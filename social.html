@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nancy — Content & Socials</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared/styles.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+<div id="loading"><div class="loading-logo">Nancy</div><div class="loading-spinner"></div></div>
+<div id="gate"><div class="gate-card"><div class="gate-logo">Nancy</div><div class="gate-sub">CareNBloom Marketing Hub</div><div class="gate-label">Enter hub password</div><input class="gate-input" type="password" id="gate-pw" placeholder="••••••••" onkeydown="if(event.key==='Enter')checkPassword()"/><div class="gate-error" id="gate-error"></div><button class="gate-btn" onclick="checkPassword()">Enter Hub</button></div></div>
+<div id="auth-screen"><div class="auth-card"><div class="auth-logo">Nancy</div><div class="auth-sub">CareNBloom Marketing Hub</div><div class="auth-tabs"><div class="auth-tab active" id="signin-tab" onclick="switchAuthTab('signin')">Sign In</div><div class="auth-tab" id="signup-tab" onclick="switchAuthTab('signup')">Join Team</div></div><div id="signin-form"><div class="auth-field"><label class="auth-label">Email</label><input class="auth-input" type="email" id="signin-email" placeholder="you@carenbloom.com" onkeydown="if(event.key==='Enter')signIn()"/></div><div class="auth-field"><label class="auth-label">Password</label><input class="auth-input" type="password" id="signin-password" placeholder="Your password" onkeydown="if(event.key==='Enter')signIn()"/><span class="auth-forgot" onclick="showForgotPassword()">Forgot password?</span></div><div class="auth-error" id="signin-error"></div><button class="auth-btn" id="signin-btn" onclick="signIn()">Sign In</button></div><div id="signup-form" style="display:none"><div class="auth-field"><label class="auth-label">Your Name</label><input class="auth-input" type="text" id="signup-name" placeholder="e.g. Crystal"/></div><div class="auth-field"><label class="auth-label">Work Email</label><input class="auth-input" type="email" id="signup-email" placeholder="you@carenbloom.com"/><div class="auth-domain-hint">Only @carenbloom.com emails allowed</div></div><div class="auth-field"><label class="auth-label">Password</label><input class="auth-input" type="password" id="signup-password" placeholder="Min 6 characters"/></div><div class="auth-error" id="signup-error"></div><div class="auth-success" id="signup-success"></div><button class="auth-btn" id="signup-btn" onclick="signUp()">Join Team</button></div><div id="forgot-form" style="display:none"><div class="auth-field"><label class="auth-label">Work Email</label><input class="auth-input" type="email" id="forgot-email" placeholder="you@carenbloom.com"/></div><div class="auth-error" id="forgot-error"></div><div class="auth-success" id="forgot-success"></div><button class="auth-btn" id="forgot-btn" onclick="sendResetEmail()">Send Reset Link</button><div style="text-align:center;margin-top:1rem"><span class="auth-forgot" onclick="switchAuthTab('signin')">Back to Sign In</span></div></div></div></div>
+<div id="app" style="display:none">
+  <nav class="topnav">
+    <a class="nav-brand" href="index.html">Nancy</a>
+    <div class="nav-links">
+      <a class="nav-link" href="index.html">Home</a>
+      <a class="nav-link" href="taskflow.html">Task Hub</a>
+      <a class="nav-link active" href="social.html">Content & Socials</a>
+      <a class="nav-link " href="learning.html">Learning</a>
+      <a class="nav-link " href="creators.html">Creators & Onboarding</a>
+    </div>
+    <div class="nav-right">
+      <div class="nav-time" id="pht-clock">HKT --:--</div>
+      <div id="admin-nav-link" style="display:none;align-items:center;height:100%"><a class="nav-link" href="admin.html" style="color:var(--primary);font-weight:700">👑 Admin</a></div>
+      <div class="user-nav-btn" onclick="openUserMenu()"><div class="user-avatar-small" id="user-avatar-nav">👤</div><span id="user-name-nav">Me</span><span>▾</span></div>
+      <button class="nav-btn" onclick="window.location.href='admin.html'">⚙</button>
+    </div>
+  </nav>
+  <div id="storage-alert-banner"><span id="storage-alert-icon">⚠️</span><span style="flex:1;font-family:sans-serif"><span id="storage-alert-pct" style="font-weight:700"></span><span id="storage-alert-msg"></span></span><button class="storage-alert-close" onclick="dismissStorageAlert()">✕</button></div>
+  <div class="coming-soon">
+    <div class="coming-soon-icon">📱
+📚</div>
+    <div class="coming-soon-title">Content & Socials
+Learning & Playbook</div>
+    <div class="coming-soon-sub">This section is being built. Check back soon!</div>
+    <a href="index.html" class="btn-ghost" style="margin-top:1rem">← Back to Home</a>
+  </div>
+  <div id="mobile-nav" style="display:none;position:fixed;bottom:0;left:0;right:0;background:var(--white);border-top:1px solid var(--border);z-index:300;padding:.4rem 0 .5rem"><div style="display:flex;justify-content:space-around;align-items:center"><a href="index.html" style="display:flex;flex-direction:column;align-items:center;gap:2px;padding:.3rem .5rem;color:var(--muted);text-decoration:none"><span style="font-size:1.2rem">🏠</span><span style="font-family:sans-serif;font-size:.58rem;font-weight:600">Home</span></a><a href="taskflow.html" style="display:flex;flex-direction:column;align-items:center;gap:2px;padding:.3rem .5rem;color:var(--muted);text-decoration:none"><span style="font-size:1.2rem">📋</span><span style="font-family:sans-serif;font-size:.58rem;font-weight:600">Tasks</span></a><a href="social.html" style="display:flex;flex-direction:column;align-items:center;gap:2px;padding:.3rem .5rem;color:var(--primary);text-decoration:none"><span style="font-size:1.2rem">📱</span><span style="font-family:sans-serif;font-size:.58rem;font-weight:600">Social</span></a><a href="learning.html" style="display:flex;flex-direction:column;align-items:center;gap:2px;padding:.3rem .5rem;color:var(--muted);text-decoration:none"><span style="font-size:1.2rem">📚</span><span style="font-family:sans-serif;font-size:.58rem;font-weight:600">Learning</span></a><a href="creators.html" style="display:flex;flex-direction:column;align-items:center;gap:2px;padding:.3rem .5rem;color:var(--muted);text-decoration:none"><span style="font-size:1.2rem">🤝</span><span style="font-family:sans-serif;font-size:.58rem;font-weight:600">Creators</span></a><a id="mnav-admin" href="admin.html" style="display:none;flex-direction:column;align-items:center;gap:2px;padding:.3rem .5rem;color:var(--muted);text-decoration:none"><span style="font-size:1.2rem">👑</span><span style="font-family:sans-serif;font-size:.58rem;font-weight:600">Admin</span></a></div></div>
+</div>
+<div class="toast" id="toast"></div>
+<script src="shared/hub.js"></script>
+<script>function onPageReady(){} bootHub();</script>
+</body>
+</html>

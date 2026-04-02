@@ -1,0 +1,3221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nancy — Marketing Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#fcf7ed;--bg2:#f5edd8;--bg3:#ede3cc;
+  --primary:#ff30cc;--primary-light:#ffe0f7;--primary-dark:#cc1fa3;
+  --h2:#282826;--body:#000;--muted:#6b6560;
+  --border:rgba(40,40,38,0.12);--border2:rgba(40,40,38,0.2);
+  --white:#fff;--radius:12px;--radius-sm:8px;
+  --shadow:0 2px 16px rgba(40,40,38,0.08);
+  --shadow-lg:0 8px 32px rgba(40,40,38,0.12);
+  --top3:#ff30cc;--focus-today:#ff6b35;--focus-week:#2d7dd2;
+  --parking:#3bb273;--founder:#f7b731;--recurring:#8854d0;
+}
+body{font-family:'Fraunces',Georgia,serif;background:var(--bg);color:var(--body);min-height:100vh;overflow-x:hidden}
+
+/* LOADING */
+#loading{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:99999;flex-direction:column;gap:1rem}
+.loading-logo{font-family:'Fraunces',serif;font-size:2.5rem;font-weight:600;color:var(--primary)}
+.loading-spinner{width:32px;height:32px;border:3px solid var(--primary-light);border-top-color:var(--primary);border-radius:50%;animation:spin 0.8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* GATE */
+#gate{position:fixed;inset:0;background:var(--bg);display:none;align-items:center;justify-content:center;z-index:9999;flex-direction:column}
+.gate-card{background:var(--white);border:1px solid var(--border);border-radius:20px;padding:3rem 3.5rem;width:100%;max-width:420px;text-align:center;box-shadow:var(--shadow-lg)}
+.gate-logo{font-family:'Fraunces',serif;font-size:2.2rem;font-weight:600;color:var(--primary);margin-bottom:.25rem}
+.gate-sub{font-size:.85rem;color:var(--muted);margin-bottom:2rem;font-family:sans-serif}
+.gate-label{font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:.5rem;text-align:left;font-family:sans-serif;font-weight:500}
+.gate-input{width:100%;padding:.875rem 1rem;border:1.5px solid var(--border2);border-radius:var(--radius-sm);font-size:1rem;background:var(--bg);color:var(--body);font-family:sans-serif;outline:none;transition:border-color .2s;margin-bottom:1rem}
+.gate-input:focus{border-color:var(--primary)}
+.gate-btn{width:100%;padding:.875rem;background:var(--primary);color:white;border:none;border-radius:var(--radius-sm);font-size:1rem;font-family:'Fraunces',serif;font-weight:500;cursor:pointer;transition:background .2s,transform .1s}
+.gate-btn:hover{background:var(--primary-dark)}
+.gate-error{font-size:.82rem;color:#e53935;margin-top:.5rem;font-family:sans-serif;display:none}
+/* AUTH SCREENS */
+#auth-screen{position:fixed;inset:0;background:var(--bg);display:none;align-items:center;justify-content:center;z-index:9998;flex-direction:column}
+.auth-card{background:var(--white);border:1px solid var(--border);border-radius:20px;padding:2.5rem 3rem;width:100%;max-width:440px;box-shadow:var(--shadow-lg)}
+.auth-logo{font-family:'Fraunces',serif;font-size:2rem;font-weight:600;color:var(--primary);text-align:center;margin-bottom:.25rem;letter-spacing:-.02em}
+.auth-sub{font-size:.85rem;color:var(--muted);text-align:center;margin-bottom:2rem;font-family:sans-serif}
+.auth-tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:1.5rem}
+.auth-tab{flex:1;padding:.75rem;text-align:center;font-family:sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .2s}
+.auth-tab.active{color:var(--primary);border-bottom-color:var(--primary)}
+.auth-field{margin-bottom:1rem}
+.auth-label{display:block;font-family:sans-serif;font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:.4rem}
+.auth-input{width:100%;padding:.8rem 1rem;border:1.5px solid var(--border2);border-radius:var(--radius-sm);font-size:.95rem;font-family:sans-serif;background:var(--bg);color:var(--body);outline:none;transition:border-color .2s}
+.auth-input:focus{border-color:var(--primary)}
+.auth-btn{width:100%;padding:.9rem;background:var(--primary);color:white;border:none;border-radius:var(--radius-sm);font-size:1rem;font-family:'Fraunces',serif;font-weight:500;cursor:pointer;transition:background .2s,transform .1s;margin-top:.5rem}
+.auth-btn:hover{background:var(--primary-dark)}
+.auth-btn:active{transform:scale(.98)}
+.auth-btn:disabled{background:var(--muted);cursor:not-allowed}
+.auth-error{font-size:.82rem;color:#e53935;margin-top:.5rem;font-family:sans-serif;display:none;padding:.5rem;background:#fee2e2;border-radius:var(--radius-sm)}
+.auth-success{font-size:.82rem;color:#2e7d32;margin-top:.5rem;font-family:sans-serif;display:none;padding:.5rem;background:#e8f5e9;border-radius:var(--radius-sm)}
+.auth-forgot{font-family:sans-serif;font-size:.8rem;color:var(--primary);cursor:pointer;text-align:right;margin-top:.25rem;display:block}
+.auth-forgot:hover{text-decoration:underline}
+.auth-domain-hint{font-family:sans-serif;font-size:.75rem;color:var(--muted);margin-top:.25rem}
+
+/* ADMIN PANEL */
+.admin-panel{padding:2rem;max-width:1000px;margin:0 auto}
+.admin-title{font-family:'Fraunces',serif;font-size:2rem;font-weight:600;color:var(--h2);margin-bottom:.25rem;letter-spacing:-.02em}
+.admin-sub{font-family:sans-serif;font-size:.88rem;color:var(--muted);margin-bottom:2rem}
+.admin-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:2rem}
+.admin-stat{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;text-align:center}
+.admin-stat-num{font-family:'Fraunces',serif;font-size:2rem;font-weight:600;color:var(--primary)}
+.admin-stat-label{font-family:sans-serif;font-size:.78rem;color:var(--muted);margin-top:.25rem}
+.admin-section{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-bottom:1.5rem}
+.admin-section-title{font-family:'Fraunces',serif;font-size:1.1rem;font-weight:600;color:var(--h2);margin-bottom:1rem}
+.member-row{display:flex;align-items:center;gap:1rem;padding:.75rem 0;border-bottom:1px solid var(--border)}
+.member-row:last-child{border-bottom:none}
+.member-avatar{width:38px;height:38px;border-radius:50%;background:var(--primary-light);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
+.member-info{flex:1}
+.member-name{font-family:sans-serif;font-size:.88rem;font-weight:600;color:var(--h2)}
+.member-email{font-family:sans-serif;font-size:.75rem;color:var(--muted)}
+.member-role-badge{font-family:sans-serif;font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:10px}
+.role-admin{background:var(--primary-light);color:var(--primary-dark)}
+.role-member{background:var(--bg2);color:var(--muted)}
+.activity-item{padding:.65rem 0;border-bottom:1px solid var(--border);display:flex;gap:.75rem;align-items:flex-start}
+.activity-item:last-child{border-bottom:none}
+.activity-icon{font-size:1rem;flex-shrink:0;margin-top:2px}
+.activity-text{font-family:sans-serif;font-size:.82rem;color:var(--h2);line-height:1.4;flex:1}
+.activity-time{font-family:sans-serif;font-size:.72rem;color:var(--muted);flex-shrink:0}
+
+/* USER NAV */
+.user-nav-btn{display:flex;align-items:center;gap:.5rem;padding:4px 10px;border-radius:20px;border:1px solid var(--border);background:var(--bg);cursor:pointer;font-family:sans-serif;font-size:.82rem;color:var(--h2);transition:all .2s}
+.user-nav-btn:hover{background:var(--bg2)}
+.user-avatar-small{width:26px;height:26px;border-radius:50%;background:var(--primary-light);display:flex;align-items:center;justify-content:center;font-size:.8rem}
+
+
+/* APP */
+#app{display:none;min-height:100vh;flex-direction:column}
+
+/* TOPNAV */
+.topnav{background:var(--white);border-bottom:1px solid var(--border);padding:0 2rem;display:flex;align-items:center;position:sticky;top:0;z-index:100;height:60px}
+.nav-brand{font-family:'Fraunces',serif;font-size:1.35rem;font-weight:600;color:var(--primary);margin-right:2.5rem;letter-spacing:-.02em;flex-shrink:0}
+.nav-links{display:flex;align-items:center;flex:1;height:100%}
+.nav-link{padding:0 1.25rem;height:100%;display:flex;align-items:center;font-family:sans-serif;font-size:.875rem;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:color .2s,border-color .2s;white-space:nowrap;font-weight:500}
+.nav-link:hover{color:var(--body)}
+.nav-link.active{color:var(--primary);border-bottom-color:var(--primary)}
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:.75rem}
+.nav-time{font-family:sans-serif;font-size:.78rem;color:var(--muted);background:var(--bg);padding:4px 10px;border-radius:20px;border:1px solid var(--border)}
+.nav-btn{background:none;border:1px solid var(--border2);border-radius:var(--radius-sm);padding:6px 12px;font-size:.8rem;font-family:sans-serif;color:var(--muted);cursor:pointer;transition:all .2s}
+.nav-btn:hover{background:var(--bg2);color:var(--body)}
+
+/* PAGES */
+.page{display:none;flex:1;flex-direction:column}
+.page.active{display:flex}
+
+/* PLACEHOLDER PAGES */
+.placeholder-page{flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1rem;padding:3rem}
+.placeholder-icon{font-size:3rem}
+.placeholder-title{font-family:'Fraunces',serif;font-size:2rem;font-weight:600;color:var(--h2);letter-spacing:-.02em}
+.placeholder-sub{font-family:sans-serif;font-size:.9rem;color:var(--muted)}
+
+/* CREATE BOARD */
+#create-board-screen{flex:1;display:flex;align-items:center;justify-content:center;padding:2rem}
+.create-board-card{background:var(--white);border:1px solid var(--border);border-radius:20px;padding:3rem;max-width:480px;width:100%;box-shadow:var(--shadow-lg);text-align:center}
+.cb-icon{width:64px;height:64px;background:var(--primary-light);border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem;font-size:1.8rem}
+.cb-title{font-family:'Fraunces',serif;font-size:1.8rem;font-weight:600;color:var(--h2);margin-bottom:.5rem;letter-spacing:-.02em}
+.cb-desc{font-family:sans-serif;font-size:.9rem;color:var(--muted);margin-bottom:2rem;line-height:1.6}
+.cb-field{margin-bottom:1rem;text-align:left}
+.cb-field label{display:block;font-family:sans-serif;font-size:.8rem;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:.4rem}
+.cb-field input{width:100%;padding:.8rem 1rem;border:1.5px solid var(--border2);border-radius:var(--radius-sm);font-size:.95rem;font-family:sans-serif;background:var(--bg);color:var(--body);outline:none;transition:border-color .2s}
+.cb-field input:focus{border-color:var(--primary)}
+.avatar-grid{display:flex;gap:8px;flex-wrap:wrap;margin-top:.4rem}
+.avatar-opt{width:40px;height:40px;border:2px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.2rem;cursor:pointer;transition:border-color .2s,transform .15s;background:var(--bg)}
+.avatar-opt:hover{transform:scale(1.1)}
+.avatar-opt.selected{border-color:var(--primary);background:var(--primary-light)}
+.cb-btn{width:100%;padding:.9rem;background:var(--primary);color:white;border:none;border-radius:var(--radius-sm);font-size:1rem;font-family:'Fraunces',serif;font-weight:500;cursor:pointer;transition:background .2s,transform .1s;margin-top:.5rem}
+.cb-btn:hover{background:var(--primary-dark)}
+.cb-btn:active{transform:scale(.98)}
+
+/* TASKFLOW MAIN */
+#taskflow-main{display:none;flex-direction:column;flex:1}
+.board-header{background:var(--white);border-bottom:1px solid var(--border);padding:1rem 2rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
+.board-switcher{display:flex;gap:6px}
+.board-tab{padding:6px 14px;border-radius:20px;border:1.5px solid var(--border2);font-family:sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;transition:all .2s;background:var(--bg);color:var(--muted)}
+.board-tab:hover{border-color:var(--primary);color:var(--primary)}
+.board-tab.active{background:var(--primary);color:white;border-color:var(--primary)}
+.board-header-right{margin-left:auto;display:flex;gap:8px;align-items:center}
+.hdr-btn{padding:6px 14px;border-radius:var(--radius-sm);border:1.5px solid var(--border2);font-family:sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;transition:all .2s;background:var(--bg);color:var(--muted);display:flex;align-items:center;gap:5px}
+.hdr-btn:hover{background:var(--bg2);color:var(--body)}
+.hdr-btn.pink{background:var(--primary);color:white;border-color:var(--primary)}
+.hdr-btn.pink:hover{background:var(--primary-dark)}
+
+/* REWARD BANNER */
+.reward-banner{background:var(--primary-light);border-bottom:1px solid var(--border);padding:.75rem 2rem;display:flex;align-items:center;gap:1rem;font-family:sans-serif}
+.reward-badge{font-size:1.4rem}
+.reward-info{flex:1}
+.reward-title{font-size:.85rem;font-weight:700;color:var(--h2)}
+.reward-quote{font-size:.78rem;color:var(--muted);margin-top:1px;font-style:italic}
+.reward-hidden{font-size:.78rem;color:var(--muted);background:rgba(40,40,38,.06);padding:4px 10px;border-radius:20px}
+
+/* BOARD BODY */
+.board-body{display:flex;flex:1;overflow:hidden;min-height:0}
+.board-main{flex:1;overflow-y:auto;padding:1.5rem 2rem;display:flex;flex-direction:column;gap:1.5rem}
+.board-sidebar{width:280px;border-left:1px solid var(--border);background:var(--white);overflow-y:auto;flex-shrink:0}
+
+/* TIERS */
+.tier-section{display:flex;flex-direction:column;gap:.75rem}
+.tier-header{display:flex;align-items:center;gap:.75rem}
+.tier-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.tier-name{font-family:'Fraunces',serif;font-size:1rem;font-weight:600;color:var(--h2);letter-spacing:-.01em}
+.tier-count{font-family:sans-serif;font-size:.75rem;color:var(--muted);background:var(--bg2);padding:2px 8px;border-radius:10px}
+.tier-limit{font-family:sans-serif;font-size:.72rem;color:var(--muted);margin-left:auto}
+.tier-collapse{background:none;border:none;cursor:pointer;color:var(--muted);font-size:.8rem;padding:2px 6px;border-radius:4px;transition:background .2s}
+.tier-collapse:hover{background:var(--bg2)}
+.add-task-btn{background:none;border:1.5px dashed var(--border2);border-radius:var(--radius-sm);padding:.6rem 1rem;font-family:sans-serif;font-size:.82rem;color:var(--muted);cursor:pointer;text-align:left;transition:all .2s;width:100%;display:flex;align-items:center;gap:6px}
+.add-task-btn:hover{border-color:var(--primary);color:var(--primary);background:var(--primary-light)}
+.tier-grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+.tier-grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem}
+.tier-col{display:flex;flex-direction:column;gap:.75rem}
+.tier-col-header{display:flex;align-items:center;gap:.5rem;padding:.5rem .75rem;border-radius:var(--radius-sm);margin-bottom:.25rem}
+.tier-col-header .tier-name{font-size:.88rem}
+
+/* TASK CARDS */
+.task-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:.875rem 1rem;cursor:grab;transition:box-shadow .2s,transform .15s;position:relative;overflow:hidden;animation:fadeIn .2s ease}
+.task-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:3px 0 0 3px}
+.task-card:hover{box-shadow:var(--shadow);transform:translateY(-1px)}
+.task-card.completed{opacity:.55}
+.task-card.completed .task-title{text-decoration:line-through}
+.task-top{display:flex;align-items:flex-start;gap:.5rem}
+.task-check{width:18px;height:18px;border:1.5px solid var(--border2);border-radius:50%;flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;margin-top:1px;transition:all .2s;background:white}
+.task-check:hover{border-color:var(--primary)}
+.task-check.done{background:var(--primary);border-color:var(--primary)}
+.task-check.done::after{content:'✓';color:white;font-size:10px;font-family:sans-serif}
+.task-title{font-family:sans-serif;font-size:.88rem;font-weight:600;color:var(--h2);line-height:1.4;flex:1}
+.task-actions{display:flex;gap:4px;opacity:0;transition:opacity .2s}
+.task-card:hover .task-actions{opacity:1}
+.task-action-btn{background:none;border:none;width:24px;height:24px;border-radius:4px;cursor:pointer;font-size:.75rem;color:var(--muted);display:flex;align-items:center;justify-content:center;transition:background .15s,color .15s}
+.task-action-btn:hover{background:var(--bg2);color:var(--body)}
+.task-action-btn.del:hover{background:#fee2e2;color:#e53935}
+.task-desc{font-family:sans-serif;font-size:.78rem;color:var(--muted);margin-top:.4rem;line-height:1.5;padding-left:26px}
+.task-meta{display:flex;align-items:center;gap:6px;margin-top:.5rem;padding-left:26px;flex-wrap:wrap}
+.task-tag{font-family:sans-serif;font-size:.68rem;padding:2px 7px;border-radius:10px;font-weight:600}
+.tag-recurring{background:#ede7f6;color:#5e35b1}
+.tag-due{background:#fff3e0;color:#e65100}
+.tag-personal{background:var(--primary-light);color:var(--primary-dark)}
+.tag-shared{background:#e8f5e9;color:#2e7d32}
+.card-top3::before{background:var(--top3)}
+.card-focus-today::before{background:var(--focus-today)}
+.card-focus-week::before{background:var(--focus-week)}
+.card-parking::before{background:var(--parking)}
+.card-founder::before{background:var(--founder)}
+.card-recurring::before{background:var(--recurring)}
+
+/* SIDEBAR */
+.sidebar-header{padding:1rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.sidebar-title{font-family:'Fraunces',serif;font-size:.95rem;font-weight:600;color:var(--h2)}
+.sidebar-clear-btn{font-family:sans-serif;font-size:.75rem;color:#e53935;background:none;border:none;cursor:pointer;padding:2px 6px;border-radius:4px;transition:background .15s}
+.sidebar-clear-btn:hover{background:#fee2e2}
+.sidebar-section{padding:.75rem 1.25rem;border-bottom:1px solid var(--border)}
+.sidebar-section-title{font-family:sans-serif;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:.5rem}
+.sidebar-task{padding:.5rem 0;display:flex;align-items:flex-start;gap:.5rem;border-bottom:1px solid var(--border)}
+.sidebar-task:last-child{border-bottom:none}
+.sidebar-task-dot{width:7px;height:7px;border-radius:50%;margin-top:5px;flex-shrink:0}
+.sidebar-task-title{font-family:sans-serif;font-size:.8rem;color:var(--h2);line-height:1.4;flex:1}
+.sidebar-task.done .sidebar-task-title{text-decoration:line-through;color:var(--muted)}
+
+/* MODALS */
+.modal-overlay{position:fixed;inset:0;background:rgba(40,40,38,.45);display:flex;align-items:center;justify-content:center;z-index:500;padding:1rem;opacity:0;pointer-events:none;transition:opacity .2s}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal{background:var(--white);border-radius:20px;padding:2rem;width:100%;max-width:480px;box-shadow:var(--shadow-lg);transform:translateY(10px);transition:transform .2s;max-height:90vh;overflow-y:auto}
+.modal-overlay.open .modal{transform:translateY(0)}
+.modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem}
+.modal-title{font-family:'Fraunces',serif;font-size:1.35rem;font-weight:600;color:var(--h2);letter-spacing:-.02em}
+.modal-close{background:none;border:none;width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:1.1rem;color:var(--muted);display:flex;align-items:center;justify-content:center;transition:background .15s}
+.modal-close:hover{background:var(--bg2)}
+.form-field{margin-bottom:1rem}
+.form-label{display:block;font-family:sans-serif;font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:.4rem}
+.form-input,.form-select,.form-textarea{width:100%;padding:.75rem 1rem;border:1.5px solid var(--border2);border-radius:var(--radius-sm);font-size:.92rem;font-family:sans-serif;background:var(--bg);color:var(--body);outline:none;transition:border-color .2s}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--primary)}
+.form-textarea{min-height:80px;resize:vertical;line-height:1.5}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+.form-check-row{display:flex;align-items:center;gap:.5rem;font-family:sans-serif;font-size:.88rem;color:var(--h2);cursor:pointer;padding:.4rem 0}
+.form-check-row input[type=checkbox]{accent-color:var(--primary);width:16px;height:16px}
+.modal-footer{display:flex;gap:.75rem;justify-content:flex-end;margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--border)}
+.btn-ghost{padding:.65rem 1.25rem;background:none;border:1.5px solid var(--border2);border-radius:var(--radius-sm);font-family:sans-serif;font-size:.88rem;font-weight:600;color:var(--muted);cursor:pointer;transition:all .2s}
+.btn-ghost:hover{background:var(--bg2);color:var(--body)}
+.btn-primary{padding:.65rem 1.5rem;background:var(--primary);border:none;border-radius:var(--radius-sm);font-family:'Fraunces',serif;font-size:.92rem;font-weight:500;color:white;cursor:pointer;transition:background .2s,transform .1s}
+.btn-primary:hover{background:var(--primary-dark)}
+.btn-primary:active{transform:scale(.98)}
+.btn-primary:disabled{background:var(--muted);cursor:not-allowed}
+
+/* FILE UPLOAD */
+.file-upload-area{border:2px dashed var(--border2);border-radius:var(--radius-sm);padding:1.5rem;text-align:center;cursor:pointer;transition:all .2s;background:var(--bg)}
+.file-upload-area:hover{border-color:var(--primary);background:var(--primary-light)}
+.file-upload-area.dragover{border-color:var(--primary);background:var(--primary-light)}
+.file-upload-input{display:none}
+.file-upload-label{font-family:sans-serif;font-size:.85rem;color:var(--muted);cursor:pointer}
+.file-upload-label span{color:var(--primary);font-weight:600}
+.uploaded-files{display:flex;flex-direction:column;gap:.5rem;margin-top:.75rem}
+.uploaded-file{display:flex;align-items:center;gap:.5rem;background:var(--bg2);border-radius:var(--radius-sm);padding:.5rem .75rem}
+.uploaded-file-name{font-family:sans-serif;font-size:.8rem;color:var(--h2);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.uploaded-file-remove{background:none;border:none;cursor:pointer;color:var(--muted);font-size:.9rem;padding:2px}
+.uploaded-file-remove:hover{color:#e53935}
+.upload-progress{font-family:sans-serif;font-size:.78rem;color:var(--primary);margin-top:.5rem;display:none}
+
+/* FILE PREVIEW */
+.file-preview-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:.75rem;margin-top:.75rem}
+.file-preview-item{position:relative;border-radius:var(--radius-sm);overflow:hidden;border:1px solid var(--border);background:var(--bg2)}
+.file-preview-item img{width:100%;height:90px;object-fit:cover;display:block}
+.file-preview-item .file-icon{width:100%;height:90px;display:flex;align-items:center;justify-content:center;font-size:2rem}
+.file-preview-item .file-name{font-family:sans-serif;font-size:.68rem;color:var(--muted);padding:4px 6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.file-preview-remove{position:absolute;top:4px;right:4px;background:rgba(0,0,0,.5);border:none;border-radius:50%;width:20px;height:20px;cursor:pointer;color:white;font-size:.7rem;display:flex;align-items:center;justify-content:center}
+
+/* LEMON COP */
+.lemon-cop-overlay{position:fixed;inset:0;background:rgba(40,40,38,.6);display:none;align-items:center;justify-content:center;z-index:800}
+.lemon-cop-card{background:var(--white);border-radius:20px;padding:2.5rem;max-width:360px;text-align:center;box-shadow:var(--shadow-lg)}
+.lemon-cop-title{font-family:'Fraunces',serif;font-size:1.3rem;font-weight:600;color:var(--h2);margin-bottom:.5rem;margin-top:1rem}
+.lemon-cop-msg{font-family:sans-serif;font-size:.88rem;color:var(--muted);line-height:1.6;margin-bottom:1.5rem}
+
+/* SETTINGS */
+.settings-overlay{position:fixed;inset:0;background:rgba(40,40,38,.45);z-index:600;display:none}
+.settings-panel{position:fixed;top:0;right:0;bottom:0;width:340px;background:var(--white);border-left:1px solid var(--border);padding:2rem 1.5rem;z-index:601;transform:translateX(100%);transition:transform .3s ease;overflow-y:auto}
+.settings-panel.open{transform:translateX(0)}
+.settings-title{font-family:'Fraunces',serif;font-size:1.3rem;font-weight:600;color:var(--h2);margin-bottom:1.5rem}
+.settings-section-title{font-family:sans-serif;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:.75rem;margin-top:1.5rem}
+
+/* STORAGE MONITOR */
+.storage-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:1rem;margin-bottom:1rem}
+.storage-bar{height:8px;background:var(--bg3);border-radius:10px;overflow:hidden;margin:.5rem 0}
+.storage-fill{height:100%;border-radius:10px;background:var(--primary);transition:width .5s}
+.storage-fill.warning{background:#ff6b35}
+.storage-fill.danger{background:#e53935}
+.storage-label{font-family:sans-serif;font-size:.75rem;color:var(--muted);display:flex;justify-content:space-between}
+
+/* RECAP */
+.recap-section{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-bottom:1.5rem}
+.recap-hidden{text-align:center;padding:2rem;color:var(--muted);font-family:sans-serif;font-size:.88rem;font-style:italic}
+
+/* SHARE */
+.share-code-item{background:var(--bg);border:1.5px solid var(--border2);border-radius:var(--radius-sm);padding:.75rem 1rem;display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem}
+.share-code-val{font-family:monospace;font-size:1.1rem;font-weight:700;color:var(--primary);letter-spacing:.1em}
+.copy-code-btn{background:var(--primary-light);border:none;border-radius:6px;padding:4px 10px;font-family:sans-serif;font-size:.75rem;font-weight:600;color:var(--primary-dark);cursor:pointer;transition:background .2s}
+.copy-code-btn:hover{background:var(--primary);color:white}
+
+/* REWARDS */
+.reward-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-bottom:1rem}
+.reward-card-title{font-family:'Fraunces',serif;font-size:1rem;font-weight:600;color:var(--h2);margin-bottom:1rem}
+.reward-progress-bar{height:10px;background:var(--bg2);border-radius:10px;overflow:hidden;margin:.4rem 0}
+.reward-progress-fill{height:100%;border-radius:10px;background:var(--primary);transition:width .5s}
+.reward-tier-display{display:flex;align-items:center;gap:1rem;padding:1rem;background:var(--bg);border-radius:var(--radius-sm);margin-top:1rem}
+.reward-tier-emoji{font-size:2.5rem}
+.reward-tier-name{font-family:'Fraunces',serif;font-size:1.1rem;font-weight:600;color:var(--h2)}
+.reward-tier-quote{font-family:sans-serif;font-size:.82rem;color:var(--muted);font-style:italic;margin-top:2px}
+
+/* IDEAS */
+.ideas-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1rem;margin-top:1rem}
+.idea-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;transition:box-shadow .2s;position:relative}
+.idea-card:hover{box-shadow:var(--shadow)}
+.idea-card-title{font-family:sans-serif;font-size:.92rem;font-weight:700;color:var(--h2);margin-bottom:.4rem}
+.idea-card-notes{font-family:sans-serif;font-size:.82rem;color:var(--muted);line-height:1.5;margin-bottom:.75rem}
+.idea-promoted-badge{position:absolute;top:10px;right:10px;background:#e8f5e9;color:#2e7d32;font-family:sans-serif;font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:10px}
+.idea-actions{display:flex;gap:6px;margin-top:.75rem}
+.idea-btn{padding:4px 10px;border-radius:6px;border:1.5px solid var(--border2);font-family:sans-serif;font-size:.75rem;font-weight:600;cursor:pointer;transition:all .2s;background:var(--bg);color:var(--muted)}
+.idea-btn:hover{background:var(--primary);color:white;border-color:var(--primary)}
+
+/* DELIVERABLES */
+.deliverable-item{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;margin-bottom:1rem}
+.deliv-task-title{font-family:sans-serif;font-size:.92rem;font-weight:700;color:var(--h2);margin-bottom:.5rem}
+.deliv-date{font-family:sans-serif;font-size:.75rem;color:var(--muted);margin-bottom:.75rem}
+.deliv-notes{font-family:sans-serif;font-size:.85rem;color:var(--body);line-height:1.6;background:var(--bg);padding:.75rem;border-radius:var(--radius-sm);margin-bottom:.75rem}
+
+/* TOAST */
+.toast{position:fixed;bottom:2rem;right:2rem;background:var(--h2);color:white;font-family:sans-serif;font-size:.85rem;padding:.75rem 1.25rem;border-radius:var(--radius-sm);box-shadow:var(--shadow-lg);z-index:9000;opacity:0;transform:translateY(10px);transition:all .25s;pointer-events:none}
+.toast.show{opacity:1;transform:translateY(0)}
+.toast.success{background:#2e7d32}
+.toast.error{background:#c62828}
+
+/* DAILY RECAP BTN */
+.daily-recap-btn{position:fixed;right:-48px;top:50%;transform:translateY(-50%) rotate(-90deg);background:var(--primary);color:white;font-family:sans-serif;font-size:.78rem;font-weight:700;padding:6px 16px;border-radius:8px 8px 0 0;cursor:pointer;z-index:200;border:none;letter-spacing:.05em;transition:right .2s;box-shadow:-2px 0 12px rgba(255,48,204,.3)}
+.daily-recap-btn:hover{right:-40px}
+
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--bg3);border-radius:10px}
+
+@media(max-width:900px){
+  .tier-grid-3{grid-template-columns:1fr}
+  .tier-grid-2{grid-template-columns:1fr}
+  .board-sidebar{display:none}
+  .board-main{padding:1rem}
+}
+
+/* MOBILE RESPONSIVE */
+@media(max-width:768px){
+  body{padding-bottom:70px}
+
+  /* NAV */
+  .topnav{padding:0 1rem;height:52px}
+  .nav-brand{font-size:1.1rem;margin-right:.75rem}
+  .nav-links{display:none}
+  .nav-right{gap:.4rem}
+  .nav-time{font-size:.7rem;padding:3px 7px}
+  .nav-btn{padding:4px 8px;font-size:.75rem}
+  .user-nav-btn{padding:3px 8px;font-size:.78rem;gap:.3rem}
+
+  /* BOARD HEADER */
+  .board-header{padding:.75rem 1rem;flex-direction:column;gap:.6rem;align-items:flex-start}
+  .board-switcher{width:100%}
+  .board-tab{font-size:.78rem;padding:5px 10px}
+  .board-header-right{width:100%;display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
+  .hdr-btn{font-size:.7rem;padding:7px 4px;justify-content:center;flex-direction:column;gap:2px;text-align:center}
+  .hdr-btn.pink{grid-column:1/-1;padding:10px;flex-direction:row}
+
+  /* REWARD BANNER */
+  .reward-banner{padding:.6rem 1rem;flex-wrap:wrap;gap:.5rem}
+  .reward-title{font-size:.8rem}
+  .reward-quote{font-size:.72rem}
+
+  /* BOARD BODY */
+  .board-body{flex-direction:column}
+  .board-sidebar{display:none}
+  .board-main{padding:.75rem}
+
+  /* TIER GRIDS - single column */
+  .tier-grid-3,.tier-grid-2{grid-template-columns:1fr}
+  .tier-name{font-size:.85rem}
+  .tier-count{font-size:.7rem}
+  .add-task-btn{font-size:.8rem;padding:.55rem .75rem}
+
+  /* TASK CARDS */
+  .task-card{padding:.75rem}
+  .task-title{font-size:.85rem}
+  .task-actions{opacity:1}
+
+  /* MODALS - slide up from bottom */
+  .modal-overlay{padding:0;align-items:flex-end}
+  .modal{border-radius:20px 20px 0 0 !important;max-height:92vh;padding:1.5rem 1.25rem;width:100% !important;max-width:100% !important}
+  .modal-title{font-size:1.1rem}
+  .form-row{grid-template-columns:1fr}
+  .form-input,.form-select,.form-textarea{font-size:16px}
+
+  /* AUTH */
+  .auth-card{padding:1.75rem 1.25rem;border-radius:20px 20px 0 0;position:fixed;bottom:0;left:0;right:0;max-width:100%;box-shadow:0 -4px 24px rgba(40,40,38,.15)}
+  #auth-screen{align-items:flex-end}
+  .auth-input{font-size:16px}
+  .auth-logo{font-size:1.6rem}
+
+  /* GATE */
+  .gate-card{padding:2rem 1.5rem;border-radius:20px 20px 0 0;position:fixed;bottom:0;left:0;right:0;max-width:100%}
+  #gate{align-items:flex-end}
+  .gate-input{font-size:16px}
+
+  /* SETTINGS */
+  .settings-panel{width:100%;border-radius:20px 20px 0 0;border-left:none}
+
+  /* ADMIN */
+  .admin-panel{padding:1rem}
+  .admin-grid{grid-template-columns:repeat(3,1fr);gap:.6rem}
+  .admin-stat{padding:.75rem .5rem}
+  .admin-stat-num{font-size:1.4rem}
+  .admin-stat-label{font-size:.65rem}
+  .admin-section{padding:1rem}
+  .admin-title{font-size:1.4rem}
+  .member-row{flex-wrap:wrap;gap:.5rem}
+
+  /* HIDE floating btn */
+  .daily-recap-btn{display:none}
+
+  /* PLACEHOLDER */
+  .placeholder-page{padding:2rem 1rem}
+  .placeholder-title{font-size:1.4rem}
+
+  /* LEMON COP */
+  .lemon-cop-card{margin:1rem;max-width:calc(100% - 2rem)}
+
+  /* RECAP */
+  .recap-section{padding:1rem}
+  .recap-hidden{padding:1rem;font-size:.82rem}
+}
+
+@media(max-width:380px){
+  .board-header-right{grid-template-columns:repeat(3,1fr)}
+  .admin-grid{grid-template-columns:1fr 1fr}
+}
+
+.tier-two-col{}
+@media(max-width:768px){.tier-two-col{display:flex !important;flex-direction:column !important}}
+
+/* STORAGE ALERT BANNER */
+#storage-alert-banner{
+  display:none;
+  padding:.65rem 1.5rem;
+  font-family:sans-serif;
+  font-size:.82rem;
+  align-items:center;
+  gap:.75rem;
+  position:relative;
+}
+#storage-alert-banner.warning{background:#fff8e1;border-bottom:1px solid #f7b731}
+#storage-alert-banner.danger{background:#fff3e0;border-bottom:1px solid #ff6b35}
+#storage-alert-banner.critical{background:#fee2e2;border-bottom:1px solid #e53935}
+.storage-alert-icon{font-size:1rem;flex-shrink:0}
+.storage-alert-text{flex:1;color:var(--h2)}
+.storage-alert-pct{font-weight:700;margin-right:4px}
+.storage-alert-close{
+  background:none;border:none;cursor:pointer;
+  color:var(--muted);font-size:1rem;padding:2px 6px;
+  border-radius:4px;flex-shrink:0;
+}
+.storage-alert-close:hover{background:rgba(40,40,38,.08)}
+@media(max-width:768px){
+  #storage-alert-banner{padding:.6rem 1rem;font-size:.78rem}
+}
+
+
+@media(max-width:768px){
+  #page-admin{
+    overflow-y:auto;
+    -webkit-overflow-scrolling:touch;
+  }
+  .admin-panel{
+    padding:1rem;
+    padding-bottom:100px;
+    min-height:100vh;
+    overflow-y:auto;
+  }
+  .admin-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:.5rem;
+    margin-bottom:1.25rem;
+  }
+  .admin-stat{
+    padding:.6rem .4rem;
+    text-align:center;
+  }
+  .admin-stat-num{font-size:1.6rem}
+  .admin-stat-label{font-size:.6rem}
+  .admin-section{
+    padding:1rem;
+    margin-bottom:1rem;
+    border-radius:var(--radius);
+  }
+  .admin-section-title{font-size:.95rem}
+  .member-row{
+    flex-wrap:wrap;
+    gap:.5rem;
+    padding:.75rem 0;
+  }
+  .member-name{font-size:.85rem}
+  .member-email{font-size:.72rem}
+  .member-role-badge{font-size:.65rem}
+  .activity-item{
+    padding:.6rem 0;
+    gap:.5rem;
+  }
+  .activity-text{font-size:.8rem}
+  .activity-time{font-size:.68rem}
+  .admin-title{font-size:1.3rem;margin-bottom:.25rem}
+  .admin-sub{font-size:.8rem;margin-bottom:1rem}
+
+  /* Make member action buttons stack on mobile */
+  .member-actions-mobile{
+    display:flex;
+    gap:.4rem;
+    width:100%;
+    margin-top:.4rem;
+  }
+  .member-actions-mobile button{
+    flex:1;
+    padding:6px 4px;
+    font-size:.72rem;
+    border-radius:var(--radius-sm);
+    cursor:pointer;
+    font-family:sans-serif;
+  }
+}
+
+</style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div id="loading">
+  <div class="loading-logo" style="font-family:Fraunces,serif;letter-spacing:-.02em">Nancy</div>
+  <div class="loading-spinner"></div>
+</div>
+
+
+<!-- AUTH SCREEN -->
+<div id="auth-screen">
+  <div class="auth-card">
+    <div class="auth-logo">Nancy</div>
+    <div class="auth-sub">CareNBloom Marketing Hub</div>
+    <div class="auth-tabs">
+      <div class="auth-tab active" id="signin-tab" onclick="switchAuthTab('signin')">Sign In</div>
+      <div class="auth-tab" id="signup-tab" onclick="switchAuthTab('signup')">Join Team</div>
+    </div>
+
+    <!-- SIGN IN -->
+    <div id="signin-form">
+      <div class="auth-field">
+        <label class="auth-label">Email</label>
+        <input class="auth-input" type="email" id="signin-email" placeholder="you@carenbloom.com"/>
+      </div>
+      <div class="auth-field">
+        <label class="auth-label">Password</label>
+        <input class="auth-input" type="password" id="signin-password" placeholder="Your password"/>
+        <span class="auth-forgot" onclick="showForgotPassword()">Forgot password?</span>
+      </div>
+      <div class="auth-error" id="signin-error"></div>
+      <button class="auth-btn" id="signin-btn" onclick="signIn()">Sign In</button>
+    </div>
+
+    <!-- SIGN UP -->
+    <div id="signup-form" style="display:none">
+      <div class="auth-field">
+        <label class="auth-label">Your Name</label>
+        <input class="auth-input" type="text" id="signup-name" placeholder="e.g. Crystal"/>
+      </div>
+      <div class="auth-field">
+        <label class="auth-label">Work Email</label>
+        <input class="auth-input" type="email" id="signup-email" placeholder="you@carenbloom.com"/>
+        <div class="auth-domain-hint">Only @carenbloom.com emails are allowed</div>
+      </div>
+      <div class="auth-field">
+        <label class="auth-label">Password</label>
+        <input class="auth-input" type="password" id="signup-password" placeholder="Create a password (min 6 chars)"/>
+      </div>
+      <div class="auth-error" id="signup-error"></div>
+      <div class="auth-success" id="signup-success"></div>
+      <button class="auth-btn" id="signup-btn" onclick="signUp()">Join Team</button>
+    </div>
+
+    <!-- FORGOT PASSWORD -->
+    <div id="forgot-form" style="display:none">
+      <div style="font-family:sans-serif;font-size:.85rem;color:var(--muted);margin-bottom:1rem;line-height:1.6">Enter your @carenbloom.com email and we will send you a password reset link.</div>
+      <div class="auth-field">
+        <label class="auth-label">Work Email</label>
+        <input class="auth-input" type="email" id="forgot-email" placeholder="you@carenbloom.com"/>
+      </div>
+      <div class="auth-error" id="forgot-error"></div>
+      <div class="auth-success" id="forgot-success"></div>
+      <button class="auth-btn" id="forgot-btn" onclick="sendResetEmail()">Send Reset Link</button>
+      <div style="text-align:center;margin-top:1rem">
+        <span class="auth-forgot" onclick="switchAuthTab('signin')">Back to Sign In</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- GATE -->
+<div id="gate">
+  <div class="gate-card">
+    <div class="gate-logo" style="font-family:Fraunces,serif;letter-spacing:-.02em">Nancy</div>
+    <div class="gate-sub">Marketing Workflow Hub</div>
+    <div class="gate-label">Enter hub password</div>
+    <input class="gate-input" type="password" id="gate-pw" placeholder="••••••••"/>
+    <div class="gate-error" id="gate-error">Incorrect password. Please try again.</div>
+    <button class="gate-btn" onclick="checkPassword()">Enter Hub</button>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <nav class="topnav">
+    <div class="nav-brand" onclick="showPage('brand',this)" style="cursor:pointer" title="Nancy Home">Nancy</div>
+    <div class="nav-links">
+      <div class="nav-link active" onclick="showPage('taskflow',this)">Task Hub</div>
+      <div class="nav-link" onclick="showPage('social',this)">Content & Socials</div>
+      <div class="nav-link" onclick="showPage('learning',this)">Learning</div>
+      <div class="nav-link" onclick="showPage('creators',this)">Creators & Onboarding</div>
+    </div>
+    <div class="nav-right">
+      <div class="nav-time" id="pht-clock">HKT --:--</div>
+      <div id="admin-nav-link" style="display:none;align-items:center;height:100%">
+        <div class="nav-link" id="admin-desktop-link" onclick="goAdmin()" style="color:var(--primary);font-weight:700;cursor:pointer">👑 Admin</div>
+      </div>
+      <div class="user-nav-btn" id="user-nav-btn" onclick="openUserMenu()">
+        <div class="user-avatar-small" id="user-avatar-nav">👤</div>
+        <span id="user-name-nav">Me</span>
+        <span>▾</span>
+      </div>
+      <button class="nav-btn" onclick="window.location.href='admin.html'">⚙</button>
+    </div>
+  </nav>
+
+
+<!-- STORAGE ALERT BANNER (admin only) -->
+<div id="storage-alert-banner">
+  <span class="storage-alert-icon" id="storage-alert-icon">⚠️</span>
+  <span class="storage-alert-text">
+    <span class="storage-alert-pct" id="storage-alert-pct"></span>
+    <span id="storage-alert-msg"></span>
+    <span style="color:var(--muted);margin-left:4px;font-size:.75rem">(Only you can see this)</span>
+  </span>
+  <button class="storage-alert-close" onclick="dismissStorageAlert()" title="Dismiss">✕</button>
+</div>
+
+  <!-- TASK HUB PAGE -->
+  <div class="page active" id="page-taskflow">
+    <div id="create-board-screen">
+      <div class="create-board-card">
+        <div class="cb-icon">📋</div>
+        <div class="cb-title">Create Your Board</div>
+        <div class="cb-desc">Set up your personal task board. You'll get a personal space and access to the shared team board.</div>
+        <div class="cb-field">
+          <label>Your Name</label>
+          <input type="text" id="board-name-input" placeholder="e.g. Crystal"/>
+        </div>
+        <div class="cb-field">
+          <label>Pick an Avatar</label>
+          <div class="avatar-grid" id="avatar-grid">
+            <div class="avatar-opt selected" data-emoji="🌸" onclick="selectAvatar(this)">🌸</div>
+            <div class="avatar-opt" data-emoji="⚡" onclick="selectAvatar(this)">⚡</div>
+            <div class="avatar-opt" data-emoji="🌙" onclick="selectAvatar(this)">🌙</div>
+            <div class="avatar-opt" data-emoji="🔥" onclick="selectAvatar(this)">🔥</div>
+            <div class="avatar-opt" data-emoji="🌊" onclick="selectAvatar(this)">🌊</div>
+            <div class="avatar-opt" data-emoji="🎯" onclick="selectAvatar(this)">🎯</div>
+            <div class="avatar-opt" data-emoji="💫" onclick="selectAvatar(this)">💫</div>
+            <div class="avatar-opt" data-emoji="🦋" onclick="selectAvatar(this)">🦋</div>
+          </div>
+        </div>
+        <button class="cb-btn" onclick="createBoard()">Create My Board →</button>
+      </div>
+    </div>
+
+    <div id="taskflow-main">
+      <div class="board-header">
+        <div class="board-switcher" style="position:relative">
+          <div class="board-tab active" id="personal-tab" onclick="switchBoard('personal',this)">🌸 My Board</div>
+          <div class="board-tab" id="shared-boards-tab" onclick="toggleSharedDropdown()">👥 Shared Boards ▾</div>
+          <div id="shared-dropdown" style="display:none;position:absolute;top:calc(100% + 8px);left:0;background:var(--white);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow-lg);min-width:240px;z-index:200;overflow:hidden">
+            <div style="padding:.5rem .75rem;border-bottom:1px solid var(--border)">
+              <div style="font-family:sans-serif;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted)">Boards You Can View</div>
+            </div>
+            <div id="shared-boards-list">
+              <div style="font-family:sans-serif;font-size:.82rem;color:var(--muted);padding:.75rem 1rem">No shared boards yet.</div>
+            </div>
+            <div style="border-top:1px solid var(--border);padding:.5rem">
+              <button onclick="openJoinModal()" style="width:100%;padding:.5rem;background:none;border:1.5px dashed var(--border2);border-radius:var(--radius-sm);font-family:sans-serif;font-size:.8rem;color:var(--muted);cursor:pointer">+ Join a Board</button>
+            </div>
+          </div>
+        </div>
+        <div class="board-header-right">
+          <button class="hdr-btn" id="bell-btn" onclick="openNotifications()" style="position:relative">
+            🔔
+            <span id="notif-badge" style="display:none;position:absolute;top:-5px;right:-5px;background:#e53935;color:white;font-family:sans-serif;font-size:.58rem;font-weight:800;min-width:16px;height:16px;border-radius:8px;padding:0 3px;align-items:center;justify-content:center">0</span>
+          </button>
+          <button class="hdr-btn" onclick="openShareModal()">🔗 Share</button>
+          <button class="hdr-btn" onclick="openModal('modal-ideas')">💡 Ideas</button>
+          <button class="hdr-btn" onclick="openDeliverables()">📦 Deliverables</button>
+          <button class="hdr-btn" onclick="openRewards()">🏆 Rewards</button>
+          <button class="hdr-btn pink" onclick="openAddTask()">+ Add Task</button>
+        </div>
+      </div>
+
+      <div class="reward-banner" id="reward-banner">
+        <div class="reward-badge" id="reward-emoji">⏳</div>
+        <div class="reward-info">
+          <div class="reward-title" id="reward-title">Daily Reward Pending</div>
+          <div class="reward-quote" id="reward-quote">Keep working — reward revealed at 6 PM HKT</div>
+        </div>
+        <div class="reward-hidden" id="reward-time-label">Revealed at 6 PM HKT</div>
+      </div>
+
+      <div class="board-body">
+        <div class="board-main" id="board-main-content">
+
+          <!-- Weekly Recap -->
+          <div class="recap-section" id="recap-section">
+            <div class="recap-hidden" id="recap-hidden-msg">📅 Weekly Recap revealed every Friday at 6:00 PM HKT</div>
+            <div id="recap-content" style="display:none">
+              <div style="font-family:'Fraunces',serif;font-size:1.1rem;font-weight:600;color:var(--h2);margin-bottom:1rem">Weekly Recap 🎉</div>
+              <div id="recap-stats" style="font-family:sans-serif;font-size:.85rem;color:var(--muted)"></div>
+            </div>
+          </div>
+
+          <!-- 2-COLUMN LAYOUT: Left col | Right col -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem" class="tier-two-col">
+
+            <!-- LEFT COLUMN -->
+            <div style="display:flex;flex-direction:column;gap:1.25rem">
+
+              <!-- Top 3 -->
+              <div class="tier-col">
+                <div class="tier-col-header" style="background:rgba(255,48,204,.08)">
+                  <div class="tier-dot" style="background:var(--top3)"></div>
+                  <div class="tier-name">🏆 Top 3</div>
+                  <div class="tier-count" id="count-top3">0/3</div>
+                  <div class="tier-limit" style="margin-left:auto;font-family:sans-serif;font-size:.7rem;color:var(--muted)">Max 3</div>
+                  <button class="tier-collapse" onclick="toggleSection('top3-cards',this)">▾</button>
+                </div>
+                <div id="top3-cards">
+                  <div class="add-task-btn" onclick="openAddTask('top3')">+ Add top priority</div>
+                </div>
+              </div>
+
+              <!-- Focus Today -->
+              <div class="tier-col">
+                <div class="tier-col-header" style="background:rgba(255,107,53,.08)">
+                  <div class="tier-dot" style="background:var(--focus-today)"></div>
+                  <div class="tier-name">⚡ Focus Today</div>
+                  <div class="tier-count" id="count-focus-today">0/15</div>
+                  <button class="tier-collapse" style="margin-left:auto" onclick="toggleSection('focus-today-cards',this)">▾</button>
+                </div>
+                <div id="focus-today-cards">
+                  <div class="add-task-btn" onclick="openAddTask('focus-today')">+ Add task</div>
+                </div>
+              </div>
+
+              <!-- Parking Lot -->
+              <div class="tier-col">
+                <div class="tier-col-header" style="background:rgba(59,178,115,.08)">
+                  <div class="tier-dot" style="background:var(--parking)"></div>
+                  <div class="tier-name">🅿️ Parking Lot</div>
+                  <div class="tier-count" id="count-parking">0</div>
+                  <button class="tier-collapse" style="margin-left:auto" onclick="toggleSection('parking-cards',this)">▾</button>
+                </div>
+                <div id="parking-cards">
+                  <div class="add-task-btn" onclick="openAddTask('parking')">+ Add task</div>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- RIGHT COLUMN -->
+            <div style="display:flex;flex-direction:column;gap:1.25rem">
+
+              <!-- Founder Assignments -->
+              <div class="tier-col">
+                <div class="tier-col-header" style="background:rgba(247,183,49,.1)">
+                  <div class="tier-dot" style="background:var(--founder)"></div>
+                  <div class="tier-name">👑 Founder Assignments</div>
+                  <div class="tier-count" id="count-founder">0</div>
+                  <button class="tier-collapse" style="margin-left:auto" onclick="toggleSection('founder-cards',this)">▾</button>
+                </div>
+                <div id="founder-cards">
+                  <div class="add-task-btn" onclick="openAddTask('founder')">+ Add founder instruction</div>
+                </div>
+              </div>
+
+              <!-- Focus This Week -->
+              <div class="tier-col">
+                <div class="tier-col-header" style="background:rgba(45,125,210,.08)">
+                  <div class="tier-dot" style="background:var(--focus-week)"></div>
+                  <div class="tier-name">📅 Focus This Week</div>
+                  <div class="tier-count" id="count-focus-week">0/6</div>
+                  <button class="tier-collapse" style="margin-left:auto" onclick="toggleSection('focus-week-cards',this)">▾</button>
+                </div>
+                <div id="focus-week-cards">
+                  <div class="add-task-btn" onclick="openAddTask('focus-week')">+ Add task</div>
+                </div>
+              </div>
+
+              <!-- Recurring -->
+              <div class="tier-col">
+                <div class="tier-col-header" style="background:rgba(136,84,208,.08)">
+                  <div class="tier-dot" style="background:var(--recurring)"></div>
+                  <div class="tier-name">🔄 Recurring</div>
+                  <div class="tier-count" id="count-recurring">0</div>
+                  <button class="tier-collapse" style="margin-left:auto" onclick="toggleSection('recurring-cards',this)">▾</button>
+                </div>
+                <div id="recurring-cards">
+                  <div class="add-task-btn" onclick="openAddTask('recurring')">+ Add recurring task</div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Sidebar -->
+        <div class="board-sidebar">
+          <div class="sidebar-header">
+            <div class="sidebar-title">All Tasks</div>
+            <button class="sidebar-clear-btn" onclick="clearCompleted()">Clear Done</button>
+          </div>
+          <div class="sidebar-section">
+            <div class="sidebar-section-title">Active</div>
+            <div id="sidebar-active"><span style="font-family:sans-serif;font-size:.8rem;color:var(--muted)">No tasks yet.</span></div>
+          </div>
+          <div class="sidebar-section">
+            <div class="sidebar-section-title">Completed</div>
+            <div id="sidebar-completed"><span style="font-family:sans-serif;font-size:.8rem;color:var(--muted)">Nothing completed yet.</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ADMIN PAGE -->
+  <div class="page" id="page-admin">
+    <div class="admin-panel" style="padding-bottom:100px;min-height:100vh">
+      <div class="admin-title">Admin Panel</div>
+      <div class="admin-sub">Manage your team, view activity, and control hub settings.</div>
+      <div class="admin-grid">
+        <div class="admin-stat">
+          <div class="admin-stat-num" id="admin-member-count">0</div>
+          <div class="admin-stat-label">Team Members</div>
+        </div>
+        <div class="admin-stat">
+          <div class="admin-stat-num" id="admin-task-count">0</div>
+          <div class="admin-stat-label">Total Tasks</div>
+        </div>
+        <div class="admin-stat">
+          <div class="admin-stat-num" id="admin-activity-count">0</div>
+          <div class="admin-stat-label">Activities Today</div>
+        </div>
+      </div>
+
+      <!-- Team Members -->
+      <div class="admin-section">
+        <div class="admin-section-title">👥 Team Members</div>
+        <div id="admin-members-list">
+          <div style="font-family:sans-serif;font-size:.85rem;color:var(--muted)">Loading...</div>
+        </div>
+      </div>
+
+      <!-- Activity Feed -->
+      <div class="admin-section">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+          <div class="admin-section-title" style="margin:0">📊 Activity Feed</div>
+          <select id="activity-filter" onchange="filterActivity()" style="font-family:sans-serif;font-size:.8rem;padding:4px 8px;border:1px solid var(--border2);border-radius:var(--radius-sm);background:var(--bg)">
+            <option value="all">All sections</option>
+            <option value="taskflow">Task Hub</option>
+            <option value="brand">Brand</option>
+            <option value="social">Social</option>
+          </select>
+        </div>
+        <div id="admin-activity-list">
+          <div style="font-family:sans-serif;font-size:.85rem;color:var(--muted)">Loading...</div>
+        </div>
+      </div>
+
+      <!-- Hub Settings -->
+      <div class="admin-section">
+        <div class="admin-section-title">⚙️ Hub Settings</div>
+        <div class="form-field">
+          <label class="form-label">Hub Password</label>
+          <div style="display:flex;gap:.75rem">
+            <input class="form-input" type="password" id="admin-hub-pw" placeholder="New hub password" style="flex:1"/>
+            <button class="btn-primary" onclick="adminChangeHubPassword()">Update</button>
+          </div>
+        </div>
+        <div class="form-field" style="margin-top:1rem">
+          <label class="form-label">Allowed Email Domain</label>
+          <div style="display:flex;gap:.75rem">
+            <input class="form-input" type="text" id="admin-domain" placeholder="carenbloom.com" style="flex:1"/>
+            <button class="btn-primary" onclick="adminChangeDomain()">Update</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OTHER PAGES -->
+  <div class="page" id="page-brand">
+    <div class="placeholder-page">
+      <div class="placeholder-icon">🎨</div>
+      <div class="placeholder-title">Brand Information</div>
+      <div class="placeholder-sub">Coming soon — building this next.</div>
+    </div>
+  </div>
+  <div class="page" id="page-social">
+    <div class="placeholder-page">
+      <div class="placeholder-icon">📱</div>
+      <div class="placeholder-title">Social Media & Playbooks</div>
+      <div class="placeholder-sub">Coming soon — building this next.</div>
+    </div>
+  </div>
+  <div class="page" id="page-learning">
+    <div class="placeholder-page">
+      <div class="placeholder-icon">📚</div>
+      <div class="placeholder-title">Learning & Playbook</div>
+      <div class="placeholder-sub">Coming soon — building this next.</div>
+    </div>
+  </div>
+  <div class="page" id="page-creators">
+    <div class="placeholder-page">
+      <div class="placeholder-icon">🤝</div>
+      <div class="placeholder-title">Creators & Onboarding</div>
+      <div class="placeholder-sub">Coming soon — building this next.</div>
+    </div>
+  </div>
+
+<!-- MOBILE BOTTOM NAV -->
+<div id="mobile-nav" style="display:none;position:fixed;bottom:0;left:0;right:0;background:var(--white);border-top:1px solid var(--border);z-index:300;padding:.4rem 0 .5rem">
+  <div style="display:flex;justify-content:space-around;align-items:center">
+    <div onclick="mobileNav('taskflow')" id="mnav-taskflow" style="display:flex;flex-direction:column;align-items:center;gap:2px;padding:.3rem .5rem;cursor:pointer;color:var(--primary)">
+      <span style="font-size:1.2rem">📋</span>
+      <span style="font-family:sans-serif;font-size:.58rem;font-weight:600">Tasks</span>
+    </div>
+    <div onclick="mobileNav('social')" id="mnav-social" style="display:flex;flex-direction:column;align-items:center;gap:2px;padding:.3rem .5rem;cursor:pointer;color:var(--muted)">
+      <span style="font-size:1.2rem">📱</span>
+      <span style="font-family:sans-serif;font-size:.58rem;font-weight:600">Social</span>
+    </div>
+    <div onclick="mobileNav('learning')" id="mnav-learning" style="display:flex;flex-direction:column;align-items:center;gap:2px;padding:.3rem .5rem;cursor:pointer;color:var(--muted)">
+      <span style="font-size:1.2rem">📚</span>
+      <span style="font-family:sans-serif;font-size:.58rem;font-weight:600">Learning</span>
+    </div>
+    <div onclick="mobileNav('creators')" id="mnav-creators" style="display:flex;flex-direction:column;align-items:center;gap:2px;padding:.3rem .5rem;cursor:pointer;color:var(--muted)">
+      <span style="font-size:1.2rem">🤝</span>
+      <span style="font-family:sans-serif;font-size:.58rem;font-weight:600">Creators</span>
+    </div>
+    <div onclick="mobileNav('brand')" id="mnav-brand" style="display:flex;flex-direction:column;align-items:center;gap:2px;padding:.3rem .5rem;cursor:pointer;color:var(--muted)">
+      <span style="font-size:1.2rem">🏠</span>
+      <span style="font-family:sans-serif;font-size:.58rem;font-weight:600">Home</span>
+    </div>
+    <div onclick="goAdmin()" id="mnav-admin" style="display:none;flex-direction:column;align-items:center;gap:2px;padding:.3rem .5rem;cursor:pointer;color:var(--muted)">
+      <span style="font-size:1.2rem">👑</span>
+      <span style="font-family:sans-serif;font-size:.58rem;font-weight:600">Admin</span>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<!-- FLOATING DAILY RECAP -->
+<button class="daily-recap-btn" onclick="showToast('Daily recap coming soon!')">Daily Recap</button>
+
+<!-- ADD TASK MODAL -->
+<div class="modal-overlay" id="modal-add-task" onclick="closeModalOutside(event,'modal-add-task')">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Add Task</div>
+      <button class="modal-close" onclick="closeModal('modal-add-task')">✕</button>
+    </div>
+    <div class="form-field">
+      <label class="form-label">Task Title *</label>
+      <input class="form-input" id="new-task-title" placeholder="What needs to be done?" maxlength="500"/>
+    </div>
+    <div class="form-field">
+      <label class="form-label">Description</label>
+      <textarea class="form-textarea" id="new-task-desc" placeholder="Add details, links, or notes..."></textarea>
+    </div>
+    <div class="form-row">
+      <div class="form-field">
+        <label class="form-label">Tier</label>
+        <select class="form-select" id="new-task-tier" onchange="onTierChange()">
+          <option value="top3">🏆 Top 3</option>
+          <option value="focus-today" selected>⚡ Focus Today</option>
+          <option value="focus-week">📅 Focus This Week</option>
+          <option value="parking">🅿️ Parking Lot</option>
+          <option value="founder">👑 Founder Assignments</option>
+          <option value="recurring">🔄 Recurring</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label class="form-label">Due Date</label>
+        <input class="form-input" type="date" id="new-task-due"/>
+      </div>
+    </div>
+    <div class="form-field" id="recurring-opts" style="display:none">
+      <label class="form-label">Recurring Frequency</label>
+      <select class="form-select" id="new-task-freq">
+        <option value="daily">Daily (resets 6AM HKT)</option>
+        <option value="weekly">Weekly (resets Monday 6AM HKT)</option>
+      </select>
+    </div>
+    <div class="form-field">
+      <label class="form-check-row">
+        <input type="checkbox" id="new-task-personal" onchange="onPersonalChange()"/>
+        <span>Personal task (only visible on my board)</span>
+      </label>
+      <label class="form-check-row" id="share-toggle" style="display:none">
+        <input type="checkbox" id="new-task-shared"/>
+        <span>Share to main dashboard</span>
+      </label>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-ghost" onclick="closeModal('modal-add-task')">Cancel</button>
+      <button class="btn-primary" id="save-task-btn" onclick="saveTask()">Add Task</button>
+    </div>
+  </div>
+</div>
+
+<!-- COMPLETE TASK MODAL -->
+<div class="modal-overlay" id="modal-complete" onclick="closeModalOutside(event,'modal-complete')">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Complete Task 🎉</div>
+      <button class="modal-close" onclick="closeModal('modal-complete')">✕</button>
+    </div>
+    <div style="font-family:sans-serif;font-size:.88rem;color:var(--muted);margin-bottom:1rem" id="complete-task-name"></div>
+    <div class="form-field">
+      <label class="form-label">Deliverable Notes</label>
+      <textarea class="form-textarea" id="complete-notes" placeholder="What did you accomplish?"></textarea>
+    </div>
+    <div class="form-field">
+      <label class="form-label">Links</label>
+      <input class="form-input" id="complete-links" placeholder="Paste links separated by comma"/>
+    </div>
+    <div class="form-field">
+      <label class="form-label">Attach Files</label>
+      <div class="file-upload-area" onclick="document.getElementById('complete-file-input').click()" ondragover="onDragOver(event)" ondrop="onFileDrop(event,'complete')">
+        <div class="file-upload-label">📎 Click to upload or drag & drop<br><span>Any file type supported</span></div>
+      </div>
+      <input type="file" id="complete-file-input" class="file-upload-input" multiple onchange="onFileSelect(event,'complete')"/>
+      <div class="upload-progress" id="complete-upload-progress">Uploading to Google Drive...</div>
+      <div class="file-preview-grid" id="complete-file-previews"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-ghost" onclick="closeModal('modal-complete')">Cancel</button>
+      <button class="btn-primary" id="confirm-complete-btn" onclick="confirmComplete()">Mark Complete ✓</button>
+    </div>
+  </div>
+</div>
+
+<!-- SHARE MODAL -->
+<div class="modal-overlay" id="modal-share" onclick="closeModalOutside(event,'modal-share')">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">🔗 Share Your Board</div>
+      <button class="modal-close" onclick="closeModal('modal-share')">✕</button>
+    </div>
+    <div style="font-family:sans-serif;font-size:.88rem;color:var(--muted);margin-bottom:1.25rem;line-height:1.6">Choose access level before sharing. You can change this anytime in Settings.</div>
+    <div class="share-code-item">
+      <div>
+        <div style="font-family:sans-serif;font-size:.75rem;color:var(--muted);margin-bottom:2px">Your Share Code</div>
+        <div class="share-code-val" id="my-share-code">—</div>
+      </div>
+      <button class="copy-code-btn" onclick="copyShareCode()">Copy</button>
+    </div>
+    <div class="form-field" style="margin-top:1.25rem">
+      <label class="form-label">Share With</label>
+      <input class="form-input" id="share-name-input" placeholder="Teammate name (e.g. Crystal)"/>
+    </div>
+    <div class="form-field">
+      <label class="form-label">Access Level</label>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">
+        <div id="perm-view" onclick="selectPerm('view')" style="border:2px solid var(--primary);border-radius:var(--radius-sm);padding:1rem;cursor:pointer;text-align:center;background:var(--primary-light)">
+          <div style="font-size:1.5rem;margin-bottom:.25rem">👁️</div>
+          <div style="font-family:sans-serif;font-size:.85rem;font-weight:700;color:var(--primary)">View Only</div>
+          <div style="font-family:sans-serif;font-size:.72rem;color:var(--muted);margin-top:2px">Can see all tasks</div>
+        </div>
+        <div id="perm-edit" onclick="selectPerm('edit')" style="border:2px solid var(--border2);border-radius:var(--radius-sm);padding:1rem;cursor:pointer;text-align:center;background:var(--bg)">
+          <div style="font-size:1.5rem;margin-bottom:.25rem">✏️</div>
+          <div style="font-family:sans-serif;font-size:.85rem;font-weight:700;color:var(--h2)">Can Edit</div>
+          <div style="font-family:sans-serif;font-size:.72rem;color:var(--muted);margin-top:2px">Add, complete, move</div>
+        </div>
+      </div>
+    </div>
+    <div class="form-field">
+      <label class="form-label">Who Has Access</label>
+      <div id="access-list">
+        <div style="font-family:sans-serif;font-size:.82rem;color:var(--muted)">Loading...</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-ghost" onclick="closeModal('modal-share')">Close</button>
+      <button class="btn-primary" onclick="grantAccess()">Generate & Share Code</button>
+    </div>
+  </div>
+</div>
+
+<!-- JOIN BOARD MODAL -->
+<div class="modal-overlay" id="modal-join" onclick="closeModalOutside(event,'modal-join')">
+  <div class="modal" style="max-width:400px">
+    <div class="modal-header">
+      <div class="modal-title">Join a Board</div>
+      <button class="modal-close" onclick="closeModal('modal-join')">✕</button>
+    </div>
+    <div style="font-family:sans-serif;font-size:.88rem;color:var(--muted);margin-bottom:1.25rem">Enter the share code from your teammate to view their board.</div>
+    <div class="form-field">
+      <label class="form-label">Share Code</label>
+      <input class="form-input" id="join-code-input" placeholder="e.g. ABC123" style="text-transform:uppercase;letter-spacing:.1em;font-size:1.1rem"/>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-ghost" onclick="closeModal('modal-join')">Cancel</button>
+      <button class="btn-primary" onclick="joinBoard()">Join Board</button>
+    </div>
+  </div>
+</div>
+
+<!-- NOTIFICATIONS MODAL -->
+<div class="modal-overlay" id="modal-notifs" onclick="closeModalOutside(event,'modal-notifs')">
+  <div class="modal" style="max-width:420px">
+    <div class="modal-header">
+      <div class="modal-title">🔔 Notifications</div>
+      <button class="modal-close" onclick="closeModal('modal-notifs')">✕</button>
+    </div>
+    <div id="notifs-list">
+      <div style="font-family:sans-serif;font-size:.85rem;color:var(--muted);padding:1rem 0;text-align:center">No notifications yet.</div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-ghost" onclick="markAllRead()">Mark All Read</button>
+      <button class="btn-ghost" onclick="closeModal('modal-notifs')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- IDEAS MODAL -->
+<div class="modal-overlay" id="modal-ideas" onclick="closeModalOutside(event,'modal-ideas')" style="align-items:flex-start;padding-top:0">
+  <div class="modal" style="max-width:700px;border-radius:0 0 20px 20px;max-height:90vh">
+    <div class="modal-header">
+      <div class="modal-title">💡 Idea Dump</div>
+      <button class="modal-close" onclick="closeModal('modal-ideas')">✕</button>
+    </div>
+    <div class="form-field">
+      <div style="display:flex;gap:.75rem;margin-bottom:.75rem">
+        <input class="form-input" id="idea-title-input" placeholder="Idea title..." style="flex:1"/>
+        <button class="btn-primary" onclick="addIdea()" id="add-idea-btn">+ Add</button>
+      </div>
+      <textarea class="form-textarea" id="idea-notes-input" placeholder="Notes, details..." style="min-height:60px;margin-bottom:.75rem"></textarea>
+      <div class="file-upload-area" onclick="document.getElementById('idea-file-input').click()" style="padding:1rem">
+        <div class="file-upload-label" style="font-size:.8rem">📎 Attach files <span>(images, docs, videos)</span></div>
+      </div>
+      <input type="file" id="idea-file-input" class="file-upload-input" multiple onchange="onFileSelect(event,'idea')"/>
+      <div class="upload-progress" id="idea-upload-progress">Uploading to Google Drive...</div>
+      <div class="file-preview-grid" id="idea-file-previews"></div>
+    </div>
+    <div class="ideas-grid" id="ideas-grid">
+      <div style="font-family:sans-serif;font-size:.85rem;color:var(--muted);grid-column:1/-1;padding:1rem 0">No ideas yet. Start dumping! 🧠</div>
+    </div>
+  </div>
+</div>
+
+<!-- DELIVERABLES MODAL -->
+<div class="modal-overlay" id="modal-deliverables" onclick="closeModalOutside(event,'modal-deliverables')" style="align-items:flex-start;padding-top:0">
+  <div class="modal" style="max-width:700px;border-radius:0 0 20px 20px;max-height:90vh">
+    <div class="modal-header">
+      <div class="modal-title">📦 Deliverables</div>
+      <button class="modal-close" onclick="closeModal('modal-deliverables')">✕</button>
+    </div>
+    <div id="deliverables-list">
+      <div style="font-family:sans-serif;font-size:.85rem;color:var(--muted);padding:1rem 0">No deliverables yet. Complete a task to add one.</div>
+    </div>
+  </div>
+</div>
+
+<!-- REWARDS MODAL -->
+<div class="modal-overlay" id="modal-rewards" onclick="closeModalOutside(event,'modal-rewards')">
+  <div class="modal" style="max-width:560px">
+    <div class="modal-header">
+      <div class="modal-title">🏆 Rewards</div>
+      <button class="modal-close" onclick="closeModal('modal-rewards')">✕</button>
+    </div>
+    <div class="reward-card">
+      <div class="reward-card-title">Daily Reward</div>
+      <div style="display:flex;justify-content:space-between;font-family:sans-serif;font-size:.78rem;color:var(--muted);margin-bottom:.4rem">
+        <span>Completion rate</span><span id="daily-pct">—</span>
+      </div>
+      <div class="reward-progress-bar"><div class="reward-progress-fill" id="daily-fill" style="width:0%"></div></div>
+      <div class="reward-tier-display">
+        <div class="reward-tier-emoji" id="daily-emoji">⏳</div>
+        <div>
+          <div class="reward-tier-name" id="daily-name">Revealed at 6 PM HKT</div>
+          <div class="reward-tier-quote" id="daily-quote">Come back after 6 PM.</div>
+        </div>
+      </div>
+    </div>
+    <div class="reward-card">
+      <div class="reward-card-title">Weekly Reward</div>
+      <div style="display:flex;justify-content:space-between;font-family:sans-serif;font-size:.78rem;color:var(--muted);margin-bottom:.4rem">
+        <span>Week completion</span><span id="weekly-pct">—</span>
+      </div>
+      <div class="reward-progress-bar"><div class="reward-progress-fill" id="weekly-fill" style="width:0%;background:var(--recurring)"></div></div>
+      <div class="reward-tier-display">
+        <div class="reward-tier-emoji" id="weekly-emoji">⏳</div>
+        <div>
+          <div class="reward-tier-name" id="weekly-name">Revealed Friday 5 PM HKT</div>
+          <div class="reward-tier-quote" id="weekly-quote">Your weekly reward reveals every Friday at 5 PM.</div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-ghost" onclick="closeModal('modal-rewards')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- LEMON COP -->
+<div class="lemon-cop-overlay" id="lemon-cop" style="display:none;align-items:center;justify-content:center">
+  <div class="lemon-cop-card">
+    <svg width="130" height="145" viewBox="0 0 130 145" style="margin:0 auto;display:block">
+      <ellipse cx="65" cy="140" rx="36" ry="6" fill="#d4c9b0" opacity=".5"/>
+      <ellipse cx="65" cy="56" rx="42" ry="8" fill="#282826"/>
+      <rect x="28" y="26" width="74" height="34" rx="10" fill="#282826"/>
+      <rect x="36" y="14" width="58" height="16" rx="8" fill="#282826"/>
+      <ellipse cx="65" cy="26" rx="12" ry="6" fill="#ff30cc"/>
+      <text x="65" y="29" text-anchor="middle" font-size="6" font-family="sans-serif" font-weight="900" fill="white">COP</text>
+      <ellipse cx="18" cy="98" rx="10" ry="8" fill="#FFE135" stroke="#282826" stroke-width="3"/>
+      <ellipse cx="112" cy="98" rx="10" ry="8" fill="#FFE135" stroke="#282826" stroke-width="3"/>
+      <ellipse cx="65" cy="100" rx="50" ry="48" fill="#FFE135" stroke="#282826" stroke-width="3.5"/>
+      <ellipse cx="80" cy="76" rx="18" ry="11" fill="#fff4a0" opacity=".45"/>
+      <rect x="22" y="90" width="34" height="21" rx="7" fill="#1a1a18" stroke="#0a0a08" stroke-width="2"/>
+      <rect x="72" y="90" width="34" height="21" rx="7" fill="#1a1a18" stroke="#0a0a08" stroke-width="2"/>
+      <rect x="54" y="96" width="14" height="6" rx="3" fill="#1a1a18"/>
+      <path d="M22 96 Q10 94 6 100" fill="none" stroke="#1a1a18" stroke-width="4.5" stroke-linecap="round"/>
+      <path d="M106 96 Q118 94 122 100" fill="none" stroke="#1a1a18" stroke-width="4.5" stroke-linecap="round"/>
+      <ellipse cx="32" cy="96" rx="7" ry="4" fill="white" opacity=".2" transform="rotate(-10,32,96)"/>
+      <ellipse cx="27" cy="93" rx="3" ry="1.8" fill="white" opacity=".45"/>
+      <ellipse cx="82" cy="96" rx="7" ry="4" fill="white" opacity=".2" transform="rotate(-10,82,96)"/>
+      <ellipse cx="77" cy="93" rx="3" ry="1.8" fill="white" opacity=".45"/>
+      <ellipse cx="32" cy="118" rx="12" ry="7" fill="#ffb347" opacity=".4"/>
+      <ellipse cx="98" cy="118" rx="12" ry="7" fill="#ffb347" opacity=".4"/>
+      <path d="M48 124 Q65 120 82 124" fill="none" stroke="#4a3010" stroke-width="2.8" stroke-linecap="round"/>
+      <rect x="48" y="130" width="34" height="14" rx="5" fill="#ff30cc" stroke="#282826" stroke-width="1.5"/>
+      <text x="65" y="138" text-anchor="middle" font-size="5.5" font-family="sans-serif" font-weight="900" fill="white">LEMON COP</text>
+    </svg>
+    <div class="lemon-cop-title">Lemon Cop Says No! 😎</div>
+    <div class="lemon-cop-msg" id="lemon-cop-msg">This tier is at capacity. The committee will not allow more tasks here. Clear some space first!</div>
+    <button class="btn-primary" onclick="closeLemonCop()" style="width:100%">Got it, Lemon Cop 🫡</button>
+  </div>
+</div>
+
+<!-- SETTINGS -->
+<div class="settings-overlay" id="settings-overlay" onclick="closeSettings()"></div>
+<div class="settings-panel" id="settings-panel">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem">
+    <div class="settings-title">Settings</div>
+    <button class="modal-close" onclick="closeSettings()">✕</button>
+  </div>
+
+  <div class="settings-section-title">Storage Health</div>
+  <div class="storage-card" id="storage-card">
+    <div class="storage-label"><span>Google Drive</span><span id="storage-pct">Checking...</span></div>
+    <div class="storage-bar"><div class="storage-fill" id="storage-fill" style="width:0%"></div></div>
+    <div style="font-family:sans-serif;font-size:.75rem;color:var(--muted)" id="storage-msg">Loading storage info...</div>
+  </div>
+
+  <div class="settings-section-title">Change Hub Password</div>
+  <div class="form-field">
+    <input class="form-input" type="password" id="new-pw" placeholder="New password"/>
+  </div>
+  <div class="form-field">
+    <input class="form-input" type="password" id="confirm-pw" placeholder="Confirm new password"/>
+  </div>
+  <button class="btn-primary" onclick="changePassword()" style="width:100%;margin-bottom:1rem">Update Password</button>
+
+  <div class="settings-section-title">Your Board</div>
+  <div style="font-family:sans-serif;font-size:.85rem;color:var(--muted);margin-bottom:.75rem" id="settings-board-info">—</div>
+  <button class="btn-ghost" onclick="resetBoard()" style="width:100%;color:#e53935;border-color:#fca5a5">Reset My Board</button>
+
+  <div class="settings-section-title">System Info</div>
+  <div style="font-family:sans-serif;font-size:.75rem;color:var(--muted);line-height:1.8">
+    <div>Database: Supabase (Singapore)</div>
+    <div>Storage: Google Drive</div>
+    <div>GitHub: hubberdione</div>
+    <div>Version: 1.0.0</div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════
+// SUPABASE INIT
+// ═══════════════════════════════════════
+const SUPABASE_URL = 'https://yiqniylxflulzfghujzw.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlpcW5peWx4Zmx1bHpmZ2h1anp3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUwNzcwMTEsImV4cCI6MjA5MDY1MzAxMX0.ZVT3XwHkBrL1leBaQevew8G4k5syHmT5gYDznPQeAFY';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx8IiG-k3J2lcQR38unRpO2cHyRidAlQTM8FLWCIbHy9JjdvmeB6MrKo_vNVaqsi3Th/exec';
+
+const { createClient } = supabase;
+const db = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// ═══════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════
+let state = {
+  currentUser: null,
+  tasks: [],
+  ideas: [],
+  deliverables: [],
+  currentBoard: 'personal',
+  pendingTierId: null,
+  pendingCompleteId: null,
+  selectedAvatar: '🌸',
+  completeFiles: [],
+  ideaFiles: []
+};
+
+const TIER_LIMITS = { 'top3': 3, 'focus-today': 15, 'focus-week': 6 };
+const TIER_COLORS = {
+  'top3': 'var(--top3)', 'focus-today': 'var(--focus-today)',
+  'focus-week': 'var(--focus-week)', 'parking': 'var(--parking)',
+  'founder': 'var(--founder)', 'recurring': 'var(--recurring)'
+};
+const REWARD_TIERS = [
+  { min: 0, max: 39, emoji: '🥀', name: 'Dead Rose', daily: 'Did we even try today? Tomorrow better be a glow-up.', weekly: 'This feels very rose-toy energy. We need LEM energy next week.' },
+  { min: 40, max: 49, emoji: '🍓', name: 'Raspberry', daily: 'Okay, we did something. Bare minimum energy.', weekly: 'Not bad. Not legendary. Just… not bad.' },
+  { min: 50, max: 79, emoji: '🥑', name: 'Avocado', daily: 'Productive day! The committee approves.', weekly: 'Solid. No complaints from the committee.' },
+  { min: 80, max: 100, emoji: '🍋', name: 'Lemon', daily: 'LEGENDARY. We are unstoppable. The committee is shook.', weekly: 'Umm, okay, diva 💅' }
+];
+
+// ═══════════════════════════════════════
+// BOOT
+// ═══════════════════════════════════════
+function loadLocal() {
+  try {
+    const s = localStorage.getItem('nancy_user');
+    if (s) state.currentUser = JSON.parse(s);
+  } catch(e) {}
+}
+
+// ═══════════════════════════════════════
+// PASSWORD
+// ═══════════════════════════════════════
+
+// ═══════════════════════════════════════
+// APP INIT
+// ═══════════════════════════════════════
+async function initApp() {
+  startClock();
+  if (state.currentUser) {
+    await showTaskHub();
+  } else {
+    document.getElementById('create-board-screen').style.display = 'flex';
+    document.getElementById('taskflow-main').style.display = 'none';
+  }
+  checkRewards();
+  checkRecap();
+  checkStorage();
+}
+
+// ═══════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════
+function showPage(name, el) {
+  document.querySelectorAll('.page').forEach(function(p) {
+    p.classList.remove('active');
+  });
+  document.querySelectorAll('.nav-link').forEach(function(l) {
+    l.classList.remove('active');
+  });
+  var page = document.getElementById('page-' + name);
+  if (page) {
+    page.classList.add('active');
+  }
+  if (el) el.classList.add('active');
+  if (name === 'admin') {
+    setTimeout(function() { loadAdminPanel(); }, 150);
+  }
+  window.scrollTo(0, 0);
+}
+
+// ═══════════════════════════════════════
+// HKT CLOCK
+// ═══════════════════════════════════════
+function startClock() {
+  function tick() {
+    const pht = new Date(Date.now() + 8 * 3600000);
+    const h = String(pht.getUTCHours()).padStart(2,'0');
+    const m = String(pht.getUTCMinutes()).padStart(2,'0');
+    document.getElementById('pht-clock').textContent = `HKT ${h}:${m}`;
+  }
+  tick();
+  setInterval(tick, 30000);
+  setInterval(() => { checkRewards(); checkRecap(); }, 60000);
+}
+
+function getHKT() {
+  return new Date(Date.now() + 8 * 3600000);
+}
+
+// ═══════════════════════════════════════
+// CREATE BOARD
+// ═══════════════════════════════════════
+function selectAvatar(el) {
+  document.querySelectorAll('.avatar-opt').forEach(a => a.classList.remove('selected'));
+  el.classList.add('selected');
+  state.selectedAvatar = el.dataset.emoji;
+}
+
+async function createBoard() {
+  const name = document.getElementById('board-name-input').value.trim();
+  if (!name) { showToast('Please enter your name!', 'error'); return; }
+
+  const shareCode = Math.random().toString(36).substr(2, 6).toUpperCase();
+
+  try {
+    const { data, error } = await db.from('boards').insert({
+      name, avatar: state.selectedAvatar, share_code: shareCode
+    }).select().single();
+
+    if (error) throw error;
+
+    state.currentUser = { id: data.id, name, avatar: state.selectedAvatar, shareCode };
+    localStorage.setItem('nancy_user', JSON.stringify(state.currentUser));
+    await showTaskHub();
+    showToast(`Welcome, ${name}! Your board is ready. 🎉`, 'success');
+  } catch(e) {
+    // fallback: create local user
+    state.currentUser = {
+      id: 'local_' + Date.now(), name,
+      avatar: state.selectedAvatar, shareCode
+    };
+    localStorage.setItem('nancy_user', JSON.stringify(state.currentUser));
+    await showTaskHub();
+    showToast(`Welcome, ${name}! 🎉`, 'success');
+  }
+}
+
+async function showTaskHub() {
+  document.getElementById('create-board-screen').style.display = 'none';
+  document.getElementById('taskflow-main').style.display = 'flex';
+  document.getElementById('taskflow-main').style.flexDirection = 'column';
+
+  if (state.currentUser) {
+    document.getElementById('personal-tab').textContent = `${state.currentUser.avatar} My Board`;
+    document.getElementById('my-share-code').textContent = state.currentUser.shareCode || '—';
+    document.getElementById('settings-board-info').textContent =
+      `${state.currentUser.avatar} ${state.currentUser.name} · Code: ${state.currentUser.shareCode}`;
+  }
+
+  await loadTasks();
+  await loadIdeas();
+  await loadDeliverables();
+  refreshRecurring();
+}
+
+// ═══════════════════════════════════════
+// TASKS — SUPABASE
+// ═══════════════════════════════════════
+async function loadTasks() {
+  try {
+    const { data, error } = await db.from('tasks').select('*').order('task_order');
+    if (error) throw error;
+    state.tasks = data || [];
+  } catch(e) {
+    state.tasks = JSON.parse(localStorage.getItem('nancy_tasks') || '[]');
+  }
+  renderBoard();
+}
+
+async function saveTaskToDB(task) {
+  try {
+    const { data, error } = await db.from('tasks').insert({
+      id: task.id,
+      title: task.title,
+      description: task.description,
+      tier: task.tier,
+      completed: task.completed,
+      created_at: task.createdAt,
+      task_order: task.taskOrder || 0,
+      recurring: task.recurring,
+      recurring_freq: task.freq,
+      due_date: task.dueDate,
+      is_personal: task.isPersonal,
+      shared_to_dashboard: task.sharedToDashboard,
+      owner_id: state.currentUser?.id?.startsWith('local_') ? null : state.currentUser?.id,
+      board_type: task.boardType || 'main'
+    }).select().single();
+    if (error) throw error;
+    return data;
+  } catch(e) {
+    // save locally as fallback
+    const tasks = JSON.parse(localStorage.getItem('nancy_tasks') || '[]');
+    tasks.push(task);
+    localStorage.setItem('nancy_tasks', JSON.stringify(tasks));
+    return task;
+  }
+}
+
+async function updateTaskInDB(id, updates) {
+  try {
+    const { error } = await db.from('tasks').update(updates).eq('id', id);
+    if (error) throw error;
+  } catch(e) {
+    const tasks = JSON.parse(localStorage.getItem('nancy_tasks') || '[]');
+    const idx = tasks.findIndex(t => t.id === id);
+    if (idx !== -1) { tasks[idx] = { ...tasks[idx], ...updates }; localStorage.setItem('nancy_tasks', JSON.stringify(tasks)); }
+  }
+}
+
+async function deleteTaskFromDB(id) {
+  try {
+    const { error } = await db.from('tasks').delete().eq('id', id);
+    if (error) throw error;
+  } catch(e) {
+    const tasks = JSON.parse(localStorage.getItem('nancy_tasks') || '[]').filter(t => t.id !== id);
+    localStorage.setItem('nancy_tasks', JSON.stringify(tasks));
+  }
+}
+
+// ═══════════════════════════════════════
+// BOARD RENDER
+// ═══════════════════════════════════════
+function switchBoard(board, el) {
+  state.currentBoard = board;
+  document.querySelectorAll('.board-tab').forEach(t => t.classList.remove('active'));
+  if (el) el.classList.add('active');
+  renderBoard();
+}
+
+function getVisibleTasks() {
+  if (state.currentBoard === 'shared') {
+    return state.tasks.filter(t => t.shared_to_dashboard);
+  }
+  // Personal board = all tasks owned by current user (personal + non-personal)
+  return state.tasks.filter(t =>
+    t.owner_id === state.currentUser?.id ||
+    t.owner_id === null ||
+    t.owner_id === undefined
+  );
+}
+
+function renderBoard() {
+  const tasks = getVisibleTasks();
+  const tiers = ['top3','focus-today','focus-week','parking','founder','recurring'];
+  const containerIds = {
+    'top3': 'top3-cards', 'focus-today': 'focus-today-cards',
+    'focus-week': 'focus-week-cards', 'parking': 'parking-cards',
+    'founder': 'founder-cards', 'recurring': 'recurring-cards'
+  };
+  const addLabels = {
+    'top3': '+ Add top priority', 'focus-today': '+ Add task',
+    'focus-week': '+ Add task', 'parking': '+ Add task',
+    'founder': '+ Add founder instruction', 'recurring': '+ Add recurring task'
+  };
+
+  tiers.forEach(tier => {
+    const tierTasks = tasks.filter(t => t.tier === tier);
+    const container = document.getElementById(containerIds[tier]);
+    if (!container) return;
+
+    const countEl = document.getElementById('count-' + tier);
+    if (countEl) {
+      const limit = TIER_LIMITS[tier];
+      countEl.textContent = limit ? `${tierTasks.length}/${limit}` : `${tierTasks.length}`;
+    }
+
+    container.innerHTML = '';
+    tierTasks.forEach(task => container.appendChild(createTaskCard(task, tier)));
+
+    const addBtn = document.createElement('div');
+    addBtn.className = 'add-task-btn';
+    addBtn.textContent = addLabels[tier];
+    addBtn.onclick = () => openAddTask(tier);
+    container.appendChild(addBtn);
+  });
+
+  renderSidebar(tasks);
+}
+
+function createTaskCard(task, tier) {
+  const card = document.createElement('div');
+  card.className = `task-card card-${tier} ${task.completed ? 'completed' : ''}`;
+  card.dataset.id = task.id;
+
+  let metaHtml = '';
+  if (task.recurring) metaHtml += `<span class="task-tag tag-recurring">🔄 ${task.recurring_freq || 'weekly'}</span>`;
+  if (task.due_date) metaHtml += `<span class="task-tag tag-due">📅 ${task.due_date}</span>`;
+  if (task.is_personal) metaHtml += `<span class="task-tag tag-personal">👤 Personal</span>`;
+  if (task.shared_to_dashboard) metaHtml += `<span class="task-tag tag-shared">👥 Shared</span>`;
+
+  card.innerHTML = `
+    <div class="task-top">
+      <div class="task-check ${task.completed ? 'done' : ''}" onclick="toggleTask('${task.id}')"></div>
+      <div class="task-title">${esc(task.title)}</div>
+      <div class="task-actions">
+        <button class="task-action-btn del" onclick="deleteTask('${task.id}')" title="Delete">✕</button>
+      </div>
+    </div>
+    ${task.description ? `<div class="task-desc">${esc(task.description)}</div>` : ''}
+    ${metaHtml ? `<div class="task-meta">${metaHtml}</div>` : ''}
+  `;
+  return card;
+}
+
+function renderSidebar(tasks) {
+  const active = tasks.filter(t => !t.completed);
+  const done = tasks.filter(t => t.completed);
+  const activeEl = document.getElementById('sidebar-active');
+  const doneEl = document.getElementById('sidebar-completed');
+
+  activeEl.innerHTML = active.length === 0
+    ? '<span style="font-family:sans-serif;font-size:.8rem;color:var(--muted)">No active tasks.</span>'
+    : active.map(t => `<div class="sidebar-task"><div class="sidebar-task-dot" style="background:${TIER_COLORS[t.tier]}"></div><div class="sidebar-task-title">${esc(t.title)}</div></div>`).join('');
+
+  doneEl.innerHTML = done.length === 0
+    ? '<span style="font-family:sans-serif;font-size:.8rem;color:var(--muted)">Nothing completed yet.</span>'
+    : done.map(t => `<div class="sidebar-task done"><div class="sidebar-task-dot" style="background:var(--muted)"></div><div class="sidebar-task-title">${esc(t.title)}</div></div>`).join('');
+}
+
+// ═══════════════════════════════════════
+// TASK OPERATIONS
+// ═══════════════════════════════════════
+function onTierChange() {
+  const tier = document.getElementById('new-task-tier').value;
+  document.getElementById('recurring-opts').style.display = tier === 'recurring' ? 'block' : 'none';
+}
+
+function onPersonalChange() {
+  const checked = document.getElementById('new-task-personal').checked;
+  document.getElementById('share-toggle').style.display = checked ? 'block' : 'none';
+}
+
+function openAddTask(tier) {
+  state.pendingTierId = tier || 'focus-today';
+  document.getElementById('new-task-tier').value = state.pendingTierId;
+  document.getElementById('new-task-title').value = '';
+  document.getElementById('new-task-desc').value = '';
+  document.getElementById('new-task-due').value = '';
+  document.getElementById('new-task-personal').checked = false;
+  document.getElementById('new-task-shared').checked = false;
+  document.getElementById('share-toggle').style.display = 'none';
+  document.getElementById('recurring-opts').style.display = state.pendingTierId === 'recurring' ? 'block' : 'none';
+  openModal('modal-add-task');
+}
+
+async function saveTask() {
+  const title = document.getElementById('new-task-title').value.trim();
+  if (!title) { showToast('Task title is required!', 'error'); return; }
+
+  const tier = document.getElementById('new-task-tier').value;
+  const limit = TIER_LIMITS[tier];
+  const existing = state.tasks.filter(t => t.tier === tier && !t.completed).length;
+
+  if (limit && existing >= limit) {
+    closeModal('modal-add-task');
+    showLemonCop(tier, limit);
+    return;
+  }
+
+  const btn = document.getElementById('save-task-btn');
+  btn.disabled = true;
+  btn.textContent = 'Saving...';
+
+  const task = {
+    id: 'task_' + Date.now(),
+    title,
+    description: document.getElementById('new-task-desc').value.trim(),
+    tier,
+    completed: false,
+    completed_at: null,
+    createdAt: Date.now(),
+    created_at: Date.now(),
+    taskOrder: state.tasks.length,
+    recurring: tier === 'recurring',
+    freq: document.getElementById('new-task-freq').value,
+    recurring_freq: document.getElementById('new-task-freq').value,
+    due_date: document.getElementById('new-task-due').value || null,
+    is_personal: document.getElementById('new-task-personal').checked,
+    shared_to_dashboard: document.getElementById('new-task-shared').checked,
+    owner_id: state.currentUser?.id
+  };
+
+  await saveTaskToDB(task);
+  state.tasks.push(task);
+  closeModal('modal-add-task');
+  renderBoard();
+  showToast(`"${title}" added! ✓`, 'success');
+  btn.disabled = false;
+  btn.textContent = 'Add Task';
+}
+
+async function toggleTask(id) {
+  const task = state.tasks.find(t => t.id === id);
+  if (!task) return;
+
+  if (!task.completed) {
+    state.pendingCompleteId = id;
+    document.getElementById('complete-task-name').textContent = `"${task.title}"`;
+    document.getElementById('complete-notes').value = '';
+    document.getElementById('complete-links').value = '';
+    state.completeFiles = [];
+    document.getElementById('complete-file-previews').innerHTML = '';
+    openModal('modal-complete');
+  } else {
+    task.completed = false;
+    task.completed_at = null;
+    await updateTaskInDB(id, { completed: false, completed_at: null });
+    renderBoard();
+  }
+}
+
+async function confirmComplete() {
+  const task = state.tasks.find(t => t.id === state.pendingCompleteId);
+  if (!task) return;
+
+  const btn = document.getElementById('confirm-complete-btn');
+  btn.disabled = true;
+  btn.textContent = 'Saving...';
+
+  task.completed = true;
+  task.completed_at = Date.now();
+
+  await updateTaskInDB(task.id, { completed: true, completed_at: Date.now() });
+
+  const notes = document.getElementById('complete-notes').value.trim();
+  const links = document.getElementById('complete-links').value.trim();
+
+  try {
+    const { data: deliv, error } = await db.from('deliverables').insert({
+      task_id: task.id.startsWith('task_') ? null : task.id,
+      task_title: task.title,
+      notes: notes || '',
+      links: links ? links.split(',').map(l => l.trim()) : [],
+      completed_at: Date.now()
+    }).select().single();
+
+    if (!error && deliv && state.completeFiles.length > 0) {
+      for (const file of state.completeFiles) {
+        await db.from('deliverable_files').insert({
+          deliverable_id: deliv.id,
+          file_name: file.fileName,
+          embed_url: file.embedUrl,
+          direct_url: file.directUrl,
+          thumbnail_url: file.thumbnailUrl || '',
+          file_id: file.fileId,
+          mime_type: file.mimeType
+        });
+      }
+    }
+  } catch(e) {
+    const delivs = JSON.parse(localStorage.getItem('nancy_delivs') || '[]');
+    delivs.push({ id: 'deliv_'+Date.now(), taskTitle: task.title, notes, links, completedAt: Date.now(), files: state.completeFiles });
+    localStorage.setItem('nancy_delivs', JSON.stringify(delivs));
+  }
+
+  closeModal('modal-complete');
+  renderBoard();
+  await loadDeliverables();
+  showToast('Task completed! 🎉', 'success');
+  btn.disabled = false;
+  btn.textContent = 'Mark Complete ✓';
+}
+
+async function deleteTask(id) {
+  if (!confirm('Delete this task?')) return;
+  await deleteTaskFromDB(id);
+  state.tasks = state.tasks.filter(t => t.id !== id);
+  renderBoard();
+  showToast('Task deleted.');
+}
+
+async function clearCompleted() {
+  if (!confirm('Clear all completed tasks?')) return;
+  const completed = state.tasks.filter(t => t.completed);
+  for (const t of completed) await deleteTaskFromDB(t.id);
+  state.tasks = state.tasks.filter(t => !t.completed);
+  renderBoard();
+  showToast('Completed tasks cleared.');
+}
+
+function toggleSection(id, btn) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.style.display = el.style.display === 'none' ? '' : 'none';
+  btn.textContent = el.style.display === 'none' ? '▸' : '▾';
+}
+
+// ═══════════════════════════════════════
+// FILE UPLOADS
+// ═══════════════════════════════════════
+function onDragOver(e) { e.preventDefault(); e.currentTarget.classList.add('dragover'); }
+
+function onFileDrop(e, context) {
+  e.preventDefault();
+  e.currentTarget.classList.remove('dragover');
+  const files = Array.from(e.dataTransfer.files);
+  handleFiles(files, context);
+}
+
+function onFileSelect(e, context) {
+  const files = Array.from(e.target.files);
+  handleFiles(files, context);
+  e.target.value = '';
+}
+
+async function handleFiles(files, context) {
+  const progressEl = document.getElementById(context + '-upload-progress');
+  const previewEl = document.getElementById(context + '-file-previews');
+  progressEl.style.display = 'block';
+  progressEl.textContent = `Uploading ${files.length} file(s) to Google Drive...`;
+
+  for (const file of files) {
+    try {
+      const base64 = await fileToBase64(file);
+      const response = await fetch(SCRIPT_URL, {
+        method: 'POST',
+        body: JSON.stringify({
+          action: 'upload',
+          fileName: file.name,
+          mimeType: file.type || 'application/octet-stream',
+          fileData: base64,
+          section: context === 'complete' ? 'taskflow/deliverables' : 'taskflow/ideas'
+        })
+      });
+      const result = await response.json();
+      if (result.success) {
+        const fileData = {
+          fileId: result.fileId,
+          fileName: result.fileName,
+          embedUrl: result.embedUrl,
+          directUrl: result.directUrl,
+          thumbnailUrl: result.thumbnailUrl,
+          mimeType: file.type
+        };
+        if (context === 'complete') state.completeFiles.push(fileData);
+        else state.ideaFiles.push(fileData);
+        addFilePreview(previewEl, fileData, context);
+        showToast(`${file.name} uploaded! ✓`, 'success');
+      } else {
+        showToast(`Upload failed: ${file.name}`, 'error');
+      }
+    } catch(e) {
+      showToast(`Could not upload ${file.name}`, 'error');
+    }
+  }
+  progressEl.style.display = 'none';
+}
+
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result.split(',')[1]);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+function addFilePreview(container, file, context) {
+  const item = document.createElement('div');
+  item.className = 'file-preview-item';
+  item.dataset.fileId = file.fileId;
+
+  const isImage = file.mimeType && file.mimeType.startsWith('image/');
+  const isVideo = file.mimeType && file.mimeType.startsWith('video/');
+  const isPdf = file.mimeType === 'application/pdf';
+
+  let icon = '📄';
+  if (isImage) icon = '🖼️';
+  else if (isVideo) icon = '🎬';
+  else if (isPdf) icon = '📕';
+
+  item.innerHTML = `
+    ${isImage
+      ? `<img src="${file.thumbnailUrl || file.embedUrl}" alt="${esc(file.fileName)}" onerror="this.parentElement.querySelector('.file-icon').style.display='flex';this.style.display='none'">`
+      : ''}
+    <div class="file-icon" style="display:${isImage ? 'none' : 'flex'}">${icon}</div>
+    <div class="file-name">${esc(file.fileName)}</div>
+    <button class="file-preview-remove" onclick="removeFile('${file.fileId}','${context}',this.parentElement)">✕</button>
+  `;
+  container.appendChild(item);
+}
+
+function removeFile(fileId, context, el) {
+  if (context === 'complete') state.completeFiles = state.completeFiles.filter(f => f.fileId !== fileId);
+  else state.ideaFiles = state.ideaFiles.filter(f => f.fileId !== fileId);
+  el.remove();
+}
+
+// ═══════════════════════════════════════
+// IDEAS
+// ═══════════════════════════════════════
+async function loadIdeas() {
+  try {
+    const { data, error } = await db.from('ideas').select('*, idea_files(*)').order('created_at', { ascending: false });
+    if (error) throw error;
+    state.ideas = data || [];
+  } catch(e) {
+    state.ideas = JSON.parse(localStorage.getItem('nancy_ideas') || '[]');
+  }
+}
+
+async function addIdea() {
+  const title = document.getElementById('idea-title-input').value.trim();
+  if (!title) { showToast('Add a title!', 'error'); return; }
+
+  const btn = document.getElementById('add-idea-btn');
+  btn.disabled = true;
+
+  const notes = document.getElementById('idea-notes-input').value.trim();
+
+  try {
+    const { data: idea, error } = await db.from('ideas').insert({
+      title, notes: notes || '', links: [], promoted: false, created_at: Date.now()
+    }).select().single();
+
+    if (!error && idea && state.ideaFiles.length > 0) {
+      for (const file of state.ideaFiles) {
+        await db.from('idea_files').insert({
+          idea_id: idea.id,
+          file_name: file.fileName,
+          embed_url: file.embedUrl,
+          direct_url: file.directUrl,
+          thumbnail_url: file.thumbnailUrl || '',
+          file_id: file.fileId,
+          mime_type: file.mimeType
+        });
+      }
+      idea.idea_files = state.ideaFiles;
+    }
+
+    state.ideas.unshift(idea || { id: 'idea_'+Date.now(), title, notes, created_at: Date.now(), promoted: false, idea_files: [] });
+  } catch(e) {
+    state.ideas.unshift({ id: 'idea_'+Date.now(), title, notes, created_at: Date.now(), promoted: false, idea_files: state.ideaFiles });
+    const ideas = JSON.parse(localStorage.getItem('nancy_ideas') || '[]');
+    ideas.unshift(state.ideas[0]);
+    localStorage.setItem('nancy_ideas', JSON.stringify(ideas));
+  }
+
+  document.getElementById('idea-title-input').value = '';
+  document.getElementById('idea-notes-input').value = '';
+  state.ideaFiles = [];
+  document.getElementById('idea-file-previews').innerHTML = '';
+  renderIdeas();
+  showToast('Idea saved! 💡', 'success');
+  btn.disabled = false;
+}
+
+function renderIdeas() {
+  const grid = document.getElementById('ideas-grid');
+  if (!state.ideas.length) {
+    grid.innerHTML = '<div style="font-family:sans-serif;font-size:.85rem;color:var(--muted);grid-column:1/-1;padding:1rem 0">No ideas yet. Start dumping! 🧠</div>';
+    return;
+  }
+  grid.innerHTML = state.ideas.map(idea => {
+    const files = idea.idea_files || [];
+    const imgFile = files.find(f => f.mime_type && f.mime_type.startsWith('image/'));
+    return `
+    <div class="idea-card">
+      ${idea.promoted ? '<div class="idea-promoted-badge">✓ Promoted</div>' : ''}
+      ${imgFile ? `<img src="${imgFile.thumbnail_url || imgFile.embed_url}" style="width:100%;height:120px;object-fit:cover;border-radius:8px;margin-bottom:.75rem" onerror="this.style.display='none'">` : ''}
+      <div class="idea-card-title">${esc(idea.title)}</div>
+      ${idea.notes ? `<div class="idea-card-notes">${esc(idea.notes)}</div>` : ''}
+      ${files.length > 0 ? `<div style="font-family:sans-serif;font-size:.72rem;color:var(--muted);margin-bottom:.5rem">📎 ${files.length} file(s) attached</div>` : ''}
+      <div class="idea-actions">
+        ${!idea.promoted ? `<button class="idea-btn" onclick="promoteIdea('${idea.id}')">→ Promote to Task</button>` : ''}
+        <button class="idea-btn" onclick="deleteIdea('${idea.id}')" style="color:#e53935">Delete</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function promoteIdea(id) {
+  const idea = state.ideas.find(i => i.id === id);
+  if (!idea) return;
+  idea.promoted = true;
+  try { await db.from('ideas').update({ promoted: true }).eq('id', id); } catch(e) {}
+  const task = {
+    id: 'task_' + Date.now(), title: idea.title, description: idea.notes,
+    tier: 'parking', completed: false, completed_at: null, createdAt: Date.now(),
+    created_at: Date.now(), is_personal: false, shared_to_dashboard: false, recurring: false
+  };
+  await saveTaskToDB(task);
+  state.tasks.push(task);
+  renderIdeas();
+  renderBoard();
+  showToast('Idea promoted to task! ✓', 'success');
+}
+
+async function deleteIdea(id) {
+  if (!confirm('Delete this idea?')) return;
+  try { await db.from('ideas').delete().eq('id', id); } catch(e) {}
+  state.ideas = state.ideas.filter(i => i.id !== id);
+  renderIdeas();
+  showToast('Idea deleted.');
+}
+
+// ═══════════════════════════════════════
+// DELIVERABLES
+// ═══════════════════════════════════════
+async function loadDeliverables() {
+  try {
+    const { data, error } = await db.from('deliverables').select('*, deliverable_files(*)').order('completed_at', { ascending: false });
+    if (error) throw error;
+    state.deliverables = data || [];
+  } catch(e) {
+    state.deliverables = JSON.parse(localStorage.getItem('nancy_delivs') || '[]');
+  }
+}
+
+async function openDeliverables() {
+  await loadDeliverables();
+  const list = document.getElementById('deliverables-list');
+  if (!state.deliverables.length) {
+    list.innerHTML = '<div style="font-family:sans-serif;font-size:.85rem;color:var(--muted);padding:1rem 0">No deliverables yet.</div>';
+  } else {
+    list.innerHTML = state.deliverables.map(d => {
+      const files = d.deliverable_files || [];
+      const imgs = files.filter(f => f.mime_type && f.mime_type.startsWith('image/'));
+      return `
+      <div class="deliverable-item">
+        <div class="deliv-task-title">✓ ${esc(d.task_title)}</div>
+        <div class="deliv-date">${new Date(d.completed_at).toLocaleDateString('en-HK', {year:'numeric',month:'short',day:'numeric'})}</div>
+        ${d.notes ? `<div class="deliv-notes">${esc(d.notes)}</div>` : ''}
+        ${imgs.length > 0 ? `<div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.5rem">${imgs.map(f => `<a href="${f.direct_url}" target="_blank"><img src="${f.thumbnail_url || f.embed_url}" style="width:80px;height:60px;object-fit:cover;border-radius:6px;border:1px solid var(--border)" onerror="this.style.display='none'"></a>`).join('')}</div>` : ''}
+        ${files.filter(f => !f.mime_type?.startsWith('image/')).map(f => `<div style="margin-top:.5rem"><a href="${f.direct_url}" target="_blank" style="font-family:sans-serif;font-size:.78rem;color:var(--primary)">📎 ${esc(f.file_name)}</a></div>`).join('')}
+      </div>`;
+    }).join('');
+  }
+  openModal('modal-deliverables');
+}
+
+// ═══════════════════════════════════════
+// REWARDS
+// ═══════════════════════════════════════
+function getRewardTier(pct) {
+  return REWARD_TIERS.find(r => pct >= r.min && pct <= r.max) || REWARD_TIERS[0];
+}
+
+function isHKTAfter(hour, dayOfWeek) {
+  const pht = getHKT();
+  if (dayOfWeek !== undefined) return pht.getUTCDay() === dayOfWeek && pht.getUTCHours() >= hour;
+  return pht.getUTCHours() >= hour;
+}
+
+function getDayStart() {
+  const pht = getHKT();
+  pht.setUTCHours(0,0,0,0);
+  return pht.getTime() - 8*3600000;
+}
+
+function getWeekStart() {
+  const pht = getHKT();
+  const day = pht.getUTCDay();
+  const diff = day === 0 ? 6 : day - 1;
+  pht.setUTCDate(pht.getUTCDate() - diff);
+  pht.setUTCHours(0,0,0,0);
+  return pht.getTime() - 8*3600000;
+}
+
+function calcDailyPct() {
+  const start = getDayStart();
+  const today = state.tasks.filter(t => t.created_at >= start && (t.tier === 'focus-today' || t.tier === 'focus-week'));
+  if (!today.length) return 0;
+  return Math.round((today.filter(t => t.completed).length / today.length) * 100);
+}
+
+function calcWeeklyPct() {
+  const start = getWeekStart();
+  const week = state.tasks.filter(t => t.created_at >= start && ['focus-today','focus-week','recurring'].includes(t.tier));
+  if (!week.length) return 0;
+  return Math.round((week.filter(t => t.completed).length / week.length) * 100);
+}
+
+function checkRewards() {
+  const dailyOk = isHKTAfter(18);
+  const weeklyOk = isHKTAfter(17, 5);
+  const dp = calcDailyPct();
+  const wp = calcWeeklyPct();
+  const dt = getRewardTier(dp);
+  const wt = getRewardTier(wp);
+
+  if (dailyOk) {
+    document.getElementById('reward-emoji').textContent = dt.emoji;
+    document.getElementById('reward-title').textContent = `${dt.name} Day`;
+    document.getElementById('reward-quote').textContent = dt.daily;
+    document.getElementById('reward-time-label').style.display = 'none';
+  } else {
+    document.getElementById('reward-emoji').textContent = '⏳';
+    document.getElementById('reward-title').textContent = 'Daily Reward Pending';
+    document.getElementById('reward-quote').textContent = 'Keep working — reward revealed at 6 PM HKT';
+    document.getElementById('reward-time-label').style.display = 'block';
+  }
+
+  document.getElementById('daily-pct').textContent = dailyOk ? `${dp}%` : '—';
+  document.getElementById('daily-fill').style.width = dailyOk ? `${dp}%` : '0%';
+  if (dailyOk) {
+    document.getElementById('daily-emoji').textContent = dt.emoji;
+    document.getElementById('daily-name').textContent = `${dt.emoji} ${dt.name}`;
+    document.getElementById('daily-quote').textContent = dt.daily;
+  }
+  document.getElementById('weekly-pct').textContent = weeklyOk ? `${wp}%` : '—';
+  document.getElementById('weekly-fill').style.width = weeklyOk ? `${wp}%` : '0%';
+  if (weeklyOk) {
+    document.getElementById('weekly-emoji').textContent = wt.emoji;
+    document.getElementById('weekly-name').textContent = `${wt.emoji} ${wt.name}`;
+    document.getElementById('weekly-quote').textContent = wt.weekly;
+  }
+}
+
+function openRewards() { checkRewards(); openModal('modal-rewards'); }
+
+// ═══════════════════════════════════════
+// WEEKLY RECAP
+// ═══════════════════════════════════════
+function checkRecap() {
+  const shown = isHKTAfter(18, 5);
+  document.getElementById('recap-hidden-msg').style.display = shown ? 'none' : 'block';
+  document.getElementById('recap-content').style.display = shown ? 'block' : 'none';
+  if (shown) {
+    const start = getWeekStart();
+    const done = state.tasks.filter(t => t.completed_at >= start);
+    document.getElementById('recap-stats').innerHTML = `
+      <b>Daily Focus done:</b> ${done.filter(t=>t.tier==='focus-today').length} &nbsp;|&nbsp;
+      <b>Weekly Focus done:</b> ${done.filter(t=>t.tier==='focus-week').length} &nbsp;|&nbsp;
+      <b>Recurring done:</b> ${done.filter(t=>t.tier==='recurring').length} &nbsp;|&nbsp;
+      <b>Parking Lot done:</b> ${done.filter(t=>t.tier==='parking').length} &nbsp;|&nbsp;
+      <b>Total pending:</b> ${state.tasks.filter(t=>!t.completed).length}
+    `;
+  }
+}
+
+// ═══════════════════════════════════════
+// RECURRING REFRESH
+// ═══════════════════════════════════════
+async function refreshRecurring() {
+  const pht = getHKT();
+  const phtHour = pht.getUTCHours();
+  const phtDay = pht.getUTCDay();
+
+  for (const task of state.tasks) {
+    if (!task.recurring || !task.completed) continue;
+    const lastRefreshed = task.last_refreshed_at ? new Date(task.last_refreshed_at + 8*3600000) : null;
+
+    if ((task.recurring_freq === 'daily' || task.freq === 'daily') && phtHour >= 6) {
+      const lastDate = lastRefreshed ? lastRefreshed.toDateString() : null;
+      if (lastDate !== pht.toDateString()) {
+        task.completed = false; task.completed_at = null; task.last_refreshed_at = Date.now();
+        await updateTaskInDB(task.id, { completed: false, completed_at: null, last_refreshed_at: Date.now() });
+      }
+    }
+    if ((task.recurring_freq === 'weekly' || task.freq === 'weekly') && phtDay === 1 && phtHour >= 6) {
+      const lastDay = lastRefreshed ? lastRefreshed.getUTCDay() : -1;
+      if (lastDay !== 1) {
+        task.completed = false; task.completed_at = null; task.last_refreshed_at = Date.now();
+        await updateTaskInDB(task.id, { completed: false, completed_at: null, last_refreshed_at: Date.now() });
+      }
+    }
+  }
+}
+
+// ═══════════════════════════════════════
+// LEMON COP
+// ═══════════════════════════════════════
+function showLemonCop(tier, limit) {
+  const msgs = {
+    'top3': `Top 3 is FULL. You only get 3 priorities. The Lemon Cop is watching.`,
+    'focus-today': `Focus Today is at capacity (${limit} tasks). Clear some before adding!`,
+    'focus-week': `Focus This Week is at capacity (${limit} tasks). The committee says no.`
+  };
+  document.getElementById('lemon-cop-msg').textContent = msgs[tier] || `This tier is at its limit (${limit}).`;
+  document.getElementById('lemon-cop').style.display = 'flex';
+}
+function closeLemonCop() { document.getElementById('lemon-cop').style.display = 'none'; }
+
+// ═══════════════════════════════════════
+// STORAGE CHECK
+// ═══════════════════════════════════════
+async function checkStorage() {
+  var msgEl = document.getElementById('storage-msg');
+  var pctEl = document.getElementById('storage-pct');
+  if (msgEl) msgEl.textContent = 'Checking...';
+  try {
+    var controller = new AbortController();
+    var timeout = setTimeout(function() { controller.abort(); }, 6000);
+    var response = await fetch(SCRIPT_URL, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'usage' }),
+      signal: controller.signal
+    });
+    clearTimeout(timeout);
+    var data = await response.json();
+    if (data && data.success) {
+      var fill = document.getElementById('storage-fill');
+      if (fill) {
+        fill.style.width = data.percentage + '%';
+        fill.className = 'storage-fill ' + (data.percentage >= 90 ? 'danger' : data.percentage >= 80 ? 'warning' : '');
+      }
+      if (pctEl) pctEl.textContent = data.percentage + '%';
+      if (msgEl) msgEl.textContent = data.message || 'Storage checked.';
+    }
+  } catch(e) {
+    if (msgEl) msgEl.textContent = 'Storage check unavailable on this device.';
+    if (pctEl) pctEl.textContent = '--';
+  }
+}
+
+// ═══════════════════════════════════════
+// SHARE BOARD
+// ═══════════════════════════════════════
+function openShareModal() {
+  if (state.currentUser) document.getElementById('my-share-code').textContent = state.currentUser.shareCode || '—';
+  openModal('modal-share');
+}
+
+function copyShareCode() {
+  const code = document.getElementById('my-share-code').textContent;
+  navigator.clipboard.writeText(code).then(() => showToast('Share code copied! 📋', 'success'));
+}
+
+async function joinBoard() {
+  const code = document.getElementById('join-code-input').value.trim().toUpperCase();
+  if (!code) { showToast('Enter a share code!', 'error'); return; }
+  try {
+    const { data, error } = await db.from('boards').select('*').eq('share_code', code).single();
+    if (error || !data) throw new Error('Board not found');
+    showToast(`Joined ${data.name}'s board! 🤝`, 'success');
+  } catch(e) {
+    showToast('Share code not found. Check and try again.', 'error');
+  }
+  document.getElementById('join-code-input').value = '';
+}
+
+// ═══════════════════════════════════════
+// SETTINGS
+// ═══════════════════════════════════════
+function openSettings() {
+  checkStorage();
+  document.getElementById('settings-overlay').style.display = 'block';
+  document.getElementById('settings-panel').classList.add('open');
+}
+function closeSettings() {
+  document.getElementById('settings-overlay').style.display = 'none';
+  document.getElementById('settings-panel').classList.remove('open');
+}
+
+async function changePassword() {
+  const np = document.getElementById('new-pw').value;
+  const cp = document.getElementById('confirm-pw').value;
+  if (!np) { showToast('Enter a new password!', 'error'); return; }
+  if (np !== cp) { showToast('Passwords do not match!', 'error'); return; }
+  if (np.length < 4) { showToast('Password must be at least 4 characters.', 'error'); return; }
+
+  try {
+    await db.from('settings').update({ value: np }).eq('key', 'hub_password');
+    state.dbPassword = np;
+    showToast('Password updated! ✓', 'success');
+  } catch(e) {
+    state.dbPassword = np;
+    showToast('Password updated locally.', 'success');
+  }
+  document.getElementById('new-pw').value = '';
+  document.getElementById('confirm-pw').value = '';
+  closeSettings();
+}
+
+function resetBoard() {
+  if (!confirm('Reset your board? This will remove your profile from this device.')) return;
+  state.currentUser = null;
+  localStorage.removeItem('nancy_user');
+  document.getElementById('create-board-screen').style.display = 'flex';
+  document.getElementById('taskflow-main').style.display = 'none';
+  closeSettings();
+  showToast('Board reset.');
+}
+
+// ═══════════════════════════════════════
+// MODAL HELPERS
+// ═══════════════════════════════════════
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+function closeModalOutside(e, id) { if (e.target.id === id) closeModal(id); }
+
+// ═══════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════
+let toastTimer;
+function showToast(msg, type) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast ${type || ''} show`;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ═══════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════
+function esc(str) {
+  return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+
+
+
+// PERMISSIONS & SHARING
+let selectedPerm = 'view';
+let sharedBoards = [];
+let notifications = [];
+
+function selectPerm(perm) {
+  selectedPerm = perm;
+  var viewEl = document.getElementById('perm-view');
+  var editEl = document.getElementById('perm-edit');
+  if (perm === 'view') {
+    viewEl.style.border = '2px solid var(--primary)';
+    viewEl.style.background = 'var(--primary-light)';
+    editEl.style.border = '2px solid var(--border2)';
+    editEl.style.background = 'var(--bg)';
+  } else {
+    editEl.style.border = '2px solid var(--primary)';
+    editEl.style.background = 'var(--primary-light)';
+    viewEl.style.border = '2px solid var(--border2)';
+    viewEl.style.background = 'var(--bg)';
+  }
+}
+
+async function openShareModal() {
+  selectedPerm = 'view';
+  selectPerm('view');
+  if (state.currentUser) {
+    document.getElementById('my-share-code').textContent = state.currentUser.shareCode || '--';
+  }
+  var inp = document.getElementById('share-name-input');
+  if (inp) inp.value = '';
+  await loadAccessList();
+  openModal('modal-share');
+}
+
+async function loadAccessList() {
+  var list = document.getElementById('access-list');
+  if (!list || !state.currentUser) return;
+  list.innerHTML = '<div style="font-family:sans-serif;font-size:.82rem;color:var(--muted)">Loading...</div>';
+  try {
+    var result = await db.from('board_access').select('*').eq('board_id', state.currentUser.id);
+    var data = result.data;
+    var error = result.error;
+    if (error || !data || data.length === 0) {
+      list.innerHTML = '<div style="font-family:sans-serif;font-size:.82rem;color:var(--muted)">No one has access yet.</div>';
+      return;
+    }
+    var html = '';
+    for (var i = 0; i < data.length; i++) {
+      var a = data[i];
+      var permLabel = a.permission === 'edit' ? 'Can Edit' : 'View Only';
+      var viewSel = a.permission === 'view' ? 'selected' : '';
+      var editSel = a.permission === 'edit' ? 'selected' : '';
+      html += '<div style="display:flex;align-items:center;justify-content:space-between;padding:.6rem 0;border-bottom:1px solid var(--border)">';
+      html += '<div><div style="font-family:sans-serif;font-size:.85rem;font-weight:600;color:var(--h2)">' + esc(a.granted_to_name) + '</div>';
+      html += '<div style="font-family:sans-serif;font-size:.72rem;color:var(--muted)">' + permLabel + '</div></div>';
+      html += '<div style="display:flex;gap:.5rem;align-items:center">';
+      html += '<select data-id="' + a.id + '" onchange="updatePermission(this.dataset.id,this.value)" style="font-family:sans-serif;font-size:.75rem;padding:3px 6px;border:1px solid var(--border2);border-radius:6px;background:var(--bg)">';
+      html += '<option value="view" ' + viewSel + '>View Only</option>';
+      html += '<option value="edit" ' + editSel + '>Can Edit</option>';
+      html += '</select>';
+      html += '<button data-id="' + a.id + '" data-name="' + esc(a.granted_to_name) + '" onclick="revokeAccess(this.dataset.id,this.dataset.name)" style="background:none;border:none;cursor:pointer;color:#e53935;font-size:.9rem;padding:2px 6px">x</button>';
+      html += '</div></div>';
+    }
+    list.innerHTML = html;
+  } catch(e) {
+    list.innerHTML = '<div style="font-family:sans-serif;font-size:.82rem;color:var(--muted)">Could not load access list.</div>';
+  }
+}
+
+async function grantAccess() {
+  var nameEl = document.getElementById('share-name-input');
+  if (!nameEl) return;
+  var name = nameEl.value.trim();
+  if (!name) { showToast('Enter a teammate name!', 'error'); return; }
+  try {
+    await db.from('board_access').insert({
+      board_id: state.currentUser.id,
+      granted_to_name: name,
+      permission: selectedPerm,
+      granted_by: state.currentUser.id
+    });
+    var permWord = selectedPerm === 'edit' ? 'edit' : 'view';
+    await addNotification(name + ' was given ' + permWord + ' access to your board.', 'access');
+    showToast('Access granted to ' + name + '! Share code: ' + state.currentUser.shareCode, 'success');
+    nameEl.value = '';
+    await loadAccessList();
+  } catch(e) {
+    showToast('Could not grant access. Try again.', 'error');
+  }
+}
+
+async function updatePermission(accessId, newPerm) {
+  try {
+    await db.from('board_access').update({ permission: newPerm }).eq('id', accessId);
+    var permWord = newPerm === 'edit' ? 'Can Edit' : 'View Only';
+    await addNotification('Access level updated to ' + permWord + '.', 'access');
+    showToast('Permission updated!', 'success');
+    await loadAccessList();
+  } catch(e) {
+    showToast('Could not update permission.', 'error');
+  }
+}
+
+async function revokeAccess(accessId, name) {
+  if (!confirm('Remove ' + name + ' access to your board?')) return;
+  try {
+    await db.from('board_access').delete().eq('id', accessId);
+    await addNotification(name + ' access was removed.', 'access');
+    showToast(name + ' access removed.');
+    await loadAccessList();
+  } catch(e) {
+    showToast('Could not remove access.', 'error');
+  }
+}
+
+// SHARED BOARDS DROPDOWN
+function toggleSharedDropdown() {
+  var dd = document.getElementById('shared-dropdown');
+  var isOpen = dd.style.display !== 'none';
+  dd.style.display = isOpen ? 'none' : 'block';
+  if (!isOpen) {
+    loadSharedBoardsList();
+    setTimeout(function() {
+      document.addEventListener('click', closeDropdownOutside, { once: true });
+    }, 100);
+  }
+}
+
+function closeDropdownOutside(e) {
+  var dd = document.getElementById('shared-dropdown');
+  var tab = document.getElementById('shared-boards-tab');
+  if (dd && tab && !dd.contains(e.target) && !tab.contains(e.target)) {
+    dd.style.display = 'none';
+  }
+}
+
+async function loadSharedBoardsList() {
+  var list = document.getElementById('shared-boards-list');
+  if (!list || !state.currentUser) return;
+  list.innerHTML = '<div style="font-family:sans-serif;font-size:.82rem;color:var(--muted);padding:.75rem 1rem">Loading...</div>';
+  try {
+    var result = await db.from('board_access').select('*, boards!board_id(*)').eq('granted_to_name', state.currentUser.name);
+    var data = result.data;
+    var error = result.error;
+    if (error || !data || data.length === 0) {
+      list.innerHTML = '<div style="font-family:sans-serif;font-size:.82rem;color:var(--muted);padding:.75rem 1rem">No shared boards yet.</div>';
+      return;
+    }
+    sharedBoards = data;
+    var html = '';
+    for (var i = 0; i < data.length; i++) {
+      var a = data[i];
+      var bname = (a.boards && a.boards.name) ? a.boards.name : 'Board';
+      var bavatar = (a.boards && a.boards.avatar) ? a.boards.avatar : 'U';
+      var bid = a.board_id;
+      var permLabel = a.permission === 'edit' ? 'Can Edit' : 'View Only';
+      html += '<div data-id="' + bid + '" data-name="' + esc(bname) + '" onclick="viewSharedBoard(this.dataset.id,this.dataset.name)" style="padding:.65rem 1rem;cursor:pointer;display:flex;align-items:center;gap:.75rem" onmouseover="this.style.background=\'var(--bg2)\'" onmouseout="this.style.background=\'\'">';
+      html += '<div style="width:32px;height:32px;border-radius:50%;background:var(--primary-light);display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0">' + bavatar + '</div>';
+      html += '<div><div style="font-family:sans-serif;font-size:.85rem;font-weight:600;color:var(--h2)">' + esc(bname) + "'s Board</div>";
+      html += '<div style="font-family:sans-serif;font-size:.7rem;color:var(--muted)">' + permLabel + '</div></div>';
+      html += '</div>';
+    }
+    list.innerHTML = html;
+  } catch(e) {
+    list.innerHTML = '<div style="font-family:sans-serif;font-size:.82rem;color:var(--muted);padding:.75rem 1rem">Could not load boards.</div>';
+  }
+}
+
+async function viewSharedBoard(boardId, boardName) {
+  document.getElementById('shared-dropdown').style.display = 'none';
+  document.querySelectorAll('.board-tab').forEach(function(t) { t.classList.remove('active'); });
+  document.getElementById('shared-boards-tab').classList.add('active');
+  document.getElementById('shared-boards-tab').textContent = '👥 ' + boardName + "'s Board ▾";
+  state.currentBoard = 'viewing';
+  state.viewingBoardId = boardId;
+  state.viewingBoardName = boardName;
+  try {
+    var result = await db.from('tasks').select('*').eq('owner_id', boardId).order('task_order');
+    if (result.error) throw result.error;
+    state.tasks = result.data || [];
+    renderBoard();
+    showToast('Viewing ' + boardName + "'s board");
+  } catch(e) {
+    showToast('Could not load board tasks.', 'error');
+  }
+}
+
+function openJoinModal() {
+  document.getElementById('shared-dropdown').style.display = 'none';
+  var inp = document.getElementById('join-code-input');
+  if (inp) inp.value = '';
+  openModal('modal-join');
+}
+
+async function joinBoard() {
+  var inp = document.getElementById('join-code-input');
+  if (!inp) return;
+  var code = inp.value.trim().toUpperCase();
+  if (!code) { showToast('Enter a share code!', 'error'); return; }
+  try {
+    var result = await db.from('boards').select('*').eq('share_code', code).single();
+    if (result.error || !result.data) throw new Error('Not found');
+    var bname = result.data.name;
+    showToast('Code valid! Ask ' + bname + ' to grant you access from their Share settings.');
+    closeModal('modal-join');
+  } catch(e) {
+    showToast('Share code not found. Check and try again.', 'error');
+  }
+}
+
+// NOTIFICATIONS
+async function addNotification(message, type) {
+  if (!state.currentUser) return;
+  try {
+    await db.from('notifications').insert({ board_id: state.currentUser.id, message: message, type: type });
+    await loadNotifications();
+  } catch(e) {}
+}
+
+async function loadNotifications() {
+  if (!state.currentUser) return;
+  try {
+    var result = await db.from('notifications').select('*').eq('board_id', state.currentUser.id).order('created_at', { ascending: false }).limit(20);
+    if (result.error) throw result.error;
+    notifications = result.data || [];
+    var unread = notifications.filter(function(n) { return !n.read; }).length;
+    var badge = document.getElementById('notif-badge');
+    if (badge) {
+      if (unread > 0) {
+        badge.style.display = 'flex';
+        badge.textContent = unread > 9 ? '9+' : String(unread);
+      } else {
+        badge.style.display = 'none';
+      }
+    }
+  } catch(e) {}
+}
+
+async function openNotifications() {
+  await loadNotifications();
+  var list = document.getElementById('notifs-list');
+  if (!notifications.length) {
+    list.innerHTML = '<div style="font-family:sans-serif;font-size:.85rem;color:var(--muted);padding:1rem 0;text-align:center">No notifications yet.</div>';
+  } else {
+    var html = '';
+    for (var i = 0; i < notifications.length; i++) {
+      var n = notifications[i];
+      var icon = n.type === 'access' ? '🔑' : n.type === 'task' ? '✅' : '🔔';
+      var dot = !n.read ? '<div style="width:7px;height:7px;border-radius:50%;background:var(--primary);flex-shrink:0;margin-top:5px"></div>' : '';
+      var opacity = n.read ? '0.55' : '1';
+      html += '<div style="padding:.75rem 0;border-bottom:1px solid var(--border);display:flex;gap:.75rem;align-items:flex-start;opacity:' + opacity + '">';
+      html += '<div style="font-size:1.1rem;flex-shrink:0">' + icon + '</div>';
+      html += '<div style="flex:1"><div style="font-family:sans-serif;font-size:.84rem;color:var(--h2);line-height:1.4">' + esc(n.message) + '</div>';
+      html += '<div style="font-family:sans-serif;font-size:.72rem;color:var(--muted);margin-top:2px">' + new Date(n.created_at).toLocaleString('en-HK') + '</div></div>';
+      html += dot + '</div>';
+    }
+    list.innerHTML = html;
+  }
+  try {
+    if (state.currentUser) {
+      await db.from('notifications').update({ read: true }).eq('board_id', state.currentUser.id).eq('read', false);
+      var badge = document.getElementById('notif-badge');
+      if (badge) badge.style.display = 'none';
+    }
+  } catch(e) {}
+  openModal('modal-notifs');
+}
+
+async function markAllRead() {
+  try {
+    if (state.currentUser) {
+      await db.from('notifications').update({ read: true }).eq('board_id', state.currentUser.id);
+    }
+    var badge = document.getElementById('notif-badge');
+    if (badge) badge.style.display = 'none';
+    closeModal('modal-notifs');
+    showToast('All notifications marked as read.');
+  } catch(e) {}
+}
+
+
+// AUTH SYSTEM
+async function boot() {
+  loadLocal();
+  await checkAuthSession();
+}
+
+async function checkAuthSession() {
+  try {
+    const { data: { session } } = await db.auth.getSession();
+    if (session && session.user) {
+      await onAuthSuccess(session.user);
+    } else {
+      showGate();
+    }
+  } catch(e) {
+    showGate();
+  }
+}
+
+function showGate() {
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('gate').style.display = 'flex';
+}
+
+function showAuthScreen() {
+  document.getElementById('gate').style.display = 'none';
+  document.getElementById('auth-screen').style.display = 'flex';
+}
+
+async function checkPassword() {
+  const val = document.getElementById('gate-pw').value;
+  try {
+    const { data, error } = await db.from('settings').select('value').eq('key', 'hub_password').single();
+    const correctPw = (data && data.value) ? data.value : 'nancy2024';
+    if (val === correctPw) {
+      showAuthScreen();
+    } else {
+      document.getElementById('gate-error').style.display = 'block';
+      document.getElementById('gate-error').textContent = 'Incorrect password. Please try again.';
+      document.getElementById('gate-pw').style.borderColor = '#e53935';
+    }
+  } catch(e) {
+    if (val === 'nancy2024') {
+      showAuthScreen();
+    } else {
+      document.getElementById('gate-error').style.display = 'block';
+      document.getElementById('gate-pw').style.borderColor = '#e53935';
+    }
+  }
+}
+
+document.getElementById('gate-pw').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') checkPassword();
+});
+
+function switchAuthTab(tab) {
+  document.getElementById('signin-form').style.display = tab === 'signin' ? 'block' : 'none';
+  document.getElementById('signup-form').style.display = tab === 'signup' ? 'block' : 'none';
+  document.getElementById('forgot-form').style.display = 'none';
+  document.getElementById('signin-tab').classList.toggle('active', tab === 'signin');
+  document.getElementById('signup-tab').classList.toggle('active', tab === 'signup');
+}
+
+function showForgotPassword() {
+  document.getElementById('signin-form').style.display = 'none';
+  document.getElementById('signup-form').style.display = 'none';
+  document.getElementById('forgot-form').style.display = 'block';
+}
+
+async function signIn() {
+  const email = document.getElementById('signin-email').value.trim();
+  const password = document.getElementById('signin-password').value;
+  const errEl = document.getElementById('signin-error');
+  const btn = document.getElementById('signin-btn');
+
+  errEl.style.display = 'none';
+
+  if (!email || !password) {
+    errEl.textContent = 'Please fill in all fields.';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Signing in...';
+
+  try {
+    const { data, error } = await db.auth.signInWithPassword({ email, password });
+    if (error) throw error;
+    await onAuthSuccess(data.user);
+  } catch(e) {
+    errEl.textContent = e.message || 'Invalid email or password.';
+    errEl.style.display = 'block';
+    btn.disabled = false;
+    btn.textContent = 'Sign In';
+  }
+}
+
+document.getElementById('signin-password').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') signIn();
+});
+
+async function signUp() {
+  const name = document.getElementById('signup-name').value.trim();
+  const email = document.getElementById('signup-email').value.trim().toLowerCase();
+  const password = document.getElementById('signup-password').value;
+  const errEl = document.getElementById('signup-error');
+  const successEl = document.getElementById('signup-success');
+  const btn = document.getElementById('signup-btn');
+
+  errEl.style.display = 'none';
+  successEl.style.display = 'none';
+
+  if (!name || !email || !password) {
+    errEl.textContent = 'Please fill in all fields.';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  // Check domain
+  try {
+    const { data: domainData } = await db.from('settings').select('value').eq('key', 'allowed_domain').single();
+    const allowedDomain = (domainData && domainData.value) ? domainData.value : 'carenbloom.com';
+    if (!email.endsWith('@' + allowedDomain)) {
+      errEl.textContent = 'Only @' + allowedDomain + ' emails are allowed to join.';
+      errEl.style.display = 'block';
+      return;
+    }
+  } catch(e) {
+    if (!email.endsWith('@carenbloom.com')) {
+      errEl.textContent = 'Only @carenbloom.com emails are allowed to join.';
+      errEl.style.display = 'block';
+      return;
+    }
+  }
+
+  if (password.length < 6) {
+    errEl.textContent = 'Password must be at least 6 characters.';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Creating account...';
+
+  try {
+    const { data, error } = await db.auth.signUp({ email, password, options: { data: { name } } });
+    if (error) throw error;
+
+    // Create board profile
+    const shareCode = Math.random().toString(36).substr(2, 6).toUpperCase();
+    const isAdmin = email === 'danielle@carenbloom.com';
+    const avatar = getAvatarForName(name);
+
+    const { data: boardData, error: boardError } = await db.from('boards').insert({
+      name, avatar, share_code: shareCode, email,
+      role: isAdmin ? 'admin' : 'member',
+      auth_id: data.user ? data.user.id : null
+    }).select().single();
+
+    if (boardError) throw boardError;
+
+    state.currentUser = {
+      id: boardData.id, name, avatar, email,
+      shareCode, role: isAdmin ? 'admin' : 'member',
+      authId: data.user ? data.user.id : null
+    };
+    localStorage.setItem('nancy_user', JSON.stringify(state.currentUser));
+
+    await logActivity('Joined the team', 'welcome');
+    await onAuthSuccess(data.user);
+
+  } catch(e) {
+    errEl.textContent = e.message || 'Could not create account. Try again.';
+    errEl.style.display = 'block';
+    btn.disabled = false;
+    btn.textContent = 'Join Team';
+  }
+}
+
+async function sendResetEmail() {
+  const email = document.getElementById('forgot-email').value.trim();
+  const errEl = document.getElementById('forgot-error');
+  const successEl = document.getElementById('forgot-success');
+  const btn = document.getElementById('forgot-btn');
+
+  errEl.style.display = 'none';
+  successEl.style.display = 'none';
+
+  if (!email) {
+    errEl.textContent = 'Please enter your email.';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  if (!email.endsWith('@carenbloom.com')) {
+    errEl.textContent = 'Only @carenbloom.com emails are supported.';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Sending...';
+
+  try {
+    const { error } = await db.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.href
+    });
+    if (error) throw error;
+    successEl.textContent = 'Reset link sent! Check your @carenbloom.com inbox.';
+    successEl.style.display = 'block';
+  } catch(e) {
+    errEl.textContent = e.message || 'Could not send reset email.';
+    errEl.style.display = 'block';
+  }
+
+  btn.disabled = false;
+  btn.textContent = 'Send Reset Link';
+}
+
+async function onAuthSuccess(authUser) {
+  document.getElementById('auth-screen').style.display = 'none';
+  document.getElementById('loading').style.display = 'none';
+
+  // Find or load board profile
+  try {
+    const { data: boardData, error } = await db.from('boards').select('*').eq('auth_id', authUser.id).single();
+    if (!error && boardData) {
+      state.currentUser = {
+        id: boardData.id,
+        name: boardData.name,
+        avatar: boardData.avatar,
+        email: boardData.email,
+        shareCode: boardData.share_code,
+        role: boardData.role || 'member',
+        authId: authUser.id
+      };
+    } else {
+      // Try by email
+      const { data: bd2 } = await db.from('boards').select('*').eq('email', authUser.email).single();
+      if (bd2) {
+        // Update auth_id
+        await db.from('boards').update({ auth_id: authUser.id }).eq('id', bd2.id);
+        state.currentUser = {
+          id: bd2.id, name: bd2.name, avatar: bd2.avatar,
+          email: bd2.email, shareCode: bd2.share_code,
+          role: bd2.role || 'member', authId: authUser.id
+        };
+      }
+    }
+  } catch(e) {}
+
+  localStorage.setItem('nancy_user', JSON.stringify(state.currentUser));
+  updateNavUser();
+  document.getElementById('app').style.display = 'flex';
+  document.getElementById('app').style.flexDirection = 'column';
+  await initApp();
+  setTimeout(function() { try { checkStorageAlert(); } catch(e) {} }, 5000); // Check storage silently
+}
+
+function updateNavUser() {
+  if (!state.currentUser) return;
+  var nameEl = document.getElementById('user-name-nav');
+  var avatarEl = document.getElementById('user-avatar-nav');
+  var adminLink = document.getElementById('admin-nav-link');
+  var mobileAdminBtn = document.getElementById('mnav-admin');
+  if (nameEl) nameEl.textContent = state.currentUser.name || 'Me';
+  if (avatarEl) avatarEl.textContent = state.currentUser.avatar || '👤';
+  if (adminLink) {
+    var isAdmin = state.currentUser.role === 'admin';
+    adminLink.style.display = isAdmin ? 'flex' : 'none';
+    adminLink.style.alignItems = 'center';
+    adminLink.style.height = '100%';
+  }
+  // Show admin in mobile bottom nav only for admins
+  if (mobileAdminBtn) {
+    mobileAdminBtn.style.display = state.currentUser.role === 'admin' ? 'flex' : 'none';
+  }
+}
+
+function openUserMenu() {
+  // Simple dropdown for user actions
+  var existing = document.getElementById('user-dropdown');
+  if (existing) { existing.remove(); return; }
+
+  var menu = document.createElement('div');
+  menu.id = 'user-dropdown';
+  menu.style.cssText = 'position:fixed;top:56px;right:80px;background:var(--white);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow-lg);z-index:999;min-width:180px;overflow:hidden';
+
+  var userInfo = '<div style="padding:.75rem 1rem;border-bottom:1px solid var(--border)">';
+  userInfo += '<div style="font-family:sans-serif;font-size:.85rem;font-weight:600;color:var(--h2)">' + (state.currentUser ? state.currentUser.name : 'User') + '</div>';
+  userInfo += '<div style="font-family:sans-serif;font-size:.72rem;color:var(--muted)">' + (state.currentUser ? state.currentUser.email : '') + '</div>';
+  if (state.currentUser && state.currentUser.role === 'admin') {
+    userInfo += '<div style="font-family:sans-serif;font-size:.68rem;font-weight:700;color:var(--primary);margin-top:2px">👑 Admin</div>';
+  }
+  userInfo += '</div>';
+
+  var signOutBtn = '<div onclick="signOut()" style="padding:.75rem 1rem;font-family:sans-serif;font-size:.85rem;color:#e53935;cursor:pointer">Sign Out</div>';
+
+  menu.innerHTML = userInfo + signOutBtn;
+  document.body.appendChild(menu);
+
+  setTimeout(function() {
+    document.addEventListener('click', function closeMenu(e) {
+      if (!menu.contains(e.target)) {
+        menu.remove();
+        document.removeEventListener('click', closeMenu);
+      }
+    });
+  }, 100);
+}
+
+async function signOut() {
+  try {
+    await db.auth.signOut();
+  } catch(e) {}
+  state.currentUser = null;
+  localStorage.removeItem('nancy_user');
+  var dropdown = document.getElementById('user-dropdown');
+  if (dropdown) dropdown.remove();
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('gate').style.display = 'flex';
+  document.getElementById('gate-pw').value = '';
+  document.getElementById('gate-error').style.display = 'none';
+  showToast('Signed out successfully.');
+}
+
+function getAvatarForName(name) {
+  var avatars = ['🌸','⚡','🌙','🔥','🌊','🎯','💫','🦋','🌺','✨'];
+  var idx = name.charCodeAt(0) % avatars.length;
+  return avatars[idx];
+}
+
+// ACTIVITY LOGGING
+async function logActivity(action, type, details) {
+  if (!state.currentUser) return;
+  try {
+    await db.from('activity_log').insert({
+      board_id: state.currentUser.id,
+      member_name: state.currentUser.name,
+      member_email: state.currentUser.email,
+      action: action,
+      details: details || '',
+      section: type || 'taskflow'
+    });
+  } catch(e) {}
+}
+
+// ADMIN FUNCTIONS
+async function loadAdminPanel() {
+  if (!state.currentUser || state.currentUser.role !== 'admin') return;
+
+  // Load members
+  try {
+    const { data: members } = await db.from('boards').select('*').order('created_at');
+    var memberList = document.getElementById('admin-members-list');
+    var memberCount = document.getElementById('admin-member-count');
+    if (memberCount) memberCount.textContent = members ? members.length : 0;
+
+    if (memberList && members) {
+      memberList.innerHTML = members.map(function(m) {
+        var isMe = state.currentUser && m.id === state.currentUser.id;
+        return '<div class="member-row">' +
+          '<div class="member-avatar">' + (m.avatar || '👤') + '</div>' +
+          '<div class="member-info">' +
+          '<div class="member-name">' + m.name + (isMe ? ' <span style="font-size:.7rem;color:var(--muted)">(you)</span>' : '') + '</div>' +
+          '<div class="member-email">' + (m.email || 'No email') + '</div>' +
+          '</div>' +
+          '<span class="member-role-badge ' + (m.role === 'admin' ? 'role-admin' : 'role-member') + '">' + (m.role === 'admin' ? '👑 Admin' : 'Member') + '</span>' +
+          (!isMe ? '<div style="display:flex;gap:.5rem">' +
+          '<button data-mid="' + m.id + '" data-mrole="' + m.role + '" onclick="toggleAdminRole(this.dataset.mid,this.dataset.mrole)" style="font-family:sans-serif;font-size:.75rem;padding:4px 10px;border:1px solid var(--border2);border-radius:var(--radius-sm);background:var(--bg);cursor:pointer">' +
+          (m.role === 'admin' ? 'Remove Admin' : 'Make Admin') + '</button>' +
+          '<button data-mid="' + m.id + '" data-mname="' + m.name + '" onclick="removeMember(this.dataset.mid,this.dataset.mname)" style="font-family:sans-serif;font-size:.75rem;padding:4px 10px;border:1px solid #fca5a5;border-radius:var(--radius-sm);background:#fee2e2;color:#e53935;cursor:pointer">Remove</button>' +
+          '</div>' : '') +
+          '</div>';
+      }).join('');
+    }
+  } catch(e) {}
+
+  // Load activity
+  await filterActivity();
+
+  // Load task count
+  try {
+    const { data: tasks } = await db.from('tasks').select('id');
+    var taskCount = document.getElementById('admin-task-count');
+    if (taskCount) taskCount.textContent = tasks ? tasks.length : 0;
+  } catch(e) {}
+
+  // Load today activity count
+  try {
+    var todayStart = new Date();
+    todayStart.setHours(0,0,0,0);
+    const { data: todayActs } = await db.from('activity_log').select('id').gte('created_at', todayStart.toISOString());
+    var actCount = document.getElementById('admin-activity-count');
+    if (actCount) actCount.textContent = todayActs ? todayActs.length : 0;
+  } catch(e) {}
+}
+
+async function filterActivity() {
+  var filter = document.getElementById('activity-filter');
+  var section = filter ? filter.value : 'all';
+  var list = document.getElementById('admin-activity-list');
+  if (!list) return;
+
+  try {
+    var query = db.from('activity_log').select('*').order('created_at', { ascending: false }).limit(50);
+    if (section !== 'all') query = query.eq('section', section);
+    const { data: acts } = await query;
+
+    if (!acts || acts.length === 0) {
+      list.innerHTML = '<div style="font-family:sans-serif;font-size:.85rem;color:var(--muted)">No activity yet.</div>';
+      return;
+    }
+
+    list.innerHTML = acts.map(function(a) {
+      var icon = a.section === 'taskflow' ? '✅' : a.section === 'brand' ? '🎨' : a.section === 'welcome' ? '👋' : '📝';
+      var time = new Date(a.created_at).toLocaleString('en-HK', { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' });
+      return '<div class="activity-item">' +
+        '<div class="activity-icon">' + icon + '</div>' +
+        '<div class="activity-text"><strong>' + a.member_name + '</strong> ' + a.action + (a.details ? ' — ' + a.details : '') + '</div>' +
+        '<div class="activity-time">' + time + '</div>' +
+        '</div>';
+    }).join('');
+  } catch(e) {
+    list.innerHTML = '<div style="font-family:sans-serif;font-size:.85rem;color:var(--muted)">Could not load activity.</div>';
+  }
+}
+
+async function toggleAdminRole(memberId, currentRole) {
+  var newRole = currentRole === 'admin' ? 'member' : 'admin';
+  try {
+    await db.from('boards').update({ role: newRole }).eq('id', memberId);
+    showToast('Role updated to ' + newRole + '!', 'success');
+    await loadAdminPanel();
+  } catch(e) {
+    showToast('Could not update role.', 'error');
+  }
+}
+
+async function removeMember(memberId, name) {
+  if (!confirm('Remove ' + name + ' from the team? This cannot be undone.')) return;
+  try {
+    await db.from('boards').delete().eq('id', memberId);
+    showToast(name + ' removed from team.');
+    await loadAdminPanel();
+  } catch(e) {
+    showToast('Could not remove member.', 'error');
+  }
+}
+
+async function adminChangeHubPassword() {
+  var pw = document.getElementById('admin-hub-pw').value;
+  if (!pw || pw.length < 4) { showToast('Password must be at least 4 characters.', 'error'); return; }
+  try {
+    await db.from('settings').update({ value: pw }).eq('key', 'hub_password');
+    state.dbPassword = pw;
+    showToast('Hub password updated!', 'success');
+    document.getElementById('admin-hub-pw').value = '';
+  } catch(e) {
+    showToast('Could not update password.', 'error');
+  }
+}
+
+async function adminChangeDomain() {
+  var domain = document.getElementById('admin-domain').value.trim();
+  if (!domain) { showToast('Enter a domain.', 'error'); return; }
+  try {
+    await db.from('settings').update({ value: domain }).eq('key', 'allowed_domain');
+    showToast('Allowed domain updated to @' + domain + '!', 'success');
+    document.getElementById('admin-domain').value = '';
+  } catch(e) {
+    showToast('Could not update domain.', 'error');
+  }
+}
+
+
+// MOBILE NAV
+function isMobile() { return window.innerWidth <= 768; }
+
+function initMobileNav() {
+  if (isMobile()) {
+    var nav = document.getElementById('mobile-nav');
+    if (nav) nav.style.display = 'block';
+  }
+}
+
+function mobileNav(page) {
+  // Update bottom nav colors
+  ['taskflow','social','learning','creators','brand','admin'].forEach(function(p) {
+    var el = document.getElementById('mnav-' + p);
+    if (el) el.style.color = p === page ? 'var(--primary)' : 'var(--muted)';
+  });
+  // Hide all pages
+  document.querySelectorAll('.page').forEach(function(p) {
+    p.classList.remove('active');
+  });
+  // Show target page
+  var pageEl = document.getElementById('page-' + page);
+  if (pageEl) {
+    pageEl.classList.add('active');
+  }
+  // Load admin data if needed
+  if (page === 'admin') {
+    setTimeout(function() { loadAdminPanel(); }, 200);
+  }
+  // Scroll to top
+  window.scrollTo(0, 0);
+}
+
+window.addEventListener('resize', function() {
+  var nav = document.getElementById('mobile-nav');
+  if (nav) nav.style.display = isMobile() ? 'block' : 'none';
+});
+
+
+// STORAGE ALERT BANNER (admin only)
+var storageDismissed = false;
+
+async function checkStorageAlert() {
+  if (!state.currentUser || state.currentUser.role !== 'admin') return;
+  if (storageDismissed) return;
+  try {
+    var controller = new AbortController();
+    var timeout = setTimeout(function() { controller.abort(); }, 5000);
+    var result = await fetch(SCRIPT_URL, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'usage' }),
+      signal: controller.signal
+    });
+    clearTimeout(timeout);
+    var data = await result.json();
+    if (!data || !data.success) return;
+    var pct = data.percentage || 0;
+    var banner = document.getElementById('storage-alert-banner');
+    var pctEl = document.getElementById('storage-alert-pct');
+    var msgEl = document.getElementById('storage-alert-msg');
+    var iconEl = document.getElementById('storage-alert-icon');
+    if (!banner) return;
+    if (pct >= 95) {
+      banner.className = 'critical';
+      banner.style.display = 'flex';
+      if (iconEl) iconEl.textContent = '🔴';
+      if (pctEl) pctEl.textContent = 'CRITICAL: Storage at ' + pct + '% —';
+      if (msgEl) msgEl.textContent = 'Uploads may fail. Upgrade Google Drive storage immediately.';
+    } else if (pct >= 90) {
+      banner.className = 'danger';
+      banner.style.display = 'flex';
+      if (iconEl) iconEl.textContent = '🟠';
+      if (pctEl) pctEl.textContent = 'URGENT: Storage at ' + pct + '% —';
+      if (msgEl) msgEl.textContent = 'Google Drive almost full. Action required soon.';
+    } else if (pct >= 80) {
+      banner.className = 'warning';
+      banner.style.display = 'flex';
+      if (iconEl) iconEl.textContent = '⚠️';
+      if (pctEl) pctEl.textContent = 'Storage at ' + pct + '% —';
+      if (msgEl) msgEl.textContent = 'Google Drive filling up. Consider upgrading.';
+    } else {
+      banner.style.display = 'none';
+    }
+  } catch(e) {
+    // Completely silent - storage check never breaks the app
+    return;
+  }
+}
+
+function dismissStorageAlert() {
+  storageDismissed = true;
+  var banner = document.getElementById('storage-alert-banner');
+  if (banner) banner.style.display = 'none';
+}
+
+// Check storage on page navigation (silent, admin only)
+var originalShowPage = showPage;
+function showPage(name, el) {
+  originalShowPage(name, el);
+  if (!storageDismissed && state.currentUser && state.currentUser.role === 'admin') {
+    setTimeout(function() { try { checkStorageAlert(); } catch(e) {} }, 1500);
+  }
+}
+
+
+function goAdmin() {
+  if (!state.currentUser || state.currentUser.role !== 'admin') {
+    showToast('Admin access required.', 'error');
+    return;
+  }
+  // Hide all pages
+  document.querySelectorAll('.page').forEach(function(p) {
+    p.classList.remove('active');
+    p.style.display = 'none';
+  });
+  // Remove active from all nav links
+  document.querySelectorAll('.nav-link').forEach(function(l) { l.classList.remove('active'); });
+  // Show admin page
+  var adminPage = document.getElementById('page-admin');
+  if (adminPage) {
+    adminPage.classList.add('active');
+    adminPage.style.display = 'flex';
+    adminPage.style.flexDirection = 'column';
+    adminPage.style.minHeight = '100vh';
+  }
+  // Mark admin link as active
+  var adminLink = document.getElementById('admin-desktop-link');
+  if (adminLink) adminLink.classList.add('active');
+  // Load admin data
+  setTimeout(function() { loadAdminPanel(); }, 100);
+  window.scrollTo(0, 0);
+}
+
+// ═══════════════════════════════════════
+// START
+// ═══════════════════════════════════════
+boot();
+initMobileNav();
+</script>
+</body>
+</html>

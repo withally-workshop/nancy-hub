@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nancy — Marketing Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared/styles.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+.hub-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.5rem;padding:2rem;max-width:1100px;margin:0 auto}
+.hub-card{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:2rem;cursor:pointer;transition:all .2s;text-decoration:none;display:block;position:relative;overflow:hidden}
+.hub-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--card-color,var(--primary))}
+.hub-card:hover{box-shadow:var(--shadow-lg);transform:translateY(-2px)}
+.hub-card-icon{font-size:2.5rem;margin-bottom:1rem;display:block}
+.hub-card-title{font-family:'Fraunces',serif;font-size:1.2rem;font-weight:600;color:var(--h2);margin-bottom:.4rem}
+.hub-card-desc{font-family:sans-serif;font-size:.85rem;color:var(--muted);line-height:1.5}
+.hub-card-badge{position:absolute;top:1rem;right:1rem}
+.welcome-section{padding:2rem 2rem 0;max-width:1100px;margin:0 auto}
+.welcome-title{font-family:'Fraunces',serif;font-size:2.2rem;font-weight:600;color:var(--h2);letter-spacing:-.02em}
+.welcome-sub{font-family:sans-serif;font-size:.95rem;color:var(--muted);margin-top:.35rem}
+@media(max-width:768px){
+  .hub-grid{grid-template-columns:1fr 1fr;gap:1rem;padding:1rem}
+  .welcome-section{padding:1rem 1rem 0}
+  .welcome-title{font-size:1.5rem}
+  .hub-card{padding:1.25rem}
+  .hub-card-icon{font-size:2rem;margin-bottom:.6rem}
+  .hub-card-title{font-size:1rem}
+  .hub-card-desc{font-size:.78rem}
+}
+@media(max-width:380px){
+  .hub-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div id="loading">
+  <div class="loading-logo">Nancy</div>
+  <div class="loading-spinner"></div>
+</div>
+
+<div id="gate">
+  <div class="gate-card">
+    <div class="gate-logo">Nancy</div>
+    <div class="gate-sub">CareNBloom Marketing Hub</div>
+    <div class="gate-label">Enter hub password</div>
+    <input class="gate-input" type="password" id="gate-pw" placeholder="••••••••" onkeydown="if(event.key==='Enter')checkPassword()"/>
+    <div class="gate-error" id="gate-error"></div>
+    <button class="gate-btn" onclick="checkPassword()">Enter Hub</button>
+  </div>
+</div>
+
+<div id="auth-screen">
+  <div class="auth-card">
+    <div class="auth-logo">Nancy</div>
+    <div class="auth-sub">CareNBloom Marketing Hub</div>
+    <div class="auth-tabs">
+      <div class="auth-tab active" id="signin-tab" onclick="switchAuthTab('signin')">Sign In</div>
+      <div class="auth-tab" id="signup-tab" onclick="switchAuthTab('signup')">Join Team</div>
+    </div>
+    <div id="signin-form">
+      <div class="auth-field">
+        <label class="auth-label">Email</label>
+        <input class="auth-input" type="email" id="signin-email" placeholder="you@carenbloom.com" onkeydown="if(event.key==='Enter')signIn()"/>
+      </div>
+      <div class="auth-field">
+        <label class="auth-label">Password</label>
+        <input class="auth-input" type="password" id="signin-password" placeholder="Your password" onkeydown="if(event.key==='Enter')signIn()"/>
+        <span class="auth-forgot" onclick="showForgotPassword()">Forgot password?</span>
+      </div>
+      <div class="auth-error" id="signin-error"></div>
+      <button class="auth-btn" id="signin-btn" onclick="signIn()">Sign In</button>
+    </div>
+    <div id="signup-form" style="display:none">
+      <div class="auth-field">
+        <label class="auth-label">Your Name</label>
+        <input class="auth-input" type="text" id="signup-name" placeholder="e.g. Crystal"/>
+      </div>
+      <div class="auth-field">
+        <label class="auth-label">Work Email</label>
+        <input class="auth-input" type="email" id="signup-email" placeholder="you@carenbloom.com"/>
+        <div class="auth-domain-hint">Only @carenbloom.com emails allowed</div>
+      </div>
+      <div class="auth-field">
+        <label class="auth-label">Password</label>
+        <input class="auth-input" type="password" id="signup-password" placeholder="Min 6 characters"/>
+      </div>
+      <div class="auth-error" id="signup-error"></div>
+      <div class="auth-success" id="signup-success"></div>
+      <button class="auth-btn" id="signup-btn" onclick="signUp()">Join Team</button>
+    </div>
+    <div id="forgot-form" style="display:none">
+      <div style="font-family:sans-serif;font-size:.85rem;color:var(--muted);margin-bottom:1rem;line-height:1.6">Enter your work email to receive a password reset link.</div>
+      <div class="auth-field">
+        <label class="auth-label">Work Email</label>
+        <input class="auth-input" type="email" id="forgot-email" placeholder="you@carenbloom.com"/>
+      </div>
+      <div class="auth-error" id="forgot-error"></div>
+      <div class="auth-success" id="forgot-success"></div>
+      <button class="auth-btn" id="forgot-btn" onclick="sendResetEmail()">Send Reset Link</button>
+      <div style="text-align:center;margin-top:1rem"><span class="auth-forgot" onclick="switchAuthTab('signin')">Back to Sign In</span></div>
+    </div>
+  </div>
+</div>
+
+<div id="app" style="display:none">
+  <nav class="topnav">
+    <a class="nav-brand" href="index.html">Nancy</a>
+    <div class="nav-links">
+      <a class="nav-link active" href="index.html">Home</a>
+      <a class="nav-link" href="taskflow.html">Task Hub</a>
+      <a class="nav-link" href="social.html">Content & Socials</a>
+      <a class="nav-link" href="learning.html">Learning</a>
+      <a class="nav-link" href="creators.html">Creators & Onboarding</a>
+    </div>
+    <div class="nav-right">
+      <div class="nav-time" id="pht-clock">HKT --:--</div>
+      <div id="admin-nav-link" style="display:none;align-items:center;height:100%">
+        <a class="nav-link" href="admin.html" style="color:var(--primary);font-weight:700">👑 Admin</a>
+      </div>
+      <div class="user-nav-btn" onclick="openUserMenu()">
+        <div class="user-avatar-small" id="user-avatar-nav">👤</div>
+        <span id="user-name-nav">Me</span>
+        <span>▾</span>
+      </div>
+      <button class="nav-btn" onclick="window.location.href='admin.html'" id="settings-nav-btn">⚙</button>
+    </div>
+  </nav>
+
+  <div id="storage-alert-banner">
+    <span id="storage-alert-icon">⚠️</span>
+    <span style="flex:1;font-family:sans-serif">
+      <span id="storage-alert-pct" style="font-weight:700"></span>
+      <span id="storage-alert-msg"></span>
+      <span style="color:var(--muted);font-size:.75rem"> (Only you can see this)</span>
+    </span>
+    <button class="storage-alert-close" onclick="dismissStorageAlert()">✕</button>
+  </div>
+
+  <!-- HOME CONTENT -->
+  <div class="welcome-section">
+    <div class="welcome-title" id="welcome-msg">Good morning! 👋</div>
+    <div class="welcome-sub">Welcome back to the Nancy Marketing Hub</div>
+  </div>
+
+  <div class="hub-grid">
+    <a href="taskflow.html" class="hub-card" style="--card-color:#ff30cc">
+      <span class="hub-card-icon">📋</span>
+      <div class="hub-card-title">Task Hub</div>
+      <div class="hub-card-desc">Manage team tasks, track deliverables, and stay on top of priorities.</div>
+      <div class="hub-card-badge"><span class="badge badge-pink">Active</span></div>
+    </a>
+    <a href="social.html" class="hub-card" style="--card-color:#8854d0">
+      <span class="hub-card-icon">📱</span>
+      <div class="hub-card-title">Content & Socials</div>
+      <div class="hub-card-desc">AI-powered content creation for avatars and the HelloNancy brand.</div>
+      <div class="hub-card-badge"><span class="badge badge-purple">Coming soon</span></div>
+    </a>
+    <a href="learning.html" class="hub-card" style="--card-color:#2d7dd2">
+      <span class="hub-card-icon">📚</span>
+      <div class="hub-card-title">Learning & Playbook</div>
+      <div class="hub-card-desc">SOPs, training materials, and team knowledge base.</div>
+      <div class="hub-card-badge"><span class="badge badge-blue">Coming soon</span></div>
+    </a>
+    <a href="creators.html" class="hub-card" style="--card-color:#3bb273">
+      <span class="hub-card-icon">🤝</span>
+      <div class="hub-card-title">Creators & Onboarding</div>
+      <div class="hub-card-desc">Manage creators, partnerships, and team onboarding flows.</div>
+      <div class="hub-card-badge"><span class="badge badge-green">Coming soon</span></div>
+    </a>
+  </div>
+
+  <!-- MOBILE BOTTOM NAV -->
+  <div id="mobile-nav" style="display:none;position:fixed;bottom:0;left:0;right:0;background:var(--white);border-top:1px solid var(--border);z-index:300;padding:.4rem 0 .5rem">
+    <div style="display:flex;justify-content:space-around;align-items:center">
+      <a href="index.html" style="display:flex;flex-direction:column;align-items:center;gap:2px;padding:.3rem .5rem;cursor:pointer;color:var(--primary);text-decoration:none">
+        <span style="font-size:1.2rem">🏠</span>
+        <span style="font-family:sans-serif;font-size:.58rem;font-weight:600">Home</span>
+      </a>
+      <a href="taskflow.html" style="display:flex;flex-direction:column;align-items:center;gap:2px;padding:.3rem .5rem;cursor:pointer;color:var(--muted);text-decoration:none">
+        <span style="font-size:1.2rem">📋</span>
+        <span style="font-family:sans-serif;font-size:.58rem;font-weight:600">Tasks</span>
+      </a>
+      <a href="social.html" style="display:flex;flex-direction:column;align-items:center;gap:2px;padding:.3rem .5rem;cursor:pointer;color:var(--muted);text-decoration:none">
+        <span style="font-size:1.2rem">📱</span>
+        <span style="font-family:sans-serif;font-size:.58rem;font-weight:600">Social</span>
+      </a>
+      <a href="learning.html" style="display:flex;flex-direction:column;align-items:center;gap:2px;padding:.3rem .5rem;cursor:pointer;color:var(--muted);text-decoration:none">
+        <span style="font-size:1.2rem">📚</span>
+        <span style="font-family:sans-serif;font-size:.58rem;font-weight:600">Learning</span>
+      </a>
+      <a href="creators.html" style="display:flex;flex-direction:column;align-items:center;gap:2px;padding:.3rem .5rem;cursor:pointer;color:var(--muted);text-decoration:none">
+        <span style="font-size:1.2rem">🤝</span>
+        <span style="font-family:sans-serif;font-size:.58rem;font-weight:600">Creators</span>
+      </a>
+      <a id="mnav-admin" href="admin.html" style="display:none;flex-direction:column;align-items:center;gap:2px;padding:.3rem .5rem;cursor:pointer;color:var(--muted);text-decoration:none">
+        <span style="font-size:1.2rem">👑</span>
+        <span style="font-family:sans-serif;font-size:.58rem;font-weight:600">Admin</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="shared/hub.js"></script>
+<script>
+function onPageReady() {
+  // Set welcome message based on time
+  var hour = getPHT().getUTCHours();
+  var greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
+  var name = hubState.currentUser ? hubState.currentUser.name : '';
+  var el = document.getElementById('welcome-msg');
+  if (el) el.textContent = greeting + (name ? ', ' + name + '!' : '!') + ' 👋';
+}
+bootHub();
+</script>
+</body>
+</html>
