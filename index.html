@@ -4,29 +4,100 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Nancy — Marketing Hub</title>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="shared/styles.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-.hub-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.5rem;padding:2rem;max-width:1100px;margin:0 auto}
-.hub-card{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:2rem;cursor:pointer;transition:all .2s;text-decoration:none;display:block;position:relative;overflow:hidden}
-.hub-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--card-color,var(--primary))}
-.hub-card:hover{box-shadow:var(--shadow-lg);transform:translateY(-2px)}
-.hub-card-icon{font-size:2.5rem;margin-bottom:1rem;display:block}
-.hub-card-title{font-family:'Fraunces',serif;font-size:1.2rem;font-weight:600;color:var(--h2);margin-bottom:.4rem}
-.hub-card-desc{font-family:sans-serif;font-size:.85rem;color:var(--muted);line-height:1.5}
-.hub-card-badge{position:absolute;top:1rem;right:1rem}
-.welcome-section{padding:2rem 2rem 0;max-width:1100px;margin:0 auto}
-.welcome-title{font-family:'Fraunces',serif;font-size:2.2rem;font-weight:600;color:var(--h2);letter-spacing:-.02em}
-.welcome-sub{font-family:sans-serif;font-size:.95rem;color:var(--muted);margin-top:.35rem}
+/* ── HOME PAGE STYLES ── */
+.home-wrap{max-width:1100px;margin:0 auto;padding:2.5rem 2rem 4rem}
+
+/* Welcome */
+.welcome-section{margin-bottom:2.5rem}
+.welcome-title{font-family:'Fraunces',serif;font-size:2.4rem;font-weight:600;color:var(--h2);letter-spacing:-.03em;line-height:1.15}
+.welcome-sub{font-family:'Inter',sans-serif;font-size:.95rem;color:var(--muted);margin-top:.4rem;font-weight:400}
+
+/* Hub grid */
+.hub-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.25rem}
+
+/* Hub card */
+.hub-card{
+  background:var(--white);
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:1.75rem;
+  cursor:pointer;
+  transition:box-shadow .3s cubic-bezier(.25,.46,.45,.94),transform .3s cubic-bezier(.25,.46,.45,.94);
+  text-decoration:none;
+  display:flex;
+  flex-direction:column;
+  gap:.6rem;
+  position:relative;
+  overflow:hidden;
+}
+.hub-card::after{
+  content:'';
+  position:absolute;
+  inset:0;
+  border-radius:20px;
+  opacity:0;
+  transition:opacity .3s;
+  background:radial-gradient(circle at 60% 0%,var(--card-glow,rgba(255,48,204,.06)),transparent 70%);
+}
+.hub-card:hover{
+  box-shadow:0 16px 48px rgba(40,40,38,.13),0 4px 12px rgba(40,40,38,.06);
+  transform:translateY(-4px);
+}
+.hub-card:hover::after{opacity:1}
+.hub-card-top{display:flex;align-items:flex-start;justify-content:space-between}
+.hub-card-icon{
+  width:48px;height:48px;border-radius:14px;
+  background:var(--card-icon-bg,var(--primary-light));
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.5rem;flex-shrink:0;
+  transition:transform .3s cubic-bezier(.34,1.56,.64,1);
+}
+.hub-card:hover .hub-card-icon{transform:scale(1.1) rotate(-4deg)}
+.hub-card-arrow{
+  font-size:.9rem;color:var(--muted);opacity:0;
+  transition:opacity .2s,transform .2s;
+  margin-top:.2rem;
+}
+.hub-card:hover .hub-card-arrow{opacity:1;transform:translate(2px,-2px)}
+.hub-card-title{font-family:'Fraunces',serif;font-size:1.15rem;font-weight:600;color:var(--h2);letter-spacing:-.02em}
+.hub-card-desc{font-family:'Inter',sans-serif;font-size:.82rem;color:var(--muted);line-height:1.55;flex:1}
+.hub-card-footer{display:flex;align-items:center;justify-content:space-between;margin-top:.25rem}
+
+/* Mobile nav */
+.mobile-nav-wrap{
+  position:fixed;bottom:.75rem;left:50%;transform:translateX(-50%);
+  background:rgba(252,247,237,.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border:1px solid var(--border);border-radius:var(--radius-pill);
+  padding:.4rem .6rem;
+  box-shadow:0 8px 32px rgba(40,40,38,.12);
+  z-index:300;
+  display:none;
+}
+.mobile-nav-inner{display:flex;align-items:center;gap:.1rem}
+.mnav-item{
+  display:flex;flex-direction:column;align-items:center;gap:2px;
+  padding:.35rem .65rem;border-radius:var(--radius-pill);
+  color:var(--muted);text-decoration:none;
+  transition:background .2s,color .2s;
+}
+.mnav-item.active{background:var(--primary-light);color:var(--primary)}
+.mnav-item:hover{background:var(--bg2);color:var(--body)}
+.mnav-icon{font-size:1.1rem;line-height:1}
+.mnav-label{font-family:'Inter',sans-serif;font-size:.56rem;font-weight:600;letter-spacing:.01em}
+
 @media(max-width:768px){
-  .hub-grid{grid-template-columns:1fr 1fr;gap:1rem;padding:1rem}
-  .welcome-section{padding:1rem 1rem 0}
-  .welcome-title{font-size:1.5rem}
-  .hub-card{padding:1.25rem}
-  .hub-card-icon{font-size:2rem;margin-bottom:.6rem}
+  .home-wrap{padding:1.5rem 1rem 5rem}
+  .welcome-title{font-size:1.6rem}
+  .hub-grid{grid-template-columns:1fr 1fr;gap:.85rem}
+  .hub-card{padding:1.25rem;border-radius:16px;gap:.45rem}
+  .hub-card-icon{width:40px;height:40px;border-radius:11px;font-size:1.2rem}
   .hub-card-title{font-size:1rem}
-  .hub-card-desc{font-size:.78rem}
+  .hub-card-desc{font-size:.76rem}
+  .mobile-nav-wrap{display:block}
 }
 @media(max-width:380px){
   .hub-grid{grid-template-columns:1fr}
@@ -91,7 +162,7 @@
       <button class="auth-btn" id="signup-btn" onclick="signUp()">Join Team</button>
     </div>
     <div id="forgot-form" style="display:none">
-      <div style="font-family:sans-serif;font-size:.85rem;color:var(--muted);margin-bottom:1rem;line-height:1.6">Enter your work email to receive a password reset link.</div>
+      <div style="font-family:'Inter',sans-serif;font-size:.85rem;color:var(--muted);margin-bottom:1rem;line-height:1.6">Enter your work email to receive a password reset link.</div>
       <div class="auth-field">
         <label class="auth-label">Work Email</label>
         <input class="auth-input" type="email" id="forgot-email" placeholder="you@carenbloom.com"/>
@@ -99,12 +170,14 @@
       <div class="auth-error" id="forgot-error"></div>
       <div class="auth-success" id="forgot-success"></div>
       <button class="auth-btn" id="forgot-btn" onclick="sendResetEmail()">Send Reset Link</button>
-      <div style="text-align:center;margin-top:1rem"><span class="auth-forgot" onclick="switchAuthTab('signin')">Back to Sign In</span></div>
+      <div style="text-align:center;margin-top:1rem"><span class="auth-forgot" onclick="switchAuthTab('signin')">← Back to Sign In</span></div>
     </div>
   </div>
 </div>
 
 <div id="app" style="display:none">
+
+  <!-- FLOATING NAV -->
   <nav class="topnav">
     <a class="nav-brand" href="index.html">Nancy</a>
     <div class="nav-links">
@@ -112,25 +185,25 @@
       <a class="nav-link" href="taskflow.html">Task Hub</a>
       <a class="nav-link" href="social.html">Content & Socials</a>
       <a class="nav-link" href="learning.html">Learning</a>
-      <a class="nav-link" href="creators.html">Creators & Onboarding</a>
+      <a class="nav-link" href="creators.html">Creators</a>
     </div>
     <div class="nav-right">
       <div class="nav-time" id="pht-clock">HKT --:--</div>
-      <div id="admin-nav-link" style="display:none;align-items:center;height:100%">
-        <a class="nav-link" href="admin.html" style="color:var(--primary);font-weight:700">👑 Admin</a>
+      <div id="admin-nav-link" style="display:none">
+        <a class="nav-link" href="admin.html" style="color:var(--primary);font-weight:600">👑 Admin</a>
       </div>
       <div class="user-nav-btn" onclick="openUserMenu()">
         <div class="user-avatar-small" id="user-avatar-nav">👤</div>
         <span id="user-name-nav">Me</span>
-        <span>▾</span>
+        <span style="font-size:.7rem;color:var(--muted)">▾</span>
       </div>
-      <button class="nav-btn" onclick="window.location.href='admin.html'" id="settings-nav-btn">⚙</button>
     </div>
   </nav>
 
-  <div id="storage-alert-banner">
+  <!-- STORAGE ALERT -->
+  <div id="storage-alert-banner" style="max-width:1100px;margin:0 auto">
     <span id="storage-alert-icon">⚠️</span>
-    <span style="flex:1;font-family:sans-serif">
+    <span style="flex:1;font-family:'Inter',sans-serif">
       <span id="storage-alert-pct" style="font-weight:700"></span>
       <span id="storage-alert-msg"></span>
       <span style="color:var(--muted);font-size:.75rem"> (Only you can see this)</span>
@@ -139,67 +212,95 @@
   </div>
 
   <!-- HOME CONTENT -->
-  <div class="welcome-section">
-    <div class="welcome-title" id="welcome-msg">Good morning! 👋</div>
-    <div class="welcome-sub">Welcome back to the Nancy Marketing Hub</div>
+  <div class="home-wrap">
+    <div class="welcome-section">
+      <div class="welcome-title" id="welcome-msg">Good morning! 👋</div>
+      <div class="welcome-sub">Welcome back to the CareNBloom Marketing Hub</div>
+    </div>
+
+    <div class="hub-grid">
+
+      <a href="taskflow.html" class="hub-card" style="--card-color:#ff30cc;--card-glow:rgba(255,48,204,.08);--card-icon-bg:#ffe0f7">
+        <div class="hub-card-top">
+          <div class="hub-card-icon">📋</div>
+          <span class="hub-card-arrow">↗</span>
+        </div>
+        <div class="hub-card-title">Task Hub</div>
+        <div class="hub-card-desc">Manage team tasks, track deliverables, and stay on top of priorities.</div>
+        <div class="hub-card-footer">
+          <span class="badge badge-pink">Active</span>
+        </div>
+      </a>
+
+      <a href="social.html" class="hub-card" style="--card-color:#8854d0;--card-glow:rgba(136,84,208,.07);--card-icon-bg:#ede7f6">
+        <div class="hub-card-top">
+          <div class="hub-card-icon">📱</div>
+          <span class="hub-card-arrow">↗</span>
+        </div>
+        <div class="hub-card-title">Content & Socials</div>
+        <div class="hub-card-desc">AI-powered content creation for avatars and the HelloNancy brand.</div>
+        <div class="hub-card-footer">
+          <span class="badge badge-purple">Coming soon</span>
+        </div>
+      </a>
+
+      <a href="learning.html" class="hub-card" style="--card-color:#2d7dd2;--card-glow:rgba(45,125,210,.07);--card-icon-bg:#e3f2fd">
+        <div class="hub-card-top">
+          <div class="hub-card-icon">📚</div>
+          <span class="hub-card-arrow">↗</span>
+        </div>
+        <div class="hub-card-title">Learning & Playbook</div>
+        <div class="hub-card-desc">SOPs, training materials, and team knowledge base.</div>
+        <div class="hub-card-footer">
+          <span class="badge badge-blue">Coming soon</span>
+        </div>
+      </a>
+
+      <a href="creators.html" class="hub-card" style="--card-color:#3bb273;--card-glow:rgba(59,178,115,.07);--card-icon-bg:#e8f5e9">
+        <div class="hub-card-top">
+          <div class="hub-card-icon">🤝</div>
+          <span class="hub-card-arrow">↗</span>
+        </div>
+        <div class="hub-card-title">Creators & Onboarding</div>
+        <div class="hub-card-desc">Manage creators, partnerships, and team onboarding flows.</div>
+        <div class="hub-card-footer">
+          <span class="badge badge-green">Coming soon</span>
+        </div>
+      </a>
+
+    </div>
   </div>
 
-  <div class="hub-grid">
-    <a href="taskflow.html" class="hub-card" style="--card-color:#ff30cc">
-      <span class="hub-card-icon">📋</span>
-      <div class="hub-card-title">Task Hub</div>
-      <div class="hub-card-desc">Manage team tasks, track deliverables, and stay on top of priorities.</div>
-      <div class="hub-card-badge"><span class="badge badge-pink">Active</span></div>
-    </a>
-    <a href="social.html" class="hub-card" style="--card-color:#8854d0">
-      <span class="hub-card-icon">📱</span>
-      <div class="hub-card-title">Content & Socials</div>
-      <div class="hub-card-desc">AI-powered content creation for avatars and the HelloNancy brand.</div>
-      <div class="hub-card-badge"><span class="badge badge-purple">Coming soon</span></div>
-    </a>
-    <a href="learning.html" class="hub-card" style="--card-color:#2d7dd2">
-      <span class="hub-card-icon">📚</span>
-      <div class="hub-card-title">Learning & Playbook</div>
-      <div class="hub-card-desc">SOPs, training materials, and team knowledge base.</div>
-      <div class="hub-card-badge"><span class="badge badge-blue">Coming soon</span></div>
-    </a>
-    <a href="creators.html" class="hub-card" style="--card-color:#3bb273">
-      <span class="hub-card-icon">🤝</span>
-      <div class="hub-card-title">Creators & Onboarding</div>
-      <div class="hub-card-desc">Manage creators, partnerships, and team onboarding flows.</div>
-      <div class="hub-card-badge"><span class="badge badge-green">Coming soon</span></div>
-    </a>
-  </div>
-
-  <!-- MOBILE BOTTOM NAV -->
-  <div id="mobile-nav" style="display:none;position:fixed;bottom:0;left:0;right:0;background:var(--white);border-top:1px solid var(--border);z-index:300;padding:.4rem 0 .5rem">
-    <div style="display:flex;justify-content:space-around;align-items:center">
-      <a href="index.html" style="display:flex;flex-direction:column;align-items:center;gap:2px;padding:.3rem .5rem;cursor:pointer;color:var(--primary);text-decoration:none">
-        <span style="font-size:1.2rem">🏠</span>
-        <span style="font-family:sans-serif;font-size:.58rem;font-weight:600">Home</span>
+  <!-- MOBILE FLOATING NAV -->
+  <div class="mobile-nav-wrap" id="mobile-nav">
+    <div class="mobile-nav-inner">
+      <a href="index.html" class="mnav-item active">
+        <span class="mnav-icon">🏠</span>
+        <span class="mnav-label">Home</span>
       </a>
-      <a href="taskflow.html" style="display:flex;flex-direction:column;align-items:center;gap:2px;padding:.3rem .5rem;cursor:pointer;color:var(--muted);text-decoration:none">
-        <span style="font-size:1.2rem">📋</span>
-        <span style="font-family:sans-serif;font-size:.58rem;font-weight:600">Tasks</span>
+      <a href="taskflow.html" class="mnav-item">
+        <span class="mnav-icon">📋</span>
+        <span class="mnav-label">Tasks</span>
       </a>
-      <a href="social.html" style="display:flex;flex-direction:column;align-items:center;gap:2px;padding:.3rem .5rem;cursor:pointer;color:var(--muted);text-decoration:none">
-        <span style="font-size:1.2rem">📱</span>
-        <span style="font-family:sans-serif;font-size:.58rem;font-weight:600">Social</span>
+      <a href="social.html" class="mnav-item">
+        <span class="mnav-icon">📱</span>
+        <span class="mnav-label">Social</span>
       </a>
-      <a href="learning.html" style="display:flex;flex-direction:column;align-items:center;gap:2px;padding:.3rem .5rem;cursor:pointer;color:var(--muted);text-decoration:none">
-        <span style="font-size:1.2rem">📚</span>
-        <span style="font-family:sans-serif;font-size:.58rem;font-weight:600">Learning</span>
+      <a href="learning.html" class="mnav-item">
+        <span class="mnav-icon">📚</span>
+        <span class="mnav-label">Learn</span>
       </a>
-      <a href="creators.html" style="display:flex;flex-direction:column;align-items:center;gap:2px;padding:.3rem .5rem;cursor:pointer;color:var(--muted);text-decoration:none">
-        <span style="font-size:1.2rem">🤝</span>
-        <span style="font-family:sans-serif;font-size:.58rem;font-weight:600">Creators</span>
+      <a href="creators.html" class="mnav-item">
+        <span class="mnav-icon">🤝</span>
+        <span class="mnav-label">Creators</span>
       </a>
-      <a id="mnav-admin" href="admin.html" style="display:none;flex-direction:column;align-items:center;gap:2px;padding:.3rem .5rem;cursor:pointer;color:var(--muted);text-decoration:none">
-        <span style="font-size:1.2rem">👑</span>
-        <span style="font-family:sans-serif;font-size:.58rem;font-weight:600">Admin</span>
+      <a id="mnav-admin" href="admin.html" class="mnav-item" style="display:none">
+        <span class="mnav-icon">👑</span>
+        <span class="mnav-label">Admin</span>
       </a>
     </div>
   </div>
+
 </div>
 
 <div class="toast" id="toast"></div>
@@ -207,7 +308,6 @@
 <script src="shared/hub.js"></script>
 <script>
 function onPageReady() {
-  // Set welcome message based on time
   var hour = getPHT().getUTCHours();
   var greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
   var name = hubState.currentUser ? hubState.currentUser.name : '';
