@@ -28,3 +28,9 @@ See [SETUP.md](SETUP.md) for full step-by-step instructions covering Supabase, G
 ## Running locally
 
 No server needed — open `index.html` directly in a browser.
+
+## Recent Updates
+
+- Added Admin Base (`admin.html`) with system health monitor and smart fix guides
+- Added Google Apps Script backend (`gas/Code.gs`) for Gmail and Drive
+- Added full setup guide (`SETUP.md`)
