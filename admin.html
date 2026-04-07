@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Base — Nancy Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared/styles.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+/* ── ADMIN LAYOUT ── */
+.admin-container{max-width:1000px;margin:0 auto;padding:2rem;display:flex;flex-direction:column;gap:2rem}
+.admin-header{display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
+.admin-back{font-family:sans-serif;font-size:.85rem;color:var(--muted);text-decoration:none;padding:.45rem .9rem;border:1.5px solid var(--border2);border-radius:var(--radius-sm);transition:all .2s;white-space:nowrap}
+.admin-back:hover{background:var(--bg2);color:var(--body)}
+.admin-title-block{}
+.admin-title{font-family:'Fraunces',serif;font-size:1.9rem;font-weight:600;color:var(--h2);letter-spacing:-.02em}
+.admin-sub{font-family:sans-serif;font-size:.85rem;color:var(--muted);margin-top:.2rem}
+
+/* ── SECTION BLOCKS ── */
+.admin-section{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem}
+.admin-section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:.5rem}
+.admin-section-title{font-family:'Fraunces',serif;font-size:1.1rem;font-weight:600;color:var(--h2);display:flex;align-items:center;gap:.5rem}
+.admin-section-action{font-family:sans-serif;font-size:.8rem;color:var(--primary);cursor:pointer;background:none;border:none;font-weight:600;padding:.3rem .7rem;border-radius:var(--radius-sm);transition:background .2s}
+.admin-section-action:hover{background:var(--primary-light)}
+
+/* ── HEALTH CARDS ── */
+.health-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:.75rem}
+.hc{border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:1rem;transition:border-color .2s;position:relative}
+.hc.ok{border-color:#c8e6c9;background:#f1f8f1}
+.hc.warn{border-color:#ffe082;background:#fffde7}
+.hc.err{border-color:#ffcdd2;background:#fff5f5}
+.hc.checking{border-color:var(--border);background:var(--bg)}
+.hc-top{display:flex;align-items:center;gap:.5rem;margin-bottom:.3rem}
+.hc-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.hc-dot.ok{background:#4caf50}
+.hc-dot.warn{background:#ffc107}
+.hc-dot.err{background:#e53935}
+.hc-dot.checking{background:#ccc;animation:pulse 1.2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.hc-name{font-family:sans-serif;font-size:.78rem;font-weight:700;color:var(--h2);text-transform:uppercase;letter-spacing:.05em}
+.hc-msg{font-family:sans-serif;font-size:.78rem;color:var(--muted);line-height:1.4}
+.hc-fix-toggle{font-family:sans-serif;font-size:.72rem;color:var(--primary);cursor:pointer;margin-top:.5rem;font-weight:600;background:none;border:none;padding:0;display:none}
+.hc-fix-toggle.visible{display:inline}
+.hc-fix-body{display:none;margin-top:.75rem;padding-top:.75rem;border-top:1px solid var(--border)}
+.hc-fix-body.open{display:block}
+.hc-fix-step{font-family:sans-serif;font-size:.75rem;color:var(--h2);line-height:1.6;margin-bottom:.35rem;display:flex;gap:.5rem}
+.hc-fix-step-num{color:var(--primary);font-weight:700;flex-shrink:0}
+.hc-fix-link{color:var(--primary);text-decoration:underline;cursor:pointer}
+.hc-recheck{margin-top:.5rem;font-family:sans-serif;font-size:.72rem;color:var(--primary);cursor:pointer;background:var(--primary-light);border:none;border-radius:4px;padding:3px 8px;font-weight:600}
+
+/* ── USAGE BAR ── */
+.usage-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem}
+.usage-stat{display:flex;flex-direction:column;gap:.3rem}
+.usage-stat-label{font-family:sans-serif;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.usage-stat-value{font-family:'Fraunces',serif;font-size:1.6rem;font-weight:600;color:var(--h2)}
+.usage-stat-sub{font-family:sans-serif;font-size:.75rem;color:var(--muted)}
+.usage-bar-wrap{height:6px;background:var(--bg3);border-radius:10px;overflow:hidden;margin-top:.3rem}
+.usage-bar-fill{height:100%;border-radius:10px;background:var(--primary);transition:width .6s ease}
+.usage-bar-fill.warn{background:var(--amber)}
+.usage-bar-fill.danger{background:#e53935}
+
+/* ── TEAM TABLE ── */
+.team-list{display:flex;flex-direction:column;gap:.5rem}
+.team-row{display:flex;align-items:center;gap:.75rem;padding:.65rem .75rem;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--bg);transition:background .15s;flex-wrap:wrap}
+.team-row:hover{background:var(--bg2)}
+.team-avatar{width:34px;height:34px;border-radius:50%;background:var(--primary-light);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+.team-info{flex:1;min-width:120px}
+.team-name{font-family:sans-serif;font-size:.88rem;font-weight:700;color:var(--h2)}
+.team-email{font-family:sans-serif;font-size:.73rem;color:var(--muted)}
+.team-role-badge{font-family:sans-serif;font-size:.7rem;font-weight:700;padding:3px 9px;border-radius:20px}
+.team-role-badge.admin{background:var(--primary-light);color:var(--primary-dark)}
+.team-role-badge.member{background:var(--bg2);color:var(--muted)}
+.team-actions{display:flex;gap:.4rem;margin-left:auto}
+.team-role-btn{font-family:sans-serif;font-size:.72rem;padding:.3rem .65rem;border-radius:var(--radius-sm);border:1.5px solid var(--border2);background:none;color:var(--muted);cursor:pointer;transition:all .2s;white-space:nowrap}
+.team-role-btn:hover{background:var(--bg2);color:var(--body)}
+.team-role-btn.danger{border-color:#fca5a5;color:#e53935}
+.team-role-btn.danger:hover{background:#fee2e2}
+
+/* ── SETTINGS ── */
+.settings-grid{display:flex;flex-direction:column;gap:.85rem}
+.settings-row{display:grid;grid-template-columns:1fr auto;gap:.75rem;align-items:end;padding:.85rem;background:var(--bg);border-radius:var(--radius-sm);border:1px solid var(--border)}
+.settings-row-inner{display:flex;flex-direction:column;gap:.3rem;min-width:0}
+.settings-key{font-family:sans-serif;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.settings-desc{font-family:sans-serif;font-size:.75rem;color:var(--muted);line-height:1.4;margin-bottom:.3rem}
+.settings-input-wrap{display:flex;gap:.5rem;align-items:center}
+.settings-input{flex:1;padding:.55rem .85rem;border:1.5px solid var(--border2);border-radius:var(--radius-sm);font-size:.88rem;font-family:sans-serif;background:var(--white);color:var(--body);outline:none;transition:border-color .2s;min-width:0}
+.settings-input:focus{border-color:var(--primary)}
+.settings-save-btn{padding:.55rem 1rem;background:var(--primary);color:white;border:none;border-radius:var(--radius-sm);font-family:sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;transition:background .2s;white-space:nowrap;flex-shrink:0}
+.settings-save-btn:hover{background:var(--primary-dark)}
+.settings-saved{font-family:sans-serif;font-size:.72rem;color:#2e7d32;margin-top:.25rem;display:none}
+
+/* ── ACTIVITY LOG ── */
+.activity-list{display:flex;flex-direction:column;gap:0}
+.activity-row{display:flex;align-items:flex-start;gap:.75rem;padding:.65rem 0;border-bottom:1px solid var(--border)}
+.activity-row:last-child{border-bottom:none}
+.activity-avatar{width:28px;height:28px;border-radius:50%;background:var(--bg2);display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0;margin-top:1px}
+.activity-text{flex:1;min-width:0}
+.activity-action{font-family:sans-serif;font-size:.82rem;color:var(--h2);line-height:1.4}
+.activity-meta{font-family:sans-serif;font-size:.72rem;color:var(--muted);margin-top:1px}
+.activity-empty{font-family:sans-serif;font-size:.85rem;color:var(--muted);text-align:center;padding:1.5rem}
+
+/* ── EMPTY / LOADING STATES ── */
+.admin-loading{font-family:sans-serif;font-size:.82rem;color:var(--muted);padding:.5rem 0;display:flex;align-items:center;gap:.5rem}
+.admin-loading::before{content:'';width:14px;height:14px;border:2px solid var(--primary-light);border-top-color:var(--primary);border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0}
+
+/* ── MOBILE ── */
+@media(max-width:768px){
+  .admin-container{padding:1rem;gap:1.5rem}
+  .health-grid{grid-template-columns:1fr 1fr}
+  .usage-grid{grid-template-columns:1fr 1fr}
+  .settings-row{grid-template-columns:1fr;gap:.5rem}
+  .team-row{gap:.5rem}
+  .admin-title{font-size:1.4rem}
+}
+@media(max-width:380px){
+  .health-grid{grid-template-columns:1fr}
+  .usage-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div id="loading">
+  <div class="loading-logo">Nancy</div>
+  <div class="loading-spinner"></div>
+</div>
+
+<div id="gate">
+  <div class="gate-card">
+    <div class="gate-logo">Nancy</div>
+    <div class="gate-sub">CareNBloom Marketing Hub</div>
+    <div class="gate-label">Enter hub password</div>
+    <input class="gate-input" type="password" id="gate-pw" placeholder="••••••••" onkeydown="if(event.key==='Enter')checkPassword()"/>
+    <div class="gate-error" id="gate-error"></div>
+    <button class="gate-btn" onclick="checkPassword()">Enter Hub</button>
+  </div>
+</div>
+
+<div id="auth-screen">
+  <div class="auth-card">
+    <div class="auth-logo">Nancy</div>
+    <div class="auth-sub">CareNBloom Marketing Hub</div>
+    <div class="auth-tabs">
+      <div class="auth-tab active" id="signin-tab" onclick="switchAuthTab('signin')">Sign In</div>
+      <div class="auth-tab" id="signup-tab" onclick="switchAuthTab('signup')">Join Team</div>
+    </div>
+    <div id="signin-form">
+      <div class="auth-field">
+        <label class="auth-label">Email</label>
+        <input class="auth-input" type="email" id="signin-email" placeholder="you@carenbloom.com" onkeydown="if(event.key==='Enter')signIn()"/>
+      </div>
+      <div class="auth-field">
+        <label class="auth-label">Password</label>
+        <input class="auth-input" type="password" id="signin-password" placeholder="Your password" onkeydown="if(event.key==='Enter')signIn()"/>
+        <span class="auth-forgot" onclick="showForgotPassword()">Forgot password?</span>
+      </div>
+      <div class="auth-error" id="signin-error"></div>
+      <button class="auth-btn" id="signin-btn" onclick="signIn()">Sign In</button>
+    </div>
+    <div id="signup-form" style="display:none">
+      <div class="auth-field">
+        <label class="auth-label">Your Name</label>
+        <input class="auth-input" type="text" id="signup-name" placeholder="e.g. Crystal"/>
+      </div>
+      <div class="auth-field">
+        <label class="auth-label">Work Email</label>
+        <input class="auth-input" type="email" id="signup-email" placeholder="you@carenbloom.com"/>
+        <div class="auth-domain-hint">Only @carenbloom.com emails allowed</div>
+      </div>
+      <div class="auth-field">
+        <label class="auth-label">Password</label>
+        <input class="auth-input" type="password" id="signup-password" placeholder="Min 6 characters"/>
+      </div>
+      <div class="auth-error" id="signup-error"></div>
+      <div class="auth-success" id="signup-success"></div>
+      <button class="auth-btn" id="signup-btn" onclick="signUp()">Join Team</button>
+    </div>
+    <div id="forgot-form" style="display:none">
+      <div style="font-family:sans-serif;font-size:.85rem;color:var(--muted);margin-bottom:1rem;line-height:1.6">Enter your work email to receive a password reset link.</div>
+      <div class="auth-field">
+        <label class="auth-label">Work Email</label>
+        <input class="auth-input" type="email" id="forgot-email" placeholder="you@carenbloom.com"/>
+      </div>
+      <div class="auth-error" id="forgot-error"></div>
+      <div class="auth-success" id="forgot-success"></div>
+      <button class="auth-btn" id="forgot-btn" onclick="sendResetEmail()">Send Reset Link</button>
+      <div style="text-align:center;margin-top:1rem"><span class="auth-forgot" onclick="switchAuthTab('signin')">Back to Sign In</span></div>
+    </div>
+  </div>
+</div>
+
+<div id="app" style="display:none">
+  <nav class="topnav">
+    <a class="nav-brand" href="index.html">Nancy</a>
+    <div class="nav-links">
+      <a class="nav-link" href="index.html">Home</a>
+      <a class="nav-link" href="taskflow.html">Task Hub</a>
+      <a class="nav-link" href="social.html">Content & Socials</a>
+      <a class="nav-link" href="learning.html">Learning</a>
+      <a class="nav-link" href="creators.html">Creators & Onboarding</a>
+    </div>
+    <div class="nav-right">
+      <div class="nav-time" id="pht-clock">HKT --:--</div>
+      <div id="admin-nav-link" style="display:none;align-items:center;height:100%">
+        <a class="nav-link active" href="admin.html" style="color:var(--primary);font-weight:700">👑 Admin</a>
+      </div>
+      <div class="user-nav-btn" onclick="openUserMenu()">
+        <div class="user-avatar-small" id="user-avatar-nav">👤</div>
+        <span id="user-name-nav">Me</span>
+        <span>▾</span>
+      </div>
+    </div>
+  </nav>
+
+  <div class="admin-container">
+
+    <!-- HEADER -->
+    <div class="admin-header">
+      <a href="index.html" class="admin-back">← Back to Hub</a>
+      <div class="admin-title-block">
+        <div class="admin-title">👑 Admin Base</div>
+        <div class="admin-sub">Your private control room — only you can see this</div>
+      </div>
+    </div>
+
+    <!-- ── SYSTEM HEALTH ── -->
+    <div class="admin-section">
+      <div class="admin-section-header">
+        <div class="admin-section-title">🔴 System Health</div>
+        <button class="admin-section-action" onclick="runAllChecks()">↻ Refresh all</button>
+      </div>
+      <div class="health-grid">
+
+        <!-- Supabase -->
+        <div class="hc checking" id="hc-supabase">
+          <div class="hc-top">
+            <div class="hc-dot checking" id="hc-supabase-dot"></div>
+            <div class="hc-name">Supabase</div>
+          </div>
+          <div class="hc-msg" id="hc-supabase-msg">Checking...</div>
+          <button class="hc-fix-toggle" id="hc-supabase-toggle" onclick="toggleFix('supabase')">▼ How to fix</button>
+          <div class="hc-fix-body" id="hc-supabase-fix">
+            <div class="hc-fix-step"><span class="hc-fix-step-num">1.</span><span>Go to <a class="hc-fix-link" href="https://supabase.com/dashboard" target="_blank">supabase.com/dashboard</a> and check your project is active (not paused).</span></div>
+            <div class="hc-fix-step"><span class="hc-fix-step-num">2.</span><span>If paused, click <b>Restore project</b>. Free tier pauses after 1 week of inactivity.</span></div>
+            <div class="hc-fix-step"><span class="hc-fix-step-num">3.</span><span>If still broken, check that SUPABASE_URL and SUPABASE_KEY in <b>shared/hub.js</b> match your project settings.</span></div>
+            <button class="hc-recheck" onclick="checkSupabase()">Recheck ↻</button>
+          </div>
+        </div>
+
+        <!-- GAS -->
+        <div class="hc checking" id="hc-gas">
+          <div class="hc-top">
+            <div class="hc-dot checking" id="hc-gas-dot"></div>
+            <div class="hc-name">GAS Script</div>
+          </div>
+          <div class="hc-msg" id="hc-gas-msg">Checking...</div>
+          <button class="hc-fix-toggle" id="hc-gas-toggle" onclick="toggleFix('gas')">▼ How to fix</button>
+          <div class="hc-fix-body" id="hc-gas-fix">
+            <div class="hc-fix-step"><span class="hc-fix-step-num">1.</span><span>Open your <a class="hc-fix-link" href="https://script.google.com" target="_blank">Google Apps Script</a> project.</span></div>
+            <div class="hc-fix-step"><span class="hc-fix-step-num">2.</span><span>Click <b>Deploy → Manage deployments</b> and confirm the script is deployed as a Web App.</span></div>
+            <div class="hc-fix-step"><span class="hc-fix-step-num">3.</span><span>Make sure <b>Execute as: Me</b> and <b>Who has access: Anyone</b> is set.</span></div>
+            <div class="hc-fix-step"><span class="hc-fix-step-num">4.</span><span>Copy the deployment URL and update SCRIPT_URL in <b>shared/hub.js</b>.</span></div>
+            <button class="hc-recheck" onclick="checkGAS()">Recheck ↻</button>
+          </div>
+        </div>
+
+        <!-- Gmail -->
+        <div class="hc checking" id="hc-gmail">
+          <div class="hc-top">
+            <div class="hc-dot checking" id="hc-gmail-dot"></div>
+            <div class="hc-name">Gmail</div>
+          </div>
+          <div class="hc-msg" id="hc-gmail-msg">Checking...</div>
+          <button class="hc-fix-toggle" id="hc-gmail-toggle" onclick="toggleFix('gmail')">▼ How to fix</button>
+          <div class="hc-fix-body" id="hc-gmail-fix">
+            <div class="hc-fix-step"><span class="hc-fix-step-num">1.</span><span>Open your <a class="hc-fix-link" href="https://script.google.com" target="_blank">Google Apps Script</a> project.</span></div>
+            <div class="hc-fix-step"><span class="hc-fix-step-num">2.</span><span>In the editor, find or add this function and click <b>Run</b>:<br><code style="font-size:.7rem;background:var(--bg2);padding:2px 5px;border-radius:4px">function testGmail() { GmailApp.search('in:inbox',0,1); }</code></span></div>
+            <div class="hc-fix-step"><span class="hc-fix-step-num">3.</span><span>A popup will appear — click <b>Review Permissions → Allow</b>.</span></div>
+            <div class="hc-fix-step"><span class="hc-fix-step-num">4.</span><span>Come back here and click Recheck.</span></div>
+            <button class="hc-recheck" onclick="checkGmail()">Recheck ↻</button>
+          </div>
+        </div>
+
+        <!-- Slack -->
+        <div class="hc checking" id="hc-slack">
+          <div class="hc-top">
+            <div class="hc-dot checking" id="hc-slack-dot"></div>
+            <div class="hc-name">Slack</div>
+          </div>
+          <div class="hc-msg" id="hc-slack-msg">Checking...</div>
+          <button class="hc-fix-toggle" id="hc-slack-toggle" onclick="toggleFix('slack')">▼ How to fix</button>
+          <div class="hc-fix-body" id="hc-slack-fix">
+            <div class="hc-fix-step"><span class="hc-fix-step-num">1.</span><span>Go to the <b>Settings</b> section below on this page.</span></div>
+            <div class="hc-fix-step"><span class="hc-fix-step-num">2.</span><span>Paste a valid Slack user token (starts with <code style="font-size:.7rem;background:var(--bg2);padding:2px 4px;border-radius:3px">xoxp-</code>) into the Slack Token field.</span></div>
+            <div class="hc-fix-step"><span class="hc-fix-step-num">3.</span><span>To get a token: go to <a class="hc-fix-link" href="https://api.slack.com/apps" target="_blank">api.slack.com/apps</a>, create an app, add <b>channels:history</b> + <b>channels:read</b> scopes, then install to your workspace.</span></div>
+            <div class="hc-fix-step"><span class="hc-fix-step-num">4.</span><span>Save and click Recheck.</span></div>
+            <button class="hc-recheck" onclick="checkSlack()">Recheck ↻</button>
+          </div>
+        </div>
+
+        <!-- Gemini -->
+        <div class="hc checking" id="hc-gemini">
+          <div class="hc-top">
+            <div class="hc-dot checking" id="hc-gemini-dot"></div>
+            <div class="hc-name">Gemini AI</div>
+          </div>
+          <div class="hc-msg" id="hc-gemini-msg">Checking...</div>
+          <button class="hc-fix-toggle" id="hc-gemini-toggle" onclick="toggleFix('gemini')">▼ How to fix</button>
+          <div class="hc-fix-body" id="hc-gemini-fix">
+            <div class="hc-fix-step"><span class="hc-fix-step-num">1.</span><span>Go to <a class="hc-fix-link" href="https://aistudio.google.com/app/apikey" target="_blank">Google AI Studio</a> and create or copy your free API key.</span></div>
+            <div class="hc-fix-step"><span class="hc-fix-step-num">2.</span><span>Paste it into the <b>Gemini API Key</b> field in the Settings section below.</span></div>
+            <div class="hc-fix-step"><span class="hc-fix-step-num">3.</span><span>Click Save, then come back here and Recheck.</span></div>
+            <button class="hc-recheck" onclick="checkGemini()">Recheck ↻</button>
+          </div>
+        </div>
+
+      </div><!-- /health-grid -->
+    </div><!-- /health section -->
+
+    <!-- ── USAGE ── -->
+    <div class="admin-section">
+      <div class="admin-section-header">
+        <div class="admin-section-title">📊 Usage</div>
+      </div>
+      <div class="usage-grid" id="usage-grid">
+        <div class="admin-loading">Loading stats...</div>
+      </div>
+    </div>
+
+    <!-- ── TEAM MEMBERS ── -->
+    <div class="admin-section">
+      <div class="admin-section-header">
+        <div class="admin-section-title">👥 Team Members</div>
+        <button class="admin-section-action" onclick="loadTeam()">↻ Refresh</button>
+      </div>
+      <div id="team-list-wrap">
+        <div class="admin-loading">Loading team...</div>
+      </div>
+    </div>
+
+    <!-- ── SETTINGS ── -->
+    <div class="admin-section">
+      <div class="admin-section-header">
+        <div class="admin-section-title">⚙️ Settings</div>
+      </div>
+      <div class="settings-grid">
+
+        <!-- Gemini API Key -->
+        <div class="settings-row">
+          <div class="settings-row-inner">
+            <div class="settings-key">Gemini API Key</div>
+            <div class="settings-desc">Used for AI triage of emails and Slack messages in Inbox Review. Free tier — get it from Google AI Studio.</div>
+            <div class="settings-input-wrap">
+              <input class="settings-input" type="password" id="setting-gemini" placeholder="AIza••••••••••••••••••••••••••" autocomplete="off"/>
+            </div>
+            <div class="settings-saved" id="saved-gemini">✓ Saved</div>
+          </div>
+          <button class="settings-save-btn" onclick="saveSetting('gemini_api_key','setting-gemini','saved-gemini')">Save</button>
+        </div>
+
+        <!-- Slack Token -->
+        <div class="settings-row">
+          <div class="settings-row-inner">
+            <div class="settings-key">Slack Token</div>
+            <div class="settings-desc">User token for fetching messages in Inbox Review. Must start with <code style="font-size:.75rem;background:var(--bg3);padding:1px 4px;border-radius:3px">xoxp-</code>. Stored securely in your database.</div>
+            <div class="settings-input-wrap">
+              <input class="settings-input" type="password" id="setting-slack" placeholder="xoxp-••••••••••••" autocomplete="off"/>
+            </div>
+            <div class="settings-saved" id="saved-slack">✓ Saved</div>
+          </div>
+          <button class="settings-save-btn" onclick="saveSetting('inbox_slack_token','setting-slack','saved-slack')">Save</button>
+        </div>
+
+        <!-- Hub Password -->
+        <div class="settings-row">
+          <div class="settings-row-inner">
+            <div class="settings-key">Hub Password</div>
+            <div class="settings-desc">The entry password everyone uses to access the hub before signing in. Share this with your team.</div>
+            <div class="settings-input-wrap">
+              <input class="settings-input" type="text" id="setting-hubpw" placeholder="Enter new hub password" autocomplete="off"/>
+            </div>
+            <div class="settings-saved" id="saved-hubpw">✓ Saved</div>
+          </div>
+          <button class="settings-save-btn" onclick="saveSetting('hub_password','setting-hubpw','saved-hubpw')">Save</button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── ACTIVITY LOG ── -->
+    <div class="admin-section">
+      <div class="admin-section-header">
+        <div class="admin-section-title">📋 Recent Activity</div>
+        <button class="admin-section-action" onclick="loadActivity()">↻ Refresh</button>
+      </div>
+      <div id="activity-wrap">
+        <div class="admin-loading">Loading activity...</div>
+      </div>
+    </div>
+
+  </div><!-- /admin-container -->
+
+  <!-- Mobile bottom nav -->
+  <div id="mobile-nav" style="display:none;position:fixed;bottom:0;left:0;right:0;background:var(--white);border-top:1px solid var(--border);z-index:300;padding:.4rem 0 .5rem">
+    <div style="display:flex;justify-content:space-around;align-items:center">
+      <a href="index.html" style="display:flex;flex-direction:column;align-items:center;gap:2px;padding:.3rem .5rem;color:var(--muted);text-decoration:none">
+        <span style="font-size:1.2rem">🏠</span>
+        <span style="font-family:sans-serif;font-size:.58rem;font-weight:600">Home</span>
+      </a>
+      <a href="taskflow.html" style="display:flex;flex-direction:column;align-items:center;gap:2px;padding:.3rem .5rem;color:var(--muted);text-decoration:none">
+        <span style="font-size:1.2rem">📋</span>
+        <span style="font-family:sans-serif;font-size:.58rem;font-weight:600">Tasks</span>
+      </a>
+      <a id="mnav-admin" href="admin.html" style="display:none;flex-direction:column;align-items:center;gap:2px;padding:.3rem .5rem;color:var(--primary);text-decoration:none">
+        <span style="font-size:1.2rem">👑</span>
+        <span style="font-family:sans-serif;font-size:.58rem;font-weight:600">Admin</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="shared/hub.js"></script>
+<script>
+// ── PAGE READY ──
+async function onPageReady() {
+  if (!hubState.currentUser || hubState.currentUser.role !== 'admin') {
+    window.location.href = 'index.html';
+    return;
+  }
+  loadCurrentSettings();
+  runAllChecks();
+  loadUsage();
+  loadTeam();
+  loadActivity();
+}
+
+// ── RUN ALL CHECKS ──
+function runAllChecks() {
+  setChecking('supabase'); setChecking('gas');
+  setChecking('gmail'); setChecking('slack'); setChecking('gemini');
+  checkSupabase(); checkGAS(); checkGmail(); checkSlack(); checkGemini();
+}
+
+// ── HEALTH STATE HELPERS ──
+function setChecking(id) {
+  var card = document.getElementById('hc-' + id);
+  var dot = document.getElementById('hc-' + id + '-dot');
+  var msg = document.getElementById('hc-' + id + '-msg');
+  var toggle = document.getElementById('hc-' + id + '-toggle');
+  if (card) card.className = 'hc checking';
+  if (dot) dot.className = 'hc-dot checking';
+  if (msg) msg.textContent = 'Checking...';
+  if (toggle) toggle.className = 'hc-fix-toggle';
+}
+
+function setOk(id, message) {
+  var card = document.getElementById('hc-' + id);
+  var dot = document.getElementById('hc-' + id + '-dot');
+  var msg = document.getElementById('hc-' + id + '-msg');
+  var toggle = document.getElementById('hc-' + id + '-toggle');
+  var sectionTitle = document.querySelector('#health-section .admin-section-title, .admin-section .admin-section-title');
+  if (card) card.className = 'hc ok';
+  if (dot) dot.className = 'hc-dot ok';
+  if (msg) msg.textContent = message;
+  if (toggle) toggle.className = 'hc-fix-toggle';
+  updateHealthTitle();
+}
+
+function setWarn(id, message) {
+  var card = document.getElementById('hc-' + id);
+  var dot = document.getElementById('hc-' + id + '-dot');
+  var msg = document.getElementById('hc-' + id + '-msg');
+  var toggle = document.getElementById('hc-' + id + '-toggle');
+  if (card) card.className = 'hc warn';
+  if (dot) dot.className = 'hc-dot warn';
+  if (msg) msg.textContent = message;
+  if (toggle) toggle.className = 'hc-fix-toggle visible';
+  updateHealthTitle();
+}
+
+function setErr(id, message) {
+  var card = document.getElementById('hc-' + id);
+  var dot = document.getElementById('hc-' + id + '-dot');
+  var msg = document.getElementById('hc-' + id + '-msg');
+  var toggle = document.getElementById('hc-' + id + '-toggle');
+  if (card) card.className = 'hc err';
+  if (dot) dot.className = 'hc-dot err';
+  if (msg) msg.textContent = message;
+  if (toggle) toggle.className = 'hc-fix-toggle visible';
+  updateHealthTitle();
+}
+
+function updateHealthTitle() {
+  var errCount = document.querySelectorAll('.hc.err').length;
+  var warnCount = document.querySelectorAll('.hc.warn').length;
+  var checkingCount = document.querySelectorAll('.hc.checking').length;
+  var titleEl = document.querySelector('.admin-section-title');
+  if (!titleEl) return;
+  if (checkingCount > 0) { titleEl.textContent = '🔄 System Health'; return; }
+  if (errCount > 0) { titleEl.textContent = '🔴 System Health — ' + errCount + ' issue' + (errCount > 1 ? 's' : '') + ' need attention'; }
+  else if (warnCount > 0) { titleEl.textContent = '🟡 System Health — ' + warnCount + ' warning' + (warnCount > 1 ? 's' : ''); }
+  else { titleEl.textContent = '🟢 System Health — All systems go'; }
+}
+
+function toggleFix(id) {
+  var body = document.getElementById('hc-' + id + '-fix');
+  var toggle = document.getElementById('hc-' + id + '-toggle');
+  if (!body) return;
+  var isOpen = body.classList.contains('open');
+  body.classList.toggle('open', !isOpen);
+  if (toggle) toggle.textContent = isOpen ? '▼ How to fix' : '▲ Hide';
+}
+
+// ── HEALTH CHECKS ──
+
+async function checkSupabase() {
+  try {
+    var result = await db.from('settings').select('key').limit(1);
+    if (result.error) throw result.error;
+    setOk('supabase', 'Connected — database responding normally');
+  } catch(e) {
+    setErr('supabase', 'Cannot reach database. Project may be paused.');
+  }
+}
+
+async function checkGAS() {
+  try {
+    var controller = new AbortController();
+    var timeout = setTimeout(function() { controller.abort(); }, 6000);
+    var res = await fetch(SCRIPT_URL, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'usage' }),
+      signal: controller.signal
+    });
+    clearTimeout(timeout);
+    var data = await res.json();
+    if (data && data.success) {
+      setOk('gas', 'Reachable — Drive at ' + (data.percentage || 0) + '% used');
+    } else {
+      setWarn('gas', 'Reachable but returned an error. Check GAS execution logs.');
+    }
+  } catch(e) {
+    if (e.name === 'AbortError') {
+      setErr('gas', 'Timed out. Script may be undeployed or paused.');
+    } else {
+      setErr('gas', 'Cannot reach script. Check deployment settings.');
+    }
+  }
+}
+
+async function checkGmail() {
+  try {
+    var result = await db.from('inbox_sessions').select('processed_at,source').eq('source', 'email').order('processed_at', { ascending: false }).limit(1);
+    if (result.error) throw result.error;
+    if (result.data && result.data.length > 0) {
+      var last = new Date(result.data[0].processed_at);
+      var hoursAgo = Math.round((Date.now() - last.getTime()) / 3600000);
+      var label = hoursAgo < 1 ? 'less than 1h ago' : hoursAgo + 'h ago';
+      setOk('gmail', 'Last fetched ' + label);
+    } else {
+      setWarn('gmail', 'Never fetched. GmailApp may not be authorized yet.');
+    }
+  } catch(e) {
+    setWarn('gmail', 'Cannot check fetch history. Try fetching from Task Hub.');
+  }
+}
+
+async function checkSlack() {
+  try {
+    var result = await db.from('settings').select('value').eq('key', 'inbox_slack_token').single();
+    var token = result.data && result.data.value ? result.data.value : '';
+    if (!token) {
+      setWarn('slack', 'No token set. Slack fetch is disabled.');
+      return;
+    }
+    var res = await fetch('https://slack.com/api/auth.test', {
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+    var data = await res.json();
+    if (data.ok) {
+      setOk('slack', 'Token valid — connected as ' + (data.user || 'user'));
+    } else {
+      setErr('slack', 'Token invalid or expired: ' + (data.error || 'unknown error'));
+    }
+  } catch(e) {
+    setErr('slack', 'Could not verify Slack token.');
+  }
+}
+
+async function checkGemini() {
+  try {
+    var result = await db.from('settings').select('value').eq('key', 'gemini_api_key').single();
+    var key = result.data && result.data.value ? result.data.value : '';
+    if (!key) {
+      setWarn('gemini', 'No API key set. AI triage is disabled.');
+      return;
+    }
+    setOk('gemini', 'API key is configured');
+  } catch(e) {
+    setWarn('gemini', 'Could not check Gemini key. Check settings below.');
+  }
+}
+
+// ── USAGE STATS ──
+async function loadUsage() {
+  var grid = document.getElementById('usage-grid');
+  if (!grid) return;
+  try {
+    var [membersRes, sessionsRes] = await Promise.all([
+      db.from('boards').select('id', { count: 'exact' }),
+      db.from('inbox_sessions').select('id', { count: 'exact' })
+    ]);
+    var memberCount = membersRes.count || 0;
+    var sessionCount = sessionsRes.count || 0;
+
+    // Drive usage from GAS (already checked in health)
+    var driveHtml = renderUsageStat('Google Drive', '—', 'Checking...', 0);
+    try {
+      var controller = new AbortController();
+      setTimeout(function() { controller.abort(); }, 5000);
+      var gasRes = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: 'usage' }) });
+      var gasData = await gasRes.json();
+      if (gasData && gasData.success) {
+        var pct = gasData.percentage || 0;
+        var cls = pct >= 90 ? 'danger' : pct >= 75 ? 'warn' : '';
+        driveHtml = renderUsageStat('Google Drive', pct + '%', gasData.usedFormatted + ' used of ' + gasData.totalFormatted, pct, cls);
+      }
+    } catch(e) {}
+
+    grid.innerHTML =
+      renderUsageStat('Team Members', memberCount, '@carenbloom.com accounts', 0) +
+      renderUsageStat('Inbox Sessions', sessionCount, 'AI triage runs total', 0) +
+      driveHtml;
+  } catch(e) {
+    grid.innerHTML = '<div style="font-family:sans-serif;font-size:.82rem;color:var(--muted)">Could not load stats.</div>';
+  }
+}
+
+function renderUsageStat(label, value, sub, pct, barClass) {
+  var bar = pct > 0
+    ? '<div class="usage-bar-wrap"><div class="usage-bar-fill ' + (barClass || '') + '" style="width:' + Math.min(pct, 100) + '%"></div></div>'
+    : '';
+  return '<div class="usage-stat"><div class="usage-stat-label">' + esc(label) + '</div>' +
+    '<div class="usage-stat-value">' + esc(String(value)) + '</div>' +
+    '<div class="usage-stat-sub">' + esc(sub) + '</div>' + bar + '</div>';
+}
+
+// ── TEAM ──
+async function loadTeam() {
+  var wrap = document.getElementById('team-list-wrap');
+  if (!wrap) return;
+  wrap.innerHTML = '<div class="admin-loading">Loading team...</div>';
+  try {
+    var result = await db.from('boards').select('*').order('role', { ascending: false });
+    if (result.error) throw result.error;
+    if (!result.data || result.data.length === 0) {
+      wrap.innerHTML = '<div class="activity-empty">No team members found.</div>';
+      return;
+    }
+    var html = '<div class="team-list">';
+    result.data.forEach(function(member) {
+      var isMe = hubState.currentUser && member.email === hubState.currentUser.email;
+      var isAdmin = member.role === 'admin';
+      html += '<div class="team-row">';
+      html += '<div class="team-avatar">' + esc(member.avatar || '👤') + '</div>';
+      html += '<div class="team-info"><div class="team-name">' + esc(member.name || 'Unknown') + (isMe ? ' <span style="font-size:.7rem;color:var(--muted)">(you)</span>' : '') + '</div>';
+      html += '<div class="team-email">' + esc(member.email || '') + '</div></div>';
+      html += '<span class="team-role-badge ' + (isAdmin ? 'admin' : 'member') + '">' + (isAdmin ? '👑 Admin' : 'Member') + '</span>';
+      if (!isMe) {
+        html += '<div class="team-actions">';
+        if (isAdmin) {
+          html += '<button class="team-role-btn danger" onclick="changeRole(\'' + esc(member.id) + '\',\'member\',\'' + esc(member.name) + '\')">Remove admin</button>';
+        } else {
+          html += '<button class="team-role-btn" onclick="changeRole(\'' + esc(member.id) + '\',\'admin\',\'' + esc(member.name) + '\')">Make admin</button>';
+        }
+        html += '</div>';
+      }
+      html += '</div>';
+    });
+    html += '</div>';
+    wrap.innerHTML = html;
+  } catch(e) {
+    wrap.innerHTML = '<div class="activity-empty">Could not load team.</div>';
+  }
+}
+
+async function changeRole(memberId, newRole, memberName) {
+  var label = newRole === 'admin' ? 'Make ' + memberName + ' an admin?' : 'Remove admin from ' + memberName + '?';
+  if (!confirm(label)) return;
+  try {
+    var result = await db.from('boards').update({ role: newRole }).eq('id', memberId);
+    if (result.error) throw result.error;
+    showToast(memberName + ' is now ' + (newRole === 'admin' ? 'an admin' : 'a member'), 'success');
+    loadTeam();
+  } catch(e) {
+    showToast('Could not update role', 'error');
+  }
+}
+
+// ── SETTINGS ──
+async function loadCurrentSettings() {
+  try {
+    var keys = ['gemini_api_key', 'inbox_slack_token', 'hub_password'];
+    var fieldMap = { gemini_api_key: 'setting-gemini', inbox_slack_token: 'setting-slack', hub_password: 'setting-hubpw' };
+    var result = await db.from('settings').select('key,value').in('key', keys);
+    if (result.data) {
+      result.data.forEach(function(row) {
+        var el = document.getElementById(fieldMap[row.key]);
+        if (el && row.value) el.placeholder = '••••••••••••••• (set)';
+      });
+    }
+  } catch(e) {}
+}
+
+async function saveSetting(key, inputId, savedId) {
+  var input = document.getElementById(inputId);
+  var savedEl = document.getElementById(savedId);
+  if (!input || !input.value.trim()) {
+    showToast('Please enter a value first', 'error');
+    return;
+  }
+  var val = input.value.trim();
+  try {
+    var result = await db.from('settings').upsert({ key: key, value: val }, { onConflict: 'key' });
+    if (result.error) throw result.error;
+    input.value = '';
+    input.placeholder = '••••••••••••••• (set)';
+    if (savedEl) { savedEl.style.display = 'block'; setTimeout(function() { savedEl.style.display = 'none'; }, 2500); }
+    showToast('Saved', 'success');
+    // Recheck relevant service after saving
+    if (key === 'inbox_slack_token') checkSlack();
+    if (key === 'gemini_api_key') checkGemini();
+  } catch(e) {
+    showToast('Could not save: ' + (e.message || 'unknown error'), 'error');
+  }
+}
+
+// ── ACTIVITY LOG ──
+async function loadActivity() {
+  var wrap = document.getElementById('activity-wrap');
+  if (!wrap) return;
+  wrap.innerHTML = '<div class="admin-loading">Loading activity...</div>';
+  try {
+    var result = await db.from('activity_log').select('*').order('created_at', { ascending: false }).limit(30);
+    if (result.error) throw result.error;
+    if (!result.data || result.data.length === 0) {
+      wrap.innerHTML = '<div class="activity-empty">No activity logged yet.</div>';
+      return;
+    }
+    var html = '<div class="activity-list">';
+    result.data.forEach(function(row) {
+      var avatar = getAvatarForName(row.member_name || '?');
+      var time = row.created_at ? formatDate(row.created_at) : '';
+      html += '<div class="activity-row">';
+      html += '<div class="activity-avatar">' + esc(avatar) + '</div>';
+      html += '<div class="activity-text"><div class="activity-action"><b>' + esc(row.member_name || 'Unknown') + '</b> ' + esc(row.action || '') + (row.details ? ' — ' + esc(row.details) : '') + '</div>';
+      html += '<div class="activity-meta">' + esc(time) + '</div></div>';
+      html += '</div>';
+    });
+    html += '</div>';
+    wrap.innerHTML = html;
+  } catch(e) {
+    wrap.innerHTML = '<div class="activity-empty">Could not load activity.</div>';
+  }
+}
+
+bootHub();
+</script>
+</body>
+</html>
