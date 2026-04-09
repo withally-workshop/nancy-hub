@@ -222,8 +222,6 @@
 .upload-area-label{font-family:'Inter',sans-serif;font-size:.82rem;color:var(--muted);pointer-events:none}
 .upload-area-label strong{color:var(--primary)}
 .upload-service-badge{display:inline-block;font-family:'Inter',sans-serif;font-size:.67rem;font-weight:700;padding:2px 7px;border-radius:4px;margin-top:.4rem;letter-spacing:.04em}
-.upload-service-cloudinary{background:rgba(59,178,115,.12);color:var(--green);border:1px solid rgba(59,178,115,.3)}
-.upload-service-drive{background:rgba(45,125,210,.12);color:var(--blue);border:1px solid rgba(45,125,210,.3)}
 .upload-service-supabase{background:rgba(255,48,204,.1);color:var(--primary);border:1px solid rgba(255,48,204,.25)}
 .upload-prog-wrap{margin-top:.6rem;display:none}
 .upload-prog-bar{height:4px;background:var(--border);border-radius:4px;overflow:hidden}
@@ -724,7 +722,7 @@
         <input type="file" id="asset-file-input" accept="image/*" onchange="handleAssetFileSelect(this)"/>
         <div class="upload-area-label">
           <strong>Click to upload</strong> or drag & drop<br>
-          <span style="font-size:.72rem">Images → Cloudinary · Videos → Google Drive · Other → Supabase</span>
+          <span style="font-size:.72rem">All files stored in Supabase Storage · Max 50 MB</span>
         </div>
         <img id="upload-preview" class="upload-preview" alt="preview"/>
       </div>
@@ -837,13 +835,9 @@
 
 <script>
 // ── STORAGE CONFIG ──────────────────────────────────────────────────────────
-// Set these after creating accounts (see instructions in admin panel / README):
-//   Cloudinary: cloudinary.com → Settings → Upload → create unsigned preset
-//   Google Drive: open a Drive folder, copy ID from URL → set in gas/Code.gs
-//   Supabase: dashboard → Storage → create 'social-assets' bucket (Public)
-var CLOUDINARY_CLOUD_NAME = '';      // e.g. 'my-cloud-name'
-var CLOUDINARY_UPLOAD_PRESET = '';   // e.g. 'social_assets_unsigned'
-// SCRIPT_URL and db are already defined in shared/hub.js
+// All assets upload to Supabase Storage.
+// One-time setup: Supabase dashboard → Storage → New bucket → name 'social-assets' → Public
+// SUPABASE_URL, db are defined in shared/hub.js — no extra config needed here.
 // ────────────────────────────────────────────────────────────────────────────
 
 /*
@@ -1757,10 +1751,11 @@ function updateUploadAccept() {
   var input = document.getElementById('asset-file-input');
   var lbl = document.getElementById('upload-service-lbl');
   if (!input) return;
-  if (type === 'image') { input.accept = 'image/*'; lbl.textContent = '→ Cloudinary'; }
-  else if (type === 'video') { input.accept = 'video/*'; lbl.textContent = '→ Google Drive'; }
-  else if (type === 'audio') { input.accept = 'audio/*'; lbl.textContent = '→ Google Drive'; }
-  else { input.accept = '*/*'; lbl.textContent = '→ Google Drive / Supabase'; }
+  if (type === 'image') input.accept = 'image/*';
+  else if (type === 'video') input.accept = 'video/*';
+  else if (type === 'audio') input.accept = 'audio/*';
+  else input.accept = '*/*';
+  if (lbl) lbl.textContent = '→ Supabase Storage';
 }
 
 function handleAssetDrop(e) {
@@ -1813,62 +1808,33 @@ function clearUploadProgress() {
 
 async function uploadAssetFile(file) {
   var urlEl = document.getElementById('asset-form-url');
-  var isImage = file.type.startsWith('image/');
-  var isVideo = file.type.startsWith('video/');
-
-  // Route: images → Cloudinary | videos+large → Google Drive | fallback → Supabase Storage
-  if (isImage && CLOUDINARY_CLOUD_NAME && CLOUDINARY_UPLOAD_PRESET) {
-    setUploadProgress(10, 'Uploading to Cloudinary...');
-    try {
-      var fd = new FormData();
-      fd.append('file', file);
-      fd.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
-      setUploadProgress(40, 'Uploading to Cloudinary...');
-      var resp = await fetch('https://api.cloudinary.com/v1_1/' + CLOUDINARY_CLOUD_NAME + '/upload', { method: 'POST', body: fd });
-      var data = await resp.json();
-      if (data.error) throw new Error(data.error.message);
-      setUploadProgress(100, 'Uploaded via Cloudinary ✓');
-      if (urlEl) urlEl.value = data.secure_url;
-      setTimeout(clearUploadProgress, 2000);
-    } catch(e) { clearUploadProgress(); showToast('Cloudinary upload failed: ' + e.message, 'error'); }
-  } else if ((isVideo || file.size > 5 * 1024 * 1024) && (typeof SCRIPT_URL !== 'undefined') && SCRIPT_URL) {
-    setUploadProgress(10, 'Encoding for Google Drive...');
-    try {
-      var reader = new FileReader();
-      reader.onload = async function(ev) {
-        var b64 = ev.target.result.split(',')[1];
-        setUploadProgress(40, 'Uploading to Google Drive...');
-        var resp = await fetch(SCRIPT_URL, {
-          method: 'POST',
-          body: JSON.stringify({ action: 'upload', filename: file.name, mimeType: file.type, data: b64 })
-        });
-        var data = await resp.json();
-        if (data.error) throw new Error(data.error);
-        setUploadProgress(100, 'Uploaded to Google Drive ✓');
-        if (urlEl && data.url) urlEl.value = data.url;
-        setTimeout(clearUploadProgress, 2000);
-      };
-      reader.onerror = function() { clearUploadProgress(); showToast('File read failed.', 'error'); };
-      reader.readAsDataURL(file);
-    } catch(e) { clearUploadProgress(); showToast('Drive upload failed: ' + e.message, 'error'); }
-  } else {
-    // Fallback: Supabase Storage
-    setUploadProgress(10, 'Uploading to Supabase Storage...');
-    try {
-      var avId = socialState.currentAvatar ? socialState.currentAvatar.id : 'general';
-      var path = avId + '/' + Date.now() + '_' + file.name.replace(/\s+/g, '_');
-      setUploadProgress(40, 'Uploading to Supabase Storage...');
-      var r = await db.storage.from('social-assets').upload(path, file, { upsert: true });
-      if (r.error) throw r.error;
-      setUploadProgress(90, 'Getting URL...');
-      var pub = db.storage.from('social-assets').getPublicUrl(path);
-      var publicUrl = pub.data && pub.data.publicUrl;
-      setUploadProgress(100, 'Uploaded to Supabase ✓');
-      if (urlEl && publicUrl) urlEl.value = publicUrl;
-      setTimeout(clearUploadProgress, 2000);
-    } catch(e) {
-      clearUploadProgress();
-      showToast('Upload failed: ' + e.message + '. Try pasting a URL instead.', 'error');
+  // Validate size (50 MB cap — Supabase Storage free limit)
+  if (file.size > 50 * 1024 * 1024) {
+    showToast('File is over 50 MB. Please compress it or use a URL instead.', 'error');
+    return;
+  }
+  setUploadProgress(10, 'Uploading...');
+  try {
+    var avId = socialState.currentAvatar ? socialState.currentAvatar.id : 'general';
+    var safeName = file.name.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9._-]/g, '');
+    var path = avId + '/' + Date.now() + '_' + safeName;
+    setUploadProgress(40, 'Uploading to Supabase Storage...');
+    var r = await db.storage.from('social-assets').upload(path, file, { upsert: true });
+    if (r.error) throw r.error;
+    setUploadProgress(85, 'Almost done...');
+    var pub = db.storage.from('social-assets').getPublicUrl(path);
+    var publicUrl = pub.data && pub.data.publicUrl;
+    if (!publicUrl) throw new Error('Could not get public URL');
+    setUploadProgress(100, 'Upload complete ✓');
+    if (urlEl) urlEl.value = publicUrl;
+    setTimeout(clearUploadProgress, 2000);
+  } catch(e) {
+    clearUploadProgress();
+    var msg = e.message || '';
+    if (msg.includes('Bucket not found') || msg.includes('bucket')) {
+      showToast('Storage bucket not set up yet. Go to Supabase → Storage → create "social-assets" bucket (Public).', 'error');
+    } else {
+      showToast('Upload failed: ' + msg + '. Try pasting a URL instead.', 'error');
     }
   }
 }
