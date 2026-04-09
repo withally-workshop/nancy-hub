@@ -16,26 +16,34 @@
 .s-title{font-family:'Fraunces',serif;font-size:2rem;font-weight:600;color:var(--h2);letter-spacing:-.03em;line-height:1;margin-bottom:.3rem}
 .s-sub{font-size:.88rem;color:var(--muted);font-family:'Inter',sans-serif}
 .av-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem}
-.av-card{background:var(--card);border:1px solid var(--border);border-radius:20px;overflow:hidden;transition:box-shadow .25s,transform .25s;position:relative}
-.av-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--avc,var(--primary))}
-.av-card:hover{box-shadow:var(--shadow-lg);transform:translateY(-2px)}
-.av-card-in{padding:1.5rem}
-.av-card-top{display:flex;align-items:center;gap:.875rem;margin-bottom:1.25rem}
-.av-circle{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;font-size:.88rem;font-weight:700;color:white;flex-shrink:0}
-.av-card-name{font-family:'Fraunces',serif;font-size:1.1rem;font-weight:600;color:var(--h2);margin-bottom:.25rem;line-height:1.2}
-.av-type-bdg{display:inline-block;font-family:'Inter',sans-serif;font-size:.65rem;font-weight:700;padding:2px 8px;border-radius:var(--radius-pill);letter-spacing:.03em}
-.av-plat-row{display:flex;flex-wrap:wrap;gap:.3rem;margin-top:.3rem}
-.av-plat{font-family:'Inter',sans-serif;font-size:.7rem;font-weight:600;padding:2px 7px;border-radius:6px;background:var(--bg2);color:var(--muted);border:1px solid var(--border)}
-.av-stats{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:1rem}
-.av-stat{background:var(--bg2);border-radius:10px;padding:.6rem;text-align:center}
-.av-stat-n{font-family:'Fraunces',serif;font-size:1.35rem;font-weight:600;color:var(--h2);display:block}
-.av-stat-l{font-family:'Inter',sans-serif;font-size:.7rem;color:var(--muted);display:block;margin-top:.1rem}
-.av-card-admin{display:flex;gap:.35rem;margin-bottom:.75rem}
-.av-adm-btn{font-family:'Inter',sans-serif;font-size:.7rem;font-weight:600;padding:3px 10px;border-radius:6px;border:1px solid var(--border2);background:none;color:var(--muted);cursor:pointer;transition:all .15s}
+.av-card{
+  background:var(--card);border:1px solid var(--border);border-radius:20px;
+  overflow:hidden;transition:box-shadow .3s cubic-bezier(.25,.46,.45,.94),transform .3s cubic-bezier(.25,.46,.45,.94);
+  position:relative;
+}
+.av-card::after{content:'';position:absolute;inset:0;border-radius:20px;opacity:0;transition:opacity .3s;background:radial-gradient(circle at 70% 0%,var(--avc-glow,rgba(255,48,204,.08)),transparent 65%);pointer-events:none}
+.av-card:hover{box-shadow:0 20px 60px rgba(0,0,0,.35),0 4px 16px rgba(0,0,0,.2);transform:translateY(-4px)}
+.av-card:hover::after{opacity:1}
+.av-card-in{padding:1.5rem;position:relative;z-index:1}
+.av-card-head{display:flex;align-items:flex-start;gap:1rem;margin-bottom:1rem}
+.av-circle{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;font-size:.9rem;font-weight:700;color:white;flex-shrink:0;transition:transform .3s cubic-bezier(.34,1.56,.64,1)}
+.av-card:hover .av-circle{transform:scale(1.08) rotate(-3deg)}
+.av-card-meta{flex:1;min-width:0}
+.av-card-name{font-family:'Fraunces',serif;font-size:1.15rem;font-weight:600;color:var(--h2);margin-bottom:.3rem;line-height:1.2}
+.av-type-bdg{display:inline-block;font-family:'Inter',sans-serif;font-size:.63rem;font-weight:700;padding:2px 8px;border-radius:var(--radius-pill);letter-spacing:.04em}
+.av-plat-row{display:flex;flex-wrap:wrap;gap:.25rem;margin-top:.35rem}
+.av-plat{font-family:'Inter',sans-serif;font-size:.67rem;font-weight:600;padding:2px 7px;border-radius:5px;background:var(--bg2);color:var(--muted);border:1px solid var(--border)}
+.av-card-admin{position:absolute;top:1rem;right:1rem;display:flex;gap:.25rem;z-index:2}
+.av-adm-btn{font-family:'Inter',sans-serif;font-size:.67rem;font-weight:600;padding:3px 8px;border-radius:6px;border:1px solid var(--border2);background:var(--card);color:var(--muted);cursor:pointer;transition:all .15s}
 .av-adm-btn:hover{background:var(--bg2);color:var(--body)}
 .av-adm-btn.del:hover{background:rgba(229,57,53,.1);color:#e53935;border-color:rgba(229,57,53,.4)}
-.av-open{width:100%;padding:.65rem;border:none;border-radius:10px;font-family:'Fraunces',serif;font-size:.9rem;font-weight:500;color:white;cursor:pointer;transition:filter .2s,transform .15s}
-.av-open:hover{filter:brightness(1.1);transform:translateY(-1px)}
+.av-stats-row{display:flex;gap:0;border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:1rem;background:var(--bg2)}
+.av-stat-box{flex:1;padding:.65rem .5rem;text-align:center;border-right:1px solid var(--border)}
+.av-stat-box:last-child{border-right:none}
+.av-stat-n{font-family:'Fraunces',serif;font-size:1.4rem;font-weight:600;color:var(--h2);display:block;line-height:1}
+.av-stat-l{font-family:'Inter',sans-serif;font-size:.65rem;color:var(--muted);display:block;margin-top:.25rem}
+.av-open{width:100%;padding:.7rem;border:none;border-radius:10px;font-family:'Fraunces',serif;font-size:.9rem;font-weight:500;color:white;cursor:pointer;transition:filter .2s,transform .15s,box-shadow .2s}
+.av-open:hover{filter:brightness(1.12);transform:translateY(-1px);box-shadow:0 6px 20px rgba(0,0,0,.25)}
 
 /* ─── AVATAR WORKSPACE ──────────────────── */
 /* Full-screen scroll container — the pill nav sits on top (z-index 200).
@@ -207,6 +215,47 @@
 .api-warn.show{display:flex}
 .shot-foot{display:flex;justify-content:flex-end;margin-top:.875rem}
 
+/* ─── ASSET LIBRARY ──────────────────────── */
+.asset-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;gap:.75rem;flex-wrap:wrap}
+.asset-title-row{display:flex;align-items:center;gap:.75rem}
+.asset-title{font-family:'Fraunces',serif;font-size:1.2rem;font-weight:600;color:var(--h2)}
+.folder-bar{display:flex;gap:.3rem;flex-wrap:wrap;margin-bottom:1.25rem;align-items:center}
+.folder-tab{font-family:'Inter',sans-serif;font-size:.75rem;font-weight:600;padding:.35rem .85rem;border-radius:var(--radius-pill);border:1.5px solid var(--border2);background:none;color:var(--muted);cursor:pointer;transition:all .15s}
+.folder-tab:hover{border-color:var(--primary);color:var(--primary)}
+.folder-tab.act{background:var(--primary);color:white;border-color:var(--primary)}
+.asset-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:.875rem}
+.asset-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:box-shadow .2s,transform .2s;position:relative}
+.asset-card:hover{box-shadow:var(--shadow);transform:translateY(-2px)}
+.asset-thumb{height:120px;background:var(--bg2);display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}
+.asset-thumb img{width:100%;height:100%;object-fit:cover}
+.asset-thumb-icon{font-size:2rem;color:var(--muted)}
+.asset-info{padding:.7rem}
+.asset-name{font-family:'Inter',sans-serif;font-size:.82rem;font-weight:600;color:var(--h2);margin-bottom:.3rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.asset-meta{display:flex;align-items:center;gap:.3rem;flex-wrap:wrap;margin-bottom:.4rem}
+.asset-badge{font-family:'Inter',sans-serif;font-size:.62rem;font-weight:700;padding:1px 6px;border-radius:4px;background:var(--bg2);color:var(--muted);border:1px solid var(--border)}
+.asset-notes{font-family:'Inter',sans-serif;font-size:.72rem;color:var(--muted);line-height:1.4;margin-bottom:.5rem;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.asset-actions{display:flex;gap:.3rem}
+.asset-act-btn{flex:1;padding:.35rem;border-radius:6px;border:1px solid var(--border2);background:none;font-family:'Inter',sans-serif;font-size:.7rem;font-weight:600;color:var(--muted);cursor:pointer;transition:all .15s;text-align:center}
+.asset-act-btn:hover{background:var(--bg2);color:var(--body)}
+.asset-act-btn.copy:hover{border-color:var(--primary);color:var(--primary);background:var(--primary-light)}
+.asset-act-btn.del:hover{border-color:rgba(229,57,53,.4);color:#e53935;background:rgba(229,57,53,.08)}
+
+/* ─── STUDIO EXTRAS ──────────────────────── */
+.approve-bar{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:.875rem 1.25rem;margin-top:1rem;display:flex;align-items:center;gap:.75rem;flex-wrap:wrap}
+.approve-bar-lbl{font-family:'Inter',sans-serif;font-size:.82rem;color:var(--muted);flex:1;min-width:100px}
+.approve-bar-lbl strong{color:var(--h2)}
+.wk-plan-list{margin-top:1.25rem;display:flex;flex-direction:column;gap:.65rem}
+.wk-plan-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.25rem;display:flex;align-items:flex-start;gap:1rem;transition:border-color .2s}
+.wk-plan-card.approved{opacity:.45;pointer-events:none}
+.wk-plan-day{font-family:'Fraunces',serif;font-size:1.1rem;font-weight:600;color:var(--primary);width:42px;flex-shrink:0;margin-top:.1rem}
+.wk-plan-body{flex:1;min-width:0}
+.wk-plan-type{font-family:'Inter',sans-serif;font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:.2rem}
+.wk-plan-hook{font-family:'Inter',sans-serif;font-size:.9rem;font-weight:600;color:var(--h2);margin-bottom:.3rem;line-height:1.4}
+.wk-plan-cap{font-family:'Inter',sans-serif;font-size:.78rem;color:var(--muted);line-height:1.5;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.wk-plan-act{flex-shrink:0;margin-top:.25rem}
+.ctx-box{background:rgba(255,48,204,.04);border:1px solid rgba(255,48,204,.15);border-radius:var(--radius-sm);padding:.65rem 1rem;margin-bottom:.875rem;font-family:'Inter',sans-serif;font-size:.75rem;color:var(--muted);line-height:1.4}
+.ctx-box strong{color:var(--primary);font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;display:block;margin-bottom:.25rem}
+
 /* ─── EMPTY STATE ─── */
 .empty-st{text-align:center;padding:2.5rem 1rem;font-family:'Inter',sans-serif;color:var(--muted)}
 .empty-st-h{font-family:'Fraunces',serif;font-size:1.05rem;font-weight:600;color:var(--h2);margin-bottom:.4rem}
@@ -365,6 +414,7 @@
         <div class="av-tab" data-tab="review" onclick="showTab('review')">Review Desk</div>
         <div class="av-tab" data-tab="memory" onclick="showTab('memory')">Performance</div>
         <div class="av-tab" data-tab="instruct" onclick="showTab('instruct')">Instructions</div>
+        <div class="av-tab" data-tab="assets" onclick="showTab('assets')">Assets</div>
       </div>
     </div>
 
@@ -445,6 +495,17 @@
             </div>
           </div>
 
+          <!-- APPROVE TO CALENDAR (shown after script is generated) -->
+          <div class="approve-bar" id="approve-bar" style="display:none">
+            <div class="approve-bar-lbl"><strong>Script ready.</strong> Send to calendar as a post?</div>
+            <select class="post-st-sel" id="approve-platform" style="width:auto;padding:.4rem .75rem;font-size:.8rem">
+              <option value="ig">Instagram</option>
+              <option value="tiktok">TikTok</option>
+            </select>
+            <input type="date" class="form-input" id="approve-date" style="width:auto;padding:.4rem .75rem;font-size:.8rem"/>
+            <button class="btn-primary" style="padding:.45rem 1rem;font-size:.82rem" onclick="approveToCalendar()">Approve to Calendar</button>
+          </div>
+
           <div class="studio-divider"></div>
 
           <!-- STEP 3 -->
@@ -458,6 +519,37 @@
               <button class="btn-primary" id="btn-gen-shots" onclick="generateShotPlan()">Generate Shot Plan</button>
               <div id="shot-plan-output"></div>
             </div>
+          </div>
+
+          <div class="studio-divider"></div>
+
+          <!-- STEP 4 -->
+          <div class="studio-step">
+            <div class="studio-step-hdr">
+              <div class="studio-num">4</div>
+              <div class="studio-step-title">Weekly Content Plan</div>
+              <div class="studio-step-meta">AI-generated post ideas for each day of the week</div>
+            </div>
+            <div style="margin-bottom:.875rem">
+              <div style="display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;margin-bottom:.75rem">
+                <div>
+                  <label class="form-label" style="font-size:.7rem;margin-bottom:.25rem;display:block">Week of</label>
+                  <input type="date" class="form-input" id="wkplan-date" style="padding:.45rem .85rem;font-size:.82rem;width:auto"/>
+                </div>
+                <div>
+                  <label class="form-label" style="font-size:.7rem;margin-bottom:.25rem;display:block">Platform</label>
+                  <select class="post-st-sel" id="wkplan-platform" style="padding:.45rem .85rem;font-size:.82rem;width:auto">
+                    <option value="ig">Instagram</option>
+                    <option value="tiktok">TikTok</option>
+                  </select>
+                </div>
+                <div style="display:flex;gap:.5rem;align-items:flex-end;padding-bottom:1px">
+                  <button class="btn-primary" id="btn-gen-weekplan" onclick="generateWeekPlan()" style="margin-top:auto">Generate Week Plan</button>
+                  <button class="btn-ghost" id="btn-approve-all-plan" style="display:none;padding:.48rem 1rem;font-size:.82rem" onclick="approveAllWeekPosts()">Approve All</button>
+                </div>
+              </div>
+            </div>
+            <div id="wk-plan-output"></div>
           </div>
 
         </div>
@@ -549,6 +641,21 @@
         <div class="inst-items" id="instruction-list"></div>
       </div>
 
+      <!-- ASSETS TAB -->
+      <div class="av-panel" data-panel="assets">
+        <div class="asset-top">
+          <div class="asset-title-row">
+            <div class="asset-title">Asset Library</div>
+            <div id="asset-count" style="font-family:'Inter',sans-serif;font-size:.8rem;color:var(--muted)"></div>
+          </div>
+          <button class="btn-primary" onclick="openAssetModal()">+ Add Asset</button>
+        </div>
+        <div class="folder-bar" id="folder-bar">
+          <button class="folder-tab act" data-folder="all" onclick="filterAssets('all',this)">All</button>
+        </div>
+        <div id="asset-grid" class="asset-grid"></div>
+      </div>
+
     </div><!-- /av-body -->
   </div><!-- /avatar-mode -->
 
@@ -565,6 +672,42 @@
   </div>
 
 </div><!-- /app -->
+
+<!-- ASSET FORM MODAL -->
+<div class="modal-overlay" id="modal-asset-form" onclick="closeModalOutside(event,'modal-asset-form')">
+  <div class="modal" style="max-width:460px">
+    <div class="modal-header">
+      <div class="modal-title" id="asset-modal-title">Add Asset</div>
+      <button class="modal-close" onclick="closeModal('modal-asset-form')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <input type="hidden" id="asset-edit-id">
+    <div class="form-field"><label class="form-label">Asset Name</label><input class="form-input" id="asset-form-name" type="text" placeholder="e.g. Face Reference — Studio Shot"/></div>
+    <div class="form-row">
+      <div class="form-field">
+        <label class="form-label">Type</label>
+        <select class="form-select" id="asset-form-type">
+          <option value="image">Image</option>
+          <option value="video">Video</option>
+          <option value="reference">Reference</option>
+          <option value="style">Style Guide</option>
+          <option value="audio">Audio</option>
+          <option value="document">Document</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label class="form-label">Folder</label>
+        <input class="form-input" id="asset-form-folder" type="text" placeholder="e.g. Face Refs, Brand Kit"/>
+      </div>
+    </div>
+    <div class="form-field"><label class="form-label">URL</label><input class="form-input" id="asset-form-url" type="url" placeholder="Paste image/video URL..."/></div>
+    <div class="form-field"><label class="form-label">Notes <span style="font-weight:400;color:var(--muted)">(for image gen context)</span></label><textarea class="form-textarea" id="asset-form-notes" rows="2" placeholder="e.g. Use this as the face reference prompt base..."></textarea></div>
+    <div class="modal-footer">
+      <button class="btn-danger" id="btn-delete-asset" style="display:none;margin-right:auto" onclick="deleteAsset()">Delete</button>
+      <button class="btn-ghost" onclick="closeModal('modal-asset-form')">Cancel</button>
+      <button class="btn-primary" onclick="saveAsset()">Save Asset</button>
+    </div>
+  </div>
+</div>
 
 <div class="toast" id="toast"></div>
 
@@ -658,6 +801,21 @@
 </div>
 
 <script>
+/*
+  REQUIRED SUPABASE TABLE (run once in SQL editor):
+
+  create table social_assets (
+    id uuid primary key default gen_random_uuid(),
+    avatar_id uuid references social_avatars(id) on delete cascade,
+    folder text default 'General',
+    name text not null,
+    url text,
+    asset_type text default 'image',
+    notes text,
+    created_at timestamptz default now()
+  );
+*/
+
 // ══════════════════════════════════════
 // STATE
 // ══════════════════════════════════════
@@ -673,7 +831,8 @@ var studioState = {
   niche: '',
   selectedHook: null,
   duration: 15,
-  script: null   // { hook, body, cta } each { text, word_count, read_time }
+  script: null,  // { hook, body, cta } each { text, word_count, read_time }
+  weekPlan: []   // weekly content plan days
 };
 
 // ══════════════════════════════════════
@@ -733,27 +892,29 @@ function renderAvatarCards(avatars, posts) {
     var isBrand = av.type === 'Brand Account';
     var typeBg = isBrand ? 'rgba(247,183,49,.15)' : 'rgba(255,48,204,.15)';
     var typeColor = isBrand ? 'var(--amber)' : 'var(--primary)';
+    // Convert hex color to rgba for glow
+    var glowColor = hexToRgba(color, 0.1);
     var adminHtml = isAdmin
       ? '<div class="av-card-admin">' +
           '<button class="av-adm-btn" onclick="openAvatarModal(\'' + av.id + '\')">Edit</button>' +
           '<button class="av-adm-btn del" onclick="confirmDeleteAvatar(\'' + av.id + '\',\'' + esc(av.name).replace(/'/g,'&#39;') + '\')">Delete</button>' +
         '</div>' : '';
-    return '<div class="av-card" style="--avc:' + color + '">' +
+    return '<div class="av-card" style="--avc:' + color + ';--avc-glow:' + glowColor + '">' +
       '<div class="av-card-in">' +
         adminHtml +
-        '<div class="av-card-top">' +
+        '<div class="av-card-head">' +
           '<div class="av-circle" style="background:' + color + '">' + initials + '</div>' +
-          '<div>' +
+          '<div class="av-card-meta">' +
             '<div class="av-card-name">' + esc(av.name) + '</div>' +
             '<div class="av-type-bdg" style="background:' + typeBg + ';color:' + typeColor + '">' + esc(av.type || 'AI Persona') + '</div>' +
             '<div class="av-plat-row">' + platBadges + '</div>' +
           '</div>' +
         '</div>' +
-        '<div class="av-stats">' +
-          '<div class="av-stat"><span class="av-stat-n">' + postedCount + '</span><span class="av-stat-l">Posted this week</span></div>' +
-          '<div class="av-stat"><span class="av-stat-n">' + pendingCount + '</span><span class="av-stat-l">Pending review</span></div>' +
+        '<div class="av-stats-row">' +
+          '<div class="av-stat-box"><span class="av-stat-n">' + postedCount + '</span><span class="av-stat-l">Posted this week</span></div>' +
+          '<div class="av-stat-box"><span class="av-stat-n">' + pendingCount + '</span><span class="av-stat-l">Pending review</span></div>' +
         '</div>' +
-        '<button class="av-open" style="background:' + color + '" data-avid="' + av.id + '" onclick="openAvatarById(this.dataset.avid)">Open Workspace</button>' +
+        '<button class="av-open" style="background:' + color + ';margin-top:.875rem" data-avid="' + av.id + '" onclick="openAvatarById(this.dataset.avid)">Open Workspace →</button>' +
       '</div>' +
     '</div>';
   }).join('');
@@ -921,6 +1082,18 @@ function showTab(tab) {
   if (tab === 'review' && socialState.currentAvatar) loadReviewDesk(socialState.currentAvatar.id);
   if (tab === 'instruct' && socialState.currentAvatar) loadInstructions(socialState.currentAvatar.id);
   if (tab === 'memory' && socialState.currentAvatar) loadPatterns(socialState.currentAvatar.id);
+  if (tab === 'assets' && socialState.currentAvatar) {
+    assetState.currentFolder = 'all';
+    loadAssets(socialState.currentAvatar.id);
+    // Set week plan date default to current week monday
+    var wpDate = document.getElementById('wkplan-date');
+    if (wpDate && !wpDate.value) wpDate.value = getWeekMonday(new Date()).toISOString().slice(0,10);
+  }
+  if (tab === 'studio' && socialState.currentAvatar) {
+    // Set week plan date default
+    var wpDate2 = document.getElementById('wkplan-date');
+    if (wpDate2 && !wpDate2.value) wpDate2.value = getWeekMonday(new Date()).toISOString().slice(0,10);
+  }
 }
 
 // ══════════════════════════════════════
@@ -962,6 +1135,14 @@ async function saveVault() {
 }
 
 // ══════════════════════════════════════
+// HELPERS
+// ══════════════════════════════════════
+function hexToRgba(hex, alpha) {
+  var r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
+  return 'rgba(' + r + ',' + g + ',' + b + ',' + alpha + ')';
+}
+
+// ══════════════════════════════════════
 // AI STUDIO
 // ══════════════════════════════════════
 function updateNicheCount() {
@@ -990,6 +1171,79 @@ function extractJSON(text) {
   return JSON.parse(text);
 }
 
+async function buildAvatarContext() {
+  if (!socialState.currentAvatar) return '';
+  var av = socialState.currentAvatar;
+  var lines = ['=== AVATAR PROFILE ==='];
+  lines.push('Name: ' + av.name);
+  lines.push('Type: ' + (av.type || 'AI Persona'));
+  lines.push('Platforms: ' + (av.platforms || 'IG, TikTok'));
+
+  // Read vault fields currently loaded in the DOM
+  var bio = (document.getElementById('vault-bio')||{}).value || av.bio || '';
+  var voice = (document.getElementById('vault-voice')||{}).value || av.voice_tone || '';
+  var captions = (document.getElementById('vault-captions')||{}).value || av.example_captions || '';
+  var capPrompt = (document.getElementById('vault-cap-prompt')||{}).value || av.caption_prompt_base || '';
+  var igSched = (document.getElementById('vault-ig-sched')||{}).value || av.ig_schedule || '';
+  var ttSched = (document.getElementById('vault-tt-sched')||{}).value || av.tiktok_schedule || '';
+  if (bio) lines.push('Bio: ' + bio);
+  if (voice) lines.push('Voice & Tone: ' + voice);
+  if (captions) lines.push('Example Captions (reference style):\n' + captions.slice(0,600));
+  if (capPrompt) lines.push('Caption Generation Rules: ' + capPrompt);
+  if (igSched) lines.push('Instagram Schedule: ' + igSched);
+  if (ttSched) lines.push('TikTok Schedule: ' + ttSched);
+
+  // Active instructions
+  try {
+    var ir = await db.from('social_instructions').select('text').eq('avatar_id', av.id).eq('enabled', true);
+    if (ir.data && ir.data.length) {
+      lines.push('\n=== CONTENT RULES (always follow) ===');
+      ir.data.forEach(function(i){ lines.push('- ' + i.text); });
+    }
+  } catch(e) {}
+
+  // Performance patterns
+  try {
+    var pr = await db.from('social_patterns').select('type,text').eq('avatar_id', av.id);
+    if (pr.data && pr.data.length) {
+      var working = pr.data.filter(function(p){ return p.type === 'working'; });
+      var avoid = pr.data.filter(function(p){ return p.type === 'avoid'; });
+      if (working.length) {
+        lines.push('\n=== WHAT PERFORMS WELL FOR THIS AVATAR ===');
+        working.forEach(function(p){ lines.push('- ' + p.text); });
+      }
+      if (avoid.length) {
+        lines.push('\n=== WHAT TO AVOID ===');
+        avoid.forEach(function(p){ lines.push('- ' + p.text); });
+      }
+    }
+  } catch(e) {}
+
+  // Recent posts for reference
+  try {
+    var twoWeeksAgo = new Date(); twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
+    var rp = await db.from('social_posts').select('platform,post_type,caption,status').eq('avatar_id', av.id).gte('created_at', twoWeeksAgo.toISOString()).order('created_at', {ascending:false}).limit(8);
+    if (rp.data && rp.data.length) {
+      lines.push('\n=== RECENT POSTS (for style reference, avoid repeating) ===');
+      rp.data.forEach(function(p){ lines.push('[' + p.platform + '] ' + (p.post_type||'') + ': ' + (p.caption||'').slice(0,100)); });
+    }
+  } catch(e) {}
+
+  return lines.join('\n');
+}
+
+function showContextBadge(hasContext) {
+  var existing = document.getElementById('ctx-indicator');
+  if (existing) existing.remove();
+  if (!hasContext) return;
+  var badge = document.createElement('div');
+  badge.id = 'ctx-indicator';
+  badge.className = 'ctx-box';
+  badge.innerHTML = '<strong>Avatar Context Loaded</strong>Generating content based on ' + (socialState.currentAvatar ? socialState.currentAvatar.name + '\'s' : 'this avatar\'s') + ' profile, instructions, performance patterns, and recent posts.';
+  var step1 = document.querySelector('.studio-step');
+  if (step1) step1.insertBefore(badge, step1.firstChild);
+}
+
 function setBtnLoading(id, loading, label) {
   var btn = document.getElementById(id);
   if (!btn) return;
@@ -1005,11 +1259,14 @@ async function generateHooks() {
   if (!key) { showToast('Configure your Gemini API key first.', 'error'); return; }
   studioState.niche = niche;
   setBtnLoading('btn-gen-hooks', true, 'Generate Formats & Hooks');
+  var ctx = await buildAvatarContext();
+  showContextBadge(!!ctx);
   var prompt = 'You are an expert social media content strategist for short-form video.\n\n' +
-    'Niche: ' + niche + '\n\n' +
-    'Generate 3 unique short-form video content formats tailored to this niche. For each format provide:\n' +
+    (ctx ? 'AVATAR CONTEXT:\n' + ctx + '\n\n' : '') +
+    'Niche/Topic Focus: ' + niche + '\n\n' +
+    'Generate 3 unique short-form video content formats tailored to this avatar and niche. For each format provide:\n' +
     '1. A creative, memorable format name (e.g. "The Myth Buster", "Hot Take Tuesday")\n' +
-    '2. Exactly 3 scroll-stopping hooks, each under 12 words, optimized for TikTok and Instagram Reels\n\n' +
+    '2. Exactly 3 scroll-stopping hooks, each under 12 words, in this avatar\'s voice, optimized for TikTok and Instagram Reels\n\n' +
     'Respond ONLY with valid JSON, no markdown, no explanation:\n' +
     '{"formats":[{"name":"...","hooks":["...","...","..."]},{"name":"...","hooks":["...","...","..."]},{"name":"...","hooks":["...","...","..."]}]}';
   try {
@@ -1066,14 +1323,16 @@ async function generateScript(variation) {
   var key = (typeof GEMINI_API_KEY !== 'undefined') ? GEMINI_API_KEY : '';
   if (!key) { showToast('No API key configured.', 'error'); return; }
   setBtnLoading('btn-gen-script', true, 'Generate Script');
+  var ctx = await buildAvatarContext();
   var prompt = 'You are an expert short-form video scriptwriter.\n\n' +
+    (ctx ? 'AVATAR CONTEXT:\n' + ctx + '\n\n' : '') +
     'Hook: ' + studioState.selectedHook + '\n' +
     'Target Duration: ' + studioState.duration + ' seconds\n' +
-    'Niche: ' + (studioState.niche || 'general') + '\n\n' +
-    'Write a complete ' + studioState.duration + '-second video script in 3 parts:\n' +
+    'Niche/Topic: ' + (studioState.niche || 'general') + '\n\n' +
+    'Write a complete ' + studioState.duration + '-second video script in 3 parts in this avatar\'s voice and style:\n' +
     '- HOOK: use the provided hook as the opening line exactly\n' +
-    '- BODY: the main content that delivers value, builds on the hook\n' +
-    '- CTA: a compelling 1-2 sentence call to action\n\n' +
+    '- BODY: main content that delivers value, in this avatar\'s specific voice/tone\n' +
+    '- CTA: a compelling 1-2 sentence call to action matching the avatar\'s style\n\n' +
     'For each part calculate word_count and read_time (string like "8s") at 150 words per minute.\n\n' +
     (variation ? 'Generate a COMPLETELY DIFFERENT variation. Rewrite the body and CTA. Do not repeat phrasing.\n\n' : '') +
     'Respond ONLY with valid JSON, no markdown:\n' +
@@ -1082,9 +1341,16 @@ async function generateScript(variation) {
     var text = await callGemini(prompt);
     studioState.script = extractJSON(text);
     renderScript(studioState.script);
-    // Unlock step 3
+    // Unlock step 3 and show approve bar
     document.getElementById('studio-step3-body').classList.remove('studio-locked');
     document.getElementById('step3-meta').textContent = 'Script ready — generate shot plan below';
+    var approveBar = document.getElementById('approve-bar');
+    if (approveBar) {
+      approveBar.style.display = 'flex';
+      // Pre-fill date with today
+      var dateEl = document.getElementById('approve-date');
+      if (dateEl && !dateEl.value) dateEl.value = new Date().toISOString().slice(0,10);
+    }
   } catch(e) {
     showToast('Script generation failed: ' + e.message, 'error');
   }
@@ -1150,13 +1416,17 @@ async function generateShotPlan(variation) {
   if (!keyGemini) { showToast('No API key configured.', 'error'); return; }
   setBtnLoading('btn-gen-shots', true, 'Generate Shot Plan');
   var s = studioState.script;
+  var av = socialState.currentAvatar;
+  var faceDesc = av ? ((document.getElementById('vault-face')||{}).value || av.face_desc || '') : '';
   var prompt = 'You are a professional video director for short-form social media content.\n\n' +
+    (av ? 'Avatar: ' + av.name + '\n' : '') +
+    (faceDesc ? 'Creator description: ' + faceDesc + '\n\n' : '\n') +
     'Script:\nHook: ' + (s.hook ? s.hook.text : '') + '\nBody: ' + (s.body ? s.body.text : '') + '\nCTA: ' + (s.cta ? s.cta.text : '') + '\n\n' +
     'Create a detailed numbered shot plan. For each shot provide:\n' +
     '- number (integer)\n- type (e.g. Close-up, Wide shot, POV, Talking head, B-roll, Overhead)\n' +
     '- duration_s (e.g. "3s")\n- camera (e.g. handheld, static, slow zoom in)\n' +
     '- script (the exact script words delivered in this shot)\n' +
-    '- note (what the creator should show or do)\n\n' +
+    '- note (what the creator should show or do visually)\n\n' +
     (variation ? 'Create a COMPLETELY DIFFERENT shot sequence with different angles and pacing.\n\n' : '') +
     'Respond ONLY with valid JSON, no markdown:\n' +
     '{"shots":[{"number":1,"type":"...","duration_s":"...","camera":"...","script":"...","note":"..."},...]}';
@@ -1200,6 +1470,311 @@ function renderShotPlan(shots) {
       'Regenerate Shot Plan' +
     '</button>' +
   '</div>';
+}
+
+// ══════════════════════════════════════
+// APPROVE SCRIPT TO CALENDAR
+// ══════════════════════════════════════
+async function approveToCalendar() {
+  if (!studioState.script || !socialState.currentAvatar) { showToast('Generate a script first.', 'error'); return; }
+  var platform = document.getElementById('approve-platform').value;
+  var dateVal = document.getElementById('approve-date').value;
+  if (!dateVal) { showToast('Pick a date first.', 'error'); return; }
+  var s = studioState.script;
+  var fullCaption = [(s.hook ? s.hook.text : ''), (s.body ? s.body.text : ''), (s.cta ? s.cta.text : '')].filter(Boolean).join('\n\n');
+  var scheduledDate = new Date(dateVal + 'T19:00:00');
+  var weekStr = getWeekMonday(scheduledDate).toISOString().slice(0,10);
+  var payload = {
+    avatar_id: socialState.currentAvatar.id,
+    platform: platform,
+    post_type: 'AI Studio',
+    caption: fullCaption,
+    status: 'pending',
+    scheduled_for: scheduledDate.toISOString(),
+    week_start: weekStr
+  };
+  try {
+    var r = await db.from('social_posts').insert(payload);
+    if (r.error) throw r.error;
+    showToast('Script sent to calendar as pending post!', 'success');
+    var btn = document.getElementById('approve-bar');
+    if (btn) btn.style.background = 'rgba(59,178,115,.08)';
+  } catch(e) { showToast('Failed: ' + (e.message || ''), 'error'); }
+}
+
+// ══════════════════════════════════════
+// WEEK PLAN GENERATOR
+// ══════════════════════════════════════
+async function generateWeekPlan() {
+  var key = (typeof GEMINI_API_KEY !== 'undefined') ? GEMINI_API_KEY : '';
+  if (!key) { showToast('No API key configured.', 'error'); return; }
+  if (!socialState.currentAvatar) { showToast('Open an avatar first.', 'error'); return; }
+
+  var dateEl = document.getElementById('wkplan-date');
+  var platform = document.getElementById('wkplan-platform').value;
+  var pickedDate = dateEl.value ? new Date(dateEl.value) : new Date();
+  var monday = getWeekMonday(pickedDate);
+
+  setBtnLoading('btn-gen-weekplan', true, 'Generate Week Plan');
+  var ctx = await buildAvatarContext();
+
+  // Build the 7 day dates
+  var days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  var dayDates = days.map(function(d, i) {
+    var dt = new Date(monday); dt.setDate(dt.getDate() + i);
+    return dt.toISOString().slice(0,10);
+  });
+
+  var prompt = 'You are an expert social media content planner.\n\n' +
+    (ctx ? 'AVATAR CONTEXT:\n' + ctx + '\n\n' : '') +
+    'Platform: ' + platform.toUpperCase() + '\n' +
+    'Week starting: ' + monday.toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'}) + '\n\n' +
+    'Create a 7-day content plan for this avatar. For each day provide:\n' +
+    '- day: e.g. "Mon"\n' +
+    '- date: ISO date string e.g. "' + dayDates[0] + '"\n' +
+    '- post_type: e.g. "GRWM", "Tutorial", "Hot Take", "Lifestyle", "Behind the Scenes"\n' +
+    '- hook: scroll-stopping opening line under 12 words in this avatar\'s voice\n' +
+    '- caption: a full ready-to-post caption (150-200 words) in this avatar\'s voice and style\n\n' +
+    'Mix up the post types. Make each day feel distinct. Follow all avatar content rules.\n\n' +
+    'Respond ONLY with valid JSON:\n' +
+    '{"week":[' +
+    days.map(function(d, i){ return '{"day":"' + d + '","date":"' + dayDates[i] + '","post_type":"...","hook":"...","caption":"..."}'; }).join(',') +
+    ']}';
+  try {
+    var text = await callGemini(prompt);
+    var data = extractJSON(text);
+    studioState.weekPlan = data.week || [];
+    renderWeekPlan(studioState.weekPlan, platform);
+    document.getElementById('btn-approve-all-plan').style.display = 'block';
+  } catch(e) {
+    showToast('Week plan failed: ' + e.message, 'error');
+  }
+  setBtnLoading('btn-gen-weekplan', false, 'Generate Week Plan');
+}
+
+function renderWeekPlan(days, platform) {
+  var out = document.getElementById('wk-plan-output');
+  if (!days.length) { out.innerHTML = ''; return; }
+  out.innerHTML = '<div class="wk-plan-list">' + days.map(function(d, i) {
+    return '<div class="wk-plan-card" id="wkplan-card-' + i + '">' +
+      '<div class="wk-plan-day">' + esc(d.day) + '</div>' +
+      '<div class="wk-plan-body">' +
+        '<div class="wk-plan-type">' + esc(d.post_type||'') + ' &nbsp;·&nbsp; ' + esc(d.date||'') + '</div>' +
+        '<div class="wk-plan-hook">' + esc(d.hook||'') + '</div>' +
+        '<div class="wk-plan-cap">' + esc(d.caption||'') + '</div>' +
+      '</div>' +
+      '<div class="wk-plan-act">' +
+        '<button class="btn-approve" style="font-size:.75rem;padding:.4rem .8rem" data-idx="' + i + '" data-platform="' + esc(platform) + '" onclick="approveWeekPost(this)">Approve</button>' +
+      '</div>' +
+    '</div>';
+  }).join('') + '</div>';
+}
+
+async function approveWeekPost(btn) {
+  if (!socialState.currentAvatar || !studioState.weekPlan) return;
+  var idx = parseInt(btn.dataset.idx);
+  var platform = btn.dataset.platform;
+  var d = studioState.weekPlan[idx];
+  if (!d) return;
+  var scheduledDate = new Date(d.date + 'T19:00:00');
+  var weekStr = getWeekMonday(scheduledDate).toISOString().slice(0,10);
+  var payload = {
+    avatar_id: socialState.currentAvatar.id,
+    platform: platform,
+    post_type: d.post_type || 'AI Studio',
+    caption: d.caption || '',
+    status: 'pending',
+    scheduled_for: scheduledDate.toISOString(),
+    week_start: weekStr
+  };
+  try {
+    var r = await db.from('social_posts').insert(payload);
+    if (r.error) throw r.error;
+    showToast(d.day + ' post sent to calendar!', 'success');
+    var card = document.getElementById('wkplan-card-' + idx);
+    if (card) { card.classList.add('approved'); btn.textContent = 'Approved ✓'; }
+  } catch(e) { showToast('Failed: ' + (e.message || ''), 'error'); }
+}
+
+async function approveAllWeekPosts() {
+  if (!socialState.currentAvatar || !studioState.weekPlan || !studioState.weekPlan.length) return;
+  if (!confirm('Send all 7 days to the calendar as pending posts?')) return;
+  var platform = document.getElementById('wkplan-platform').value;
+  var successes = 0;
+  for (var i = 0; i < studioState.weekPlan.length; i++) {
+    var d = studioState.weekPlan[i];
+    var scheduledDate = new Date(d.date + 'T19:00:00');
+    var weekStr = getWeekMonday(scheduledDate).toISOString().slice(0,10);
+    try {
+      await db.from('social_posts').insert({
+        avatar_id: socialState.currentAvatar.id,
+        platform: platform, post_type: d.post_type || 'AI Studio',
+        caption: d.caption || '', status: 'pending',
+        scheduled_for: scheduledDate.toISOString(), week_start: weekStr
+      });
+      successes++;
+      var card = document.getElementById('wkplan-card-' + i);
+      if (card) card.classList.add('approved');
+    } catch(e) {}
+  }
+  showToast(successes + ' posts sent to calendar!', 'success');
+}
+
+// ══════════════════════════════════════
+// ASSET LIBRARY
+// ══════════════════════════════════════
+var assetState = { assets: [], currentFolder: 'all' };
+
+async function loadAssets(avatarId) {
+  var grid = document.getElementById('asset-grid');
+  if (!grid) return;
+  grid.innerHTML = '<div class="empty-st" style="padding:1.5rem">Loading...</div>';
+  try {
+    var r = await db.from('social_assets').select('*').eq('avatar_id', avatarId).order('created_at');
+    if (r.error) throw r.error;
+    assetState.assets = r.data || [];
+    renderFolderBar(assetState.assets);
+    filterAssets(assetState.currentFolder);
+    var countEl = document.getElementById('asset-count');
+    if (countEl) countEl.textContent = assetState.assets.length + ' asset' + (assetState.assets.length !== 1 ? 's' : '');
+  } catch(e) { grid.innerHTML = '<div class="empty-st"><div class="empty-st-h">Could not load assets</div></div>'; }
+}
+
+function renderFolderBar(assets) {
+  var bar = document.getElementById('folder-bar');
+  if (!bar) return;
+  var folders = [];
+  assets.forEach(function(a) {
+    var f = (a.folder || 'General').trim();
+    if (f && folders.indexOf(f) === -1) folders.push(f);
+  });
+  bar.innerHTML = '<button class="folder-tab' + (assetState.currentFolder === 'all' ? ' act' : '') + '" data-folder="all" onclick="filterAssets(\'all\',this)">All</button>' +
+    folders.map(function(f) {
+      return '<button class="folder-tab' + (assetState.currentFolder === f ? ' act' : '') + '" data-folder="' + esc(f) + '" onclick="filterAssets(\'' + esc(f).replace(/'/g,'\\\'') + '\',this)">' + esc(f) + '</button>';
+    }).join('');
+}
+
+function filterAssets(folder, btn) {
+  assetState.currentFolder = folder;
+  if (btn) {
+    document.querySelectorAll('.folder-tab').forEach(function(t){ t.classList.remove('act'); });
+    btn.classList.add('act');
+  }
+  var filtered = folder === 'all' ? assetState.assets : assetState.assets.filter(function(a){ return (a.folder || 'General') === folder; });
+  renderAssets(filtered);
+}
+
+function renderAssets(assets) {
+  var grid = document.getElementById('asset-grid');
+  if (!grid) return;
+  if (!assets.length) {
+    grid.innerHTML = '<div class="empty-st" style="grid-column:1/-1"><div class="empty-st-h">No assets yet</div><div>Add images, references, or style guides for this avatar.</div></div>';
+    return;
+  }
+  grid.innerHTML = assets.map(function(a) {
+    var isImage = a.asset_type === 'image' && a.url;
+    var typeIcons = { video:'▶', reference:'★', style:'◈', audio:'♪', document:'📄', image:'🖼' };
+    var icon = typeIcons[a.asset_type] || '📎';
+    return '<div class="asset-card" id="asset-' + a.id + '">' +
+      '<div class="asset-thumb">' +
+        (isImage ? '<img src="' + esc(a.url) + '" alt="' + esc(a.name) + '" onerror="this.parentNode.innerHTML=\'<span class=asset-thumb-icon>🖼</span>\'">' : '<span class="asset-thumb-icon">' + icon + '</span>') +
+      '</div>' +
+      '<div class="asset-info">' +
+        '<div class="asset-name" title="' + esc(a.name) + '">' + esc(a.name) + '</div>' +
+        '<div class="asset-meta">' +
+          '<span class="asset-badge">' + esc(a.asset_type || 'image') + '</span>' +
+          (a.folder ? '<span class="asset-badge">' + esc(a.folder) + '</span>' : '') +
+        '</div>' +
+        (a.notes ? '<div class="asset-notes">' + esc(a.notes) + '</div>' : '') +
+        '<div class="asset-actions">' +
+          '<button class="asset-act-btn copy" data-url="' + esc(a.url || '') + '" data-notes="' + esc(a.notes || '') + '" onclick="copyAssetRef(this)">Copy Ref</button>' +
+          '<button class="asset-act-btn" onclick="openAssetModal(\'' + a.id + '\')">Edit</button>' +
+          '<button class="asset-act-btn del" data-aid="' + a.id + '" onclick="deleteAssetById(this.dataset.aid)">Del</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function copyAssetRef(btn) {
+  var url = btn.dataset.url || '';
+  var notes = btn.dataset.notes || '';
+  var text = url + (notes ? '\n[Context: ' + notes + ']' : '');
+  navigator.clipboard.writeText(text).then(function(){
+    var orig = btn.textContent; btn.textContent = 'Copied!';
+    setTimeout(function(){ btn.textContent = orig; }, 1500);
+  }).catch(function(){ showToast('Copy failed — try manually.', 'error'); });
+}
+
+function openAssetModal(assetId) {
+  var editIdEl = document.getElementById('asset-edit-id');
+  var nameEl = document.getElementById('asset-form-name');
+  var typeEl = document.getElementById('asset-form-type');
+  var folderEl = document.getElementById('asset-form-folder');
+  var urlEl = document.getElementById('asset-form-url');
+  var notesEl = document.getElementById('asset-form-notes');
+  var delBtn = document.getElementById('btn-delete-asset');
+  var titleEl = document.getElementById('asset-modal-title');
+  nameEl.value = ''; typeEl.value = 'image'; folderEl.value = ''; urlEl.value = ''; notesEl.value = '';
+  editIdEl.value = ''; delBtn.style.display = 'none'; titleEl.textContent = 'Add Asset';
+  if (assetId) {
+    var a = assetState.assets.find(function(x){ return x.id === assetId; });
+    if (a) {
+      titleEl.textContent = 'Edit Asset';
+      editIdEl.value = a.id;
+      nameEl.value = a.name || '';
+      typeEl.value = a.asset_type || 'image';
+      folderEl.value = a.folder || '';
+      urlEl.value = a.url || '';
+      notesEl.value = a.notes || '';
+      delBtn.style.display = 'block';
+    }
+  }
+  openModal('modal-asset-form');
+}
+
+async function saveAsset() {
+  if (!socialState.currentAvatar) return;
+  var name = (document.getElementById('asset-form-name').value || '').trim();
+  var editId = document.getElementById('asset-edit-id').value;
+  if (!name) { showToast('Enter an asset name.', 'error'); return; }
+  var payload = {
+    avatar_id: socialState.currentAvatar.id,
+    name: name,
+    asset_type: document.getElementById('asset-form-type').value,
+    folder: (document.getElementById('asset-form-folder').value || 'General').trim(),
+    url: document.getElementById('asset-form-url').value.trim() || null,
+    notes: document.getElementById('asset-form-notes').value.trim() || null
+  };
+  try {
+    if (editId) {
+      var r = await db.from('social_assets').update(payload).eq('id', editId);
+      if (r.error) throw r.error;
+      showToast('Asset updated.', 'success');
+    } else {
+      var r2 = await db.from('social_assets').insert(payload);
+      if (r2.error) throw r2.error;
+      showToast('Asset saved!', 'success');
+    }
+    closeModal('modal-asset-form');
+    loadAssets(socialState.currentAvatar.id);
+  } catch(e) { showToast('Save failed: ' + (e.message || ''), 'error'); }
+}
+
+async function deleteAsset() {
+  var id = document.getElementById('asset-edit-id').value;
+  if (!id || !confirm('Delete this asset?')) return;
+  deleteAssetById(id);
+  closeModal('modal-asset-form');
+}
+
+async function deleteAssetById(id) {
+  try {
+    var r = await db.from('social_assets').delete().eq('id', id);
+    if (r.error) throw r.error;
+    showToast('Asset deleted.', 'success');
+    if (socialState.currentAvatar) loadAssets(socialState.currentAvatar.id);
+  } catch(e) { showToast('Delete failed.', 'error'); }
 }
 
 // ══════════════════════════════════════
