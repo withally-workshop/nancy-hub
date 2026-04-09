@@ -71,50 +71,44 @@ var STARTERS = [
 function injectStyles() {
   var s = document.createElement('style');
   s.textContent = [
-    // ── Bot bubble ──────────────────────────────────────────────────
-    // Outer wrapper: transparent, overflow:visible so bot sticks out above
-    '.nc-bubble{position:fixed;bottom:1.5rem;right:1.75rem;z-index:900;width:58px;height:76px;background:transparent;border:none;cursor:pointer;padding:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;transition:transform .25s cubic-bezier(.34,1.56,.64,1);overflow:visible}',
+    // ── Lemon bubble ────────────────────────────────────────────────
+    // Outer wrapper — transparent, overflow:visible so lemon floats above
+    '.nc-bubble{position:fixed;bottom:1.5rem;right:1.75rem;z-index:900;width:62px;height:84px;background:transparent;border:none;cursor:pointer;padding:0;display:block;transition:transform .25s cubic-bezier(.34,1.56,.64,1);overflow:visible}',
     '.nc-bubble:hover{transform:scale(1.07) translateY(-3px)}',
     '.nc-bubble.open{transform:scale(1)}',
 
-    // Speech bubble shell (bottom portion)
-    '.nc-bbl{position:absolute;bottom:0;left:0;right:0;height:50px;background:rgba(255,255,255,.1);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1.5px solid rgba(255,255,255,.22);border-radius:50% 50% 38% 50%/50% 50% 62% 50%;display:flex;align-items:flex-end;justify-content:center;padding-bottom:7px}',
-
-    // "Hi" / × label inside bubble
-    '.nc-bbl-lbl{font-family:Inter,sans-serif;font-size:.73rem;font-weight:700;color:rgba(255,255,255,.88);letter-spacing:.04em;line-height:1;transition:opacity .15s}',
+    // Speech bubble shell — frosted glass circle with tail
+    '.nc-bbl{position:absolute;bottom:0;left:0;right:0;height:52px;background:rgba(255,255,255,.1);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1.5px solid rgba(255,255,255,.22);border-radius:50% 50% 38% 50%/50% 50% 62% 50%;display:flex;align-items:flex-end;justify-content:center;padding-bottom:8px;z-index:1}',
+    '.nc-bbl-lbl{font-family:Inter,sans-serif;font-size:.72rem;font-weight:700;color:rgba(255,255,255,.85);letter-spacing:.05em;line-height:1}',
 
     // Notification dot
-    '.nc-bubble-dot{position:absolute;top:18px;right:2px;width:9px;height:9px;background:#f7b731;border-radius:50%;border:2px solid rgba(0,0,0,.4);display:none;z-index:2}',
+    '.nc-bubble-dot{position:absolute;top:22px;right:2px;width:9px;height:9px;background:#e53935;border-radius:50%;border:2px solid rgba(0,0,0,.4);display:none;z-index:10}',
     '.nc-bubble-dot.show{display:block}',
 
-    // Bot character wrapper — bobs gently, sits above the bubble
-    '.nc-bot{position:absolute;bottom:32px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:1px;animation:ncBotBob 3s ease-in-out infinite}',
-    '.nc-bubble.open .nc-bot{animation:none}',
-    '@keyframes ncBotBob{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-4px)}}',
+    // Lemon character — sits above bubble, rendered on top (z-index:2)
+    '.nc-lemon{position:absolute;bottom:34px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;z-index:2;animation:ncLemonBob 3s ease-in-out infinite}',
+    '.nc-bubble.open .nc-lemon{animation:none}',
+    '@keyframes ncLemonBob{0%,100%{transform:translateX(-50%) translateY(0) rotate(-3deg)}50%{transform:translateX(-50%) translateY(-5px) rotate(3deg)}}',
 
-    // Antenna
-    '.nc-bot-ant-ball{width:7px;height:7px;background:#fbbf24;border-radius:50%;border:1.5px solid rgba(255,255,255,.5)}',
-    '.nc-bot-ant-stick{width:2px;height:6px;background:#fbbf24;border-radius:2px}',
+    // Leaf
+    '.nc-lemon-leaf{width:14px;height:9px;background:linear-gradient(135deg,#4ade80,#22c55e);border-radius:80% 0 80% 0;transform:rotate(-25deg);margin-bottom:-3px;margin-left:10px;position:relative;z-index:3}',
 
-    // Head
-    '.nc-bot-head{width:30px;height:22px;background:#fbbf24;border-radius:7px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:2px 3px;position:relative}',
+    // Lemon body — oval with tips
+    '.nc-lemon-body{width:32px;height:38px;background:linear-gradient(150deg,#fef08a 10%,#facc15 60%,#eab308 100%);border-radius:50% 50% 46% 46%/40% 40% 60% 60%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;position:relative;box-shadow:inset -4px -5px 0 rgba(0,0,0,.07),inset 2px 2px 0 rgba(255,255,255,.35)}',
 
-    // Ear nubs
-    '.nc-bot-head::before,.nc-bot-head::after{content:"";position:absolute;top:50%;transform:translateY(-50%);width:4px;height:8px;background:#f0a800;border-radius:2px}',
-    '.nc-bot-head::before{left:-4px;border-radius:3px 0 0 3px}',
-    '.nc-bot-head::after{right:-4px;border-radius:0 3px 3px 0}',
+    // Pointed tip top
+    '.nc-lemon-body::before{content:"";position:absolute;top:-5px;left:50%;transform:translateX(-50%);width:8px;height:8px;background:#facc15;border-radius:50%;clip-path:ellipse(50% 80% at 50% 80%)}',
+    // Pointed tip bottom
+    '.nc-lemon-body::after{content:"";position:absolute;bottom:-4px;left:50%;transform:translateX(-50%);width:7px;height:7px;background:#eab308;border-radius:50%;clip-path:ellipse(50% 80% at 50% 20%)}',
 
-    // Visor (white eye panel)
-    '.nc-bot-visor{width:22px;height:12px;background:rgba(255,255,255,.95);border-radius:4px;display:flex;align-items:center;justify-content:space-evenly;padding:0 3px}',
-    '.nc-bot-eye{width:4px;height:4px;background:#1a1a2e;border-radius:50%;transition:transform .15s}',
-    '.nc-bubble:hover .nc-bot-eye{transform:scaleY(0.6)}', // squint on hover
+    // Eyes
+    '.nc-lemon-eyes{display:flex;gap:8px;align-items:center}',
+    '.nc-lemon-eye{width:4px;height:4px;background:#1a1a2e;border-radius:50%;transition:transform .2s}',
+    '.nc-bubble:hover .nc-lemon-eye{transform:scaleY(0.5)}',
 
-    // Mouth
-    '.nc-bot-mouth{width:10px;height:0;border-bottom:2.5px solid rgba(0,0,0,.28);border-radius:0 0 5px 5px}',
-
-    // Body (just the top of shoulders)
-    '.nc-bot-body{width:22px;height:7px;background:#fbbf24;border-radius:0 0 7px 7px;opacity:.9}',
-    // ── end bot bubble ───────────────────────────────────────────────
+    // Smile
+    '.nc-lemon-smile{width:13px;height:0;border-bottom:2.5px solid rgba(0,0,0,.3);border-radius:0 0 8px 8px}',
+    // ── end lemon bubble ─────────────────────────────────────────────
 
     // Panel
     '.nc-panel{position:fixed;bottom:calc(1.75rem + 52px + .75rem);right:1.75rem;z-index:900;width:380px;max-height:560px;background:var(--card,#1a1a1a);border:1px solid var(--border2,rgba(255,255,255,.12));border-radius:20px;display:flex;flex-direction:column;box-shadow:0 24px 60px rgba(0,0,0,.45);opacity:0;pointer-events:none;transform:translateY(12px) scale(.97);transition:opacity .22s ease,transform .25s cubic-bezier(.34,1.3,.64,1);overflow:hidden}',
@@ -231,25 +225,23 @@ function injectHTML() {
       '</div>',
     '</div>',
 
-    // Bot bubble button
+    // Lemon bubble button — bubble behind, lemon in front
     '<button class="nc-bubble" id="nc-bubble" onclick="ncToggle()" title="Chat with Nancy AI">',
       '<span class="nc-bubble-dot" id="nc-dot"></span>',
-      // Bot character (overlaps above the bubble)
-      '<span class="nc-bot" id="nc-bot-char">',
-        '<span class="nc-bot-ant-ball"></span>',
-        '<span class="nc-bot-ant-stick"></span>',
-        '<span class="nc-bot-head">',
-          '<span class="nc-bot-visor">',
-            '<span class="nc-bot-eye"></span>',
-            '<span class="nc-bot-eye"></span>',
-          '</span>',
-          '<span class="nc-bot-mouth"></span>',
-        '</span>',
-        '<span class="nc-bot-body"></span>',
-      '</span>',
-      // Speech bubble shell with "Hi" label
+      // 1. Speech bubble shell (z-index:1, rendered first = behind)
       '<span class="nc-bbl">',
         '<span class="nc-bbl-lbl" id="nc-bubble-ico">Hi</span>',
+      '</span>',
+      // 2. Lemon character (z-index:2, rendered after = always in front)
+      '<span class="nc-lemon">',
+        '<span class="nc-lemon-leaf"></span>',
+        '<span class="nc-lemon-body">',
+          '<span class="nc-lemon-eyes">',
+            '<span class="nc-lemon-eye"></span>',
+            '<span class="nc-lemon-eye"></span>',
+          '</span>',
+          '<span class="nc-lemon-smile"></span>',
+        '</span>',
       '</span>',
     '</button>'
   ].join('');

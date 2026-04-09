@@ -583,14 +583,14 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--body);min-h
    SLACK DRAWER
 ══════════════════════════════════════ */
 :root{--radius-pill:100px;--green:#3bb273}
-/* Slack floating side tab */
-.slack-open-btn{position:fixed;right:0;top:52%;transform:translateY(-50%);z-index:350;background:var(--card);border:1px solid var(--border2);border-right:none;border-radius:10px 0 0 10px;padding:.8rem .55rem .8rem .6rem;cursor:pointer;display:none;flex-direction:column;align-items:center;gap:.45rem;box-shadow:-3px 0 18px rgba(0,0,0,.22);transition:background .15s,border-color .15s}
-.slack-open-btn:hover{background:var(--bg2);border-color:var(--primary)}
-.slack-open-btn:hover .slack-side-icon{color:var(--primary)}
-.slack-open-btn:hover .slack-side-label{color:var(--primary)}
-.slack-side-icon{color:var(--muted);transition:color .15s;line-height:1}
-.slack-side-label{writing-mode:vertical-rl;font-family:'Inter',sans-serif;font-size:.62rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);transition:color .15s;line-height:1}
-.slack-open-badge{background:#e53935;color:white;font-size:.55rem;font-weight:700;padding:2px 4px;border-radius:var(--radius-pill);min-width:15px;text-align:center;display:none}
+/* Slack floating transparent bubble — matches chat bubble style */
+.slack-open-btn{position:fixed;right:1.75rem;bottom:8rem;z-index:350;width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,.07);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1.5px solid rgba(255,255,255,.15);cursor:pointer;display:none;flex-direction:column;align-items:center;justify-content:center;gap:3px;transition:transform .2s cubic-bezier(.34,1.56,.64,1),background .2s,border-color .2s;box-shadow:none;padding:0}
+.slack-open-btn:hover{transform:scale(1.08) translateY(-2px);background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.25)}
+.slack-side-icon{color:rgba(255,255,255,.7);transition:color .15s;line-height:1;display:flex;align-items:center;justify-content:center}
+.slack-open-btn:hover .slack-side-icon{color:rgba(255,255,255,.95)}
+.slack-side-label{font-family:'Inter',sans-serif;font-size:.55rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.55);transition:color .15s;line-height:1}
+.slack-open-btn:hover .slack-side-label{color:rgba(255,255,255,.85)}
+.slack-open-badge{position:absolute;top:-3px;right:-3px;background:#e53935;color:white;font-size:.55rem;font-weight:700;padding:2px 4px;border-radius:var(--radius-pill);min-width:15px;text-align:center;display:none}
 .slack-drawer{position:fixed;top:0;right:-480px;width:460px;height:100vh;z-index:400;background:var(--card);border-left:1px solid var(--border);display:flex;flex-direction:column;transition:right .28s cubic-bezier(.4,0,.2,1);box-shadow:-8px 0 32px rgba(0,0,0,.2)}
 .slack-drawer.open{right:0}
 .slack-drawer-backdrop{display:none;position:fixed;inset:0;z-index:399;background:rgba(0,0,0,.35)}
@@ -1418,7 +1418,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--body);min-h
 <button class="slack-open-btn" id="slack-open-btn" onclick="openSlackDrawer()" title="Open Slack" style="display:none">
   <span class="slack-open-badge" id="slack-open-badge"></span>
   <span class="slack-side-icon">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 10c-.83 0-1.5-.67-1.5-1.5v-5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5z"/><path d="M20.5 10H19V8.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/><path d="M9.5 14c.83 0 1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5S8 21.33 8 20.5v-5c0-.83.67-1.5 1.5-1.5z"/><path d="M3.5 14H5v1.5c0 .83-.67 1.5-1.5 1.5S2 16.33 2 15.5 2.67 14 3.5 14z"/><path d="M14 14.5c0-.83.67-1.5 1.5-1.5h5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-5c-.83 0-1.5-.67-1.5-1.5z"/><path d="M15.5 19H14v1.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5z"/><path d="M10 9.5C10 8.67 9.33 8 8.5 8h-5C2.67 8 2 8.67 2 9.5S2.67 11 3.5 11h5c.83 0 1.5-.67 1.5-1.5z"/><path d="M8.5 5H10V3.5C10 2.67 9.33 2 8.5 2S7 2.67 7 3.5 7.67 5 8.5 5z"/></svg>
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 10c-.83 0-1.5-.67-1.5-1.5v-5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5z"/><path d="M20.5 10H19V8.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/><path d="M9.5 14c.83 0 1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5S8 21.33 8 20.5v-5c0-.83.67-1.5 1.5-1.5z"/><path d="M3.5 14H5v1.5c0 .83-.67 1.5-1.5 1.5S2 16.33 2 15.5 2.67 14 3.5 14z"/><path d="M14 14.5c0-.83.67-1.5 1.5-1.5h5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-5c-.83 0-1.5-.67-1.5-1.5z"/><path d="M15.5 19H14v1.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5z"/><path d="M10 9.5C10 8.67 9.33 8 8.5 8h-5C2.67 8 2 8.67 2 9.5S2.67 11 3.5 11h5c.83 0 1.5-.67 1.5-1.5z"/><path d="M8.5 5H10V3.5C10 2.67 9.33 2 8.5 2S7 2.67 7 3.5 7.67 5 8.5 5z"/></svg>
   </span>
   <span class="slack-side-label">Slack</span>
 </button>
