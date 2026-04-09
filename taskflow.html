@@ -4143,13 +4143,19 @@ async function slackPullAll() {
         if (pullLatest) pullParams.latest = pullLatest;
         var data = await slackAPI(token, 'conversations.history', pullParams);
         if (!data.ok) continue;
-        // Only collect @mentions — skip review bots and all other noise
-        // (Individual channel view shows full history; Reviews tab shows star reviews)
+        // Only collect real human @mentions — skip bots, bulk dumps, and review messages
         var msgs = (data.messages || []).filter(function(m) {
           if (m.type !== 'message' || m.subtype) return false;
+          if (m.bot_id || m.app_id) return false; // skip all bot/app messages
           if (SLACK_REVIEW_RE.test(m.text || '')) return false; // reviews → Reviews tab
           if (!ownId) return false;
-          return (m.text || '').indexOf('<@' + ownId + '>') !== -1; // only @mentions
+          var txt = m.text || '';
+          if (!txt.includes('<@' + ownId + '>')) return false; // must mention me
+          // Skip bulk bot dumps: messages mentioning 3+ different users are automated
+          var allMentions = (txt.match(/<@[A-Z0-9]+>/g) || []);
+          var uniqueUsers = new Set(allMentions);
+          if (uniqueUsers.size >= 3) return false;
+          return true;
         });
         msgs.forEach(function(msg) {
           slackState.mentions.push({ msg: msg, channelId: ch.id, channelName: ch.name, type: 'mention' });
