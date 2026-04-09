@@ -1391,7 +1391,8 @@ let state = {
   pendingCompleteId: null,
   selectedAvatar: '#ff30cc',
   completeFiles: [],
-  ideaFiles: []
+  ideaFiles: [],
+  pendingRequests: []
 };
 
 const TIER_LIMITS = { 'top3': 3, 'focus-today': 15, 'focus-week': 6 };
@@ -2601,8 +2602,23 @@ async function joinBoard() {
   try {
     var result = await db.from('boards').select('*').eq('share_code', code).single();
     if (result.error || !result.data) throw new Error('Not found');
-    var bname = result.data.name;
-    showToast('Code valid! Ask ' + bname + ' to grant you access from their Share settings.');
+    var targetBoard = result.data;
+    // Check if already has access
+    var existing = await db.from('board_access').select('id').eq('board_id', targetBoard.id).eq('granted_to_name', state.currentUser.name).maybeSingle();
+    if (existing.data) { showToast('You already have access to this board.', 'error'); return; }
+    // Check if request already pending
+    var dupe = await db.from('board_requests').select('id').eq('board_id', targetBoard.id).eq('requester_id', state.currentUser.id).eq('status', 'pending').maybeSingle();
+    if (dupe.data) { showToast('You already have a pending request for this board.', 'error'); return; }
+    // Create access request
+    await db.from('board_requests').insert({
+      board_id: targetBoard.id,
+      requester_id: state.currentUser.id,
+      requester_name: state.currentUser.name,
+      requester_email: state.currentUser.email,
+      status: 'pending',
+      created_at: Date.now()
+    });
+    showToast('Access request sent to ' + targetBoard.name + '! You\'ll be notified when approved.', 'success');
     closeModal('modal-join');
   } catch(e) {
     showToast('Share code not found. Check and try again.', 'error');
@@ -2625,11 +2641,15 @@ async function loadNotifications() {
     if (result.error) throw result.error;
     notifications = result.data || [];
     var unread = notifications.filter(function(n) { return !n.read; }).length;
+    // Also count pending access requests to my board
+    var reqResult = await db.from('board_requests').select('*').eq('board_id', state.currentUser.id).eq('status', 'pending').order('created_at', { ascending: false });
+    state.pendingRequests = reqResult.data || [];
+    var total = unread + state.pendingRequests.length;
     var badge = document.getElementById('notif-badge');
     if (badge) {
-      if (unread > 0) {
+      if (total > 0) {
         badge.style.display = 'flex';
-        badge.textContent = unread > 9 ? '9+' : String(unread);
+        badge.textContent = total > 9 ? '9+' : String(total);
       } else {
         badge.style.display = 'none';
       }
@@ -2640,10 +2660,28 @@ async function loadNotifications() {
 async function openNotifications() {
   await loadNotifications();
   var list = document.getElementById('notifs-list');
-  if (!notifications.length) {
-    list.innerHTML = '<div style="font-family:sans-serif;font-size:.85rem;color:var(--muted);padding:1rem 0;text-align:center">No notifications yet.</div>';
-  } else {
-    var html = '';
+  var html = '';
+  // Pending access requests first
+  if (state.pendingRequests && state.pendingRequests.length) {
+    html += '<div style="font-family:sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.08em;color:var(--primary);padding:.5rem 0 .35rem;text-transform:uppercase">Access Requests</div>';
+    state.pendingRequests.forEach(function(req) {
+      html += '<div style="padding:.75rem;margin-bottom:.5rem;border-radius:10px;background:rgba(255,48,204,.07);border:1px solid rgba(255,48,204,.18)">';
+      html += '<div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.5rem">';
+      html += '<span style="font-size:1rem">📬</span>';
+      html += '<div style="flex:1"><div style="font-family:sans-serif;font-size:.84rem;color:var(--h2);font-weight:600">' + esc(req.requester_name || 'Someone') + '</div>';
+      html += '<div style="font-family:sans-serif;font-size:.72rem;color:var(--muted)">' + esc(req.requester_email || '') + ' · wants access to your board</div></div></div>';
+      html += '<div style="display:flex;gap:.5rem">';
+      html += '<button onclick="approveRequest(\'' + req.id + '\',\'' + esc(req.requester_name).replace(/'/g,"&#39;") + '\',\'view\')" style="flex:1;padding:.35rem .6rem;border-radius:7px;border:none;background:rgba(59,178,115,.15);color:#3bb273;font-size:.78rem;font-weight:600;cursor:pointer">✓ View</button>';
+      html += '<button onclick="approveRequest(\'' + req.id + '\',\'' + esc(req.requester_name).replace(/'/g,"&#39;") + '\',\'edit\')" style="flex:1;padding:.35rem .6rem;border-radius:7px;border:none;background:rgba(45,125,210,.15);color:#2d7dd2;font-size:.78rem;font-weight:600;cursor:pointer">✓ Edit</button>';
+      html += '<button onclick="denyRequest(\'' + req.id + '\',\'' + esc(req.requester_name).replace(/'/g,"&#39;") + '\')" style="flex:1;padding:.35rem .6rem;border-radius:7px;border:none;background:rgba(255,80,80,.1);color:#ff5050;font-size:.78rem;font-weight:600;cursor:pointer">✕ Deny</button>';
+      html += '</div></div>';
+    });
+  }
+  // Regular notifications
+  if (notifications.length) {
+    if (state.pendingRequests && state.pendingRequests.length) {
+      html += '<div style="font-family:sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.08em;color:var(--muted);padding:.75rem 0 .35rem;text-transform:uppercase">Recent</div>';
+    }
     for (var i = 0; i < notifications.length; i++) {
       var n = notifications[i];
       var icon = n.type === 'access' ? '🔑' : n.type === 'task' ? '✅' : '🔔';
@@ -2655,13 +2693,16 @@ async function openNotifications() {
       html += '<div style="font-family:sans-serif;font-size:.72rem;color:var(--muted);margin-top:2px">' + new Date(n.created_at).toLocaleString('en-HK') + '</div></div>';
       html += dot + '</div>';
     }
-    list.innerHTML = html;
   }
+  if (!html) {
+    html = '<div style="font-family:sans-serif;font-size:.85rem;color:var(--muted);padding:1.5rem 0;text-align:center">No notifications yet.</div>';
+  }
+  list.innerHTML = html;
   try {
     if (state.currentUser) {
       await db.from('notifications').update({ read: true }).eq('board_id', state.currentUser.id).eq('read', false);
       var badge = document.getElementById('notif-badge');
-      if (badge) badge.style.display = 'none';
+      if (badge && !(state.pendingRequests && state.pendingRequests.length)) badge.style.display = 'none';
     }
   } catch(e) {}
   openModal('modal-notifs');
@@ -2677,6 +2718,39 @@ async function markAllRead() {
     closeModal('modal-notifs');
     showToast('All notifications marked as read.');
   } catch(e) {}
+}
+
+async function approveRequest(requestId, requesterName, permission) {
+  try {
+    // Grant board access
+    await db.from('board_access').insert({
+      board_id: state.currentUser.id,
+      granted_to_name: requesterName,
+      permission: permission,
+      granted_by: state.currentUser.id
+    });
+    // Mark request as approved
+    await db.from('board_requests').update({ status: 'approved' }).eq('id', requestId);
+    showToast(requesterName + ' has been granted ' + permission + ' access!', 'success');
+    closeModal('modal-notifs');
+    await loadNotifications();
+    await openNotifications();
+  } catch(e) {
+    showToast('Could not grant access. Try again.', 'error');
+  }
+}
+
+async function denyRequest(requestId, requesterName) {
+  if (!confirm('Deny access request from ' + requesterName + '?')) return;
+  try {
+    await db.from('board_requests').update({ status: 'denied' }).eq('id', requestId);
+    showToast(requesterName + '\'s request has been denied.', 'success');
+    closeModal('modal-notifs');
+    await loadNotifications();
+    await openNotifications();
+  } catch(e) {
+    showToast('Could not deny request. Try again.', 'error');
+  }
 }
 
 
