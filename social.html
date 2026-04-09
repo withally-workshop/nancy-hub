@@ -51,7 +51,7 @@
 .avatar-identity-meta { display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; margin-top: .3rem; }
 
 /* Workspace tabs */
-.workspace-tab-bar { background: var(--card); border-bottom: 1px solid var(--border); position: sticky; top: 64px; z-index: 90; }
+.workspace-tab-bar { background: var(--card); border-bottom: 1px solid var(--border); position: sticky; top: calc(1rem + var(--nav-h)); z-index: 90; }
 .workspace-tabs { display: flex; overflow-x: auto; padding: 0 2rem; gap: 0; scrollbar-width: none; }
 .workspace-tabs::-webkit-scrollbar { display: none; }
 .workspace-tab { padding: .8rem 1.1rem; font-family: 'Inter', sans-serif; font-size: .82rem; font-weight: 600; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; white-space: nowrap; transition: all .2s; }
