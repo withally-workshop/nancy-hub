@@ -215,6 +215,24 @@
 .api-warn.show{display:flex}
 .shot-foot{display:flex;justify-content:flex-end;margin-top:.875rem}
 
+/* ─── UPLOAD PROGRESS ───────────────────── */
+.upload-area{border:2px dashed var(--border2);border-radius:var(--radius-sm);padding:1.25rem;text-align:center;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.upload-area:hover,.upload-area.drag{border-color:var(--primary);background:var(--primary-light)}
+.upload-area input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.upload-area-label{font-family:'Inter',sans-serif;font-size:.82rem;color:var(--muted);pointer-events:none}
+.upload-area-label strong{color:var(--primary)}
+.upload-service-badge{display:inline-block;font-family:'Inter',sans-serif;font-size:.67rem;font-weight:700;padding:2px 7px;border-radius:4px;margin-top:.4rem;letter-spacing:.04em}
+.upload-service-cloudinary{background:rgba(59,178,115,.12);color:var(--green);border:1px solid rgba(59,178,115,.3)}
+.upload-service-drive{background:rgba(45,125,210,.12);color:var(--blue);border:1px solid rgba(45,125,210,.3)}
+.upload-service-supabase{background:rgba(255,48,204,.1);color:var(--primary);border:1px solid rgba(255,48,204,.25)}
+.upload-prog-wrap{margin-top:.6rem;display:none}
+.upload-prog-bar{height:4px;background:var(--border);border-radius:4px;overflow:hidden}
+.upload-prog-fill{height:100%;background:var(--primary);border-radius:4px;transition:width .3s;width:0%}
+.upload-prog-lbl{font-family:'Inter',sans-serif;font-size:.72rem;color:var(--muted);margin-top:.3rem;text-align:center}
+.upload-preview{margin-top:.6rem;width:100%;max-height:120px;object-fit:contain;border-radius:6px;display:none}
+.upload-or{font-family:'Inter',sans-serif;font-size:.72rem;color:var(--muted);text-align:center;margin:.65rem 0;display:flex;align-items:center;gap:.5rem}
+.upload-or::before,.upload-or::after{content:'';flex:1;height:1px;background:var(--border)}
+
 /* ─── ASSET LIBRARY ──────────────────────── */
 .asset-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;gap:.75rem;flex-wrap:wrap}
 .asset-title-row{display:flex;align-items:center;gap:.75rem}
@@ -685,7 +703,7 @@
     <div class="form-row">
       <div class="form-field">
         <label class="form-label">Type</label>
-        <select class="form-select" id="asset-form-type">
+        <select class="form-select" id="asset-form-type" onchange="updateUploadAccept()">
           <option value="image">Image</option>
           <option value="video">Video</option>
           <option value="reference">Reference</option>
@@ -699,6 +717,23 @@
         <input class="form-input" id="asset-form-folder" type="text" placeholder="e.g. Face Refs, Brand Kit"/>
       </div>
     </div>
+    <!-- Upload area -->
+    <div class="form-field">
+      <label class="form-label">Upload File <span id="upload-service-lbl" style="font-weight:400;color:var(--muted)"></span></label>
+      <div class="upload-area" id="upload-area" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="handleAssetDrop(event)">
+        <input type="file" id="asset-file-input" accept="image/*" onchange="handleAssetFileSelect(this)"/>
+        <div class="upload-area-label">
+          <strong>Click to upload</strong> or drag & drop<br>
+          <span style="font-size:.72rem">Images → Cloudinary · Videos → Google Drive · Other → Supabase</span>
+        </div>
+        <img id="upload-preview" class="upload-preview" alt="preview"/>
+      </div>
+      <div class="upload-prog-wrap" id="upload-prog-wrap">
+        <div class="upload-prog-bar"><div class="upload-prog-fill" id="upload-prog-fill"></div></div>
+        <div class="upload-prog-lbl" id="upload-prog-lbl">Uploading...</div>
+      </div>
+    </div>
+    <div class="upload-or">or paste URL</div>
     <div class="form-field"><label class="form-label">URL</label><input class="form-input" id="asset-form-url" type="url" placeholder="Paste image/video URL..."/></div>
     <div class="form-field"><label class="form-label">Notes <span style="font-weight:400;color:var(--muted)">(for image gen context)</span></label><textarea class="form-textarea" id="asset-form-notes" rows="2" placeholder="e.g. Use this as the face reference prompt base..."></textarea></div>
     <div class="modal-footer">
@@ -801,6 +836,16 @@
 </div>
 
 <script>
+// ── STORAGE CONFIG ──────────────────────────────────────────────────────────
+// Set these after creating accounts (see instructions in admin panel / README):
+//   Cloudinary: cloudinary.com → Settings → Upload → create unsigned preset
+//   Google Drive: open a Drive folder, copy ID from URL → set in gas/Code.gs
+//   Supabase: dashboard → Storage → create 'social-assets' bucket (Public)
+var CLOUDINARY_CLOUD_NAME = '';      // e.g. 'my-cloud-name'
+var CLOUDINARY_UPLOAD_PRESET = '';   // e.g. 'social_assets_unsigned'
+// SCRIPT_URL and db are already defined in shared/hub.js
+// ────────────────────────────────────────────────────────────────────────────
+
 /*
   REQUIRED SUPABASE TABLE (run once in SQL editor):
 
@@ -1706,6 +1751,129 @@ function copyAssetRef(btn) {
   }).catch(function(){ showToast('Copy failed — try manually.', 'error'); });
 }
 
+// ── ASSET UPLOAD HELPERS ─────────────────────────────────────────────────
+function updateUploadAccept() {
+  var type = document.getElementById('asset-form-type').value;
+  var input = document.getElementById('asset-file-input');
+  var lbl = document.getElementById('upload-service-lbl');
+  if (!input) return;
+  if (type === 'image') { input.accept = 'image/*'; lbl.textContent = '→ Cloudinary'; }
+  else if (type === 'video') { input.accept = 'video/*'; lbl.textContent = '→ Google Drive'; }
+  else if (type === 'audio') { input.accept = 'audio/*'; lbl.textContent = '→ Google Drive'; }
+  else { input.accept = '*/*'; lbl.textContent = '→ Google Drive / Supabase'; }
+}
+
+function handleAssetDrop(e) {
+  e.preventDefault();
+  var area = document.getElementById('upload-area');
+  if (area) area.classList.remove('drag');
+  var file = e.dataTransfer && e.dataTransfer.files[0];
+  if (file) processAssetFile(file);
+}
+
+function handleAssetFileSelect(input) {
+  var file = input.files && input.files[0];
+  if (file) processAssetFile(file);
+}
+
+function processAssetFile(file) {
+  // Auto-set name if empty
+  var nameEl = document.getElementById('asset-form-name');
+  if (nameEl && !nameEl.value.trim()) nameEl.value = file.name.replace(/\.[^.]+$/, '').replace(/[-_]/g, ' ');
+  // Auto-set type based on mime
+  var typeEl = document.getElementById('asset-form-type');
+  if (typeEl) {
+    if (file.type.startsWith('image/')) typeEl.value = 'image';
+    else if (file.type.startsWith('video/')) typeEl.value = 'video';
+    else if (file.type.startsWith('audio/')) typeEl.value = 'audio';
+    else typeEl.value = 'document';
+    updateUploadAccept();
+  }
+  // Image preview
+  if (file.type.startsWith('image/')) {
+    var preview = document.getElementById('upload-preview');
+    if (preview) { preview.src = URL.createObjectURL(file); preview.style.display = 'block'; }
+  }
+  uploadAssetFile(file);
+}
+
+function setUploadProgress(pct, label) {
+  var wrap = document.getElementById('upload-prog-wrap');
+  var fill = document.getElementById('upload-prog-fill');
+  var lbl = document.getElementById('upload-prog-lbl');
+  if (wrap) wrap.style.display = 'block';
+  if (fill) fill.style.width = pct + '%';
+  if (lbl) lbl.textContent = label || 'Uploading...';
+}
+
+function clearUploadProgress() {
+  var wrap = document.getElementById('upload-prog-wrap');
+  if (wrap) wrap.style.display = 'none';
+}
+
+async function uploadAssetFile(file) {
+  var urlEl = document.getElementById('asset-form-url');
+  var isImage = file.type.startsWith('image/');
+  var isVideo = file.type.startsWith('video/');
+
+  // Route: images → Cloudinary | videos+large → Google Drive | fallback → Supabase Storage
+  if (isImage && CLOUDINARY_CLOUD_NAME && CLOUDINARY_UPLOAD_PRESET) {
+    setUploadProgress(10, 'Uploading to Cloudinary...');
+    try {
+      var fd = new FormData();
+      fd.append('file', file);
+      fd.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+      setUploadProgress(40, 'Uploading to Cloudinary...');
+      var resp = await fetch('https://api.cloudinary.com/v1_1/' + CLOUDINARY_CLOUD_NAME + '/upload', { method: 'POST', body: fd });
+      var data = await resp.json();
+      if (data.error) throw new Error(data.error.message);
+      setUploadProgress(100, 'Uploaded via Cloudinary ✓');
+      if (urlEl) urlEl.value = data.secure_url;
+      setTimeout(clearUploadProgress, 2000);
+    } catch(e) { clearUploadProgress(); showToast('Cloudinary upload failed: ' + e.message, 'error'); }
+  } else if ((isVideo || file.size > 5 * 1024 * 1024) && (typeof SCRIPT_URL !== 'undefined') && SCRIPT_URL) {
+    setUploadProgress(10, 'Encoding for Google Drive...');
+    try {
+      var reader = new FileReader();
+      reader.onload = async function(ev) {
+        var b64 = ev.target.result.split(',')[1];
+        setUploadProgress(40, 'Uploading to Google Drive...');
+        var resp = await fetch(SCRIPT_URL, {
+          method: 'POST',
+          body: JSON.stringify({ action: 'upload', filename: file.name, mimeType: file.type, data: b64 })
+        });
+        var data = await resp.json();
+        if (data.error) throw new Error(data.error);
+        setUploadProgress(100, 'Uploaded to Google Drive ✓');
+        if (urlEl && data.url) urlEl.value = data.url;
+        setTimeout(clearUploadProgress, 2000);
+      };
+      reader.onerror = function() { clearUploadProgress(); showToast('File read failed.', 'error'); };
+      reader.readAsDataURL(file);
+    } catch(e) { clearUploadProgress(); showToast('Drive upload failed: ' + e.message, 'error'); }
+  } else {
+    // Fallback: Supabase Storage
+    setUploadProgress(10, 'Uploading to Supabase Storage...');
+    try {
+      var avId = socialState.currentAvatar ? socialState.currentAvatar.id : 'general';
+      var path = avId + '/' + Date.now() + '_' + file.name.replace(/\s+/g, '_');
+      setUploadProgress(40, 'Uploading to Supabase Storage...');
+      var r = await db.storage.from('social-assets').upload(path, file, { upsert: true });
+      if (r.error) throw r.error;
+      setUploadProgress(90, 'Getting URL...');
+      var pub = db.storage.from('social-assets').getPublicUrl(path);
+      var publicUrl = pub.data && pub.data.publicUrl;
+      setUploadProgress(100, 'Uploaded to Supabase ✓');
+      if (urlEl && publicUrl) urlEl.value = publicUrl;
+      setTimeout(clearUploadProgress, 2000);
+    } catch(e) {
+      clearUploadProgress();
+      showToast('Upload failed: ' + e.message + '. Try pasting a URL instead.', 'error');
+    }
+  }
+}
+// ─────────────────────────────────────────────────────────────────────────────
+
 function openAssetModal(assetId) {
   var editIdEl = document.getElementById('asset-edit-id');
   var nameEl = document.getElementById('asset-form-name');
@@ -1717,6 +1885,11 @@ function openAssetModal(assetId) {
   var titleEl = document.getElementById('asset-modal-title');
   nameEl.value = ''; typeEl.value = 'image'; folderEl.value = ''; urlEl.value = ''; notesEl.value = '';
   editIdEl.value = ''; delBtn.style.display = 'none'; titleEl.textContent = 'Add Asset';
+  // Reset upload UI
+  clearUploadProgress();
+  var preview = document.getElementById('upload-preview'); if (preview) { preview.src = ''; preview.style.display = 'none'; }
+  var fileInput = document.getElementById('asset-file-input'); if (fileInput) fileInput.value = '';
+  updateUploadAccept();
   if (assetId) {
     var a = assetState.assets.find(function(x){ return x.id === assetId; });
     if (a) {
