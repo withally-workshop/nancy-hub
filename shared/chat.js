@@ -71,41 +71,56 @@ var STARTERS = [
 function injectStyles() {
   var s = document.createElement('style');
   s.textContent = [
-    // ── EVE-style mini yellow bot, small + floating ──────────────────
-    '.nc-bubble{position:fixed;bottom:1.75rem;right:1.75rem;z-index:900;width:42px;height:60px;background:transparent;border:none;cursor:pointer;padding:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:3px;transition:transform .2s ease;overflow:visible}',
-    '.nc-bubble:hover{transform:translateY(-3px)}',
+    // ── Pastel yellow EVE bot with waving arms ───────────────────────
+    // Wrapper — wide enough for arms
+    '.nc-bubble{position:fixed;bottom:1.75rem;right:1.75rem;z-index:900;width:72px;height:80px;background:transparent;border:none;cursor:pointer;padding:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:5px;transition:transform .2s ease;overflow:visible}',
+    '.nc-bubble:hover{transform:translateY(-2px)}',
     '.nc-bubble.open{transform:none}',
 
-    // "Hi" label — sits below character, no bubble background
+    // "Hi" label
     '.nc-bbl{display:none}',
     '.nc-bbl-lbl{font-family:Inter,sans-serif;font-size:.65rem;font-weight:700;color:rgba(255,255,255,.7);letter-spacing:.05em;line-height:1;flex-shrink:0}',
 
     // Unread dot
-    '.nc-bubble-dot{position:absolute;top:8px;right:0;width:7px;height:7px;background:#e53935;border-radius:50%;border:1.5px solid rgba(0,0,0,.5);display:none;z-index:10}',
+    '.nc-bubble-dot{position:absolute;top:4px;right:8px;width:7px;height:7px;background:#e53935;border-radius:50%;border:1.5px solid rgba(0,0,0,.5);display:none;z-index:10}',
     '.nc-bubble-dot.show{display:block}',
 
-    // Character wrapper
-    '.nc-lemon{display:flex;flex-direction:column;align-items:center;flex-shrink:0}',
+    // Outer column
+    '.nc-lemon{display:flex;flex-direction:column;align-items:center;flex-shrink:0;gap:0}',
 
-    // Tiny sleek leaf — top-right, angled
-    '.nc-lemon-leaf{width:9px;height:6px;background:linear-gradient(120deg,#4ade80,#16a34a);border-radius:80% 5% 80% 5%;transform:rotate(-25deg);align-self:flex-end;margin-right:2px;margin-bottom:-3px}',
+    // Tiny leaf top-right
+    '.nc-lemon-leaf{width:10px;height:7px;background:linear-gradient(120deg,#86efac,#16a34a);border-radius:80% 5% 80% 5%;transform:rotate(-28deg);align-self:flex-end;margin-right:6px;margin-bottom:-4px}',
 
-    // EVE oval body — yellow, smooth egg, small
-    '.nc-lemon-body{width:30px;height:36px;background:linear-gradient(155deg,#fef08a 0%,#fbbf24 50%,#d97706 100%);border-radius:50% 50% 46% 46%/42% 42% 58% 58%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;position:relative;box-shadow:0 5px 12px rgba(0,0,0,.3),inset 0 2px 3px rgba(255,255,255,.45)}',
+    // HEAD — large smooth oval (EVE's head is bigger than body)
+    '.nc-eve-head{width:38px;height:34px;background:linear-gradient(160deg,#fefce8 0%,#fef9c3 40%,#fef08a 100%);border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,.2),inset 0 2px 5px rgba(255,255,255,.7)}',
 
-    // Large EVE oval eyes — dark with subtle blue glint
+    // Blue oval eyes with screen lines (EVE signature)
     '.nc-lemon-eyes{display:flex;gap:4px}',
-    '.nc-lemon-eye{width:8px;height:6px;background:#111827;border-radius:50%;box-shadow:inset 1px 1px 2px rgba(96,165,250,.6)}',
+    '.nc-lemon-eye{width:11px;height:9px;background:#1e3a5f;border-radius:50%;position:relative;overflow:hidden;box-shadow:0 0 6px rgba(59,130,246,.7)}',
+    // Horizontal screen lines inside eyes
+    '.nc-lemon-eye::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(180deg,rgba(96,165,250,.6) 0px,rgba(96,165,250,.6) 1.5px,transparent 1.5px,transparent 3px)}',
 
-    // Tiny smile
-    '.nc-lemon-smile{width:10px;height:0;border-bottom:1.5px solid rgba(0,0,0,.3);border-radius:0 0 5px 5px}',
+    // BODY — smaller oval below head
+    '.nc-lemon-body{width:30px;height:28px;background:linear-gradient(160deg,#fefce8 0%,#fef9c3 40%,#fef08a 100%);border-radius:50% 50% 48% 48%/44% 44% 56% 56%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 10px rgba(0,0,0,.18),inset 0 2px 4px rgba(255,255,255,.6);margin-top:-4px}',
+    // Subtle belly oval
+    '.nc-lemon-body::after{content:"";width:14px;height:10px;background:rgba(255,255,255,.25);border-radius:50%;display:block}',
 
-    // Hidden — no neck/shoulders needed
-    '.nc-bot-neck,.nc-bot-shoulders{display:none}',
-    // ── end EVE lemon ────────────────────────────────────────────────
+    // Arms row wrapping head+body
+    '.nc-eve-row{display:flex;align-items:center;gap:2px}',
+
+    // EVE flat paddle arms — wide smooth ovals
+    '.nc-eve-arm{width:14px;height:22px;background:linear-gradient(160deg,#fefce8,#fef08a);border-radius:50%;box-shadow:0 3px 8px rgba(0,0,0,.18)}',
+    '.nc-eve-arm-l{transform:rotate(12deg);transform-origin:top center}',
+    // Right arm waves
+    '.nc-eve-arm-r{transform-origin:top center;animation:ncWave 1.2s ease-in-out infinite}',
+    '@keyframes ncWave{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(-32deg)}}',
+
+    // No old parts needed
+    '.nc-lemon-smile,.nc-bot-neck,.nc-bot-shoulders{display:none}',
+    // ── end EVE bot ──────────────────────────────────────────────────
 
     // Panel
-    '.nc-panel{position:fixed;bottom:calc(1.75rem + 60px + .75rem);right:1.75rem;z-index:900;width:380px;max-height:560px;background:var(--card,#1a1a1a);border:1px solid var(--border2,rgba(255,255,255,.12));border-radius:20px;display:flex;flex-direction:column;box-shadow:0 24px 60px rgba(0,0,0,.45);opacity:0;pointer-events:none;transform:translateY(12px) scale(.97);transition:opacity .22s ease,transform .25s cubic-bezier(.34,1.3,.64,1);overflow:hidden}',
+    '.nc-panel{position:fixed;bottom:calc(1.75rem + 80px + .75rem);right:1.75rem;z-index:900;width:380px;max-height:560px;background:var(--card,#1a1a1a);border:1px solid var(--border2,rgba(255,255,255,.12));border-radius:20px;display:flex;flex-direction:column;box-shadow:0 24px 60px rgba(0,0,0,.45);opacity:0;pointer-events:none;transform:translateY(12px) scale(.97);transition:opacity .22s ease,transform .25s cubic-bezier(.34,1.3,.64,1);overflow:hidden}',
     '.nc-panel.open{opacity:1;pointer-events:all;transform:translateY(0) scale(1)}',
 
     // Header
@@ -226,18 +241,20 @@ function injectHTML() {
       '<span class="nc-bbl">',
         '<span class="nc-bbl-lbl" id="nc-bubble-ico">Hi</span>',
       '</span>',
-      // 2. Robot character (z-index:2, rendered after = always in front)
+      // EVE character: leaf → head (eyes) → arms + body
       '<span class="nc-lemon">',
         '<span class="nc-lemon-leaf"></span>',
-        '<span class="nc-lemon-body">',
+        '<span class="nc-eve-head">',
           '<span class="nc-lemon-eyes">',
             '<span class="nc-lemon-eye"></span>',
             '<span class="nc-lemon-eye"></span>',
           '</span>',
-          '<span class="nc-lemon-smile"></span>',
         '</span>',
-        '<span class="nc-bot-neck"></span>',
-        '<span class="nc-bot-shoulders"></span>',
+        '<span class="nc-eve-row">',
+          '<span class="nc-eve-arm nc-eve-arm-l"></span>',
+          '<span class="nc-lemon-body"></span>',
+          '<span class="nc-eve-arm nc-eve-arm-r"></span>',
+        '</span>',
       '</span>',
     '</button>'
   ].join('');
