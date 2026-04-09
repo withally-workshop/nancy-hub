@@ -1007,8 +1007,20 @@ function toggleGem(id) {
   var body = document.getElementById('gem-body-' + id);
   var btn = document.getElementById('gem-btn-' + id);
   if (!body || !btn) return;
-  var isOpen = body.classList.toggle('open');
-  btn.textContent = isOpen ? 'Show less ↑' : 'Read more ↓';
+  var isOpen = body.classList.contains('open');
+  // Close all open gems first
+  document.querySelectorAll('.gem-body.open').forEach(function(el) {
+    el.classList.remove('open');
+    var otherId = el.id.replace('gem-body-', '');
+    var otherBtn = document.getElementById('gem-btn-' + otherId);
+    if (otherBtn) otherBtn.textContent = 'Read more ↓';
+  });
+  // Toggle the clicked one (open if it was closed)
+  if (!isOpen) {
+    body.classList.add('open');
+    btn.textContent = 'Show less ↑';
+    body.closest('.gem-card').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
 }
 
 // ── ADD/EDIT GEM ─────────────────────────────────────────
