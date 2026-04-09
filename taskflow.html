@@ -3531,7 +3531,7 @@ initMobileNav();
 // alter table boards add column if not exists slack_user_id text;
 // ══════════════════════════════════════
 
-window.slackState = {
+var slackState = {
   inited: false,
   ownToken: '',
   ownUserId: '',
@@ -3567,12 +3567,24 @@ function slackTutorialStep(num, title, desc) {
 function openSlackDrawer() {
   document.getElementById('slack-drawer').classList.add('open');
   document.getElementById('slack-backdrop').classList.add('show');
+
+  // Always re-read token from current user in case it was just saved
+  var cu = hubState && hubState.currentUser ? hubState.currentUser : null;
+  var freshToken = (cu && cu.slack_token) || '';
+  if (freshToken && freshToken !== slackState.ownToken) {
+    // Token was just saved — re-init fully
+    slackState.ownToken = freshToken;
+    slackState.ownUserId = (cu && cu.slack_user_id) || '';
+    slackState.channels = [];
+    slackState.dms = [];
+    slackState.inited = false;
+  }
+
   if (!slackState.inited) {
     slackState.inited = true;
     slackInitDatePicker();
     initSlack();
   } else if (slackState.ownToken && !slackState.channels.length) {
-    // Token available but channels never loaded — retry
     slackLoadChannels('own');
   }
 }
@@ -3951,11 +3963,6 @@ async function slackPullAll() {
   if (btn) { btn.disabled = true; btn.textContent = 'Pulling...'; }
 
   try {
-    if (!window.slackState) {
-      showToast('Slack not ready — please refresh the page.');
-      return;
-    }
-
     var token = slackState.ownToken;
     if (!token) {
       // Try re-reading from current user in case token was just saved
