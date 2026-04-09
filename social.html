@@ -1,198 +1,185 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script>(function(){var t=localStorage.getItem('nancy_theme');if(t==='light')document.documentElement.setAttribute('data-theme','light');})()</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Nancy — Content & Socials</title>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<script>(function(){var t=localStorage.getItem('nancy_theme');if(t==='light')document.documentElement.setAttribute('data-theme','light');})()</script>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="shared/styles.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="shared/hub.js"></script>
 <style>
+/* Social Hub specific vars - dark mode compatible */
+.social-hub-wrap { max-width: 1100px; margin: 0 auto; padding: 2rem; }
+.social-page-header { margin-bottom: 2rem; display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+.social-page-title { font-family: 'Fraunces', serif; font-size: 2rem; font-weight: 600; color: var(--h2); letter-spacing: -.02em; margin-bottom: .25rem; }
+.social-page-sub { font-size: .9rem; color: var(--muted); font-family: 'Inter', sans-serif; }
 
-/* ── SOCIAL HUB ── */
-.social-page-header{padding:1.5rem 2rem .5rem;max-width:960px;margin:0 auto}
-.social-page-title{font-family:'Fraunces',serif;font-size:2rem;font-weight:600;color:var(--h2);letter-spacing:-.03em;margin-bottom:.3rem}
-.social-page-sub{font-family:'Inter',sans-serif;font-size:.9rem;color:var(--muted)}
+/* Avatar cards grid */
+.avatar-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; }
+.avatar-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; transition: box-shadow .25s, transform .25s; border-left: 3px solid var(--avc, var(--primary)); }
+.avatar-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
+.avatar-card-inner { padding: 1.25rem; }
+.avatar-card-top { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
+.avatar-initials-wrap { width: 52px; height: 52px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Inter', sans-serif; font-size: .95rem; font-weight: 700; color: white; flex-shrink: 0; }
+.avatar-card-name { font-family: 'Fraunces', serif; font-size: 1.1rem; font-weight: 600; color: var(--h2); margin-bottom: .3rem; }
+.avatar-type-badge { display: inline-block; font-family: 'Inter', sans-serif; font-size: .68rem; font-weight: 700; padding: 2px 8px; border-radius: 20px; letter-spacing: .02em; margin-bottom: .4rem; }
+.avatar-platforms { display: flex; flex-wrap: wrap; gap: .3rem; }
+.plat-badge { font-family: 'Inter', sans-serif; font-size: .72rem; font-weight: 600; padding: 2px 8px; border-radius: 6px; background: var(--bg2); color: var(--muted); border: 1px solid var(--border); }
+.avatar-card-stats { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; margin-bottom: 1rem; }
+.avatar-stat { background: var(--bg2); border-radius: var(--radius-sm); padding: .65rem; text-align: center; }
+.avatar-stat-num { font-family: 'Fraunces', serif; font-size: 1.4rem; font-weight: 600; color: var(--h2); display: block; }
+.avatar-stat-label { font-family: 'Inter', sans-serif; font-size: .72rem; color: var(--muted); display: block; margin-top: .1rem; }
+.btn-open-avatar { width: 100%; padding: .65rem; border: none; border-radius: var(--radius-sm); font-family: 'Fraunces', serif; font-size: .92rem; font-weight: 500; color: white; cursor: pointer; transition: filter .2s; }
+.btn-open-avatar:hover { filter: brightness(1.1); }
+.card-admin-row { display: flex; gap: .4rem; margin-bottom: .75rem; }
+.card-admin-btn { font-family: 'Inter', sans-serif; font-size: .72rem; font-weight: 600; padding: 3px 10px; border-radius: 6px; border: 1px solid var(--border2); background: none; color: var(--muted); cursor: pointer; transition: all .15s; }
+.card-admin-btn:hover { background: var(--bg2); color: var(--body); }
+.card-admin-btn.danger:hover { background: rgba(229,57,53,.1); color: #e53935; border-color: #e53935; }
 
-.avatar-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.25rem;padding:1.5rem 2rem 2rem;max-width:960px;margin:0 auto}
+/* Avatar mode */
+#avatar-mode { display: none; }
+.avatar-mode-bar { display: flex; align-items: center; gap: 1rem; padding: 1rem 2rem; background: var(--card); border-bottom: 1px solid var(--border); max-width: 100%; position: sticky; top: calc(1rem + 64px); z-index: 100; }
+.back-btn { font-family: 'Inter', sans-serif; font-size: .82rem; color: var(--muted); background: none; border: none; cursor: pointer; padding: 4px 0; display: flex; align-items: center; gap: .3rem; transition: color .2s; }
+.back-btn:hover { color: var(--body); }
+.breadcrumb { font-family: 'Inter', sans-serif; font-size: .82rem; color: var(--muted); }
+.breadcrumb-current { color: var(--h2); font-weight: 600; }
+.avatar-identity-bar { display: flex; align-items: center; gap: 1.25rem; padding: 1.25rem 2rem; background: var(--card); border-bottom: 1px solid var(--border); }
+.avatar-identity-initials { width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Inter', sans-serif; font-size: 1.1rem; font-weight: 700; color: white; flex-shrink: 0; }
+.avatar-identity-name { font-family: 'Fraunces', serif; font-size: 1.4rem; font-weight: 600; color: var(--h2); letter-spacing: -.02em; }
+.avatar-identity-meta { display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; margin-top: .3rem; }
 
-.avatar-card{background:var(--white);border:1px solid var(--border);border-radius:20px;overflow:hidden;transition:box-shadow .3s cubic-bezier(.25,.46,.45,.94),transform .3s cubic-bezier(.25,.46,.45,.94);position:relative}
-.avatar-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--avc,var(--primary));border-radius:4px 0 0 4px}
-.avatar-card:hover{box-shadow:0 16px 48px rgba(40,40,38,.12),0 4px 12px rgba(40,40,38,.06);transform:translateY(-4px)}
-.avatar-card-inner{padding:1.5rem 1.5rem 1.5rem 1.75rem}
-.avatar-card.brand-card .avatar-card-inner{background:linear-gradient(160deg,var(--white) 60%,#fffdf5 100%)}
+/* Workspace tabs */
+.workspace-tab-bar { background: var(--card); border-bottom: 1px solid var(--border); position: sticky; top: calc(1rem + 64px + 57px + 85px); z-index: 90; }
+.workspace-tabs { display: flex; overflow-x: auto; padding: 0 2rem; gap: 0; scrollbar-width: none; }
+.workspace-tabs::-webkit-scrollbar { display: none; }
+.workspace-tab { padding: .8rem 1.1rem; font-family: 'Inter', sans-serif; font-size: .82rem; font-weight: 600; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; white-space: nowrap; transition: all .2s; }
+.workspace-tab:hover { color: var(--body); }
+.workspace-tab.active { color: var(--avc, var(--primary)); border-bottom-color: var(--avc, var(--primary)); }
+.workspace-content { max-width: 1100px; margin: 0 auto; padding: 2rem; }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
 
-.avatar-card-top{display:flex;gap:1rem;align-items:flex-start;margin-bottom:1.25rem}
-.avatar-emoji-wrap{width:64px;height:64px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:2rem;flex-shrink:0}
-.avatar-card-meta{flex:1;min-width:0}
-.avatar-card-name{font-family:'Fraunces',serif;font-size:1.15rem;font-weight:600;color:var(--h2);margin-bottom:.3rem;letter-spacing:-.01em}
-.avatar-type-badge{display:inline-block;font-family:sans-serif;font-size:.68rem;font-weight:700;padding:3px 9px;border-radius:20px;margin-bottom:.5rem;letter-spacing:.03em;text-transform:uppercase}
-.avatar-platforms{display:flex;gap:.35rem;flex-wrap:wrap;margin-top:.1rem}
-.plat-badge{font-family:sans-serif;font-size:.72rem;font-weight:600;padding:2px 8px;border-radius:20px;background:var(--bg2);color:var(--muted);border:1px solid var(--border)}
+/* Vault tab */
+.vault-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+.vault-section-title { font-family: 'Fraunces', serif; font-size: 1rem; font-weight: 600; color: var(--h2); margin-bottom: 1rem; padding-bottom: .5rem; border-bottom: 1px solid var(--border); }
+.vault-actions { display: flex; gap: .75rem; justify-content: flex-end; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border); }
 
-.avatar-card-stats{display:flex;gap:.5rem;margin-bottom:1rem}
-.avatar-stat{flex:1;padding:.65rem .75rem;text-align:center;background:var(--bg);border-radius:10px}
-.avatar-stat-num{font-family:'Fraunces',serif;font-size:1.5rem;font-weight:600;color:var(--h2);line-height:1}
-.avatar-stat-label{font-family:'Inter',sans-serif;font-size:.66rem;color:var(--muted);margin-top:3px}
+/* Calendar tab */
+.cal-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.25rem; flex-wrap: wrap; }
+.week-nav { display: flex; align-items: center; gap: .5rem; }
+.week-nav-btn { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius-sm); width: 30px; height: 30px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1rem; color: var(--muted); transition: all .2s; }
+.week-nav-btn:hover { background: var(--bg3); color: var(--body); }
+.week-label { font-family: 'Inter', sans-serif; font-size: .88rem; font-weight: 600; color: var(--h2); }
+.cal-table-wrap { overflow-x: auto; border-radius: var(--radius); border: 1px solid var(--border); }
+.cal-table { width: 100%; border-collapse: collapse; min-width: 560px; }
+.cal-th { padding: .65rem 1rem; font-family: 'Inter', sans-serif; font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); text-align: left; border-bottom: 1px solid var(--border); background: var(--bg2); }
+.cal-day-cell { padding: .75rem; border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); vertical-align: top; width: 72px; background: var(--bg2); }
+.cal-day-cell.today { background: rgba(255,48,204,.06); }
+.cal-day-name { font-family: 'Inter', sans-serif; font-size: .78rem; font-weight: 700; color: var(--h2); }
+.cal-day-date { font-family: 'Inter', sans-serif; font-size: .72rem; color: var(--muted); }
+.cal-day-cell.today .cal-day-name { color: var(--primary); }
+.cal-content-cell { padding: .5rem; border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); vertical-align: top; }
+.cal-content-cell:last-child { border-right: none; }
+.cal-post-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: .5rem .65rem; cursor: pointer; transition: box-shadow .2s; margin-bottom: .4rem; }
+.cal-post-card:hover { box-shadow: var(--shadow); }
+.cal-post-type { font-family: 'Inter', sans-serif; font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; margin-bottom: .2rem; }
+.cal-post-caption { font-family: 'Inter', sans-serif; font-size: .75rem; color: var(--muted); overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; line-height: 1.4; }
+.cal-status { display: inline-block; font-family: 'Inter', sans-serif; font-size: .62rem; font-weight: 700; padding: 2px 6px; border-radius: 4px; margin-top: .3rem; text-transform: uppercase; letter-spacing: .04em; }
+.cal-status.draft { background: var(--bg3); color: var(--muted); }
+.cal-status.pending { background: rgba(247,183,49,.15); color: var(--amber); }
+.cal-status.scheduled { background: rgba(45,125,210,.15); color: var(--blue); }
+.cal-status.posted { background: rgba(59,178,115,.15); color: var(--green); }
+.cal-add-btn { width: 100%; padding: .4rem; border: 1px dashed var(--border2); border-radius: var(--radius-sm); background: none; color: var(--muted); font-family: 'Inter', sans-serif; font-size: .75rem; cursor: pointer; transition: all .2s; text-align: center; }
+.cal-add-btn:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
+.cal-table tr:last-child .cal-day-cell,
+.cal-table tr:last-child .cal-content-cell { border-bottom: none; }
 
-.btn-open-avatar{width:100%;padding:.65rem 1rem;border:none;border-radius:100px;font-family:'Inter',sans-serif;font-size:.84rem;font-weight:600;color:white;cursor:pointer;transition:all .25s cubic-bezier(.25,.46,.45,.94);letter-spacing:.01em}
-.btn-open-avatar:hover{filter:brightness(1.08);transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.18)}
-.btn-open-avatar:active{transform:scale(.97)}
+/* Review Desk */
+.review-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; flex-wrap: wrap; gap: .75rem; }
+.review-title { font-family: 'Fraunces', serif; font-size: 1.2rem; font-weight: 600; color: var(--h2); }
+.review-sub { font-family: 'Inter', sans-serif; font-size: .82rem; color: var(--muted); margin-top: .15rem; }
+.review-list { display: flex; flex-direction: column; gap: 1rem; }
+.review-post { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem; }
+.review-post-header { display: flex; align-items: center; gap: .5rem; margin-bottom: 1rem; flex-wrap: wrap; }
+.review-post-date { font-family: 'Inter', sans-serif; font-size: .75rem; color: var(--muted); margin-left: auto; }
+.review-section-label { font-family: 'Inter', sans-serif; font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin-bottom: .4rem; }
+.review-caption-text { font-family: 'Inter', sans-serif; font-size: .88rem; color: var(--body); line-height: 1.6; background: var(--bg2); border-radius: var(--radius-sm); padding: .75rem 1rem; margin-bottom: 1rem; white-space: pre-wrap; }
+.review-actions { display: flex; gap: .5rem; flex-wrap: wrap; margin-top: 1rem; }
+.btn-approve { padding: .5rem 1rem; background: rgba(59,178,115,.15); color: var(--green); border: 1px solid var(--green); border-radius: var(--radius-pill); font-family: 'Inter', sans-serif; font-size: .78rem; font-weight: 600; cursor: pointer; transition: all .2s; }
+.btn-approve:hover { background: var(--green); color: white; }
+.btn-reject { padding: .5rem 1rem; background: rgba(229,57,53,.1); color: #e53935; border: 1px solid rgba(229,57,53,.3); border-radius: var(--radius-pill); font-family: 'Inter', sans-serif; font-size: .78rem; font-weight: 600; cursor: pointer; transition: all .2s; }
+.btn-reject:hover { background: #e53935; color: white; }
+.btn-edit-sm { padding: .5rem 1rem; background: none; color: var(--muted); border: 1px solid var(--border2); border-radius: var(--radius-pill); font-family: 'Inter', sans-serif; font-size: .78rem; font-weight: 600; cursor: pointer; transition: all .2s; }
+.btn-edit-sm:hover { background: var(--bg2); color: var(--body); }
+.empty-state { text-align: center; padding: 3rem 1rem; font-family: 'Inter', sans-serif; color: var(--muted); }
+.empty-state-title { font-family: 'Fraunces', serif; font-size: 1.1rem; font-weight: 600; color: var(--h2); margin-bottom: .5rem; }
 
-/* ── AVATAR MODE ── */
-.avatar-mode-bar{background:var(--white);border-bottom:1px solid var(--border);padding:.6rem 2rem;display:flex;align-items:center;gap:1rem}
-.back-btn{display:flex;align-items:center;gap:.4rem;font-family:sans-serif;font-size:.85rem;font-weight:600;color:var(--muted);cursor:pointer;background:none;border:none;padding:4px 10px;border-radius:var(--radius-sm);transition:all .15s}
-.back-btn:hover{background:var(--bg2);color:var(--body)}
-.breadcrumb{font-family:sans-serif;font-size:.82rem;color:var(--muted);display:flex;align-items:center;gap:.4rem}
-.breadcrumb-sep{color:var(--border2);font-size:.9rem}
-.breadcrumb-current{color:var(--h2);font-weight:600}
+/* Performance Memory */
+.memory-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+.memory-col-header { display: flex; align-items: center; gap: .5rem; margin-bottom: .75rem; }
+.memory-col-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.memory-col-title { font-family: 'Inter', sans-serif; font-size: .75rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); }
+.pattern-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: .85rem 1rem; margin-bottom: .6rem; }
+.pattern-card-text { font-family: 'Inter', sans-serif; font-size: .82rem; color: var(--body); line-height: 1.5; margin-bottom: .5rem; }
+.pattern-tags { display: flex; flex-wrap: wrap; gap: .3rem; }
+.pattern-tag { font-family: 'Inter', sans-serif; font-size: .68rem; font-weight: 600; padding: 2px 8px; border-radius: 4px; background: var(--bg3); color: var(--muted); }
 
-.avatar-identity-bar{padding:1.5rem 2rem;max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:1.25rem;flex-wrap:wrap}
-.avatar-identity-emoji{width:72px;height:72px;border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:2.4rem;flex-shrink:0}
-.avatar-identity-name{font-family:'Fraunces',serif;font-size:1.75rem;font-weight:600;color:var(--h2);letter-spacing:-.02em;margin-bottom:.4rem}
-.avatar-identity-meta{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
+/* Instruct Avatar */
+.instruct-compose { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem; margin-bottom: 1.5rem; }
+.instruct-compose-label { font-family: 'Inter', sans-serif; font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); margin-bottom: .3rem; }
+.instruct-compose-hint { font-family: 'Inter', sans-serif; font-size: .8rem; color: var(--muted); margin-bottom: .75rem; }
+.instruct-input-row { display: flex; gap: .65rem; align-items: flex-start; }
+.instruct-textarea { flex: 1; padding: .65rem .9rem; border: 1.5px solid var(--border2); border-radius: var(--radius-sm); font-family: 'Inter', sans-serif; font-size: .85rem; background: var(--bg); color: var(--body); outline: none; resize: none; line-height: 1.5; transition: border-color .2s; }
+.instruct-textarea:focus { border-color: var(--primary); }
+.instruction-list-header { font-family: 'Inter', sans-serif; font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); margin-bottom: .75rem; }
+.instruction-items { display: flex; flex-direction: column; gap: .5rem; }
+.instruction-item { display: flex; align-items: flex-start; gap: .75rem; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: .85rem 1rem; }
+.instruction-item.disabled { opacity: .45; }
+.instruction-text { flex: 1; font-family: 'Inter', sans-serif; font-size: .85rem; color: var(--body); line-height: 1.5; }
+.toggle-switch { position: relative; width: 36px; height: 20px; flex-shrink: 0; margin-top: 2px; }
+.toggle-switch input { display: none; }
+.toggle-slider { position: absolute; inset: 0; border-radius: 20px; background: var(--border2); cursor: pointer; transition: background .2s; }
+.toggle-switch input:checked + .toggle-slider { background: var(--primary); }
+.toggle-slider::before { content: ''; position: absolute; width: 14px; height: 14px; border-radius: 50%; background: white; top: 3px; left: 3px; transition: transform .2s; }
+.toggle-switch input:checked + .toggle-slider::before { transform: translateX(16px); }
+.instruction-delete { background: none; border: none; color: var(--muted); cursor: pointer; font-size: .9rem; padding: 0 2px; transition: color .2s; line-height: 1; margin-top: 1px; }
+.instruction-delete:hover { color: #e53935; }
 
-.workspace-tab-bar{background:var(--white);border-bottom:1px solid var(--border);position:sticky;top:calc(var(--nav-h) + 1.25rem);z-index:90;overflow-x:auto;-webkit-overflow-scrolling:touch}
-.workspace-tab-bar::-webkit-scrollbar{height:0}
-.workspace-tabs{display:flex;padding:0 2rem;min-width:max-content}
-.workspace-tab{padding:.85rem 1.25rem;font-family:sans-serif;font-size:.85rem;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:2.5px solid transparent;margin-bottom:-1px;transition:all .2s;white-space:nowrap}
-.workspace-tab:hover{color:var(--body)}
-.workspace-tab.active{color:var(--avc,var(--primary));border-bottom-color:var(--avc,var(--primary))}
+/* Train AI - Coming Soon */
+.coming-soon-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 3rem 2rem; text-align: center; }
+.coming-soon-icon-wrap { width: 56px; height: 56px; border-radius: 16px; background: var(--bg2); display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem; color: var(--muted); }
+.coming-soon-card-title { font-family: 'Fraunces', serif; font-size: 1.3rem; font-weight: 600; color: var(--h2); margin-bottom: .5rem; }
+.coming-soon-card-sub { font-family: 'Inter', sans-serif; font-size: .88rem; color: var(--muted); line-height: 1.6; max-width: 400px; margin: 0 auto; }
 
-.workspace-content{max-width:1100px;margin:0 auto;padding:2rem}
-.tab-panel{display:none}
-.tab-panel.active{display:block}
+/* Avatar form modal - color swatches */
+.color-swatches { display: flex; gap: .5rem; flex-wrap: wrap; }
+.color-swatch { width: 32px; height: 32px; border-radius: 50%; cursor: pointer; border: 3px solid transparent; transition: all .15s; }
+.color-swatch.selected { border-color: var(--h2); transform: scale(1.15); }
+.platform-checks { display: flex; gap: 1rem; }
+.platform-check { display: flex; align-items: center; gap: .4rem; font-family: 'Inter', sans-serif; font-size: .88rem; color: var(--body); cursor: pointer; }
+.platform-check input { accent-color: var(--primary); width: 15px; height: 15px; }
 
-/* ── TAB 1: AVATAR VAULT ── */
-.vault-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem}
-.vault-section-title{font-family:'Fraunces',serif;font-size:1rem;font-weight:600;color:var(--h2);margin-bottom:1rem;padding-bottom:.5rem;border-bottom:1px solid var(--border)}
+/* Post form modal */
+.post-status-select { width: 100%; padding: .75rem 1rem; border: 1.5px solid var(--border2); border-radius: var(--radius-sm); font-size: .92rem; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--body); outline: none; }
+.post-status-select:focus { border-color: var(--primary); }
 
-/* ── TAB 2: TRAIN AI ── */
-.upload-zone{border:2px dashed var(--border2);border-radius:var(--radius);padding:2.5rem 2rem;text-align:center;cursor:pointer;transition:all .2s;background:var(--bg)}
-.upload-zone:hover{border-color:var(--primary);background:var(--primary-light)}
-.upload-zone-icon{font-size:2.5rem;margin-bottom:.75rem}
-.upload-zone-title{font-family:'Fraunces',serif;font-size:1.1rem;color:var(--h2);margin-bottom:.35rem}
-.upload-zone-sub{font-family:sans-serif;font-size:.82rem;color:var(--muted);line-height:1.6}
-.upload-file-list{margin-top:1rem;display:flex;flex-wrap:wrap;gap:.4rem;justify-content:center}
-.upload-file-chip{font-family:sans-serif;font-size:.75rem;padding:3px 10px;background:var(--white);border:1px solid var(--border);border-radius:20px;color:var(--muted)}
+/* Mobile nav wrap */
+.mobile-nav-wrap { display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 300; background: var(--card); border-top: 1px solid var(--border); padding: .35rem .5rem env(safe-area-inset-bottom,.5rem); }
+.mobile-nav-inner { display: flex; align-items: center; justify-content: space-around; max-width: 480px; margin: 0 auto; }
 
-.analyze-section{margin-top:1.25rem;padding:1.25rem;background:var(--white);border:1px solid var(--border);border-radius:var(--radius)}
-.analyze-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1rem;gap:1rem;flex-wrap:wrap}
-.btn-disabled{padding:.65rem 1.5rem;background:var(--bg2);border:1.5px solid var(--border);border-radius:var(--radius-sm);font-family:'Fraunces',serif;font-size:.92rem;color:var(--muted);cursor:not-allowed}
-.api-required-note{font-family:sans-serif;font-size:.75rem;color:var(--muted);background:var(--bg);padding:4px 10px;border-radius:20px;border:1px solid var(--border);white-space:nowrap}
-
-.extracted-results{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
-.extracted-box{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:1rem}
-.extracted-box-label{font-family:sans-serif;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:.5rem}
-.extracted-box-content{font-family:sans-serif;font-size:.85rem;color:var(--muted);font-style:italic;line-height:1.6}
-
-/* ── TAB 3: CONTENT CALENDAR ── */
-.cal-header{display:flex;align-items:center;gap:.75rem;margin-bottom:1.25rem;flex-wrap:wrap}
-.week-nav{display:flex;align-items:center;gap:.4rem}
-.week-nav-btn{background:none;border:1px solid var(--border2);border-radius:var(--radius-sm);width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.9rem;color:var(--muted);transition:all .15s}
-.week-nav-btn:hover{background:var(--bg2);color:var(--body)}
-.week-label{font-family:sans-serif;font-size:.9rem;font-weight:600;color:var(--h2);padding:0 .4rem}
-.cal-generate-row{display:flex;align-items:center;gap:.75rem;margin-left:auto;flex-wrap:wrap}
-
-.cal-table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
-.cal-table{width:100%;min-width:500px;border-collapse:separate;border-spacing:0;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
-.cal-th{padding:.6rem .75rem;font-family:sans-serif;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);background:var(--bg);border-bottom:1px solid var(--border);text-align:left}
-.cal-th:not(:last-child){border-right:1px solid var(--border)}
-.cal-day-cell{padding:.6rem .75rem;font-family:sans-serif;font-size:.8rem;font-weight:600;color:var(--muted);background:var(--bg);border-bottom:1px solid var(--border);border-right:1px solid var(--border);white-space:nowrap;vertical-align:top;width:72px}
-.cal-day-cell.today{color:var(--primary)}
-.cal-content-cell{padding:.6rem .75rem;border-bottom:1px solid var(--border);vertical-align:top;background:var(--white)}
-.cal-content-cell:not(:last-child){border-right:1px solid var(--border)}
-tr:last-child .cal-day-cell,tr:last-child .cal-content-cell{border-bottom:none}
-
-.cal-post-card{border-radius:var(--radius-sm);padding:.5rem .65rem;border:1px solid var(--border)}
-.cal-post-type{font-family:sans-serif;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.25rem}
-.cal-post-caption{font-family:sans-serif;font-size:.78rem;color:var(--muted);line-height:1.4;margin-bottom:.35rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.cal-status{font-family:sans-serif;font-size:.65rem;font-weight:700;padding:2px 7px;border-radius:20px;display:inline-block}
-.cal-status.draft{background:var(--bg2);color:var(--muted)}
-.cal-status.pending{background:#fff8e1;color:#e65100}
-.cal-status.scheduled{background:#e3f2fd;color:#1565c0}
-.cal-status.posted{background:#e8f5e9;color:#2e7d32}
-.cal-empty{font-family:sans-serif;font-size:.78rem;color:var(--border2);text-align:center;padding:.75rem 0}
-
-/* ── TAB 4: REVIEW DESK ── */
-.review-list{display:flex;flex-direction:column;gap:1rem}
-.review-post{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;transition:box-shadow .2s}
-.review-post:hover{box-shadow:var(--shadow)}
-.review-post-header{display:flex;align-items:center;gap:.6rem;margin-bottom:1rem;flex-wrap:wrap}
-.review-post-date{font-family:sans-serif;font-size:.78rem;color:var(--muted);margin-left:auto}
-.review-section-label{font-family:sans-serif;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:.4rem}
-.review-caption-text{font-family:sans-serif;font-size:.9rem;color:var(--body);line-height:1.65;margin-bottom:1rem;padding:.85rem 1rem;background:var(--bg);border-radius:var(--radius-sm);border:1px solid var(--border)}
-.prompt-options{display:flex;flex-direction:column;gap:.5rem;margin-bottom:1rem}
-.prompt-option{display:flex;align-items:flex-start;gap:.65rem;padding:.65rem .85rem;border:1.5px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;transition:all .15s;background:var(--white)}
-.prompt-option:hover{border-color:var(--primary);background:var(--primary-light)}
-.prompt-option input[type=radio]{accent-color:var(--primary);margin-top:3px;flex-shrink:0}
-.prompt-option-text{font-family:sans-serif;font-size:.83rem;color:var(--body);line-height:1.5}
-
-.review-actions{display:flex;gap:.5rem;flex-wrap:wrap}
-.btn-approve{padding:.55rem 1rem;background:#e8f5e9;border:1.5px solid #a5d6a7;border-radius:var(--radius-sm);font-family:sans-serif;font-size:.82rem;font-weight:700;color:#2e7d32;cursor:pointer;transition:all .15s}
-.btn-approve:hover{background:#2e7d32;color:white}
-.btn-edit{padding:.55rem 1rem;background:var(--bg2);border:1.5px solid var(--border2);border-radius:var(--radius-sm);font-family:sans-serif;font-size:.82rem;font-weight:700;color:var(--muted);cursor:pointer;transition:all .15s}
-.btn-edit:hover{background:var(--bg3);color:var(--body)}
-.btn-regen{padding:.55rem 1rem;background:#e3f2fd;border:1.5px solid #90caf9;border-radius:var(--radius-sm);font-family:sans-serif;font-size:.82rem;font-weight:700;color:#1565c0;cursor:pointer;transition:all .15s}
-.btn-regen:hover{background:#1565c0;color:white}
-.btn-reject{padding:.55rem 1rem;background:#fee2e2;border:1.5px solid #fca5a5;border-radius:var(--radius-sm);font-family:sans-serif;font-size:.82rem;font-weight:700;color:#c62828;cursor:pointer;transition:all .15s}
-.btn-reject:hover{background:#c62828;color:white}
-
-/* ── TAB 5: PERFORMANCE MEMORY ── */
-.memory-cols{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
-.memory-col-title{font-family:'Fraunces',serif;font-size:1rem;font-weight:600;margin-bottom:.85rem;display:flex;align-items:center;gap:.4rem}
-.pattern-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius-sm);padding:1rem;margin-bottom:.65rem}
-.pattern-card-text{font-family:sans-serif;font-size:.85rem;color:var(--body);line-height:1.55;margin-bottom:.5rem}
-.pattern-tags{display:flex;flex-wrap:wrap;gap:.3rem}
-.pattern-tag{font-family:sans-serif;font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:20px;background:var(--bg2);color:var(--muted)}
-
-/* ── TAB 6: INSTRUCT AVATAR ── */
-.instruct-compose{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;margin-bottom:1.5rem}
-.instruct-compose-label{font-family:sans-serif;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:.35rem}
-.instruct-compose-hint{font-family:sans-serif;font-size:.82rem;color:var(--muted);margin-bottom:.75rem;line-height:1.5}
-.instruct-input-row{display:flex;gap:.5rem;align-items:flex-end}
-.instruct-textarea{flex:1;padding:.75rem 1rem;border:1.5px solid var(--border2);border-radius:var(--radius-sm);font-size:.9rem;font-family:sans-serif;background:var(--bg);color:var(--body);outline:none;transition:border-color .2s;resize:none;line-height:1.5}
-.instruct-textarea:focus{border-color:var(--primary)}
-
-.instruction-list-header{font-family:sans-serif;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:.75rem}
-.instruction-items{display:flex;flex-direction:column;gap:.5rem}
-.instruction-item{display:flex;align-items:flex-start;gap:.85rem;background:var(--white);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.9rem 1rem;transition:all .15s}
-.instruction-item.disabled{opacity:.45}
-.instruction-text{font-family:sans-serif;font-size:.875rem;color:var(--body);flex:1;line-height:1.55}
-
-.toggle-switch{position:relative;display:inline-block;width:36px;height:20px;flex-shrink:0;margin-top:2px}
-.toggle-switch input{opacity:0;width:0;height:0}
-.toggle-slider{position:absolute;cursor:pointer;inset:0;background:var(--bg3);border-radius:20px;transition:.2s}
-.toggle-slider::before{content:'';position:absolute;height:14px;width:14px;left:3px;bottom:3px;background:white;border-radius:50%;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
-.toggle-switch input:checked+.toggle-slider{background:var(--avc,var(--primary))}
-.toggle-switch input:checked+.toggle-slider::before{transform:translateX(16px)}
-
-/* ── MOBILE ── */
-@media(max-width:768px){
-  .social-page-header{padding:1rem 1rem 0}
-  .social-page-title{font-size:1.5rem}
-  .avatar-grid{grid-template-columns:1fr;padding:1rem}
-  .avatar-mode-bar{padding:.6rem 1rem}
-  .avatar-identity-bar{padding:1rem 1rem 0.75rem;gap:.75rem}
-  .avatar-identity-emoji{width:54px;height:54px;font-size:1.8rem;border-radius:14px}
-  .avatar-identity-name{font-size:1.35rem}
-  .workspace-tab-bar{top:52px}
-  .workspace-tabs{padding:0 1rem}
-  .workspace-tab{padding:.7rem 1rem;font-size:.8rem}
-  .workspace-content{padding:1rem}
-  .vault-grid{grid-template-columns:1fr;gap:1rem}
-  .extracted-results{grid-template-columns:1fr}
-  .memory-cols{grid-template-columns:1fr}
-  .review-post-date{margin-left:0}
-  .review-actions{gap:.35rem}
-  .btn-approve,.btn-edit,.btn-regen,.btn-reject{padding:.5rem .75rem;font-size:.78rem}
-  .cal-header{gap:.5rem}
-  .cal-generate-row{margin-left:0;width:100%;justify-content:flex-end}
-}
-@media(max-width:380px){
-  .social-page-title{font-size:1.3rem}
-  .avatar-grid{grid-template-columns:1fr}
+/* Responsive */
+@media(max-width: 768px) {
+  .social-hub-wrap { padding: 1rem; }
+  .avatar-grid { grid-template-columns: 1fr; }
+  .vault-grid { grid-template-columns: 1fr; }
+  .memory-cols { grid-template-columns: 1fr; }
+  .workspace-content { padding: 1rem; }
+  .avatar-mode-bar { padding: .75rem 1rem; }
+  .avatar-identity-bar { padding: 1rem; }
+  .workspace-tabs { padding: 0 1rem; }
+  .social-page-header { flex-direction: column; align-items: flex-start; }
 }
 </style>
 </head>
@@ -203,7 +190,7 @@ tr:last-child .cal-day-cell,tr:last-child .cal-content-cell{border-bottom:none}
 <div id="gate">
   <div class="gate-card">
     <div class="gate-logo">Nancy</div>
-    <div class="gate-sub">Care & Bloom Hub</div>
+    <div class="gate-sub">Care &amp; Bloom Hub</div>
     <div class="gate-label">Enter hub password</div>
     <input class="gate-input" type="password" id="gate-pw" placeholder="••••••••" onkeydown="if(event.key==='Enter')checkPassword()"/>
     <div class="gate-error" id="gate-error"></div>
@@ -214,7 +201,7 @@ tr:last-child .cal-day-cell,tr:last-child .cal-content-cell{border-bottom:none}
 <div id="auth-screen">
   <div class="auth-card">
     <div class="auth-logo">Nancy</div>
-    <div class="auth-sub">Care & Bloom Hub</div>
+    <div class="auth-sub">Care &amp; Bloom Hub</div>
     <div class="auth-tabs">
       <div class="auth-tab active" id="signin-tab" onclick="switchAuthTab('signin')">Sign In</div>
       <div class="auth-tab" id="signup-tab" onclick="switchAuthTab('signup')">Join Team</div>
@@ -234,7 +221,7 @@ tr:last-child .cal-day-cell,tr:last-child .cal-content-cell{border-bottom:none}
       <button class="auth-btn" id="signup-btn" onclick="signUp()">Join Team</button>
     </div>
     <div id="forgot-form" style="display:none">
-      <div style="font-family:sans-serif;font-size:.85rem;color:var(--muted);margin-bottom:1rem;line-height:1.6">Enter your work email to receive a password reset link.</div>
+      <div style="font-family:'Inter',sans-serif;font-size:.85rem;color:var(--muted);margin-bottom:1rem;line-height:1.6">Enter your work email to receive a password reset link.</div>
       <div class="auth-field"><label class="auth-label">Work Email</label><input class="auth-input" type="email" id="forgot-email" placeholder="you@carenbloom.com"/></div>
       <div class="auth-error" id="forgot-error"></div>
       <div class="auth-success" id="forgot-success"></div>
@@ -251,9 +238,9 @@ tr:last-child .cal-day-cell,tr:last-child .cal-content-cell{border-bottom:none}
     <div class="nav-links">
       <a class="nav-link" href="index.html">Home</a>
       <a class="nav-link" href="taskflow.html">Task Hub</a>
-      <a class="nav-link active" href="social.html">Content & Socials</a>
+      <a class="nav-link active" href="social.html">Content &amp; Socials</a>
       <a class="nav-link" href="learning.html">Learning</a>
-      <a class="nav-link" href="creators.html">Creators & Onboarding</a>
+      <a class="nav-link" href="creators.html">Creators &amp; Onboarding</a>
     </div>
     <div class="nav-right">
       <div class="nav-time" id="pht-clock">HKT --:--</div>
@@ -264,597 +251,1020 @@ tr:last-child .cal-day-cell,tr:last-child .cal-content-cell{border-bottom:none}
       <div class="user-nav-btn" onclick="openUserMenu()">
         <div class="user-avatar-small" id="user-avatar-nav">?</div>
         <span id="user-name-nav">Me</span>
-        <span>▾</span>
+        <span>&#9662;</span>
       </div>
     </div>
   </nav>
 
-  <div id="storage-alert-banner">
-    <span id="storage-alert-icon">⚠️</span>
-    <span style="flex:1;font-family:sans-serif"><span id="storage-alert-pct" style="font-weight:700"></span><span id="storage-alert-msg"></span><span style="color:var(--muted);font-size:.75rem"> (Only you can see this)</span></span>
-    <button class="storage-alert-close" onclick="dismissStorageAlert()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-  </div>
-
-  <!-- ════════════════════════════════════
-       MODE 1: SOCIAL HUB
-       ════════════════════════════════════ -->
+  <!-- MODE 1: SOCIAL HUB -->
   <div id="social-hub">
-    <div class="social-page-header">
-      <div class="social-page-title">Content & Socials</div>
-      <div class="social-page-sub">Manage AI avatars, generate content, and schedule posts across platforms</div>
+    <div id="storage-alert-banner">
+      <span id="storage-alert-icon" style="font-size:.9rem;flex-shrink:0">!</span>
+      <span style="flex:1;font-family:'Inter',sans-serif"><span id="storage-alert-pct" style="font-weight:700"></span><span id="storage-alert-msg"></span><span style="color:var(--muted);font-size:.75rem"> (Only you can see this)</span></span>
+      <button class="storage-alert-close" onclick="dismissStorageAlert()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
-
-    <div class="avatar-grid">
-
-      <!-- Stacy Yang -->
-      <div class="avatar-card" style="--avc:#ff30cc">
-        <div class="avatar-card-inner">
-          <div class="avatar-card-top">
-            <div class="avatar-emoji-wrap" style="background:#ffe0f7">🌸</div>
-            <div class="avatar-card-meta">
-              <div class="avatar-card-name">Stacy Yang</div>
-              <div class="avatar-type-badge" style="background:#ffe0f7;color:#cc1fa3">AI Persona</div>
-              <div class="avatar-platforms">
-                <span class="plat-badge">📸 IG</span>
-                <span class="plat-badge">🎵 TikTok</span>
-              </div>
-            </div>
-          </div>
-          <div class="avatar-card-stats">
-            <div class="avatar-stat">
-              <div class="avatar-stat-num">3</div>
-              <div class="avatar-stat-label">posts this week</div>
-            </div>
-            <div class="avatar-stat">
-              <div class="avatar-stat-num">2</div>
-              <div class="avatar-stat-label">pending review</div>
-            </div>
-          </div>
-          <button class="btn-open-avatar" style="background:#ff30cc" onclick="openAvatar('Stacy Yang','🌸','#ff30cc','#ffe0f7','AI Persona','📸 IG,🎵 TikTok')">Open Avatar →</button>
+    <div class="social-hub-wrap">
+      <div class="social-page-header">
+        <div>
+          <div class="social-page-title">Content &amp; Socials</div>
+          <div class="social-page-sub">Manage your AI personas and brand accounts</div>
         </div>
+        <!-- Admin only - shown via JS -->
+        <button class="btn-primary" id="btn-add-avatar" style="display:none" onclick="openAvatarModal()">+ Add Avatar</button>
       </div>
-
-      <!-- Paige Brenner -->
-      <div class="avatar-card" style="--avc:#8854d0">
-        <div class="avatar-card-inner">
-          <div class="avatar-card-top">
-            <div class="avatar-emoji-wrap" style="background:#ede7f6">💅</div>
-            <div class="avatar-card-meta">
-              <div class="avatar-card-name">Paige Brenner</div>
-              <div class="avatar-type-badge" style="background:#ede7f6;color:#5e35b1">AI Persona</div>
-              <div class="avatar-platforms">
-                <span class="plat-badge">📸 IG</span>
-                <span class="plat-badge">🎵 TikTok</span>
-              </div>
-            </div>
-          </div>
-          <div class="avatar-card-stats">
-            <div class="avatar-stat">
-              <div class="avatar-stat-num">1</div>
-              <div class="avatar-stat-label">posts this week</div>
-            </div>
-            <div class="avatar-stat">
-              <div class="avatar-stat-num">4</div>
-              <div class="avatar-stat-label">pending review</div>
-            </div>
-          </div>
-          <button class="btn-open-avatar" style="background:#8854d0" onclick="openAvatar('Paige Brenner','💅','#8854d0','#ede7f6','AI Persona','📸 IG,🎵 TikTok')">Open Avatar →</button>
-        </div>
+      <div class="avatar-grid" id="avatar-grid-container">
+        <div class="empty-state" id="avatars-loading">Loading...</div>
       </div>
-
-      <!-- Travel with Nancy -->
-      <div class="avatar-card" style="--avc:#2d7dd2">
-        <div class="avatar-card-inner">
-          <div class="avatar-card-top">
-            <div class="avatar-emoji-wrap" style="background:#e3f2fd">🌍</div>
-            <div class="avatar-card-meta">
-              <div class="avatar-card-name">Travel with Nancy</div>
-              <div class="avatar-type-badge" style="background:#e3f2fd;color:#1565c0">AI Persona</div>
-              <div class="avatar-platforms">
-                <span class="plat-badge">📸 IG</span>
-                <span class="plat-badge">🎵 TikTok</span>
-              </div>
-            </div>
-          </div>
-          <div class="avatar-card-stats">
-            <div class="avatar-stat">
-              <div class="avatar-stat-num">0</div>
-              <div class="avatar-stat-label">posts this week</div>
-            </div>
-            <div class="avatar-stat">
-              <div class="avatar-stat-num">0</div>
-              <div class="avatar-stat-label">pending review</div>
-            </div>
-          </div>
-          <button class="btn-open-avatar" style="background:#2d7dd2" onclick="openAvatar('Travel with Nancy','🌍','#2d7dd2','#e3f2fd','AI Persona','📸 IG,🎵 TikTok')">Open Avatar →</button>
-        </div>
-      </div>
-
-      <!-- HelloNancy -->
-      <div class="avatar-card brand-card" style="--avc:#e09000">
-        <div class="avatar-card-inner">
-          <div class="avatar-card-top">
-            <div class="avatar-emoji-wrap" style="background:#fff8e1">⭐</div>
-            <div class="avatar-card-meta">
-              <div class="avatar-card-name">HelloNancy</div>
-              <div class="avatar-type-badge" style="background:#fff8e1;color:#e65100">Brand Account</div>
-              <div class="avatar-platforms">
-                <span class="plat-badge">📸 IG</span>
-                <span class="plat-badge">🎵 TikTok</span>
-              </div>
-            </div>
-          </div>
-          <div class="avatar-card-stats">
-            <div class="avatar-stat">
-              <div class="avatar-stat-num">5</div>
-              <div class="avatar-stat-label">posts this week</div>
-            </div>
-            <div class="avatar-stat">
-              <div class="avatar-stat-num">1</div>
-              <div class="avatar-stat-label">pending review</div>
-            </div>
-          </div>
-          <button class="btn-open-avatar" style="background:#f7b731;color:#282826" onclick="openAvatar('HelloNancy','⭐','#e09000','#fff8e1','Brand Account','📸 IG,🎵 TikTok')">Open Avatar →</button>
-        </div>
-      </div>
-
     </div>
   </div>
 
-  <!-- ════════════════════════════════════
-       MODE 2: AVATAR MODE
-       ════════════════════════════════════ -->
-  <div id="avatar-mode" style="display:none">
-
-    <!-- Back + breadcrumb -->
+  <!-- MODE 2: AVATAR WORKSPACE -->
+  <div id="avatar-mode">
     <div class="avatar-mode-bar">
-      <button class="back-btn" onclick="backToHub()">← Back</button>
-      <div class="breadcrumb">
-        <span>Content & Socials</span>
-        <span class="breadcrumb-sep">›</span>
-        <span class="breadcrumb-current" id="av-breadcrumb">Avatar</span>
-      </div>
+      <button class="back-btn" onclick="backToHub()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        Back
+      </button>
+      <div class="breadcrumb">Content &amp; Socials <span style="color:var(--border2);margin:0 .35rem">/</span> <span class="breadcrumb-current" id="av-breadcrumb"></span></div>
     </div>
 
-    <!-- Avatar identity -->
     <div class="avatar-identity-bar">
-      <div class="avatar-identity-emoji" id="av-emoji-wrap">
-        <span id="av-emoji">🌸</span>
-      </div>
+      <div class="avatar-identity-initials" id="av-initials-wrap"></div>
       <div>
-        <div class="avatar-identity-name" id="av-name">Stacy Yang</div>
+        <div class="avatar-identity-name" id="av-name"></div>
         <div class="avatar-identity-meta">
-          <span class="avatar-type-badge" id="av-type-badge" style="background:#ffe0f7;color:#cc1fa3">AI Persona</span>
-          <span id="av-platform-badges" style="display:flex;gap:.35rem;margin-left:.25rem"></span>
+          <span id="av-type-badge" class="avatar-type-badge"></span>
+          <div class="avatar-platforms" id="av-platform-badges"></div>
         </div>
       </div>
     </div>
 
-    <!-- Tab bar -->
     <div class="workspace-tab-bar">
       <div class="workspace-tabs">
-        <div class="workspace-tab active" data-tab="vault" onclick="showTab('vault')">Avatar Vault</div>
+        <div class="workspace-tab active" data-tab="vault" onclick="showTab('vault')">Profile</div>
         <div class="workspace-tab" data-tab="train" onclick="showTab('train')">Train AI</div>
-        <div class="workspace-tab" data-tab="calendar" onclick="showTab('calendar')">Content Calendar</div>
+        <div class="workspace-tab" data-tab="calendar" onclick="showTab('calendar')">Calendar</div>
         <div class="workspace-tab" data-tab="review" onclick="showTab('review')">Review Desk</div>
-        <div class="workspace-tab" data-tab="memory" onclick="showTab('memory')">Performance Memory</div>
-        <div class="workspace-tab" data-tab="instruct" onclick="showTab('instruct')">Instruct Avatar</div>
+        <div class="workspace-tab" data-tab="memory" onclick="showTab('memory')">Performance</div>
+        <div class="workspace-tab" data-tab="instruct" onclick="showTab('instruct')">Instructions</div>
       </div>
     </div>
 
     <div class="workspace-content">
 
-      <!-- ── TAB 1: AVATAR VAULT ── -->
+      <!-- VAULT TAB -->
       <div class="tab-panel active" data-panel="vault">
         <div class="vault-grid">
           <div>
-            <div class="vault-section-title">Identity & Voice</div>
-            <div class="form-field">
-              <label class="form-label">Bio</label>
-              <textarea class="form-textarea" rows="3" placeholder="Short bio — who they are, their vibe, their world..."></textarea>
-            </div>
-            <div class="form-field">
-              <label class="form-label">Face Description</label>
-              <textarea class="form-textarea" rows="3" placeholder="Physical appearance, features, consistent styling — used for AI image generation..."></textarea>
-            </div>
-            <div class="form-field">
-              <label class="form-label">Voice & Tone</label>
-              <textarea class="form-textarea" rows="3" placeholder="How does this avatar write? Casual? Warm? Witty? Examples of their language style..."></textarea>
-            </div>
-            <div class="form-field">
-              <label class="form-label">Example Captions</label>
-              <textarea class="form-textarea" rows="4" placeholder="Paste 3–5 example captions that represent this avatar's voice perfectly..."></textarea>
-            </div>
+            <div class="vault-section-title">Identity &amp; Voice</div>
+            <div class="form-field"><label class="form-label">Bio</label><textarea class="form-textarea" id="vault-bio" rows="3" placeholder="Who is this avatar? Background, personality..."></textarea></div>
+            <div class="form-field"><label class="form-label">Face Description</label><textarea class="form-textarea" id="vault-face" rows="3" placeholder="Visual appearance for image generation..."></textarea></div>
+            <div class="form-field"><label class="form-label">Voice &amp; Tone</label><textarea class="form-textarea" id="vault-voice" rows="3" placeholder="How does this avatar write and speak?"></textarea></div>
+            <div class="form-field"><label class="form-label">Example Captions</label><textarea class="form-textarea" id="vault-captions" rows="4" placeholder="Paste example captions that match this voice..."></textarea></div>
           </div>
           <div>
             <div class="vault-section-title">Posting Schedule</div>
-            <div class="form-field">
-              <label class="form-label">Instagram Schedule</label>
-              <input class="form-input" type="text" placeholder="e.g. Mon, Wed, Fri at 7pm HKT"/>
-            </div>
-            <div class="form-field">
-              <label class="form-label">TikTok Schedule</label>
-              <input class="form-input" type="text" placeholder="e.g. Tue, Thu at 6pm HKT"/>
-            </div>
+            <div class="form-field"><label class="form-label">Instagram Schedule</label><input class="form-input" id="vault-ig-sched" type="text" placeholder="e.g. Mon, Wed, Fri at 7pm HKT"/></div>
+            <div class="form-field"><label class="form-label">TikTok Schedule</label><input class="form-input" id="vault-tt-sched" type="text" placeholder="e.g. Daily at 6pm HKT"/></div>
             <div class="vault-section-title" style="margin-top:1.5rem">Custom Prompts</div>
-            <div class="form-field">
-              <label class="form-label">Image Generation Prompt Base</label>
-              <textarea class="form-textarea" rows="4" placeholder="Base prompt for generating images — style, lighting, consistent elements to include..."></textarea>
-            </div>
-            <div class="form-field">
-              <label class="form-label">Caption Prompt Base</label>
-              <textarea class="form-textarea" rows="3" placeholder="System prompt for generating captions in this avatar's voice..."></textarea>
-            </div>
+            <div class="form-field"><label class="form-label">Image Generation Prompt Base</label><textarea class="form-textarea" id="vault-img-prompt" rows="4" placeholder="Base prompt for generating images of this avatar..."></textarea></div>
+            <div class="form-field"><label class="form-label">Caption Prompt Base</label><textarea class="form-textarea" id="vault-cap-prompt" rows="3" placeholder="Instructions for caption generation AI..."></textarea></div>
           </div>
         </div>
-        <div style="margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:.75rem">
-          <button class="btn-ghost">Discard Changes</button>
-          <button class="btn-primary">Save Avatar Profile</button>
+        <div class="vault-actions">
+          <button class="btn-ghost" onclick="loadVault(socialState.currentAvatar.id)">Discard Changes</button>
+          <button class="btn-primary" onclick="saveVault()">Save Profile</button>
         </div>
       </div>
 
-      <!-- ── TAB 2: TRAIN AI ── -->
+      <!-- TRAIN AI TAB -->
       <div class="tab-panel" data-panel="train">
-        <div class="upload-zone" onclick="document.getElementById('file-upload').click()">
-          <input type="file" id="file-upload" style="display:none" multiple accept="image/*,video/*,.txt">
-          <div class="upload-zone-icon">📂</div>
-          <div class="upload-zone-title">Upload Reference Materials</div>
-          <div class="upload-zone-sub">Drag & drop or click to upload photos, videos, or past captions<br><span style="opacity:.6">JPG, PNG, MP4, TXT — up to 20 files</span></div>
-          <div class="upload-file-list">
-            <span class="upload-file-chip">photo_ref_001.jpg</span>
-            <span class="upload-file-chip">photo_ref_002.jpg</span>
-            <span class="upload-file-chip">captions_archive.txt</span>
-            <span class="upload-file-chip">+ 4 more</span>
+        <div class="coming-soon-card">
+          <div class="coming-soon-icon-wrap">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
           </div>
-        </div>
-
-        <div class="analyze-section">
-          <div class="analyze-header">
-            <div>
-              <div style="font-family:'Fraunces',serif;font-size:1.1rem;font-weight:600;color:var(--h2);margin-bottom:.2rem">Analyze with Gemini</div>
-              <div style="font-family:sans-serif;font-size:.82rem;color:var(--muted)">Extract face description and voice profile from uploaded materials</div>
-            </div>
-            <div style="display:flex;align-items:center;gap:.75rem;flex-shrink:0">
-              <span class="api-required-note">🔑 API key required</span>
-              <button class="btn-disabled" disabled>Analyze Materials</button>
-            </div>
-          </div>
-          <div class="extracted-results">
-            <div class="extracted-box">
-              <div class="extracted-box-label">Extracted Face Description</div>
-              <div class="extracted-box-content">Analyze your materials to extract a consistent face and style description for image generation...</div>
-            </div>
-            <div class="extracted-box">
-              <div class="extracted-box-label">Extracted Voice & Tone</div>
-              <div class="extracted-box-content">Analyze your captions and past content to build a voice profile for this avatar...</div>
-            </div>
-          </div>
+          <div class="coming-soon-card-title">Train AI — Coming Soon</div>
+          <div class="coming-soon-card-sub">Upload reference images, videos, and style guides to train the AI on this avatar's specific aesthetic. Requires Gemini API integration.</div>
         </div>
       </div>
 
-      <!-- ── TAB 3: CONTENT CALENDAR ── -->
+      <!-- CALENDAR TAB -->
       <div class="tab-panel" data-panel="calendar">
         <div class="cal-header">
           <div class="week-nav">
-            <button class="week-nav-btn">‹</button>
-            <span class="week-label">Mar 31 – Apr 6, 2025</span>
-            <button class="week-nav-btn">›</button>
+            <button class="week-nav-btn" onclick="goWeek(-1)">&#8249;</button>
+            <span class="week-label" id="week-label">Loading...</span>
+            <button class="week-nav-btn" onclick="goWeek(1)">&#8250;</button>
           </div>
-          <button class="btn-ghost" style="font-size:.82rem;padding:.5rem .9rem">Today</button>
-          <div class="cal-generate-row">
-            <span class="api-required-note">🔑 API key required</span>
-            <button class="btn-disabled" disabled>Generate Week</button>
-          </div>
+          <button class="btn-ghost" onclick="goToday()" style="padding:.4rem .85rem;font-size:.8rem">Today</button>
         </div>
-
         <div class="cal-table-wrap">
           <table class="cal-table">
             <thead>
               <tr>
-                <th class="cal-th" style="width:72px">Day</th>
-                <th class="cal-th">📸 Instagram</th>
-                <th class="cal-th">🎵 TikTok</th>
+                <th class="cal-th" style="width:80px">Day</th>
+                <th class="cal-th">Instagram</th>
+                <th class="cal-th">TikTok</th>
               </tr>
             </thead>
-            <tbody>
-              <tr>
-                <td class="cal-day-cell"><div style="font-weight:700">Mon</div><div style="font-size:.7rem;opacity:.7">Mar 31</div></td>
-                <td class="cal-content-cell">
-                  <div class="cal-post-card" style="border-color:#c8e6c9;background:#f1faf3">
-                    <div class="cal-post-type" style="color:#2e7d32">Lifestyle</div>
-                    <div class="cal-post-caption">"Mornings with my matcha and a little sunshine ☀️ Starting the week right..."</div>
-                    <span class="cal-status posted">Posted</span>
-                  </div>
-                </td>
-                <td class="cal-content-cell">
-                  <div class="cal-post-card" style="border-color:#c8e6c9;background:#f1faf3">
-                    <div class="cal-post-type" style="color:#2e7d32">GRWM</div>
-                    <div class="cal-post-caption">"Get ready with me for a Monday reset day 🌿"</div>
-                    <span class="cal-status posted">Posted</span>
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td class="cal-day-cell"><div style="font-weight:700">Tue</div><div style="font-size:.7rem;opacity:.7">Apr 1</div></td>
-                <td class="cal-content-cell">
-                  <div class="cal-post-card" style="border-color:#bbdefb;background:#f3f9ff">
-                    <div class="cal-post-type" style="color:#1565c0">Product</div>
-                    <div class="cal-post-caption">"This skincare routine completely changed my skin in 30 days. Here's what I use..."</div>
-                    <span class="cal-status scheduled">Scheduled</span>
-                  </div>
-                </td>
-                <td class="cal-content-cell">
-                  <div class="cal-post-card" style="border-color:#bbdefb;background:#f3f9ff">
-                    <div class="cal-post-type" style="color:#1565c0">Tutorial</div>
-                    <div class="cal-post-caption">"My 3-step morning routine 🌿 (it takes 5 minutes)"</div>
-                    <span class="cal-status scheduled">Scheduled</span>
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td class="cal-day-cell today"><div style="font-weight:700">Wed</div><div style="font-size:.7rem">Apr 2 ✦</div></td>
-                <td class="cal-content-cell">
-                  <div class="cal-post-card" style="border-color:#ffe0b2;background:#fffaf5">
-                    <div class="cal-post-type" style="color:#e65100">Story Series</div>
-                    <div class="cal-post-caption">"Things I wish someone told me about building a brand from zero..."</div>
-                    <span class="cal-status pending">Pending Review</span>
-                  </div>
-                </td>
-                <td class="cal-content-cell">
-                  <div class="cal-post-card" style="border-color:#ffe0b2;background:#fffaf5">
-                    <div class="cal-post-type" style="color:#e65100">POV</div>
-                    <div class="cal-post-caption">"POV: You finally stopped chasing trends and started setting them 💫"</div>
-                    <span class="cal-status pending">Pending Review</span>
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td class="cal-day-cell"><div style="font-weight:700">Thu</div><div style="font-size:.7rem;opacity:.7">Apr 3</div></td>
-                <td class="cal-content-cell">
-                  <div class="cal-post-card">
-                    <div class="cal-post-type" style="color:var(--muted)">Lifestyle</div>
-                    <div class="cal-post-caption">"Caption draft in progress — finalizing tone and hook..."</div>
-                    <span class="cal-status draft">Draft</span>
-                  </div>
-                </td>
-                <td class="cal-content-cell"><div class="cal-empty">—</div></td>
-              </tr>
-              <tr>
-                <td class="cal-day-cell"><div style="font-weight:700">Fri</div><div style="font-size:.7rem;opacity:.7">Apr 4</div></td>
-                <td class="cal-content-cell"><div class="cal-empty">—</div></td>
-                <td class="cal-content-cell"><div class="cal-empty">—</div></td>
-              </tr>
-              <tr>
-                <td class="cal-day-cell"><div style="font-weight:700">Sat</div><div style="font-size:.7rem;opacity:.7">Apr 5</div></td>
-                <td class="cal-content-cell"><div class="cal-empty">—</div></td>
-                <td class="cal-content-cell"><div class="cal-empty">—</div></td>
-              </tr>
-              <tr>
-                <td class="cal-day-cell"><div style="font-weight:700">Sun</div><div style="font-size:.7rem;opacity:.7">Apr 6</div></td>
-                <td class="cal-content-cell"><div class="cal-empty">—</div></td>
-                <td class="cal-content-cell"><div class="cal-empty">—</div></td>
-              </tr>
+            <tbody id="cal-body">
+              <!-- JS rendered -->
             </tbody>
           </table>
         </div>
       </div>
 
-      <!-- ── TAB 4: REVIEW DESK ── -->
+      <!-- REVIEW DESK TAB -->
       <div class="tab-panel" data-panel="review">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:.75rem">
+        <div class="review-header">
           <div>
-            <div style="font-family:'Fraunces',serif;font-size:1.1rem;font-weight:600;color:var(--h2);margin-bottom:.2rem">Pending Review</div>
-            <div style="font-family:sans-serif;font-size:.82rem;color:var(--muted)">2 posts waiting for your approval</div>
+            <div class="review-title">Review Desk</div>
+            <div class="review-sub" id="review-sub">Loading pending posts...</div>
           </div>
-          <button class="btn-ghost" style="font-size:.82rem;padding:.5rem 1rem">Approve All</button>
+          <button class="btn-ghost" onclick="approveAll()" id="btn-approve-all" style="display:none">Approve All</button>
         </div>
-        <div class="review-list">
-
-          <!-- Post 1 -->
-          <div class="review-post">
-            <div class="review-post-header">
-              <span class="badge badge-pink">📸 Instagram</span>
-              <span class="badge badge-amber">Pending</span>
-              <span class="review-post-date">Wed Apr 2 · 7:00 PM HKT</span>
-            </div>
-            <div class="review-section-label">Caption</div>
-            <div class="review-caption-text">Things I wish someone told me about building a brand from zero ✨<br><br>1. You don't need to be perfect — you need to be consistent<br>2. Your niche finds you, not the other way around<br>3. The boring stuff (systems, routines) is what makes everything else possible<br><br>Save this for when you need a reminder 🤍<br><br>#brandbuilding #contentcreator #carenbloom</div>
-            <div class="review-section-label">Choose Image Prompt</div>
-            <div class="prompt-options">
-              <label class="prompt-option">
-                <input type="radio" name="prompt1" checked>
-                <span class="prompt-option-text">Sitting at a minimalist desk, warm afternoon light, looking thoughtful with a notebook open, soft pink and cream tones, editorial lifestyle aesthetic</span>
-              </label>
-              <label class="prompt-option">
-                <input type="radio" name="prompt1">
-                <span class="prompt-option-text">Close-up flatlay of a journal, pen, matcha, and mood board on a cream linen surface, overhead shot, natural light</span>
-              </label>
-              <label class="prompt-option">
-                <input type="radio" name="prompt1">
-                <span class="prompt-option-text">Standing by a large window, city view behind, holding coffee cup with both hands, soft smile, golden hour lighting</span>
-              </label>
-            </div>
-            <div class="review-actions">
-              <button class="btn-approve">✓ Approve</button>
-              <button class="btn-edit">✎ Edit</button>
-              <button class="btn-regen">↺ Regenerate</button>
-              <button class="btn-reject">✕ Reject</button>
-            </div>
-          </div>
-
-          <!-- Post 2 -->
-          <div class="review-post">
-            <div class="review-post-header">
-              <span class="badge badge-purple">🎵 TikTok</span>
-              <span class="badge badge-amber">Pending</span>
-              <span class="review-post-date">Wed Apr 2 · 8:00 PM HKT</span>
-            </div>
-            <div class="review-section-label">Caption</div>
-            <div class="review-caption-text">POV: You finally stopped chasing trends and started setting them 💫<br><br>It took me way too long to figure this out — but once I did, everything changed.<br><br>#contentcreator #personalbrand #pov</div>
-            <div class="review-section-label">Choose Image Prompt</div>
-            <div class="prompt-options">
-              <label class="prompt-option">
-                <input type="radio" name="prompt2" checked>
-                <span class="prompt-option-text">Walking confidently through a modern lobby, blurred background, candid paparazzi-style, editorial fashion feel</span>
-              </label>
-              <label class="prompt-option">
-                <input type="radio" name="prompt2">
-                <span class="prompt-option-text">Direct eye contact to camera, bold portrait, pink-toned studio lighting, empowering energy</span>
-              </label>
-              <label class="prompt-option">
-                <input type="radio" name="prompt2">
-                <span class="prompt-option-text">Shot from behind looking at a city skyline, golden hour, cinematic framing, symbolic of ambition</span>
-              </label>
-            </div>
-            <div class="review-actions">
-              <button class="btn-approve">✓ Approve</button>
-              <button class="btn-edit">✎ Edit</button>
-              <button class="btn-regen">↺ Regenerate</button>
-              <button class="btn-reject">✕ Reject</button>
-            </div>
-          </div>
-
+        <div class="review-list" id="review-list">
+          <!-- JS rendered -->
         </div>
       </div>
 
-      <!-- ── TAB 5: PERFORMANCE MEMORY ── -->
+      <!-- PERFORMANCE MEMORY TAB -->
       <div class="tab-panel" data-panel="memory">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:.75rem">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem">
           <div>
-            <div style="font-family:'Fraunces',serif;font-size:1.1rem;font-weight:600;color:var(--h2);margin-bottom:.2rem">What AI Has Learned</div>
-            <div style="font-family:sans-serif;font-size:.82rem;color:var(--muted)">Patterns extracted from approved and rejected posts</div>
+            <div style="font-family:'Fraunces',serif;font-size:1.2rem;font-weight:600;color:var(--h2);margin-bottom:.25rem">Performance Patterns</div>
+            <div style="font-family:'Inter',sans-serif;font-size:.82rem;color:var(--muted)">What the AI has learned from approved and rejected posts</div>
           </div>
-          <button class="btn-ghost" style="font-size:.82rem;padding:.5rem 1rem">+ Add Pattern</button>
+          <button class="btn-ghost">+ Add Pattern</button>
         </div>
         <div class="memory-cols">
           <div>
-            <div class="memory-col-title" style="color:#2e7d32">✅ What's Working</div>
-            <div class="pattern-card">
-              <div class="pattern-card-text">Warm editorial lifestyle shots (desk, window, coffee) consistently get 2–3× more saves than studio-style photos</div>
-              <div class="pattern-tags"><span class="pattern-tag">imagery</span><span class="pattern-tag">lifestyle</span><span class="pattern-tag">saves</span></div>
-            </div>
-            <div class="pattern-card">
-              <div class="pattern-card-text">Captions with numbered lists or "3 things I wish I knew" format drive high share rates</div>
-              <div class="pattern-tags"><span class="pattern-tag">caption</span><span class="pattern-tag">format</span><span class="pattern-tag">shares</span></div>
-            </div>
-            <div class="pattern-card">
-              <div class="pattern-card-text">Posting between 7–9pm HKT on weekdays significantly outperforms morning posts for this avatar</div>
-              <div class="pattern-tags"><span class="pattern-tag">timing</span><span class="pattern-tag">reach</span></div>
-            </div>
-            <div class="pattern-card">
-              <div class="pattern-card-text">Questions at the end of captions boost comment rates by ~40%</div>
-              <div class="pattern-tags"><span class="pattern-tag">engagement</span><span class="pattern-tag">caption</span><span class="pattern-tag">comments</span></div>
-            </div>
+            <div class="memory-col-header"><div class="memory-col-dot" style="background:var(--green)"></div><div class="memory-col-title">What's Working</div></div>
+            <div class="pattern-card"><div class="pattern-card-text">Warm editorial lifestyle shots perform 2–3× better than flat lays — more saves and profile visits.</div><div class="pattern-tags"><span class="pattern-tag">imagery</span><span class="pattern-tag">lifestyle</span><span class="pattern-tag">saves</span></div></div>
+            <div class="pattern-card"><div class="pattern-card-text">Numbered lists in captions drive high share rates — "5 things I wish I knew" format outperforms essays.</div><div class="pattern-tags"><span class="pattern-tag">captions</span><span class="pattern-tag">format</span><span class="pattern-tag">shares</span></div></div>
+            <div class="pattern-card"><div class="pattern-card-text">Posting between 7–9pm HKT consistently outperforms morning slots by 40–60% on engagement.</div><div class="pattern-tags"><span class="pattern-tag">timing</span><span class="pattern-tag">engagement</span></div></div>
+            <div class="pattern-card"><div class="pattern-card-text">Questions at end of caption boost comment rate by ~40% — open-ended work better than yes/no.</div><div class="pattern-tags"><span class="pattern-tag">captions</span><span class="pattern-tag">comments</span></div></div>
           </div>
           <div>
-            <div class="memory-col-title" style="color:#c62828">❌ What to Avoid</div>
-            <div class="pattern-card">
-              <div class="pattern-card-text">Flat lay shots with products on white backgrounds underperform — audience prefers in-context lifestyle imagery</div>
-              <div class="pattern-tags"><span class="pattern-tag">imagery</span><span class="pattern-tag">product</span><span class="pattern-tag">flat-lay</span></div>
-            </div>
-            <div class="pattern-card">
-              <div class="pattern-card-text">Long captions (200+ words) on TikTok see a sharp engagement drop — keep it under 100 words</div>
-              <div class="pattern-tags"><span class="pattern-tag">tiktok</span><span class="pattern-tag">caption-length</span></div>
-            </div>
-            <div class="pattern-card">
-              <div class="pattern-card-text">Generic motivational quotes without personal context feel inauthentic for this avatar's voice</div>
-              <div class="pattern-tags"><span class="pattern-tag">voice</span><span class="pattern-tag">authenticity</span></div>
-            </div>
+            <div class="memory-col-header"><div class="memory-col-dot" style="background:#e53935"></div><div class="memory-col-title">What to Avoid</div></div>
+            <div class="pattern-card"><div class="pattern-card-text">Flat lay on white backgrounds consistently underperforms — feels generic and doesn't stop the scroll.</div><div class="pattern-tags"><span class="pattern-tag">imagery</span><span class="pattern-tag">low-perform</span></div></div>
+            <div class="pattern-card"><div class="pattern-card-text">Long captions on TikTok (200+ chars) cause significant engagement drop — keep it punchy.</div><div class="pattern-tags"><span class="pattern-tag">tiktok</span><span class="pattern-tag">captions</span></div></div>
+            <div class="pattern-card"><div class="pattern-card-text">Generic motivational quotes feel inauthentic for this avatar — audience responds better to specific personal experiences.</div><div class="pattern-tags"><span class="pattern-tag">voice</span><span class="pattern-tag">authenticity</span></div></div>
           </div>
         </div>
       </div>
 
-      <!-- ── TAB 6: INSTRUCT AVATAR ── -->
+      <!-- INSTRUCT AVATAR TAB -->
       <div class="tab-panel" data-panel="instruct">
         <div class="instruct-compose">
           <div class="instruct-compose-label">Add New Instruction</div>
-          <div class="instruct-compose-hint">Give this avatar a permanent rule or guideline. These are always followed when generating content.</div>
+          <div class="instruct-compose-hint">Permanent rules the AI will always follow when generating content for this avatar.</div>
           <div class="instruct-input-row">
-            <textarea class="instruct-textarea" rows="2" placeholder="e.g. Always include a hashtag set. Never use the word 'amazing'. Post a Story the day before every grid post..."></textarea>
-            <button class="btn-primary" style="flex-shrink:0">Add</button>
+            <textarea class="instruct-textarea" id="instruct-new-text" rows="2" placeholder="e.g. Always end captions with a question to drive comments..."></textarea>
+            <button class="btn-primary" onclick="addInstruction()">Add</button>
           </div>
         </div>
-
-        <div class="instruction-list-header">Active Instructions (4)</div>
-        <div class="instruction-items">
-          <div class="instruction-item">
-            <div class="instruction-text">Always end captions with a clear call to action — "save this", "share with a friend", or a question to boost engagement.</div>
-            <label class="toggle-switch"><input type="checkbox" checked><span class="toggle-slider"></span></label>
-          </div>
-          <div class="instruction-item">
-            <div class="instruction-text">Use casual, warm and aspirational tone — avoid corporate or overly polished language. Write like a friend, not a brand.</div>
-            <label class="toggle-switch"><input type="checkbox" checked><span class="toggle-slider"></span></label>
-          </div>
-          <div class="instruction-item">
-            <div class="instruction-text">Never mention or reference competitor brands, products, or creators by name.</div>
-            <label class="toggle-switch"><input type="checkbox" checked><span class="toggle-slider"></span></label>
-          </div>
-          <div class="instruction-item disabled">
-            <div class="instruction-text">Post IG content at 7–9pm HKT for maximum reach. (Paused — testing morning slots this week)</div>
-            <label class="toggle-switch"><input type="checkbox"><span class="toggle-slider"></span></label>
-          </div>
+        <div class="instruction-list-header" id="instruct-header">Active Instructions</div>
+        <div class="instruction-items" id="instruction-list">
+          <!-- JS rendered -->
         </div>
       </div>
 
     </div><!-- /workspace-content -->
   </div><!-- /avatar-mode -->
 
-  <!-- MOBILE BOTTOM NAV -->
-  <div id="mobile-nav" style="display:none;position:fixed;bottom:0;left:0;right:0;background:var(--nav-bg,rgba(30,30,28,0.88));border-top:1px solid var(--border);z-index:300;padding:.4rem 0 .5rem;backdrop-filter:blur(16px)">
-    <div style="display:flex;justify-content:space-around;align-items:center">
-      <a href="index.html" style="display:flex;flex-direction:column;align-items:center;gap:2px;padding:.3rem .5rem;color:var(--muted);text-decoration:none"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/><polyline points="9 21 9 12 15 12 15 21"/></svg><span style="font-family:sans-serif;font-size:.58rem;font-weight:600">Home</span></a>
-      <a href="taskflow.html" style="display:flex;flex-direction:column;align-items:center;gap:2px;padding:.3rem .5rem;color:var(--muted);text-decoration:none"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="9" y1="7" x2="20" y2="7"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="17" x2="20" y2="17"/><polyline points="4 7 5 8 7 6"/><polyline points="4 12 5 13 7 11"/><polyline points="4 17 5 18 7 16"/></svg><span style="font-family:sans-serif;font-size:.58rem;font-weight:600">Tasks</span></a>
-      <a href="social.html" style="display:flex;flex-direction:column;align-items:center;gap:2px;padding:.3rem .5rem;color:var(--primary);text-decoration:none"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg><span style="font-family:sans-serif;font-size:.58rem;font-weight:600">Social</span></a>
-      <a href="learning.html" style="display:flex;flex-direction:column;align-items:center;gap:2px;padding:.3rem .5rem;color:var(--muted);text-decoration:none"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg><span style="font-family:sans-serif;font-size:.58rem;font-weight:600">Learning</span></a>
-      <a href="creators.html" style="display:flex;flex-direction:column;align-items:center;gap:2px;padding:.3rem .5rem;color:var(--muted);text-decoration:none"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg><span style="font-family:sans-serif;font-size:.58rem;font-weight:600">Creators</span></a>
-      <a id="mnav-admin" href="admin.html" style="display:none;flex-direction:column;align-items:center;gap:2px;padding:.3rem .5rem;color:var(--muted);text-decoration:none"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><span style="font-family:sans-serif;font-size:.58rem;font-weight:600">Admin</span></a>
+  <!-- MOBILE NAV -->
+  <div class="mobile-nav-wrap" id="mobile-nav">
+    <div class="mobile-nav-inner">
+      <a href="index.html" class="mnav-item"><span class="mnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/><polyline points="9 21 9 12 15 12 15 21"/></svg></span><span class="mnav-label">Home</span></a>
+      <a href="taskflow.html" class="mnav-item"><span class="mnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="9" y1="7" x2="20" y2="7"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="17" x2="20" y2="17"/><polyline points="4 7 5 8 7 6"/><polyline points="4 12 5 13 7 11"/><polyline points="4 17 5 18 7 16"/></svg></span><span class="mnav-label">Tasks</span></a>
+      <span class="mnav-item active"><span class="mnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></span><span class="mnav-label">Social</span></span>
+      <a href="learning.html" class="mnav-item"><span class="mnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg></span><span class="mnav-label">Learn</span></a>
+      <a href="creators.html" class="mnav-item"><span class="mnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></span><span class="mnav-label">Creators</span></a>
+      <a id="mnav-admin" href="admin.html" class="mnav-item" style="display:none"><span class="mnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span><span class="mnav-label">Admin</span></a>
     </div>
   </div>
 
 </div><!-- /app -->
 
+<!-- TOAST -->
 <div class="toast" id="toast"></div>
 
-<script src="shared/hub.js"></script>
-<script>
-function onPageReady() {}
+<!-- AVATAR FORM MODAL -->
+<div class="modal-overlay" id="modal-avatar-form" onclick="closeModalOutside(event,'modal-avatar-form')">
+  <div class="modal" style="max-width:440px">
+    <div class="modal-header">
+      <div class="modal-title" id="avatar-modal-title">Add Avatar</div>
+      <button class="modal-close" onclick="closeModal('modal-avatar-form')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <input type="hidden" id="avatar-edit-id">
+    <div class="form-field"><label class="form-label">Name</label><input class="form-input" id="avatar-form-name" type="text" placeholder="e.g. Stacy Yang"/></div>
+    <div class="form-field">
+      <label class="form-label">Type</label>
+      <select class="form-select" id="avatar-form-type">
+        <option value="AI Persona">AI Persona</option>
+        <option value="Brand Account">Brand Account</option>
+      </select>
+    </div>
+    <div class="form-field">
+      <label class="form-label">Color</label>
+      <div class="color-swatches" id="color-swatches">
+        <div class="color-swatch selected" data-color="#ff30cc" style="background:#ff30cc" onclick="selectColor(this)"></div>
+        <div class="color-swatch" data-color="#8854d0" style="background:#8854d0" onclick="selectColor(this)"></div>
+        <div class="color-swatch" data-color="#2d7dd2" style="background:#2d7dd2" onclick="selectColor(this)"></div>
+        <div class="color-swatch" data-color="#3bb273" style="background:#3bb273" onclick="selectColor(this)"></div>
+        <div class="color-swatch" data-color="#f7b731" style="background:#f7b731" onclick="selectColor(this)"></div>
+        <div class="color-swatch" data-color="#e09000" style="background:#e09000" onclick="selectColor(this)"></div>
+        <div class="color-swatch" data-color="#ff6b35" style="background:#ff6b35" onclick="selectColor(this)"></div>
+        <div class="color-swatch" data-color="#0097a7" style="background:#0097a7" onclick="selectColor(this)"></div>
+      </div>
+    </div>
+    <div class="form-field">
+      <label class="form-label">Platforms</label>
+      <div class="platform-checks">
+        <label class="platform-check"><input type="checkbox" id="av-plat-ig" value="IG" checked> Instagram</label>
+        <label class="platform-check"><input type="checkbox" id="av-plat-tt" value="TikTok" checked> TikTok</label>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-danger" id="btn-delete-avatar" style="display:none;margin-right:auto" onclick="deleteAvatar()">Delete</button>
+      <button class="btn-ghost" onclick="closeModal('modal-avatar-form')">Cancel</button>
+      <button class="btn-primary" onclick="saveAvatar()">Save Avatar</button>
+    </div>
+  </div>
+</div>
 
-function openAvatar(name, emoji, color, lightColor, type, platformsStr) {
-  document.getElementById('social-hub').style.display = 'none';
-  var mode = document.getElementById('avatar-mode');
-  mode.style.display = 'block';
-  mode.style.setProperty('--avc', color);
-  document.getElementById('av-name').textContent = name;
-  document.getElementById('av-emoji').textContent = emoji;
-  document.getElementById('av-emoji-wrap').style.background = lightColor;
-  document.getElementById('av-breadcrumb').textContent = name;
-  var badge = document.getElementById('av-type-badge');
-  badge.textContent = type;
-  badge.style.background = lightColor;
-  badge.style.color = color;
-  var platWrap = document.getElementById('av-platform-badges');
-  platWrap.innerHTML = platformsStr.split(',').map(function(p) {
-    return '<span class="plat-badge">' + p.trim() + '</span>';
+<!-- POST FORM MODAL -->
+<div class="modal-overlay" id="modal-post-form" onclick="closeModalOutside(event,'modal-post-form')">
+  <div class="modal" style="max-width:480px">
+    <div class="modal-header">
+      <div class="modal-title" id="post-modal-title">Add Post</div>
+      <button class="modal-close" onclick="closeModal('modal-post-form')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <input type="hidden" id="post-edit-id">
+    <div class="form-row">
+      <div class="form-field">
+        <label class="form-label">Platform</label>
+        <select class="form-select" id="post-form-platform">
+          <option value="ig">Instagram</option>
+          <option value="tiktok">TikTok</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label class="form-label">Post Type</label>
+        <input class="form-input" id="post-form-type" type="text" placeholder="e.g. Lifestyle, GRWM..."/>
+      </div>
+    </div>
+    <div class="form-field"><label class="form-label">Caption</label><textarea class="form-textarea" id="post-form-caption" rows="5" placeholder="Write your caption..."></textarea></div>
+    <div class="form-row">
+      <div class="form-field">
+        <label class="form-label">Status</label>
+        <select class="post-status-select" id="post-form-status">
+          <option value="draft">Draft</option>
+          <option value="pending">Pending Review</option>
+          <option value="scheduled">Scheduled</option>
+          <option value="posted">Posted</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label class="form-label">Scheduled For</label>
+        <input class="form-input" id="post-form-date" type="datetime-local"/>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-danger" id="btn-delete-post" style="display:none;margin-right:auto" onclick="deletePost()">Delete Post</button>
+      <button class="btn-ghost" onclick="closeModal('modal-post-form')">Cancel</button>
+      <button class="btn-primary" onclick="savePost()">Save Post</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════
+// SOCIAL HUB STATE
+// ═══════════════════════════
+var socialState = {
+  avatars: [],
+  currentAvatar: null,
+  calWeekStart: null,
+  editingPostId: null,
+  pendingPostDate: null
+};
+
+// ═══════════════════════════
+// PAGE READY
+// ═══════════════════════════
+function onPageReady() {
+  // Show admin "Add Avatar" button
+  if (hubState.currentUser && hubState.currentUser.role === 'admin') {
+    var btn = document.getElementById('btn-add-avatar');
+    if (btn) btn.style.display = 'block';
+  }
+  loadAvatars();
+  initThemeToggleLocal();
+}
+
+function initThemeToggleLocal() {
+  var btn = document.getElementById('theme-toggle');
+  if (!btn) return;
+  var isLight = document.documentElement.getAttribute('data-theme') === 'light';
+  var MOON = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>';
+  var SUN = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>';
+  btn.innerHTML = isLight ? SUN : MOON;
+}
+
+// ═══════════════════════════
+// AVATAR GRID
+// ═══════════════════════════
+async function loadAvatars() {
+  var container = document.getElementById('avatar-grid-container');
+  try {
+    var avResult = await db.from('social_avatars').select('*').order('created_at');
+    if (avResult.error) throw avResult.error;
+    socialState.avatars = avResult.data || [];
+
+    // Get post stats for current week
+    var weekStart = getWeekMonday(new Date());
+    var weekEnd = new Date(weekStart);
+    weekEnd.setDate(weekEnd.getDate() + 7);
+
+    var postResult = await db.from('social_posts')
+      .select('avatar_id, status')
+      .gte('week_start', weekStart.toISOString().slice(0,10))
+      .lt('week_start', weekEnd.toISOString().slice(0,10));
+
+    renderAvatarCards(socialState.avatars, postResult.data || []);
+  } catch(e) {
+    container.innerHTML = '<div class="empty-state"><div class="empty-state-title">Could not load avatars</div><div>' + esc(e.message || '') + '</div></div>';
+  }
+}
+
+function getInitials(name) {
+  return (name || 'AV').split(' ').map(function(w){ return w[0]; }).join('').toUpperCase().slice(0,2);
+}
+
+function renderAvatarCards(avatars, posts) {
+  var container = document.getElementById('avatar-grid-container');
+  var isAdmin = hubState.currentUser && hubState.currentUser.role === 'admin';
+
+  if (!avatars.length) {
+    container.innerHTML = '<div class="empty-state"><div class="empty-state-title">No avatars yet</div><div>Add your first avatar to get started.</div></div>';
+    return;
+  }
+
+  container.innerHTML = avatars.map(function(av) {
+    var color = av.color || '#ff30cc';
+    var initials = getInitials(av.name);
+    var platforms = (av.platforms || 'IG,TikTok').split(',').map(function(p){ return p.trim(); });
+    var platBadges = platforms.map(function(p){ return '<span class="plat-badge">' + esc(p) + '</span>'; }).join('');
+
+    // Stats
+    var avPosts = posts.filter(function(p){ return p.avatar_id === av.id; });
+    var postedCount = avPosts.filter(function(p){ return p.status === 'posted'; }).length;
+    var pendingCount = avPosts.filter(function(p){ return p.status === 'pending'; }).length;
+
+    // Type badge colors
+    var isBrand = av.type === 'Brand Account';
+    var typeBg = isBrand ? 'rgba(247,183,49,.15)' : 'rgba(255,48,204,.15)';
+    var typeColor = isBrand ? 'var(--amber)' : 'var(--primary)';
+
+    var adminHtml = isAdmin
+      ? '<div class="card-admin-row">' +
+          '<button class="card-admin-btn" onclick="openAvatarModal(\'' + av.id + '\')">Edit</button>' +
+          '<button class="card-admin-btn danger" onclick="confirmDeleteAvatar(\'' + av.id + '\',\'' + esc(av.name).replace(/'/g,'&#39;') + '\')">Delete</button>' +
+        '</div>'
+      : '';
+
+    // Use data-id attribute for safe avatar opening
+    return '<div class="avatar-card" style="--avc:' + color + '">' +
+      '<div class="avatar-card-inner">' +
+        adminHtml +
+        '<div class="avatar-card-top">' +
+          '<div class="avatar-initials-wrap" style="background:' + color + '">' + initials + '</div>' +
+          '<div>' +
+            '<div class="avatar-card-name">' + esc(av.name) + '</div>' +
+            '<div class="avatar-type-badge" style="background:' + typeBg + ';color:' + typeColor + '">' + esc(av.type || 'AI Persona') + '</div>' +
+            '<div class="avatar-platforms">' + platBadges + '</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="avatar-card-stats">' +
+          '<div class="avatar-stat"><span class="avatar-stat-num">' + postedCount + '</span><span class="avatar-stat-label">Posted this week</span></div>' +
+          '<div class="avatar-stat"><span class="avatar-stat-num">' + pendingCount + '</span><span class="avatar-stat-label">Pending review</span></div>' +
+        '</div>' +
+        '<button class="btn-open-avatar" style="background:' + color + '" data-avid="' + av.id + '" onclick="openAvatarById(this.dataset.avid)">Open Workspace</button>' +
+      '</div>' +
+    '</div>';
   }).join('');
+}
+
+// ═══════════════════════════
+// AVATAR MODAL (Add/Edit)
+// ═══════════════════════════
+async function openAvatarModal(avatarId) {
+  var titleEl = document.getElementById('avatar-modal-title');
+  var nameEl = document.getElementById('avatar-form-name');
+  var typeEl = document.getElementById('avatar-form-type');
+  var editIdEl = document.getElementById('avatar-edit-id');
+  var deleteBtn = document.getElementById('btn-delete-avatar');
+
+  // Reset
+  nameEl.value = '';
+  typeEl.value = 'AI Persona';
+  editIdEl.value = '';
+  deleteBtn.style.display = 'none';
+  selectColorByValue('#ff30cc');
+  document.getElementById('av-plat-ig').checked = true;
+  document.getElementById('av-plat-tt').checked = true;
+  titleEl.textContent = 'Add Avatar';
+
+  if (avatarId) {
+    var av = socialState.avatars.find(function(a){ return a.id === avatarId; });
+    if (!av) {
+      var result = await db.from('social_avatars').select('*').eq('id', avatarId).single();
+      av = result.data;
+    }
+    if (av) {
+      titleEl.textContent = 'Edit Avatar';
+      editIdEl.value = av.id;
+      nameEl.value = av.name || '';
+      typeEl.value = av.type || 'AI Persona';
+      selectColorByValue(av.color || '#ff30cc');
+      var platforms = (av.platforms || 'IG,TikTok').split(',').map(function(p){ return p.trim(); });
+      document.getElementById('av-plat-ig').checked = platforms.indexOf('IG') !== -1;
+      document.getElementById('av-plat-tt').checked = platforms.indexOf('TikTok') !== -1;
+      deleteBtn.style.display = 'block';
+    }
+  }
+
+  openModal('modal-avatar-form');
+}
+
+function selectColor(el) {
+  document.querySelectorAll('.color-swatch').forEach(function(s){ s.classList.remove('selected'); });
+  el.classList.add('selected');
+}
+
+function selectColorByValue(color) {
+  document.querySelectorAll('.color-swatch').forEach(function(s){
+    s.classList.toggle('selected', s.dataset.color === color);
+  });
+}
+
+function getSelectedColor() {
+  var sel = document.querySelector('.color-swatch.selected');
+  return sel ? sel.dataset.color : '#ff30cc';
+}
+
+async function saveAvatar() {
+  var name = (document.getElementById('avatar-form-name').value || '').trim();
+  var type = document.getElementById('avatar-form-type').value;
+  var color = getSelectedColor();
+  var editId = document.getElementById('avatar-edit-id').value;
+  var platforms = [];
+  if (document.getElementById('av-plat-ig').checked) platforms.push('IG');
+  if (document.getElementById('av-plat-tt').checked) platforms.push('TikTok');
+
+  if (!name) { showToast('Please enter a name.', 'error'); return; }
+  if (!platforms.length) { showToast('Select at least one platform.', 'error'); return; }
+
+  var payload = { name: name, type: type, color: color, platforms: platforms.join(',') };
+
+  try {
+    if (editId) {
+      var upResult = await db.from('social_avatars').update(payload).eq('id', editId);
+      if (upResult.error) throw upResult.error;
+      showToast('Avatar updated.', 'success');
+    } else {
+      var insResult = await db.from('social_avatars').insert(payload);
+      if (insResult.error) throw insResult.error;
+      showToast('Avatar added!', 'success');
+    }
+    closeModal('modal-avatar-form');
+    loadAvatars();
+  } catch(e) {
+    showToast('Save failed: ' + (e.message || 'Unknown error'), 'error');
+  }
+}
+
+function confirmDeleteAvatar(avatarId, name) {
+  if (!confirm('Delete ' + name + '? This will also delete all their posts and instructions.')) return;
+  deleteAvatarById(avatarId, name);
+}
+
+async function deleteAvatarById(avatarId, name) {
+  try {
+    var delResult = await db.from('social_avatars').delete().eq('id', avatarId);
+    if (delResult.error) throw delResult.error;
+    showToast((name || 'Avatar') + ' deleted.', 'success');
+    closeModal('modal-avatar-form');
+    loadAvatars();
+  } catch(e) {
+    showToast('Delete failed.', 'error');
+  }
+}
+
+async function deleteAvatar() {
+  var editId = document.getElementById('avatar-edit-id').value;
+  var name = document.getElementById('avatar-form-name').value;
+  if (!editId) return;
+  confirmDeleteAvatar(editId, name);
+}
+
+// ═══════════════════════════
+// AVATAR WORKSPACE
+// ═══════════════════════════
+function openAvatarById(avId) {
+  var av = socialState.avatars.find(function(a){ return a.id === avId; });
+  if (!av) { showToast('Avatar not found.', 'error'); return; }
+  openAvatar(av);
+}
+
+function openAvatar(av) {
+  socialState.currentAvatar = av;
+  var color = av.color || '#ff30cc';
+  var initials = getInitials(av.name);
+
+  // Update identity bar
+  document.getElementById('av-name').textContent = av.name;
+  document.getElementById('av-breadcrumb').textContent = av.name;
+
+  var initialsWrap = document.getElementById('av-initials-wrap');
+  initialsWrap.textContent = initials;
+  initialsWrap.style.background = color;
+
+  var typeBadge = document.getElementById('av-type-badge');
+  typeBadge.textContent = av.type || 'AI Persona';
+  var isBrand = av.type === 'Brand Account';
+  typeBadge.style.background = isBrand ? 'rgba(247,183,49,.15)' : 'rgba(255,48,204,.15)';
+  typeBadge.style.color = isBrand ? 'var(--amber)' : 'var(--primary)';
+
+  var platforms = (av.platforms || 'IG,TikTok').split(',').map(function(p){ return p.trim(); });
+  document.getElementById('av-platform-badges').innerHTML = platforms.map(function(p){
+    return '<span class="plat-badge">' + esc(p) + '</span>';
+  }).join('');
+
+  // Set avatar color variable for tab active states
+  document.getElementById('avatar-mode').style.setProperty('--avc', color);
+
+  // Show workspace
+  document.getElementById('social-hub').style.display = 'none';
+  document.getElementById('avatar-mode').style.display = 'block';
+  window.scrollTo(0,0);
+
+  // Load first tab
   showTab('vault');
-  window.scrollTo(0, 0);
 }
 
 function backToHub() {
   document.getElementById('avatar-mode').style.display = 'none';
   document.getElementById('social-hub').style.display = 'block';
-  window.scrollTo(0, 0);
+  socialState.currentAvatar = null;
+  window.scrollTo(0,0);
 }
 
 function showTab(tab) {
-  document.querySelectorAll('.workspace-tab').forEach(function(t) {
+  document.querySelectorAll('.workspace-tab').forEach(function(t){
     t.classList.toggle('active', t.dataset.tab === tab);
   });
-  document.querySelectorAll('.tab-panel').forEach(function(p) {
+  document.querySelectorAll('.tab-panel').forEach(function(p){
     p.classList.toggle('active', p.dataset.panel === tab);
   });
+
+  if (tab === 'vault' && socialState.currentAvatar) loadVault(socialState.currentAvatar.id);
+  if (tab === 'calendar' && socialState.currentAvatar) {
+    if (!socialState.calWeekStart) socialState.calWeekStart = getWeekMonday(new Date());
+    loadCalendar();
+  }
+  if (tab === 'review' && socialState.currentAvatar) loadReviewDesk(socialState.currentAvatar.id);
+  if (tab === 'instruct' && socialState.currentAvatar) loadInstructions(socialState.currentAvatar.id);
 }
 
+// ═══════════════════════════
+// VAULT
+// ═══════════════════════════
+async function loadVault(avatarId) {
+  try {
+    var result = await db.from('social_avatars').select('*').eq('id', avatarId).single();
+    if (result.error) throw result.error;
+    var data = result.data;
+    document.getElementById('vault-bio').value = data.bio || '';
+    document.getElementById('vault-face').value = data.face_desc || '';
+    document.getElementById('vault-voice').value = data.voice_tone || '';
+    document.getElementById('vault-captions').value = data.example_captions || '';
+    document.getElementById('vault-ig-sched').value = data.ig_schedule || '';
+    document.getElementById('vault-tt-sched').value = data.tiktok_schedule || '';
+    document.getElementById('vault-img-prompt').value = data.img_prompt_base || '';
+    document.getElementById('vault-cap-prompt').value = data.caption_prompt_base || '';
+  } catch(e) {
+    showToast('Could not load profile.', 'error');
+  }
+}
+
+async function saveVault() {
+  if (!socialState.currentAvatar) return;
+  var payload = {
+    bio: document.getElementById('vault-bio').value,
+    face_desc: document.getElementById('vault-face').value,
+    voice_tone: document.getElementById('vault-voice').value,
+    example_captions: document.getElementById('vault-captions').value,
+    ig_schedule: document.getElementById('vault-ig-sched').value,
+    tiktok_schedule: document.getElementById('vault-tt-sched').value,
+    img_prompt_base: document.getElementById('vault-img-prompt').value,
+    caption_prompt_base: document.getElementById('vault-cap-prompt').value
+  };
+  try {
+    var result = await db.from('social_avatars').update(payload).eq('id', socialState.currentAvatar.id);
+    if (result.error) throw result.error;
+    showToast('Profile saved.', 'success');
+  } catch(e) {
+    showToast('Save failed.', 'error');
+  }
+}
+
+// ═══════════════════════════
+// CALENDAR
+// ═══════════════════════════
+function getWeekMonday(date) {
+  var d = new Date(date);
+  var day = d.getDay(); // 0=Sun
+  var diff = (day === 0) ? -6 : 1 - day;
+  d.setDate(d.getDate() + diff);
+  d.setHours(0,0,0,0);
+  return d;
+}
+
+function formatWeekLabel(monday) {
+  var end = new Date(monday);
+  end.setDate(end.getDate() + 6);
+  var opts = { month: 'short', day: 'numeric' };
+  return monday.toLocaleDateString('en-HK', opts) + ' \u2013 ' + end.toLocaleDateString('en-HK', opts) + ', ' + end.getFullYear();
+}
+
+function goWeek(dir) {
+  var d = new Date(socialState.calWeekStart);
+  d.setDate(d.getDate() + (dir * 7));
+  socialState.calWeekStart = d;
+  loadCalendar();
+}
+
+function goToday() {
+  socialState.calWeekStart = getWeekMonday(new Date());
+  loadCalendar();
+}
+
+async function loadCalendar() {
+  if (!socialState.currentAvatar || !socialState.calWeekStart) return;
+  var monday = socialState.calWeekStart;
+  var weekStr = monday.toISOString().slice(0,10);
+
+  document.getElementById('week-label').textContent = formatWeekLabel(monday);
+
+  try {
+    var result = await db.from('social_posts')
+      .select('*')
+      .eq('avatar_id', socialState.currentAvatar.id)
+      .eq('week_start', weekStr);
+    if (result.error) throw result.error;
+    renderCalendar(monday, result.data || []);
+  } catch(e) {
+    showToast('Could not load calendar.', 'error');
+  }
+}
+
+function renderCalendar(monday, posts) {
+  var days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  var today = new Date();
+  today.setHours(0,0,0,0);
+  var weekStr = monday.toISOString().slice(0,10);
+  var tbody = document.getElementById('cal-body');
+
+  tbody.innerHTML = days.map(function(dayName, i) {
+    var date = new Date(monday);
+    date.setDate(date.getDate() + i);
+    var dateStr = date.toISOString().slice(0,10);
+    var isToday = date.getTime() === today.getTime();
+
+    return '<tr>' +
+      '<td class="cal-day-cell' + (isToday ? ' today' : '') + '">' +
+        '<div class="cal-day-name">' + dayName + '</div>' +
+        '<div class="cal-day-date">' + date.toLocaleDateString('en-HK',{month:'short',day:'numeric'}) + '</div>' +
+      '</td>' +
+      '<td class="cal-content-cell">' + renderCalCell('ig', dateStr, weekStr, posts) + '</td>' +
+      '<td class="cal-content-cell">' + renderCalCell('tiktok', dateStr, weekStr, posts) + '</td>' +
+    '</tr>';
+  }).join('');
+}
+
+function isSameDay(ts, date) {
+  if (!ts) return false;
+  var d = new Date(ts);
+  return d.getFullYear() === date.getFullYear() && d.getMonth() === date.getMonth() && d.getDate() === date.getDate();
+}
+
+function renderCalCell(platform, dateStr, weekStr, posts) {
+  var cellPosts = posts.filter(function(p){
+    return p.platform === platform && isSameDay(p.scheduled_for, new Date(dateStr));
+  });
+
+  var html = cellPosts.map(function(p) {
+    var color = p.status === 'posted' ? 'var(--green)' : p.status === 'scheduled' ? 'var(--blue)' : p.status === 'pending' ? 'var(--amber)' : 'var(--muted)';
+    return '<div class="cal-post-card" data-postid="' + p.id + '" data-platform="' + esc(platform) + '" data-date="' + esc(dateStr) + '" onclick="openPostModalFromCard(this)">' +
+      '<div class="cal-post-type" style="color:' + color + '">' + esc(p.post_type || platform.toUpperCase()) + '</div>' +
+      '<div class="cal-post-caption">' + esc(p.caption || '') + '</div>' +
+      '<span class="cal-status ' + esc(p.status) + '">' + esc(p.status) + '</span>' +
+    '</div>';
+  }).join('');
+
+  html += '<button class="cal-add-btn" data-platform="' + esc(platform) + '" data-date="' + esc(dateStr) + '" onclick="openPostModalFromAdd(this)">+ Add</button>';
+  return html;
+}
+
+// Safe wrappers for calendar onclick
+function openPostModalFromCard(el) {
+  openPostModal(el.dataset.platform, el.dataset.date, el.dataset.postid);
+}
+function openPostModalFromAdd(el) {
+  openPostModal(el.dataset.platform, el.dataset.date, null);
+}
+
+// ═══════════════════════════
+// POST MODAL
+// ═══════════════════════════
+async function openPostModal(platform, dateStr, postId) {
+  var titleEl = document.getElementById('post-modal-title');
+  var deleteBtn = document.getElementById('btn-delete-post');
+  var editIdEl = document.getElementById('post-edit-id');
+
+  // Reset
+  document.getElementById('post-form-platform').value = platform || 'ig';
+  document.getElementById('post-form-type').value = '';
+  document.getElementById('post-form-caption').value = '';
+  document.getElementById('post-form-status').value = 'draft';
+  document.getElementById('post-form-date').value = dateStr ? (dateStr + 'T19:00') : '';
+  editIdEl.value = '';
+  deleteBtn.style.display = 'none';
+  titleEl.textContent = 'Add Post';
+  socialState.pendingPostDate = dateStr;
+
+  if (postId) {
+    titleEl.textContent = 'Edit Post';
+    editIdEl.value = postId;
+    deleteBtn.style.display = 'block';
+    try {
+      var result = await db.from('social_posts').select('*').eq('id', postId).single();
+      if (result.data) {
+        var data = result.data;
+        document.getElementById('post-form-platform').value = data.platform || platform;
+        document.getElementById('post-form-type').value = data.post_type || '';
+        document.getElementById('post-form-caption').value = data.caption || '';
+        document.getElementById('post-form-status').value = data.status || 'draft';
+        if (data.scheduled_for) {
+          var dt = new Date(data.scheduled_for);
+          var local = new Date(dt.getTime() - dt.getTimezoneOffset()*60000).toISOString().slice(0,16);
+          document.getElementById('post-form-date').value = local;
+        }
+      }
+    } catch(e) {}
+  }
+
+  openModal('modal-post-form');
+}
+
+async function savePost() {
+  if (!socialState.currentAvatar) return;
+  var postId = document.getElementById('post-edit-id').value;
+  var platform = document.getElementById('post-form-platform').value;
+  var postType = document.getElementById('post-form-type').value.trim();
+  var caption = document.getElementById('post-form-caption').value.trim();
+  var status = document.getElementById('post-form-status').value;
+  var scheduledFor = document.getElementById('post-form-date').value;
+  var weekStr = socialState.calWeekStart
+    ? socialState.calWeekStart.toISOString().slice(0,10)
+    : getWeekMonday(scheduledFor ? new Date(scheduledFor) : new Date()).toISOString().slice(0,10);
+
+  var payload = {
+    avatar_id: socialState.currentAvatar.id,
+    platform: platform,
+    post_type: postType,
+    caption: caption,
+    status: status,
+    scheduled_for: scheduledFor ? new Date(scheduledFor).toISOString() : null,
+    week_start: weekStr
+  };
+
+  try {
+    if (postId) {
+      var upResult = await db.from('social_posts').update(payload).eq('id', postId);
+      if (upResult.error) throw upResult.error;
+      showToast('Post updated.', 'success');
+    } else {
+      var insResult = await db.from('social_posts').insert(payload);
+      if (insResult.error) throw insResult.error;
+      showToast('Post added!', 'success');
+    }
+    closeModal('modal-post-form');
+    loadCalendar();
+    if (document.querySelector('[data-panel="review"].active')) {
+      loadReviewDesk(socialState.currentAvatar.id);
+    }
+  } catch(e) {
+    showToast('Save failed: ' + (e.message || ''), 'error');
+  }
+}
+
+async function deletePost() {
+  var postId = document.getElementById('post-edit-id').value;
+  if (!postId || !confirm('Delete this post?')) return;
+  try {
+    var result = await db.from('social_posts').delete().eq('id', postId);
+    if (result.error) throw result.error;
+    showToast('Post deleted.', 'success');
+    closeModal('modal-post-form');
+    loadCalendar();
+    if (document.querySelector('[data-panel="review"].active')) {
+      loadReviewDesk(socialState.currentAvatar.id);
+    }
+  } catch(e) {
+    showToast('Delete failed.', 'error');
+  }
+}
+
+// ═══════════════════════════
+// REVIEW DESK
+// ═══════════════════════════
+async function loadReviewDesk(avatarId) {
+  var list = document.getElementById('review-list');
+  var sub = document.getElementById('review-sub');
+  var approveAllBtn = document.getElementById('btn-approve-all');
+  list.innerHTML = '<div class="empty-state" style="padding:1.5rem">Loading...</div>';
+  sub.textContent = '';
+  approveAllBtn.style.display = 'none';
+
+  try {
+    var result = await db.from('social_posts')
+      .select('*')
+      .eq('avatar_id', avatarId)
+      .eq('status', 'pending')
+      .order('scheduled_for');
+    if (result.error) throw result.error;
+    renderReviewDesk(result.data || []);
+  } catch(e) {
+    list.innerHTML = '<div class="empty-state"><div class="empty-state-title">Could not load posts</div></div>';
+  }
+}
+
+function renderReviewDesk(posts) {
+  var list = document.getElementById('review-list');
+  var sub = document.getElementById('review-sub');
+  var approveAllBtn = document.getElementById('btn-approve-all');
+
+  sub.textContent = posts.length + ' post' + (posts.length !== 1 ? 's' : '') + ' pending review';
+  approveAllBtn.style.display = posts.length > 1 ? 'block' : 'none';
+
+  if (!posts.length) {
+    list.innerHTML = '<div class="empty-state"><div class="empty-state-title">All clear</div><div>No posts pending review.</div></div>';
+    return;
+  }
+
+  list.innerHTML = posts.map(function(p) {
+    var platLabel = p.platform === 'ig' ? 'Instagram' : 'TikTok';
+    var platBadgeClass = p.platform === 'ig' ? 'badge-pink' : 'badge-purple';
+    var dateStr = p.scheduled_for ? new Date(p.scheduled_for).toLocaleDateString('en-HK',{weekday:'short',month:'short',day:'numeric'}) : 'No date';
+    return '<div class="review-post" id="review-post-' + p.id + '">' +
+      '<div class="review-post-header">' +
+        '<span class="badge ' + platBadgeClass + '">' + platLabel + '</span>' +
+        '<span class="badge badge-amber">Pending</span>' +
+        (p.post_type ? '<span class="badge badge-gray">' + esc(p.post_type) + '</span>' : '') +
+        '<span class="review-post-date">' + dateStr + '</span>' +
+      '</div>' +
+      '<div class="review-section-label">Caption</div>' +
+      '<div class="review-caption-text">' + esc(p.caption || 'No caption') + '</div>' +
+      '<div class="review-actions">' +
+        '<button class="btn-approve" data-pid="' + p.id + '" onclick="approvePost(this.dataset.pid)">Approve</button>' +
+        '<button class="btn-reject" data-pid="' + p.id + '" onclick="rejectPost(this.dataset.pid)">Reject</button>' +
+        '<button class="btn-edit-sm" data-platform="' + esc(p.platform) + '" data-pid="' + p.id + '" onclick="openPostModal(this.dataset.platform,null,this.dataset.pid)">Edit</button>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+async function approvePost(postId) {
+  try {
+    var result = await db.from('social_posts').update({ status: 'scheduled' }).eq('id', postId);
+    if (result.error) throw result.error;
+    showToast('Post approved \u2014 marked as Scheduled.', 'success');
+    var el = document.getElementById('review-post-' + postId);
+    if (el) el.remove();
+    var remaining = document.querySelectorAll('.review-post');
+    var sub = document.getElementById('review-sub');
+    if (sub) sub.textContent = remaining.length + ' post' + (remaining.length !== 1 ? 's' : '') + ' pending review';
+    if (!remaining.length) {
+      document.getElementById('review-list').innerHTML = '<div class="empty-state"><div class="empty-state-title">All clear</div><div>No posts pending review.</div></div>';
+      document.getElementById('btn-approve-all').style.display = 'none';
+    }
+  } catch(e) { showToast('Failed to approve.', 'error'); }
+}
+
+async function rejectPost(postId) {
+  try {
+    var result = await db.from('social_posts').update({ status: 'draft' }).eq('id', postId);
+    if (result.error) throw result.error;
+    showToast('Post sent back to Draft.', 'success');
+    var el = document.getElementById('review-post-' + postId);
+    if (el) el.remove();
+    var remaining = document.querySelectorAll('.review-post');
+    var sub = document.getElementById('review-sub');
+    if (sub) sub.textContent = remaining.length + ' post' + (remaining.length !== 1 ? 's' : '') + ' pending review';
+    if (!remaining.length) {
+      document.getElementById('review-list').innerHTML = '<div class="empty-state"><div class="empty-state-title">All clear</div><div>No posts pending review.</div></div>';
+      document.getElementById('btn-approve-all').style.display = 'none';
+    }
+  } catch(e) { showToast('Failed to reject.', 'error'); }
+}
+
+async function approveAll() {
+  if (!socialState.currentAvatar) return;
+  if (!confirm('Approve all pending posts for this avatar?')) return;
+  try {
+    var result = await db.from('social_posts').update({ status: 'scheduled' }).eq('avatar_id', socialState.currentAvatar.id).eq('status', 'pending');
+    if (result.error) throw result.error;
+    showToast('All posts approved!', 'success');
+    loadReviewDesk(socialState.currentAvatar.id);
+  } catch(e) { showToast('Failed.', 'error'); }
+}
+
+// ═══════════════════════════
+// INSTRUCTIONS
+// ═══════════════════════════
+async function loadInstructions(avatarId) {
+  var list = document.getElementById('instruction-list');
+  list.innerHTML = '<div style="color:var(--muted);font-family:Inter,sans-serif;font-size:.85rem">Loading...</div>';
+  try {
+    var result = await db.from('social_instructions').select('*').eq('avatar_id', avatarId).order('created_at');
+    if (result.error) throw result.error;
+    renderInstructions(result.data || []);
+  } catch(e) {
+    list.innerHTML = '<div style="color:var(--muted);font-family:Inter,sans-serif;font-size:.85rem">Could not load instructions.</div>';
+  }
+}
+
+function renderInstructions(instructions) {
+  var list = document.getElementById('instruction-list');
+  var header = document.getElementById('instruct-header');
+  if (header) header.textContent = 'Active Instructions (' + instructions.length + ')';
+
+  if (!instructions.length) {
+    list.innerHTML = '<div class="empty-state" style="padding:1.5rem"><div class="empty-state-title">No instructions yet</div><div>Add rules the AI will always follow for this avatar.</div></div>';
+    return;
+  }
+
+  list.innerHTML = instructions.map(function(inst) {
+    return '<div class="instruction-item' + (inst.enabled ? '' : ' disabled') + '" id="inst-' + inst.id + '">' +
+      '<div class="instruction-text">' + esc(inst.text) + '</div>' +
+      '<label class="toggle-switch" title="Enable/disable">' +
+        '<input type="checkbox"' + (inst.enabled ? ' checked' : '') + ' data-instid="' + inst.id + '" onchange="toggleInstruction(this.dataset.instid,this.checked)">' +
+        '<span class="toggle-slider"></span>' +
+      '</label>' +
+      '<button class="instruction-delete" data-instid="' + inst.id + '" onclick="deleteInstruction(this.dataset.instid)" title="Delete">&#215;</button>' +
+    '</div>';
+  }).join('');
+}
+
+async function addInstruction() {
+  if (!socialState.currentAvatar) return;
+  var text = (document.getElementById('instruct-new-text').value || '').trim();
+  if (!text) { showToast('Enter an instruction first.', 'error'); return; }
+  try {
+    var result = await db.from('social_instructions').insert({ avatar_id: socialState.currentAvatar.id, text: text, enabled: true });
+    if (result.error) throw result.error;
+    document.getElementById('instruct-new-text').value = '';
+    showToast('Instruction added.', 'success');
+    loadInstructions(socialState.currentAvatar.id);
+  } catch(e) { showToast('Failed to add instruction.', 'error'); }
+}
+
+async function toggleInstruction(id, enabled) {
+  var el = document.getElementById('inst-' + id);
+  try {
+    var result = await db.from('social_instructions').update({ enabled: enabled }).eq('id', id);
+    if (result.error) throw result.error;
+    if (el) el.classList.toggle('disabled', !enabled);
+  } catch(e) { showToast('Failed to update.', 'error'); }
+}
+
+async function deleteInstruction(id) {
+  if (!confirm('Delete this instruction?')) return;
+  try {
+    var result = await db.from('social_instructions').delete().eq('id', id);
+    if (result.error) throw result.error;
+    showToast('Instruction deleted.', 'success');
+    if (socialState.currentAvatar) loadInstructions(socialState.currentAvatar.id);
+  } catch(e) { showToast('Failed to delete.', 'error'); }
+}
+
+// ═══════════════════════════
+// BOOT
+// ═══════════════════════════
 bootHub();
 </script>
 </body>
