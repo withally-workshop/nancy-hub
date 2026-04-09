@@ -1206,9 +1206,21 @@ async function callGemini(prompt) {
 }
 
 function extractJSON(text) {
-  var match = text.match(/\{[\s\S]*\}/);
-  if (match) return JSON.parse(match[0]);
-  return JSON.parse(text);
+  // Strip markdown code fences
+  text = text.replace(/```(?:json)?\n?/g, '').replace(/```/g, '').trim();
+  // Try direct parse first
+  try { return JSON.parse(text); } catch(e) {}
+  // Try outermost object
+  var s = text.indexOf('{'), e2 = text.lastIndexOf('}');
+  if (s !== -1 && e2 !== -1) {
+    try { return JSON.parse(text.slice(s, e2 + 1)); } catch(e3) {}
+  }
+  // Try outermost array
+  var s2 = text.indexOf('['), e3 = text.lastIndexOf(']');
+  if (s2 !== -1 && e3 !== -1) {
+    try { return JSON.parse(text.slice(s2, e3 + 1)); } catch(e4) {}
+  }
+  throw new Error('Could not parse AI response. Try again.');
 }
 
 async function buildAvatarContext() {
@@ -1302,12 +1314,12 @@ async function generateHooks() {
   var ctx = await buildAvatarContext();
   showContextBadge(!!ctx);
   var prompt = 'You are an expert social media content strategist for short-form video.\n\n' +
-    (ctx ? 'AVATAR CONTEXT:\n' + ctx + '\n\n' : '') +
+    (ctx ? 'AVATAR CONTEXT (follow ALL instructions exactly):\n' + ctx + '\n\n' : '') +
     'Niche/Topic Focus: ' + niche + '\n\n' +
     'Generate 3 unique short-form video content formats tailored to this avatar and niche. For each format provide:\n' +
     '1. A creative, memorable format name (e.g. "The Myth Buster", "Hot Take Tuesday")\n' +
-    '2. Exactly 3 scroll-stopping hooks, each under 12 words, in this avatar\'s voice, optimized for TikTok and Instagram Reels\n\n' +
-    'Respond ONLY with valid JSON, no markdown, no explanation:\n' +
+    '2. Exactly 3 scroll-stopping hooks in this avatar\'s voice, optimized for TikTok and Instagram Reels. CRITICAL: Follow the avatar\'s instructions above precisely — if a word count or style rule is specified, obey it exactly.\n\n' +
+    'Respond ONLY with raw valid JSON — no markdown, no code fences, no explanation:\n' +
     '{"formats":[{"name":"...","hooks":["...","...","..."]},{"name":"...","hooks":["...","...","..."]},{"name":"...","hooks":["...","...","..."]}]}';
   try {
     var text = await callGemini(prompt);
