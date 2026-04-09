@@ -905,9 +905,8 @@ async function loadAvatars() {
     var all = avResult.data || [];
     var currentUserId = hubState.currentUser && hubState.currentUser.id;
     var isAdmin = hubState.currentUser && hubState.currentUser.role === 'admin';
-    // Filter: own avatars + avatars shared with me + legacy avatars without owner (visible to all)
+    // Filter: own avatars + avatars explicitly shared with me. Admins see all.
     socialState.avatars = isAdmin ? all : all.filter(function(av) {
-      if (!av.owner_id) return true; // legacy - no owner set, visible to all
       if (av.owner_id === currentUserId) return true; // my avatar
       var shared = Array.isArray(av.shared_with) ? av.shared_with : (av.shared_with ? JSON.parse(av.shared_with) : []);
       return shared.indexOf(currentUserId) !== -1;
