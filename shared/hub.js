@@ -350,9 +350,11 @@ function handleNavScroll(y) {
   var delta = y - _navLastY;
   if (delta > 6 && y > 60 && !_navHidden) {
     nav.classList.add('nav-hidden');
+    document.body.classList.add('nav-hidden');
     _navHidden = true;
   } else if (delta < -6 && _navHidden) {
     nav.classList.remove('nav-hidden');
+    document.body.classList.remove('nav-hidden');
     _navHidden = false;
   }
   _navLastY = y;
