@@ -345,10 +345,6 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--body);min-h
 .toast.success{background:#2e7d32}
 .toast.error{background:#c62828}
 
-/* DAILY RECAP BTN */
-.daily-recap-btn{position:fixed;right:-48px;top:50%;transform:translateY(-50%) rotate(-90deg);background:var(--primary);color:white;font-family:sans-serif;font-size:.78rem;font-weight:700;padding:6px 16px;border-radius:8px 8px 0 0;cursor:pointer;z-index:200;border:none;letter-spacing:.05em;transition:right .2s;box-shadow:-2px 0 12px rgba(255,48,204,.3)}
-.daily-recap-btn:hover{right:-40px}
-.daily-recap-btn.active{right:-40px;background:#c020a0}
 
 @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 ::-webkit-scrollbar{width:5px}
@@ -435,9 +431,6 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--body);min-h
   .admin-title{font-size:1.4rem}
   .member-row{flex-wrap:wrap;gap:.5rem}
 
-  /* HIDE floating btn */
-  .daily-recap-btn{display:none}
-
   /* PLACEHOLDER */
   .placeholder-page{padding:2rem 1rem}
   .placeholder-title{font-size:1.4rem}
@@ -483,142 +476,6 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--body);min-h
 @media(max-width:768px){
   #storage-alert-banner{padding:.6rem 1rem;font-size:.78rem}
 }
-
-/* ═══════════════════════════════════════
-   INBOX REVIEW PANEL
-═══════════════════════════════════════ */
-.inbox-config{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.85rem 1rem;margin-bottom:.85rem}
-.inbox-config-title{font-family:sans-serif;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:.6rem;display:flex;align-items:center;justify-content:space-between}
-.inbox-config-row{display:flex;gap:.5rem;align-items:center;margin-bottom:.5rem;flex-wrap:wrap}
-.inbox-config-row:last-child{margin-bottom:0}
-.inbox-config-input{flex:1;min-width:0;padding:.45rem .7rem;border:1.5px solid var(--border2);border-radius:6px;font-family:sans-serif;font-size:.82rem;background:var(--white);color:var(--h2);outline:none;transition:border-color .2s}
-.inbox-config-input:focus{border-color:var(--primary)}
-.inbox-config-select{padding:.45rem .7rem;border:1.5px solid var(--border2);border-radius:6px;font-family:sans-serif;font-size:.82rem;background:var(--white);color:var(--h2);outline:none;cursor:pointer}
-.inbox-config-btn{padding:.45rem .9rem;background:var(--primary);color:white;border:none;border-radius:6px;font-family:sans-serif;font-size:.78rem;font-weight:600;cursor:pointer;white-space:nowrap;transition:filter .2s}
-.inbox-config-btn:hover{filter:brightness(1.1)}
-.inbox-fetch-btn{width:100%;padding:.72rem;margin-bottom:.6rem;background:#1a1a18;color:white;border:none;border-radius:var(--radius-sm);font-family:'Fraunces',serif;font-size:.92rem;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:.5rem;transition:background .2s}
-.inbox-fetch-btn:hover{background:#333}
-.inbox-fetch-btn:disabled{background:var(--muted);cursor:not-allowed}
-.inbox-divider{text-align:center;font-family:sans-serif;font-size:.72rem;color:var(--muted);margin:.65rem 0;display:flex;align-items:center;gap:.5rem}
-.inbox-divider::before,.inbox-divider::after{content:'';flex:1;height:1px;background:var(--border)}
-.inbox-status-row{display:flex;align-items:center;gap:.35rem;font-family:sans-serif;font-size:.72rem;color:var(--muted)}
-.inbox-dot{width:7px;height:7px;border-radius:50%;background:var(--border2);flex-shrink:0}
-.inbox-dot.on{background:#3bb273}
-.inbox-channel-list{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.5rem}
-.inbox-chip{padding:3px 9px;border:1.5px solid var(--border2);border-radius:20px;font-family:sans-serif;font-size:.75rem;cursor:pointer;background:var(--white);transition:all .15s;user-select:none}
-.inbox-chip.active{background:var(--primary-light);border-color:var(--primary);color:var(--primary-dark);font-weight:600}
-.inbox-chip:hover{border-color:var(--primary)}
-.inbox-coming-soon{text-align:center;padding:2rem 1rem;font-family:sans-serif;font-size:.85rem;color:var(--muted)}
-.inbox-overlay{position:fixed;inset:0;background:rgba(40,40,38,.45);z-index:600;display:none}
-.inbox-panel{
-  position:fixed;top:0;right:0;bottom:0;
-  width:500px;max-width:100vw;
-  background:var(--white);border-left:1px solid var(--border);
-  z-index:601;transform:translateX(100%);transition:transform .3s ease;
-  overflow:hidden;display:flex;flex-direction:column
-}
-.inbox-panel.open{transform:translateX(0)}
-.inbox-panel-header{
-  padding:1.25rem 1.5rem 0;
-  border-bottom:1px solid var(--border);flex-shrink:0
-}
-.inbox-panel-title{
-  font-family:'Fraunces',serif;font-size:1.15rem;font-weight:600;
-  color:var(--h2);display:flex;align-items:center;
-  justify-content:space-between;margin-bottom:1rem
-}
-.inbox-tabs{display:flex;border-bottom:1px solid var(--border);margin:0 -1.5rem;padding:0 1.5rem}
-.inbox-tab{
-  flex:1;padding:.65rem .5rem;text-align:center;
-  font-family:sans-serif;font-size:.82rem;font-weight:600;
-  cursor:pointer;color:var(--muted);
-  border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .2s
-}
-.inbox-tab.active{color:var(--primary);border-bottom-color:var(--primary)}
-.inbox-tab-panels{flex:1;overflow-y:auto;padding:1.25rem 1.5rem}
-.inbox-source-panel{display:none}
-.inbox-source-panel.active{display:block}
-.inbox-paste-label{
-  font-family:sans-serif;font-size:.72rem;font-weight:700;
-  text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:.4rem
-}
-.inbox-textarea{
-  width:100%;min-height:110px;max-height:180px;
-  padding:.75rem 1rem;border:1.5px solid var(--border2);
-  border-radius:var(--radius-sm);font-size:.85rem;
-  font-family:sans-serif;background:var(--bg);
-  color:var(--body);outline:none;resize:vertical;
-  transition:border-color .2s;line-height:1.5;box-sizing:border-box
-}
-.inbox-textarea:focus{border-color:var(--primary)}
-.inbox-process-btn{
-  width:100%;padding:.75rem;margin-top:.75rem;
-  background:var(--primary);color:white;border:none;
-  border-radius:var(--radius-sm);font-family:'Fraunces',serif;
-  font-size:.95rem;font-weight:500;cursor:pointer;
-  transition:background .2s;display:flex;align-items:center;justify-content:center;gap:.5rem
-}
-.inbox-process-btn:hover{filter:brightness(1.1)}
-.inbox-process-btn:disabled{background:var(--muted);cursor:not-allowed}
-.inbox-results{margin-top:1rem}
-.inbox-result-section{margin-bottom:1.1rem}
-.inbox-result-label{
-  font-family:sans-serif;font-size:.72rem;font-weight:700;
-  text-transform:uppercase;letter-spacing:.07em;
-  color:var(--muted);margin-bottom:.5rem;
-  display:flex;align-items:center;gap:.35rem
-}
-.inbox-result-card{
-  background:var(--bg);border:1px solid var(--border);
-  border-radius:var(--radius-sm);padding:.75rem 1rem;
-  margin-bottom:.5rem;font-family:sans-serif;
-  font-size:.82rem;color:var(--h2);line-height:1.5
-}
-.inbox-result-summary{
-  background:#fdf0fb;border:1px solid rgba(255,48,204,.2);
-  border-radius:var(--radius-sm);padding:.75rem 1rem;
-  font-family:sans-serif;font-size:.82rem;color:var(--h2);line-height:1.6
-}
-.inbox-convert-btn{
-  margin-top:.5rem;padding:4px 10px;
-  border-radius:6px;border:1.5px solid var(--border2);
-  font-family:sans-serif;font-size:.75rem;font-weight:600;
-  cursor:pointer;background:var(--bg);color:var(--muted);transition:all .2s
-}
-.inbox-convert-btn:hover{background:var(--primary);color:white;border-color:var(--primary)}
-.inbox-history-section{border-top:1px solid var(--border);padding-top:.75rem;margin-top:1rem}
-.inbox-history-label{
-  font-family:sans-serif;font-size:.72rem;font-weight:700;
-  text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:.5rem
-}
-.inbox-history-item{
-  padding:.45rem 0;border-bottom:1px solid var(--border);
-  display:flex;gap:.6rem;font-family:sans-serif;font-size:.78rem;align-items:baseline
-}
-.inbox-history-item:last-child{border-bottom:none}
-.inbox-spinner{
-  display:inline-block;width:15px;height:15px;
-  border:2px solid rgba(255,255,255,.4);border-top-color:white;
-  border-radius:50%;animation:spin .7s linear infinite
-}
-/* Floating inbox toggle — mirrors .daily-recap-btn */
-.inbox-float-btn{
-  position:fixed;right:-48px;top:calc(50% + 36px);
-  transform:translateY(-50%) rotate(-90deg);
-  background:linear-gradient(135deg,#ff30cc,#c020a0);
-  color:white;font-family:sans-serif;font-size:.78rem;font-weight:700;
-  padding:6px 16px;border-radius:8px 8px 0 0;cursor:pointer;
-  z-index:200;border:none;letter-spacing:.05em;
-  transition:right .2s;box-shadow:-2px 0 12px rgba(255,48,204,.3);
-  white-space:nowrap
-}
-.inbox-float-btn:hover{right:-40px}
-.inbox-float-btn.active{right:-40px;background:linear-gradient(135deg,#c020a0,#8a0070)}
-@media(max-width:768px){
-  .inbox-float-btn{display:none}
-  .inbox-panel{width:100%;border-left:none;border-radius:20px 20px 0 0;top:auto;height:90vh}
-}
-
 
 @media(max-width:768px){
   #page-admin{
@@ -1112,9 +969,6 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--body);min-h
   </div>
 
 
-<!-- FLOATING DAILY RECAP -->
-<button class="daily-recap-btn" id="daily-recap-btn" onclick="toggleInboxPanel()">📬 Inbox</button>
-
 <!-- ADD TASK MODAL -->
 <div class="modal-overlay" id="modal-add-task" onclick="closeModalOutside(event,'modal-add-task')">
   <div class="modal">
@@ -1438,138 +1292,34 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--body);min-h
   </div>
 </div>
 
-<!-- INBOX REVIEW PANEL -->
-<div class="inbox-overlay" id="inbox-overlay" onclick="closeInboxPanel()"></div>
-<div class="inbox-panel" id="inbox-panel">
-  <div class="inbox-panel-header">
-    <div class="inbox-panel-title">
-      <span>📬 Inbox Review</span>
-      <button class="modal-close" onclick="closeInboxPanel()">✕</button>
-    </div>
-    <div class="inbox-tabs">
-      <div class="inbox-tab active" id="itab-email" onclick="switchInboxTab('email')">✉️ Email</div>
-      <div class="inbox-tab" id="itab-whatsapp" onclick="switchInboxTab('whatsapp')">💬 WhatsApp</div>
-      <div class="inbox-tab" id="itab-slack" onclick="switchInboxTab('slack')">⚡ Slack</div>
-    </div>
+<!-- MOBILE FLOATING NAV -->
+<div class="mobile-nav-wrap" id="mobile-nav">
+  <div class="mobile-nav-inner">
+    <a href="index.html" class="mnav-item">
+      <span class="mnav-icon">🏠</span>
+      <span class="mnav-label">Home</span>
+    </a>
+    <span class="mnav-item active">
+      <span class="mnav-icon">📋</span>
+      <span class="mnav-label">Tasks</span>
+    </span>
+    <a href="social.html" class="mnav-item">
+      <span class="mnav-icon">📱</span>
+      <span class="mnav-label">Social</span>
+    </a>
+    <a href="learning.html" class="mnav-item">
+      <span class="mnav-icon">📚</span>
+      <span class="mnav-label">Learn</span>
+    </a>
+    <a href="creators.html" class="mnav-item">
+      <span class="mnav-icon">🤝</span>
+      <span class="mnav-label">Creators</span>
+    </a>
+    <a id="mnav-admin" href="admin.html" class="mnav-item" style="display:none">
+      <span class="mnav-icon">👑</span>
+      <span class="mnav-label">Admin</span>
+    </a>
   </div>
-  <div class="inbox-tab-panels">
-
-    <!-- EMAIL -->
-    <!-- EMAIL TAB -->
-    <div class="inbox-source-panel active" id="ipanel-email">
-      <div class="inbox-config">
-        <div class="inbox-config-title">
-          <span>Gmail Settings</span>
-          <span style="font-size:.7rem;color:var(--muted)">via Google Apps Script</span>
-        </div>
-        <div class="inbox-config-row">
-          <input class="inbox-config-input" id="inbox-gmail-account" type="email" placeholder="your@carenbloom.com"/>
-          <button class="inbox-config-btn" onclick="saveGmailAccount()">Save</button>
-        </div>
-        <div class="inbox-config-row">
-          <select class="inbox-config-select" id="inbox-gmail-hours" style="flex:1">
-            <option value="4">Last 4 hours</option>
-            <option value="8">Last 8 hours</option>
-            <option value="24" selected>Last 24 hours</option>
-            <option value="48">Last 48 hours</option>
-          </select>
-          <select class="inbox-config-select" id="inbox-gmail-label" style="flex:1">
-            <option value="in:inbox">Inbox</option>
-            <option value="is:unread">Unread</option>
-            <option value="is:starred">Starred</option>
-          </select>
-        </div>
-      </div>
-      <button class="inbox-fetch-btn" id="inbox-fetch-btn-email" onclick="fetchAndProcess('email')">🔄 Fetch from Gmail</button>
-      <div class="inbox-divider">or paste manually</div>
-      <div class="inbox-paste-label">Paste email messages</div>
-      <textarea class="inbox-textarea" id="inbox-text-email" placeholder="Paste raw email text here — subject lines, message bodies, sender names..."></textarea>
-      <button class="inbox-process-btn" id="inbox-btn-email" onclick="processInbox('email')">✨ Process pasted text</button>
-      <div class="inbox-results" id="inbox-results-email" style="display:none"></div>
-      <div class="inbox-history-section" id="inbox-history-email" style="display:none">
-        <div class="inbox-history-label">Today's Sessions</div>
-        <div id="inbox-history-list-email"></div>
-      </div>
-    </div>
-
-    <!-- WHATSAPP TAB -->
-    <div class="inbox-source-panel" id="ipanel-whatsapp">
-      <div class="inbox-coming-soon">
-        <div style="font-size:2rem;margin-bottom:.5rem">💬</div>
-        <div style="font-weight:600;color:var(--h2);margin-bottom:.4rem">WhatsApp — Coming Soon</div>
-        <div style="font-size:.8rem">WhatsApp doesn't offer a free read API. We'll add support in a future version. For now, paste messages manually below.</div>
-      </div>
-      <div class="inbox-paste-label">Paste WhatsApp messages</div>
-      <textarea class="inbox-textarea" id="inbox-text-whatsapp" placeholder="Paste WhatsApp conversation — sender names, timestamps, message text..."></textarea>
-      <button class="inbox-process-btn" id="inbox-btn-whatsapp" onclick="processInbox('whatsapp')">✨ Process with Gemini</button>
-      <div class="inbox-results" id="inbox-results-whatsapp" style="display:none"></div>
-      <div class="inbox-history-section" id="inbox-history-whatsapp" style="display:none">
-        <div class="inbox-history-label">Today's Sessions</div>
-        <div id="inbox-history-list-whatsapp"></div>
-      </div>
-    </div>
-
-    <!-- SLACK TAB -->
-    <div class="inbox-source-panel" id="ipanel-slack">
-      <div class="inbox-config">
-        <div class="inbox-config-title">
-          <span>Slack Settings</span>
-          <div class="inbox-status-row"><span class="inbox-dot" id="slack-dot"></span><span id="slack-status-text">Not connected</span></div>
-        </div>
-        <div class="inbox-config-row">
-          <input class="inbox-config-input" id="inbox-slack-token" type="password" placeholder="Paste xoxp- user token from api.slack.com"/>
-          <button class="inbox-config-btn" onclick="saveSlackToken()">Connect</button>
-        </div>
-        <div id="slack-channel-picker" style="display:none">
-          <div style="font-family:sans-serif;font-size:.72rem;color:var(--muted);margin-bottom:.3rem">Select channels to fetch:</div>
-          <div class="inbox-channel-list" id="slack-channel-list"></div>
-          <button onclick="loadSlackChannels()" style="margin-top:.5rem;font-family:sans-serif;font-size:.73rem;padding:3px 9px;border:1px solid var(--border2);border-radius:6px;background:var(--bg);cursor:pointer;color:var(--muted)">↻ Refresh list</button>
-        </div>
-      </div>
-      <button class="inbox-fetch-btn" id="inbox-fetch-btn-slack" onclick="fetchAndProcess('slack')">🔄 Fetch from Slack</button>
-      <div class="inbox-divider">or paste manually</div>
-      <div class="inbox-paste-label">Paste Slack messages</div>
-      <textarea class="inbox-textarea" id="inbox-text-slack" placeholder="Paste Slack thread or channel messages — channel name, sender, message text..."></textarea>
-      <button class="inbox-process-btn" id="inbox-btn-slack" onclick="processInbox('slack')">✨ Process pasted text</button>
-      <div class="inbox-results" id="inbox-results-slack" style="display:none"></div>
-      <div class="inbox-history-section" id="inbox-history-slack" style="display:none">
-        <div class="inbox-history-label">Today's Sessions</div>
-        <div id="inbox-history-list-slack"></div>
-      </div>
-    </div>
-
-  </div>
-
-  <!-- MOBILE FLOATING NAV -->
-  <div class="mobile-nav-wrap" id="mobile-nav">
-    <div class="mobile-nav-inner">
-      <a href="index.html" class="mnav-item">
-        <span class="mnav-icon">🏠</span>
-        <span class="mnav-label">Home</span>
-      </a>
-      <span class="mnav-item active">
-        <span class="mnav-icon">📋</span>
-        <span class="mnav-label">Tasks</span>
-      </span>
-      <a href="social.html" class="mnav-item">
-        <span class="mnav-icon">📱</span>
-        <span class="mnav-label">Social</span>
-      </a>
-      <a href="learning.html" class="mnav-item">
-        <span class="mnav-icon">📚</span>
-        <span class="mnav-label">Learn</span>
-      </a>
-      <a href="creators.html" class="mnav-item">
-        <span class="mnav-icon">🤝</span>
-        <span class="mnav-label">Creators</span>
-      </a>
-      <a id="mnav-admin" href="admin.html" class="mnav-item" style="display:none">
-        <span class="mnav-icon">👑</span>
-        <span class="mnav-label">Admin</span>
-      </a>
-    </div>
-  </div>
-
 </div>
 
 <!-- TOAST -->
@@ -1582,8 +1332,6 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--body);min-h
 const SUPABASE_URL = 'https://yiqniylxflulzfghujzw.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlpcW5peWx4Zmx1bHpmZ2h1anp3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUwNzcwMTEsImV4cCI6MjA5MDY1MzAxMX0.ZVT3XwHkBrL1leBaQevew8G4k5syHmT5gYDznPQeAFY';
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx8IiG-k3J2lcQR38unRpO2cHyRidAlQTM8FLWCIbHy9JjdvmeB6MrKo_vNVaqsi3Th/exec';
-const GEMINI_API_KEY = ''; // ← Paste your Gemini Flash API key here
-const GEMINI_ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
 
 const { createClient } = supabase;
 const db = createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -1601,9 +1349,7 @@ let state = {
   pendingCompleteId: null,
   selectedAvatar: '🌸',
   completeFiles: [],
-  ideaFiles: [],
-  inboxOpen: false,
-  inboxActiveTab: 'email'
+  ideaFiles: []
 };
 
 const TIER_LIMITS = { 'top3': 3, 'focus-today': 15, 'focus-week': 6 };
@@ -2535,395 +2281,6 @@ function closeSettings() {
   document.getElementById('settings-panel').classList.remove('open');
 }
 
-// ═══════════════════════════════════════
-// INBOX REVIEW PANEL
-// ═══════════════════════════════════════
-function toggleInboxPanel() {
-  if (state.inboxOpen) { closeInboxPanel(); } else { openInboxPanel(); }
-}
-
-function openInboxPanel() {
-  if (!state.currentUser || state.currentUser.role !== 'admin') return;
-  state.inboxOpen = true;
-  document.getElementById('inbox-overlay').style.display = 'block';
-  document.getElementById('inbox-panel').classList.add('open');
-  document.getElementById('daily-recap-btn').classList.add('active');
-  loadInboxHistory(state.inboxActiveTab);
-  initInboxConnections();
-}
-
-function closeInboxPanel() {
-  state.inboxOpen = false;
-  document.getElementById('inbox-overlay').style.display = 'none';
-  document.getElementById('inbox-panel').classList.remove('open');
-  document.getElementById('daily-recap-btn').classList.remove('active');
-}
-
-function switchInboxTab(source) {
-  ['email','whatsapp','slack'].forEach(function(s) {
-    document.getElementById('itab-' + s).classList.remove('active');
-    document.getElementById('ipanel-' + s).classList.remove('active');
-  });
-  document.getElementById('itab-' + source).classList.add('active');
-  document.getElementById('ipanel-' + source).classList.add('active');
-  state.inboxActiveTab = source;
-  loadInboxHistory(source);
-}
-
-async function callGeminiForInbox(source, rawText) {
-  if (!GEMINI_API_KEY) throw new Error('no_key');
-  const label = source === 'email' ? 'email inbox'
-    : source === 'whatsapp' ? 'WhatsApp messages' : 'Slack messages';
-  const prompt = `You are an inbox triage assistant for a busy marketing professional.
-
-Analyze these ${label} and return a JSON object with exactly three keys:
-
-1. "important": array of objects, each with:
-   - "message": sender name + key message text (max 2 sentences)
-   - "reason": one short sentence on why it needs attention or a reply
-
-2. "marketing_assets": array of strings — any URLs, Google Drive links, Canva links, image links, file references, or creative asset names found in the messages. Empty array if none.
-
-3. "summary": single paragraph (3–5 sentences) summarizing what happened — who said what, key topics, decisions, deadlines.
-
-Rules:
-- Return valid JSON only. No markdown fences. No text outside the JSON.
-- "important" should flag messages needing reply, containing deadlines, requests, approvals, or urgent issues.
-- Ignore promotional emails, read receipts, and automated notifications.
-
-Messages:
----
-${rawText}
----`;
-
-  const res = await fetch(GEMINI_ENDPOINT + '?key=' + GEMINI_API_KEY, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      contents: [{ parts: [{ text: prompt }] }],
-      generationConfig: { temperature: 0.2, maxOutputTokens: 1500 }
-    })
-  });
-  if (!res.ok) {
-    const err = await res.json().catch(function(){ return {}; });
-    throw new Error(err.error && err.error.message ? err.error.message : 'Gemini API error ' + res.status);
-  }
-  const data = await res.json();
-  const raw = (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0] && data.candidates[0].content.parts[0].text) || '';
-  const cleaned = raw.replace(/^```json\s*/i, '').replace(/\s*```$/i, '').trim();
-  return JSON.parse(cleaned);
-}
-
-async function processInbox(source) {
-  const textarea = document.getElementById('inbox-text-' + source);
-  const btn = document.getElementById('inbox-btn-' + source);
-  const resultsEl = document.getElementById('inbox-results-' + source);
-  const rawText = textarea.value.trim();
-
-  if (!rawText) { showToast('Paste some messages first!', 'error'); return; }
-  if (!GEMINI_API_KEY) {
-    showToast('Add your Gemini API key to GEMINI_API_KEY in the script.', 'error');
-    return;
-  }
-
-  btn.disabled = true;
-  btn.innerHTML = '<span class="inbox-spinner"></span> Processing...';
-  resultsEl.style.display = 'none';
-
-  try {
-    const result = await callGeminiForInbox(source, rawText);
-    renderInboxResults(source, result);
-    await saveInboxSession(source, result.summary || '');
-    await loadInboxHistory(source);
-    showToast('Inbox processed ✓', 'success');
-  } catch(e) {
-    if (e.message === 'no_key') {
-      showToast('Add your Gemini API key first.', 'error');
-    } else {
-      showToast('Processing failed: ' + (e.message || 'Unknown error'), 'error');
-    }
-  }
-
-  btn.disabled = false;
-  btn.innerHTML = '✨ Process with Gemini';
-}
-
-function renderInboxResults(source, result) {
-  const resultsEl = document.getElementById('inbox-results-' + source);
-  const important = result.important || [];
-  const assets = result.marketing_assets || [];
-  const summary = result.summary || '';
-  let html = '';
-
-  // Important
-  html += '<div class="inbox-result-section">';
-  html += '<div class="inbox-result-label">🚨 Important (' + important.length + ')</div>';
-  if (!important.length) {
-    html += '<div style="font-family:sans-serif;font-size:.82rem;color:var(--muted)">Nothing flagged as important.</div>';
-  } else {
-    important.forEach(function(item) {
-      html += '<div class="inbox-result-card">';
-      html += '<div style="font-weight:600;margin-bottom:.25rem">' + esc(item.message || '') + '</div>';
-      if (item.reason) html += '<div style="font-size:.75rem;color:var(--muted);margin-bottom:.4rem">' + esc(item.reason) + '</div>';
-      html += '<button class="inbox-convert-btn" onclick="convertInboxItemToTask(this)" data-title="' + esc(item.message || '') + '" data-source="' + esc(source) + '">+ Add to Task Hub</button>';
-      html += '</div>';
-    });
-  }
-  html += '</div>';
-
-  // Marketing Assets
-  html += '<div class="inbox-result-section">';
-  html += '<div class="inbox-result-label">📦 Marketing Assets (' + assets.length + ')</div>';
-  if (!assets.length) {
-    html += '<div style="font-family:sans-serif;font-size:.82rem;color:var(--muted)">No assets detected.</div>';
-  } else {
-    assets.forEach(function(asset) {
-      const isUrl = /^https?:\/\//.test(asset);
-      html += '<div class="inbox-result-card">';
-      if (isUrl) {
-        html += '<a href="' + esc(asset) + '" target="_blank" rel="noopener" style="color:var(--primary);word-break:break-all">' + esc(asset) + '</a>';
-      } else {
-        html += '<span style="word-break:break-all">' + esc(asset) + '</span>';
-      }
-      html += '</div>';
-    });
-  }
-  html += '</div>';
-
-  // Summary
-  html += '<div class="inbox-result-section">';
-  html += '<div class="inbox-result-label">📋 Summary</div>';
-  html += '<div class="inbox-result-summary">' + esc(summary) + '</div>';
-  html += '</div>';
-
-  resultsEl.innerHTML = html;
-  resultsEl.style.display = 'block';
-}
-
-function convertInboxItemToTask(btn) {
-  const title = btn.dataset.title || 'Inbox item';
-  const source = btn.dataset.source || 'inbox';
-  document.getElementById('new-task-title').value = title;
-  document.getElementById('new-task-desc').value = '[From ' + source + ' inbox review]';
-  document.getElementById('new-task-tier').value = 'founder';
-  document.getElementById('new-task-due').value = '';
-  document.getElementById('new-task-personal').checked = false;
-  document.getElementById('new-task-shared').checked = false;
-  document.getElementById('share-toggle').style.display = 'none';
-  document.getElementById('recurring-opts').style.display = 'none';
-  state.pendingTierId = 'founder';
-  openModal('modal-add-task');
-}
-
-// ═══════════════════════════════════════
-// INBOX SOURCE CONNECTIONS
-// ═══════════════════════════════════════
-var inboxConfig = { slack: { token: '', channelIds: [] } };
-
-async function initInboxConnections() {
-  var userId = state.currentUser && state.currentUser.id;
-  var gmailKey = 'inbox_gmail_account_' + userId;
-  try {
-    var keys = ['inbox_slack_token', 'inbox_slack_channels', gmailKey];
-    const { data } = await db.from('settings').select('key,value').in('key', keys);
-    if (data) {
-      data.forEach(function(row) {
-        if (row.key === 'inbox_slack_token' && row.value) {
-          inboxConfig.slack.token = row.value;
-          var tokenEl = document.getElementById('inbox-slack-token');
-          if (tokenEl) tokenEl.value = row.value;
-          setSlackStatus(true);
-        }
-        if (row.key === 'inbox_slack_channels' && row.value) {
-          try { inboxConfig.slack.channelIds = JSON.parse(row.value); } catch(e) {}
-        }
-        if (row.key === gmailKey && row.value) {
-          var accountEl = document.getElementById('inbox-gmail-account');
-          if (accountEl) accountEl.value = row.value;
-        }
-      });
-      if (inboxConfig.slack.token) loadSlackChannels();
-    }
-  } catch(e) {}
-}
-
-async function saveGmailAccount() {
-  var email = (document.getElementById('inbox-gmail-account').value || '').trim();
-  if (!email || !email.includes('@')) { showToast('Enter a valid email address.', 'error'); return; }
-  var userId = state.currentUser && state.currentUser.id;
-  try {
-    await db.from('settings').upsert({ key: 'inbox_gmail_account_' + userId, value: email });
-    showToast('Gmail account saved ✓', 'success');
-  } catch(e) {
-    showToast('Could not save — try again.', 'error');
-  }
-}
-
-function setSlackStatus(connected) {
-  var dot = document.getElementById('slack-dot');
-  var txt = document.getElementById('slack-status-text');
-  if (dot) { dot.className = 'inbox-dot' + (connected ? ' on' : ''); }
-  if (txt) txt.textContent = connected ? 'Connected' : 'Not connected';
-}
-
-async function saveSlackToken() {
-  var token = (document.getElementById('inbox-slack-token').value || '').trim();
-  if (!token || !token.startsWith('xoxp-')) {
-    showToast('Paste a valid xoxp- user token from api.slack.com', 'error');
-    return;
-  }
-  inboxConfig.slack.token = token;
-  try {
-    await db.from('settings').upsert({ key: 'inbox_slack_token', value: token });
-  } catch(e) {}
-  setSlackStatus(true);
-  showToast('Slack connected ✓', 'success');
-  loadSlackChannels();
-}
-
-async function loadSlackChannels() {
-  var token = inboxConfig.slack.token;
-  if (!token) return;
-  try {
-    var res = await fetch('https://slack.com/api/conversations.list?types=public_channel,private_channel&limit=100&exclude_archived=true', {
-      headers: { 'Authorization': 'Bearer ' + token }
-    });
-    var data = await res.json();
-    if (!data.ok) throw new Error(data.error);
-    renderSlackChannels(data.channels || []);
-    document.getElementById('slack-channel-picker').style.display = 'block';
-  } catch(e) {
-    showToast('Could not load channels: ' + (e.message || 'Check your token'), 'error');
-    setSlackStatus(false);
-  }
-}
-
-function renderSlackChannels(channels) {
-  var list = document.getElementById('slack-channel-list');
-  if (!list) return;
-  var saved = inboxConfig.slack.channelIds;
-  list.innerHTML = channels.slice(0, 24).map(function(ch) {
-    var sel = saved.indexOf(ch.id) !== -1;
-    return '<div class="inbox-chip' + (sel ? ' active' : '') + '" data-id="' + esc(ch.id) + '" onclick="toggleSlackChannel(this)">#' + esc(ch.name) + '</div>';
-  }).join('');
-}
-
-async function toggleSlackChannel(el) {
-  el.classList.toggle('active');
-  var id = el.dataset.id;
-  var ids = inboxConfig.slack.channelIds;
-  if (el.classList.contains('active')) {
-    if (ids.indexOf(id) === -1) ids.push(id);
-  } else {
-    inboxConfig.slack.channelIds = ids.filter(function(x) { return x !== id; });
-  }
-  try {
-    await db.from('settings').upsert({ key: 'inbox_slack_channels', value: JSON.stringify(inboxConfig.slack.channelIds) });
-  } catch(e) {}
-}
-
-async function fetchAndProcess(source) {
-  var fetchBtn = document.getElementById('inbox-fetch-btn-' + source);
-  var resultsEl = document.getElementById('inbox-results-' + source);
-  fetchBtn.disabled = true;
-  fetchBtn.innerHTML = '<span class="inbox-spinner"></span> Fetching...';
-  resultsEl.style.display = 'none';
-  try {
-    var rawText = '';
-    if (source === 'email') rawText = await fetchEmailsViaGAS();
-    else if (source === 'slack') rawText = await fetchSlackMessages();
-    if (!rawText || rawText.trim().length < 10) {
-      showToast('No new messages found.', 'error');
-    } else {
-      document.getElementById('inbox-text-' + source).value = rawText;
-      await processInbox(source);
-    }
-  } catch(e) {
-    showToast('Fetch failed: ' + (e.message || 'Unknown error'), 'error');
-  }
-  fetchBtn.disabled = false;
-  fetchBtn.innerHTML = source === 'email' ? '🔄 Fetch from Gmail' : '🔄 Fetch from Slack';
-}
-
-async function fetchEmailsViaGAS() {
-  var hours = parseInt(document.getElementById('inbox-gmail-hours').value) || 24;
-  var label = document.getElementById('inbox-gmail-label').value || 'in:inbox';
-  var account = (document.getElementById('inbox-gmail-account').value || '').trim();
-  if (!account) { throw new Error('Enter your Gmail address in the Email settings first.'); }
-  var res = await fetch(SCRIPT_URL, {
-    method: 'POST',
-    body: JSON.stringify({ action: 'fetchEmails', hoursBack: hours, query: label, maxResults: 30, targetEmail: account })
-  });
-  var data = await res.json();
-  if (!data.success) throw new Error(data.error || 'GAS fetch failed');
-  return data.emails.map(function(e) {
-    return 'From: ' + e.from + '\nSubject: ' + e.subject + '\nDate: ' + e.date + '\n' + e.snippet;
-  }).join('\n\n---\n\n');
-}
-
-async function fetchSlackMessages() {
-  var token = inboxConfig.slack.token;
-  var channelIds = inboxConfig.slack.channelIds;
-  if (!token) throw new Error('No Slack token — click Connect first.');
-  if (!channelIds.length) throw new Error('Select at least one channel first.');
-  var oldest = Math.floor((Date.now() - 24 * 60 * 60 * 1000) / 1000);
-  var lines = [];
-  for (var i = 0; i < channelIds.length; i++) {
-    var chId = channelIds[i];
-    var chEl = document.querySelector('[data-id="' + chId + '"]');
-    var chName = chEl ? chEl.textContent.trim() : chId;
-    try {
-      var res = await fetch('https://slack.com/api/conversations.history?channel=' + chId + '&oldest=' + oldest + '&limit=50', {
-        headers: { 'Authorization': 'Bearer ' + token }
-      });
-      var data = await res.json();
-      if (data.ok && data.messages) {
-        data.messages.forEach(function(msg) {
-          if (msg.text && !msg.bot_id) lines.push(chName + ' | ' + (msg.username || msg.user || 'user') + ': ' + msg.text);
-        });
-      }
-    } catch(e) {}
-  }
-  return lines.join('\n');
-}
-
-async function saveInboxSession(source, summaryText) {
-  if (!state.currentUser || !state.currentUser.authId) return;
-  try {
-    await db.from('inbox_sessions').insert({
-      user_id: state.currentUser.authId,
-      source: source,
-      summary: summaryText || '',
-      processed_at: new Date().toISOString()
-    });
-  } catch(e) { /* silent — history is non-critical */ }
-}
-
-async function loadInboxHistory(source) {
-  const historySection = document.getElementById('inbox-history-' + source);
-  const historyList = document.getElementById('inbox-history-list-' + source);
-  if (!historySection || !historyList) return;
-  if (!state.currentUser || !state.currentUser.authId) return;
-  try {
-    const todayStart = new Date();
-    todayStart.setHours(0, 0, 0, 0);
-    const { data, error } = await db
-      .from('inbox_sessions')
-      .select('id, summary, processed_at')
-      .eq('user_id', state.currentUser.authId)
-      .eq('source', source)
-      .gte('processed_at', todayStart.toISOString())
-      .order('processed_at', { ascending: false })
-      .limit(5);
-    if (error || !data || !data.length) { historySection.style.display = 'none'; return; }
-    historyList.innerHTML = data.map(function(s) {
-      const t = new Date(s.processed_at).toLocaleTimeString('en-HK', { hour: '2-digit', minute: '2-digit' });
-      return '<div class="inbox-history-item"><span style="color:var(--muted);flex-shrink:0">' + esc(t) + '</span><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + esc(s.summary || 'Processed') + '</span></div>';
-    }).join('');
-    historySection.style.display = 'block';
-  } catch(e) { historySection.style.display = 'none'; }
-}
-
 async function changePassword() {
   const np = document.getElementById('new-pw').value;
   const cp = document.getElementById('confirm-pw').value;
@@ -3542,9 +2899,6 @@ function updateNavUser() {
   if (mobileAdminBtn) {
     mobileAdminBtn.style.display = state.currentUser.role === 'admin' ? 'flex' : 'none';
   }
-  // Inbox Review (Daily Recap button) is admin-only
-  var dailyBtn = document.getElementById('daily-recap-btn');
-  if (dailyBtn) dailyBtn.style.display = state.currentUser.role === 'admin' ? 'block' : 'none';
 }
 
 function openUserMenu() {
