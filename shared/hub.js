@@ -341,6 +341,22 @@ window.addEventListener('resize', function() {
   if (nav) nav.style.display = isMobile() ? 'block' : 'none';
 });
 
+// ── HIDE NAV ON SCROLL ──
+var _navLastY = 0;
+function handleNavScroll(y) {
+  var nav = document.querySelector('.topnav');
+  if (!nav) return;
+  if (y > _navLastY + 4 && y > 80) {
+    nav.classList.add('nav-hidden');
+  } else if (y < _navLastY - 4) {
+    nav.classList.remove('nav-hidden');
+  }
+  _navLastY = y;
+}
+window.addEventListener('scroll', function() {
+  handleNavScroll(window.scrollY || document.documentElement.scrollTop);
+}, { passive: true });
+
 // ── STORAGE ALERT ──
 var storageDismissed = false;
 async function checkStorageAlert() {

@@ -125,8 +125,9 @@ body{
   height:var(--nav-h);
   z-index:200;
   box-shadow:0 4px 24px rgba(40,40,38,0.09),0 1px 3px rgba(40,40,38,0.06);
-  transition:box-shadow .3s;
+  transition:box-shadow .3s, transform .35s cubic-bezier(.4,0,.2,1);
 }
+.topnav.nav-hidden{transform:translateX(-50%) translateY(calc(-100% - 2rem));}
 .topnav:hover{box-shadow:0 8px 32px rgba(40,40,38,0.12),0 1px 3px rgba(40,40,38,0.06)}
 .nav-brand{
   font-family:'Fraunces',serif;font-size:1.25rem;font-weight:600;
