@@ -3571,6 +3571,9 @@ function openSlackDrawer() {
     slackState.inited = true;
     slackInitDatePicker();
     initSlack();
+  } else if (slackState.ownToken && !slackState.channels.length) {
+    // Token available but channels never loaded — retry
+    slackLoadChannels('own');
   }
 }
 
@@ -3924,82 +3927,89 @@ function renderSlackMessages() {
 
 async function slackPullChannel() {
   if (!slackState.activeChannelId) return;
-  // Update both the in-channel button and the header button
   var btn = document.getElementById('slack-pull-ch-btn');
   var hdrBtn = document.getElementById('slack-pull-ch-hdr-btn');
   [btn, hdrBtn].forEach(function(b){ if(b){ b.disabled = true; b.textContent = 'Pulling...'; } });
-  await slackLoadMessages(slackState.activeChannelId);
-  if (btn) { btn.disabled = false; btn.textContent = 'Pull'; }
-  if (hdrBtn) { hdrBtn.disabled = false; hdrBtn.textContent = 'Pull Channel'; }
+  try {
+    await slackLoadMessages(slackState.activeChannelId);
+  } catch(e) {
+    showToast('Pull failed: ' + (e.message || 'error'));
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = 'Pull'; }
+    if (hdrBtn) { hdrBtn.disabled = false; hdrBtn.textContent = 'Pull Channel'; }
+  }
 }
 
 async function slackPullAll() {
   var btn = document.getElementById('slack-pull-all-btn');
   if (btn) { btn.disabled = true; btn.textContent = 'Pulling...'; }
 
-  var token = slackState.ownToken;
-  if (!token) {
+  try {
+    var token = slackState.ownToken;
+    if (!token) {
+      showToast('No Slack token set — click your avatar → My Slack to add one.');
+      return;
+    }
+
+    // If channels haven't loaded yet, load them first
+    if (!slackState.channels.length) {
+      await slackLoadChannels('own');
+    }
+
+    slackState.mentions = [];
+    var oldest = slackGetSelectedOldest();
+    var ownId = slackState.ownUserId;
+    var channelsToCheck = slackState.channels.slice(0, 12); // cap for rate limits
+
+    for (var i = 0; i < channelsToCheck.length; i++) {
+      var ch = channelsToCheck[i];
+      try {
+        var data = await slackAPI(token, 'conversations.history', { channel: ch.id, oldest: oldest, limit: 50 });
+        if (!data.ok) continue;
+        var msgs = (data.messages || []).filter(function(m){ return m.type === 'message' && !m.subtype; });
+        msgs.forEach(function(msg) {
+          var isMention = ownId && (msg.text || '').indexOf('<@' + ownId + '>') !== -1;
+          slackState.mentions.push({ msg: msg, channelId: ch.id, channelName: ch.name, type: isMention ? 'mention' : 'message' });
+        });
+      } catch(e) { /* skip failed channel */ }
+      if (i < channelsToCheck.length - 1) await slackSleep(150);
+    }
+
+    // DMs
+    for (var j = 0; j < Math.min(slackState.dms.length, 8); j++) {
+      var dm = slackState.dms[j];
+      try {
+        var dmData = await slackAPI(token, 'conversations.history', { channel: dm.id, oldest: oldest, limit: 20 });
+        if (!dmData.ok) continue;
+        var dmName = slackState.userCache[dm.user] || dm.user || 'DM';
+        (dmData.messages || []).forEach(function(msg) {
+          if (msg.type !== 'message' || msg.subtype || msg.user === ownId) return;
+          slackState.mentions.push({ msg: msg, channelId: dm.id, channelName: dmName, type: 'dm' });
+        });
+      } catch(e) { /* skip */ }
+      await slackSleep(100);
+    }
+
+    // Client workspace keyword scan
+    for (var k = 0; k < (slackState.clientWorkspaces || []).length; k++) {
+      var ws = slackState.clientWorkspaces[k];
+      if (!ws || !ws.token) continue;
+      try { await slackPullClientWorkspace(ws, oldest); } catch(e) { /* skip */ }
+    }
+
+    updateMentionCounts();
+    renderMentionsStrip();
+    updateSlackOpenBadge();
+
+    var mentionCount = slackState.mentions.filter(function(m){ return m.type === 'mention'; }).length;
+    var total = slackState.mentions.length;
+    showToast('Pulled ' + total + ' message' + (total !== 1 ? 's' : '') + (mentionCount ? ' · ' + mentionCount + ' @mention' + (mentionCount !== 1 ? 's' : '') : ''));
+
+  } catch(e) {
+    showToast('Pull failed: ' + (e.message || 'unknown error'));
+  } finally {
     if (btn) { btn.disabled = false; btn.textContent = 'Pull All'; }
-    showToast('No Slack token set. Add one in your profile.');
-    return;
   }
-
-  slackState.mentions = [];
-  var oldest = slackGetSelectedOldest();
-  var ownId = slackState.ownUserId;
-  var channelsToCheck = slackState.channels.slice(0, 15); // cap at 15 for rate limits
-
-  for (var i = 0; i < channelsToCheck.length; i++) {
-    var ch = channelsToCheck[i];
-    try {
-      var data = await slackAPI(token, 'conversations.history', { channel: ch.id, oldest: oldest, limit: 50 });
-      if (!data.ok) continue;
-      var msgs = (data.messages || []).filter(function(m){ return m.type === 'message' && !m.subtype; });
-
-      // Resolve user IDs we haven't seen
-      var newIds = msgs.map(function(m){ return m.user; }).filter(function(uid) {
-        return uid && !slackState.userCache[uid];
-      }).filter(function(v,i,a){ return a.indexOf(v)===i; });
-      if (newIds.length) await resolveSlackUsers(token, newIds);
-
-      msgs.forEach(function(msg) {
-        var isMention = ownId && (msg.text || '').indexOf('<@' + ownId + '>') !== -1;
-        // Include: @mentions AND all messages (so user sees full picture)
-        slackState.mentions.push({ msg: msg, channelId: ch.id, channelName: ch.name, type: isMention ? 'mention' : 'message' });
-      });
-    } catch(e) { /* skip failed channel */ }
-    if (i < channelsToCheck.length - 1) await slackSleep(200);
-  }
-
-  // DMs
-  for (var j = 0; j < slackState.dms.length && j < 10; j++) {
-    var dm = slackState.dms[j];
-    try {
-      var dmData = await slackAPI(token, 'conversations.history', { channel: dm.id, oldest: oldest, limit: 20 });
-      if (!dmData.ok) continue;
-      (dmData.messages || []).forEach(function(msg) {
-        if (msg.type !== 'message' || msg.subtype || msg.user === ownId) return;
-        var name = slackState.userCache[dm.user] || dm.user || 'DM';
-        slackState.mentions.push({ msg: msg, channelId: dm.id, channelName: name, type: 'dm' });
-      });
-    } catch(e) { /* skip */ }
-  }
-
-  // Client workspace keyword scan
-  for (var k = 0; k < slackState.clientWorkspaces.length; k++) {
-    var ws = slackState.clientWorkspaces[k];
-    if (!ws.token) continue;
-    await slackPullClientWorkspace(ws, oldest);
-  }
-
-  updateMentionCounts();
-  renderMentionsStrip();
-  updateSlackOpenBadge();
-
-  if (btn) { btn.disabled = false; btn.textContent = 'Pull All'; }
-  var mentionCount = slackState.mentions.filter(function(m){ return m.type === 'mention'; }).length;
-  var total = slackState.mentions.length;
-  showToast('Pulled ' + total + ' message' + (total !== 1 ? 's' : '') + (mentionCount ? ' · ' + mentionCount + ' @mention' + (mentionCount !== 1 ? 's' : '') : ''));
 }
 
 async function slackPullClientWorkspace(ws, oldest) {
