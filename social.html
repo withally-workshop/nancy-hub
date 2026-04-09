@@ -10,180 +10,233 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="shared/hub.js"></script>
 <style>
-/* Social Hub specific vars - dark mode compatible */
-.social-hub-wrap { max-width: 1100px; margin: 0 auto; padding: 2rem; }
-.social-page-header { margin-bottom: 2rem; display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
-.social-page-title { font-family: 'Fraunces', serif; font-size: 2rem; font-weight: 600; color: var(--h2); letter-spacing: -.02em; margin-bottom: .25rem; }
-.social-page-sub { font-size: .9rem; color: var(--muted); font-family: 'Inter', sans-serif; }
+/* ─── HUB PAGE ──────────────────────────── */
+.s-wrap{max-width:1100px;margin:0 auto;padding:0 2rem 3rem}
+.s-hdr{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:2rem}
+.s-title{font-family:'Fraunces',serif;font-size:2rem;font-weight:600;color:var(--h2);letter-spacing:-.03em;line-height:1;margin-bottom:.3rem}
+.s-sub{font-size:.88rem;color:var(--muted);font-family:'Inter',sans-serif}
+.av-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem}
+.av-card{background:var(--card);border:1px solid var(--border);border-radius:20px;overflow:hidden;transition:box-shadow .25s,transform .25s;position:relative}
+.av-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--avc,var(--primary))}
+.av-card:hover{box-shadow:var(--shadow-lg);transform:translateY(-2px)}
+.av-card-in{padding:1.5rem}
+.av-card-top{display:flex;align-items:center;gap:.875rem;margin-bottom:1.25rem}
+.av-circle{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;font-size:.88rem;font-weight:700;color:white;flex-shrink:0}
+.av-card-name{font-family:'Fraunces',serif;font-size:1.1rem;font-weight:600;color:var(--h2);margin-bottom:.25rem;line-height:1.2}
+.av-type-bdg{display:inline-block;font-family:'Inter',sans-serif;font-size:.65rem;font-weight:700;padding:2px 8px;border-radius:var(--radius-pill);letter-spacing:.03em}
+.av-plat-row{display:flex;flex-wrap:wrap;gap:.3rem;margin-top:.3rem}
+.av-plat{font-family:'Inter',sans-serif;font-size:.7rem;font-weight:600;padding:2px 7px;border-radius:6px;background:var(--bg2);color:var(--muted);border:1px solid var(--border)}
+.av-stats{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:1rem}
+.av-stat{background:var(--bg2);border-radius:10px;padding:.6rem;text-align:center}
+.av-stat-n{font-family:'Fraunces',serif;font-size:1.35rem;font-weight:600;color:var(--h2);display:block}
+.av-stat-l{font-family:'Inter',sans-serif;font-size:.7rem;color:var(--muted);display:block;margin-top:.1rem}
+.av-card-admin{display:flex;gap:.35rem;margin-bottom:.75rem}
+.av-adm-btn{font-family:'Inter',sans-serif;font-size:.7rem;font-weight:600;padding:3px 10px;border-radius:6px;border:1px solid var(--border2);background:none;color:var(--muted);cursor:pointer;transition:all .15s}
+.av-adm-btn:hover{background:var(--bg2);color:var(--body)}
+.av-adm-btn.del:hover{background:rgba(229,57,53,.1);color:#e53935;border-color:rgba(229,57,53,.4)}
+.av-open{width:100%;padding:.65rem;border:none;border-radius:10px;font-family:'Fraunces',serif;font-size:.9rem;font-weight:500;color:white;cursor:pointer;transition:filter .2s,transform .15s}
+.av-open:hover{filter:brightness(1.1);transform:translateY(-1px)}
 
-/* Avatar cards grid */
-.avatar-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; }
-.avatar-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; transition: box-shadow .25s, transform .25s; border-left: 3px solid var(--avc, var(--primary)); }
-.avatar-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
-.avatar-card-inner { padding: 1.25rem; }
-.avatar-card-top { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
-.avatar-initials-wrap { width: 52px; height: 52px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Inter', sans-serif; font-size: .95rem; font-weight: 700; color: white; flex-shrink: 0; }
-.avatar-card-name { font-family: 'Fraunces', serif; font-size: 1.1rem; font-weight: 600; color: var(--h2); margin-bottom: .3rem; }
-.avatar-type-badge { display: inline-block; font-family: 'Inter', sans-serif; font-size: .68rem; font-weight: 700; padding: 2px 8px; border-radius: 20px; letter-spacing: .02em; margin-bottom: .4rem; }
-.avatar-platforms { display: flex; flex-wrap: wrap; gap: .3rem; }
-.plat-badge { font-family: 'Inter', sans-serif; font-size: .72rem; font-weight: 600; padding: 2px 8px; border-radius: 6px; background: var(--bg2); color: var(--muted); border: 1px solid var(--border); }
-.avatar-card-stats { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; margin-bottom: 1rem; }
-.avatar-stat { background: var(--bg2); border-radius: var(--radius-sm); padding: .65rem; text-align: center; }
-.avatar-stat-num { font-family: 'Fraunces', serif; font-size: 1.4rem; font-weight: 600; color: var(--h2); display: block; }
-.avatar-stat-label { font-family: 'Inter', sans-serif; font-size: .72rem; color: var(--muted); display: block; margin-top: .1rem; }
-.btn-open-avatar { width: 100%; padding: .65rem; border: none; border-radius: var(--radius-sm); font-family: 'Fraunces', serif; font-size: .92rem; font-weight: 500; color: white; cursor: pointer; transition: filter .2s; }
-.btn-open-avatar:hover { filter: brightness(1.1); }
-.card-admin-row { display: flex; gap: .4rem; margin-bottom: .75rem; }
-.card-admin-btn { font-family: 'Inter', sans-serif; font-size: .72rem; font-weight: 600; padding: 3px 10px; border-radius: 6px; border: 1px solid var(--border2); background: none; color: var(--muted); cursor: pointer; transition: all .15s; }
-.card-admin-btn:hover { background: var(--bg2); color: var(--body); }
-.card-admin-btn.danger:hover { background: rgba(229,57,53,.1); color: #e53935; border-color: #e53935; }
+/* ─── AVATAR WORKSPACE ──────────────────── */
+/* Full-screen scroll container — the pill nav sits on top (z-index 200).
+   Everything inside is normal flow, so back/identity/tabs all scroll away. */
+#avatar-mode{
+  display:none;position:fixed;
+  top:0;left:0;right:0;bottom:0;
+  z-index:50;
+  background:var(--bg);
+  overflow-y:auto;overflow-x:hidden;
+}
+#avatar-mode.is-open{display:block}
+/* Pushes first visible content below the pill nav */
+.av-spacer{height:calc(1rem + var(--nav-h) + 1rem);pointer-events:none}
 
-/* Avatar mode — single scroll container, back/identity scroll away, tab bar sticks */
-#avatar-mode { display: none; position: fixed; top: calc(1rem + var(--nav-h)); left: 0; right: 0; bottom: 0; z-index: 50; background: var(--bg); overflow-y: auto; transition: top .3s cubic-bezier(.4,0,.2,1); }
-#avatar-mode.is-open { display: block; }
-body.nav-hidden #avatar-mode { top: 0; }
-.av-nav-spacer { display: none; }
-.avatar-mode-bar { display: flex; align-items: center; gap: 1rem; padding: .75rem 2rem; background: var(--card); border-bottom: 1px solid var(--border); }
-.back-btn { font-family: 'Inter', sans-serif; font-size: .82rem; color: var(--muted); background: none; border: none; cursor: pointer; padding: 4px 0; display: flex; align-items: center; gap: .3rem; transition: color .2s; }
-.back-btn:hover { color: var(--body); }
-.breadcrumb { font-family: 'Inter', sans-serif; font-size: .82rem; color: var(--muted); }
-.breadcrumb-current { color: var(--h2); font-weight: 600; }
-.avatar-identity-bar { display: flex; align-items: center; gap: 1.25rem; padding: 1.25rem 2rem; background: var(--card); border-bottom: 1px solid var(--border); }
-.avatar-identity-initials { width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Inter', sans-serif; font-size: 1.1rem; font-weight: 700; color: white; flex-shrink: 0; }
-.avatar-identity-name { font-family: 'Fraunces', serif; font-size: 1.4rem; font-weight: 600; color: var(--h2); letter-spacing: -.02em; }
-.avatar-identity-meta { display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; margin-top: .3rem; }
+.av-back{display:flex;align-items:center;gap:1rem;padding:.75rem 2rem;background:var(--card);border-bottom:1px solid var(--border)}
+.av-back-btn{font-family:'Inter',sans-serif;font-size:.82rem;color:var(--muted);background:none;border:none;cursor:pointer;padding:5px 0;display:flex;align-items:center;gap:.3rem;transition:color .2s}
+.av-back-btn:hover{color:var(--body)}
+.av-crumb{font-family:'Inter',sans-serif;font-size:.82rem;color:var(--muted)}
+.av-crumb-cur{color:var(--h2);font-weight:600}
 
-/* Workspace tabs */
-.workspace-tab-bar { background: var(--card); border-bottom: 1px solid var(--border); }
-.workspace-tabs { display: flex; overflow-x: auto; padding: 0 2rem; gap: 0; scrollbar-width: none; }
-.workspace-tabs::-webkit-scrollbar { display: none; }
-.workspace-tab { padding: .8rem 1.1rem; font-family: 'Inter', sans-serif; font-size: .82rem; font-weight: 600; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; white-space: nowrap; transition: all .2s; }
-.workspace-tab:hover { color: var(--body); }
-.workspace-tab.active { color: var(--avc, var(--primary)); border-bottom-color: var(--avc, var(--primary)); }
-.workspace-content { padding: 2rem; }
-.workspace-inner { max-width: 1100px; margin: 0 auto; }
-.tab-panel { display: none; }
-.tab-panel.active { display: block; }
+.av-ident{display:flex;align-items:center;gap:1.25rem;padding:1.5rem 2rem;background:var(--card);border-bottom:1px solid var(--border)}
+.av-id-circle{width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;font-size:1.1rem;font-weight:700;color:white;flex-shrink:0}
+.av-id-name{font-family:'Fraunces',serif;font-size:1.5rem;font-weight:600;color:var(--h2);letter-spacing:-.03em}
+.av-id-meta{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin-top:.3rem}
 
-/* Vault tab */
-.vault-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 2rem; }
-.vault-section-title { font-family: 'Fraunces', serif; font-size: 1rem; font-weight: 600; color: var(--h2); margin-bottom: 1rem; padding-bottom: .5rem; border-bottom: 1px solid var(--border); }
-.vault-actions { display: flex; gap: .75rem; justify-content: flex-end; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border); }
+/* Tab bar — no sticky, scrolls away with content */
+.av-tabbar{background:var(--card);border-bottom:1px solid var(--border);overflow-x:auto;scrollbar-width:none}
+.av-tabbar::-webkit-scrollbar{display:none}
+.av-tabs{display:flex;padding:0 2rem;white-space:nowrap}
+.av-tab{padding:.85rem 1.1rem;font-family:'Inter',sans-serif;font-size:.82rem;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .2s,border-color .2s}
+.av-tab:hover{color:var(--body)}
+.av-tab.active{color:var(--avc,var(--primary));border-bottom-color:var(--avc,var(--primary))}
 
-/* Calendar tab */
-.cal-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.25rem; flex-wrap: wrap; }
-.week-nav { display: flex; align-items: center; gap: .5rem; }
-.week-nav-btn { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius-sm); width: 30px; height: 30px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1rem; color: var(--muted); transition: all .2s; }
-.week-nav-btn:hover { background: var(--bg3); color: var(--body); }
-.week-label { font-family: 'Inter', sans-serif; font-size: .88rem; font-weight: 600; color: var(--h2); }
-.cal-table-wrap { overflow-x: auto; border-radius: var(--radius); border: 1px solid var(--border); }
-.cal-table { width: 100%; border-collapse: collapse; min-width: 560px; }
-.cal-th { padding: .65rem 1rem; font-family: 'Inter', sans-serif; font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); text-align: left; border-bottom: 1px solid var(--border); background: var(--bg2); }
-.cal-day-cell { padding: .75rem; border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); vertical-align: top; width: 72px; background: var(--bg2); }
-.cal-day-cell.today { background: rgba(255,48,204,.06); }
-.cal-day-name { font-family: 'Inter', sans-serif; font-size: .78rem; font-weight: 700; color: var(--h2); }
-.cal-day-date { font-family: 'Inter', sans-serif; font-size: .72rem; color: var(--muted); }
-.cal-day-cell.today .cal-day-name { color: var(--primary); }
-.cal-content-cell { padding: .5rem; border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); vertical-align: top; }
-.cal-content-cell:last-child { border-right: none; }
-.cal-post-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: .5rem .65rem; cursor: pointer; transition: box-shadow .2s; margin-bottom: .4rem; }
-.cal-post-card:hover { box-shadow: var(--shadow); }
-.cal-post-type { font-family: 'Inter', sans-serif; font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; margin-bottom: .2rem; }
-.cal-post-caption { font-family: 'Inter', sans-serif; font-size: .75rem; color: var(--muted); overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; line-height: 1.4; }
-.cal-status { display: inline-block; font-family: 'Inter', sans-serif; font-size: .62rem; font-weight: 700; padding: 2px 6px; border-radius: 4px; margin-top: .3rem; text-transform: uppercase; letter-spacing: .04em; }
-.cal-status.draft { background: var(--bg3); color: var(--muted); }
-.cal-status.pending { background: rgba(247,183,49,.15); color: var(--amber); }
-.cal-status.scheduled { background: rgba(45,125,210,.15); color: var(--blue); }
-.cal-status.posted { background: rgba(59,178,115,.15); color: var(--green); }
-.cal-add-btn { width: 100%; padding: .4rem; border: 1px dashed var(--border2); border-radius: var(--radius-sm); background: none; color: var(--muted); font-family: 'Inter', sans-serif; font-size: .75rem; cursor: pointer; transition: all .2s; text-align: center; }
-.cal-add-btn:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
-.cal-table tr:last-child .cal-day-cell,
-.cal-table tr:last-child .cal-content-cell { border-bottom: none; }
+.av-body{padding:2rem;max-width:1100px;margin:0 auto}
+.av-panel{display:none}
+.av-panel.active{display:block}
 
-/* Review Desk */
-.review-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; flex-wrap: wrap; gap: .75rem; }
-.review-title { font-family: 'Fraunces', serif; font-size: 1.2rem; font-weight: 600; color: var(--h2); }
-.review-sub { font-family: 'Inter', sans-serif; font-size: .82rem; color: var(--muted); margin-top: .15rem; }
-.review-list { display: flex; flex-direction: column; gap: 1rem; }
-.review-post { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem; }
-.review-post-header { display: flex; align-items: center; gap: .5rem; margin-bottom: 1rem; flex-wrap: wrap; }
-.review-post-date { font-family: 'Inter', sans-serif; font-size: .75rem; color: var(--muted); margin-left: auto; }
-.review-section-label { font-family: 'Inter', sans-serif; font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin-bottom: .4rem; }
-.review-caption-text { font-family: 'Inter', sans-serif; font-size: .88rem; color: var(--body); line-height: 1.6; background: var(--bg2); border-radius: var(--radius-sm); padding: .75rem 1rem; margin-bottom: 1rem; white-space: pre-wrap; }
-.review-actions { display: flex; gap: .5rem; flex-wrap: wrap; margin-top: 1rem; }
-.btn-approve { padding: .5rem 1rem; background: rgba(59,178,115,.15); color: var(--green); border: 1px solid var(--green); border-radius: var(--radius-pill); font-family: 'Inter', sans-serif; font-size: .78rem; font-weight: 600; cursor: pointer; transition: all .2s; }
-.btn-approve:hover { background: var(--green); color: white; }
-.btn-reject { padding: .5rem 1rem; background: rgba(229,57,53,.1); color: #e53935; border: 1px solid rgba(229,57,53,.3); border-radius: var(--radius-pill); font-family: 'Inter', sans-serif; font-size: .78rem; font-weight: 600; cursor: pointer; transition: all .2s; }
-.btn-reject:hover { background: #e53935; color: white; }
-.btn-edit-sm { padding: .5rem 1rem; background: none; color: var(--muted); border: 1px solid var(--border2); border-radius: var(--radius-pill); font-family: 'Inter', sans-serif; font-size: .78rem; font-weight: 600; cursor: pointer; transition: all .2s; }
-.btn-edit-sm:hover { background: var(--bg2); color: var(--body); }
-.empty-state { text-align: center; padding: 3rem 1rem; font-family: 'Inter', sans-serif; color: var(--muted); }
-.empty-state-title { font-family: 'Fraunces', serif; font-size: 1.1rem; font-weight: 600; color: var(--h2); margin-bottom: .5rem; }
+/* ─── VAULT ─────────────────────────────── */
+.vault-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:2rem}
+.vault-sec{font-family:'Fraunces',serif;font-size:.98rem;font-weight:600;color:var(--h2);margin-bottom:1rem;padding-bottom:.5rem;border-bottom:1px solid var(--border)}
+.vault-foot{display:flex;gap:.75rem;justify-content:flex-end;margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--border)}
 
-/* Performance Memory */
-.memory-cols { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 1.5rem; }
-.memory-col-header { display: flex; align-items: center; gap: .5rem; margin-bottom: .75rem; }
-.memory-col-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-.memory-col-title { font-family: 'Inter', sans-serif; font-size: .75rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); }
-.pattern-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: .85rem 1rem; margin-bottom: .6rem; }
-.pattern-card-text { font-family: 'Inter', sans-serif; font-size: .82rem; color: var(--body); line-height: 1.5; margin-bottom: .5rem; }
-.pattern-tags { display: flex; flex-wrap: wrap; gap: .3rem; }
-.pattern-tag { font-family: 'Inter', sans-serif; font-size: .68rem; font-weight: 600; padding: 2px 8px; border-radius: 4px; background: var(--bg3); color: var(--muted); }
+/* ─── CALENDAR ───────────────────────────── */
+.cal-top{display:flex;align-items:center;gap:.75rem;margin-bottom:1.25rem;flex-wrap:wrap}
+.wk-nav{display:flex;align-items:center;gap:.4rem}
+.wk-btn{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);width:28px;height:28px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1rem;color:var(--muted);transition:all .15s}
+.wk-btn:hover{background:var(--bg3);color:var(--body)}
+.wk-lbl{font-family:'Inter',sans-serif;font-size:.85rem;font-weight:600;color:var(--h2)}
+.cal-wrap{overflow-x:auto;border-radius:var(--radius);border:1px solid var(--border)}
+.cal-tbl{width:100%;border-collapse:collapse;min-width:520px}
+.cal-th{padding:.6rem 1rem;font-family:'Inter',sans-serif;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);text-align:left;border-bottom:1px solid var(--border);background:var(--bg2)}
+.cal-day{padding:.6rem .75rem;border-right:1px solid var(--border);border-bottom:1px solid var(--border);vertical-align:top;width:68px;background:var(--bg2)}
+.cal-day.today{background:rgba(255,48,204,.05)}
+.cal-day-n{font-family:'Inter',sans-serif;font-size:.75rem;font-weight:700;color:var(--h2)}
+.cal-day.today .cal-day-n{color:var(--primary)}
+.cal-day-d{font-family:'Inter',sans-serif;font-size:.7rem;color:var(--muted)}
+.cal-cell{padding:.5rem;border-right:1px solid var(--border);border-bottom:1px solid var(--border);vertical-align:top}
+.cal-cell:last-child{border-right:none}
+.cal-post{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:.45rem .6rem;cursor:pointer;transition:box-shadow .15s;margin-bottom:.35rem}
+.cal-post:hover{box-shadow:var(--shadow)}
+.cal-post-type{font-family:'Inter',sans-serif;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin-bottom:.2rem}
+.cal-post-cap{font-family:'Inter',sans-serif;font-size:.72rem;color:var(--muted);overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;line-height:1.4}
+.cal-st{display:inline-block;font-family:'Inter',sans-serif;font-size:.6rem;font-weight:700;padding:1px 5px;border-radius:4px;margin-top:.25rem;text-transform:uppercase;letter-spacing:.04em}
+.cal-st.draft{background:var(--bg3);color:var(--muted)}
+.cal-st.pending{background:rgba(247,183,49,.15);color:var(--amber)}
+.cal-st.scheduled{background:rgba(45,125,210,.15);color:var(--blue)}
+.cal-st.posted{background:rgba(59,178,115,.15);color:var(--green)}
+.cal-add{width:100%;padding:.35rem;border:1px dashed var(--border2);border-radius:8px;background:none;color:var(--muted);font-family:'Inter',sans-serif;font-size:.72rem;cursor:pointer;transition:all .15s;text-align:center}
+.cal-add:hover{border-color:var(--primary);color:var(--primary);background:var(--primary-light)}
+.cal-tbl tr:last-child .cal-day,.cal-tbl tr:last-child .cal-cell{border-bottom:none}
 
-/* Instruct Avatar */
-.instruct-compose { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem; margin-bottom: 1.5rem; }
-.instruct-compose-label { font-family: 'Inter', sans-serif; font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); margin-bottom: .3rem; }
-.instruct-compose-hint { font-family: 'Inter', sans-serif; font-size: .8rem; color: var(--muted); margin-bottom: .75rem; }
-.instruct-input-row { display: flex; gap: .65rem; align-items: flex-start; }
-.instruct-textarea { flex: 1; padding: .65rem .9rem; border: 1.5px solid var(--border2); border-radius: var(--radius-sm); font-family: 'Inter', sans-serif; font-size: .85rem; background: var(--bg); color: var(--body); outline: none; resize: none; line-height: 1.5; transition: border-color .2s; }
-.instruct-textarea:focus { border-color: var(--primary); }
-.instruction-list-header { font-family: 'Inter', sans-serif; font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); margin-bottom: .75rem; }
-.instruction-items { display: flex; flex-direction: column; gap: .5rem; }
-.instruction-item { display: flex; align-items: flex-start; gap: .75rem; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: .85rem 1rem; }
-.instruction-item.disabled { opacity: .45; }
-.instruction-text { flex: 1; font-family: 'Inter', sans-serif; font-size: .85rem; color: var(--body); line-height: 1.5; }
-.toggle-switch { position: relative; width: 36px; height: 20px; flex-shrink: 0; margin-top: 2px; }
-.toggle-switch input { display: none; }
-.toggle-slider { position: absolute; inset: 0; border-radius: 20px; background: var(--border2); cursor: pointer; transition: background .2s; }
-.toggle-switch input:checked + .toggle-slider { background: var(--primary); }
-.toggle-slider::before { content: ''; position: absolute; width: 14px; height: 14px; border-radius: 50%; background: white; top: 3px; left: 3px; transition: transform .2s; }
-.toggle-switch input:checked + .toggle-slider::before { transform: translateX(16px); }
-.instruction-delete { background: none; border: none; color: var(--muted); cursor: pointer; font-size: .9rem; padding: 0 2px; transition: color .2s; line-height: 1; margin-top: 1px; }
-.instruction-delete:hover { color: #e53935; }
+/* ─── REVIEW DESK ────────────────────────── */
+.rev-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:.75rem}
+.rev-title{font-family:'Fraunces',serif;font-size:1.2rem;font-weight:600;color:var(--h2)}
+.rev-sub{font-family:'Inter',sans-serif;font-size:.82rem;color:var(--muted);margin-top:.15rem}
+.rev-list{display:flex;flex-direction:column;gap:.875rem}
+.rev-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem}
+.rev-card-hdr{display:flex;align-items:center;gap:.5rem;margin-bottom:.875rem;flex-wrap:wrap}
+.rev-date{font-family:'Inter',sans-serif;font-size:.73rem;color:var(--muted);margin-left:auto}
+.rev-lbl{font-family:'Inter',sans-serif;font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:.35rem}
+.rev-cap{font-family:'Inter',sans-serif;font-size:.88rem;color:var(--body);line-height:1.6;background:var(--bg2);border-radius:var(--radius-sm);padding:.7rem 1rem;margin-bottom:.875rem;white-space:pre-wrap}
+.rev-btns{display:flex;gap:.4rem;flex-wrap:wrap}
+.btn-approve{padding:.45rem .9rem;background:rgba(59,178,115,.12);color:var(--green);border:1px solid rgba(59,178,115,.4);border-radius:var(--radius-pill);font-family:'Inter',sans-serif;font-size:.78rem;font-weight:600;cursor:pointer;transition:all .15s}
+.btn-approve:hover{background:var(--green);color:white;border-color:var(--green)}
+.btn-reject{padding:.45rem .9rem;background:rgba(229,57,53,.08);color:#e53935;border:1px solid rgba(229,57,53,.25);border-radius:var(--radius-pill);font-family:'Inter',sans-serif;font-size:.78rem;font-weight:600;cursor:pointer;transition:all .15s}
+.btn-reject:hover{background:#e53935;color:white;border-color:#e53935}
+.btn-edit-sm{padding:.45rem .9rem;background:none;color:var(--muted);border:1px solid var(--border2);border-radius:var(--radius-pill);font-family:'Inter',sans-serif;font-size:.78rem;font-weight:600;cursor:pointer;transition:all .15s}
+.btn-edit-sm:hover{background:var(--bg2);color:var(--body)}
 
-/* Train AI - Coming Soon */
-.coming-soon-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 3rem 2rem; text-align: center; }
-.coming-soon-icon-wrap { width: 56px; height: 56px; border-radius: 16px; background: var(--bg2); display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem; color: var(--muted); }
-.coming-soon-card-title { font-family: 'Fraunces', serif; font-size: 1.3rem; font-weight: 600; color: var(--h2); margin-bottom: .5rem; }
-.coming-soon-card-sub { font-family: 'Inter', sans-serif; font-size: .88rem; color: var(--muted); line-height: 1.6; max-width: 400px; margin: 0 auto; }
+/* ─── PERFORMANCE ────────────────────────── */
+.mem-cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:1.5rem}
+.mem-col-hdr{display:flex;align-items:center;gap:.45rem;margin-bottom:.75rem}
+.mem-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.mem-lbl{font-family:'Inter',sans-serif;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
+.pat-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:.8rem 1rem;margin-bottom:.5rem}
+.pat-text{font-family:'Inter',sans-serif;font-size:.82rem;color:var(--body);line-height:1.5;margin-bottom:.45rem}
+.pat-tags{display:flex;flex-wrap:wrap;gap:.25rem}
+.pat-tag{font-family:'Inter',sans-serif;font-size:.65rem;font-weight:600;padding:2px 7px;border-radius:4px;background:var(--bg3);color:var(--muted)}
 
-/* Avatar form modal - color swatches */
-.color-swatches { display: flex; gap: .5rem; flex-wrap: wrap; }
-.color-swatch { width: 32px; height: 32px; border-radius: 50%; cursor: pointer; border: 3px solid transparent; transition: all .15s; }
-.color-swatch.selected { border-color: var(--h2); transform: scale(1.15); }
-.platform-checks { display: flex; gap: 1rem; }
-.platform-check { display: flex; align-items: center; gap: .4rem; font-family: 'Inter', sans-serif; font-size: .88rem; color: var(--body); cursor: pointer; }
-.platform-check input { accent-color: var(--primary); width: 15px; height: 15px; }
+/* ─── INSTRUCTIONS ───────────────────────── */
+.inst-compose{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;margin-bottom:1.5rem}
+.inst-ttl{font-family:'Inter',sans-serif;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:.3rem}
+.inst-hint{font-family:'Inter',sans-serif;font-size:.8rem;color:var(--muted);margin-bottom:.75rem;line-height:1.5}
+.inst-row{display:flex;gap:.65rem;align-items:flex-start}
+.inst-area{flex:1;padding:.65rem .9rem;border:1.5px solid var(--border2);border-radius:var(--radius-sm);font-family:'Inter',sans-serif;font-size:.85rem;background:var(--bg);color:var(--body);outline:none;resize:none;line-height:1.5;transition:border-color .2s}
+.inst-area:focus{border-color:var(--primary)}
+.inst-list-hdr{font-family:'Inter',sans-serif;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:.75rem}
+.inst-items{display:flex;flex-direction:column;gap:.5rem}
+.inst-item{display:flex;align-items:flex-start;gap:.75rem;background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.85rem 1rem}
+.inst-item.off{opacity:.45}
+.inst-text{flex:1;font-family:'Inter',sans-serif;font-size:.85rem;color:var(--body);line-height:1.5}
+.tog-sw{position:relative;width:36px;height:20px;flex-shrink:0;margin-top:2px}
+.tog-sw input{display:none}
+.tog-track{position:absolute;inset:0;border-radius:20px;background:var(--border2);cursor:pointer;transition:background .2s}
+.tog-sw input:checked+.tog-track{background:var(--primary)}
+.tog-track::before{content:'';position:absolute;width:14px;height:14px;border-radius:50%;background:white;top:3px;left:3px;transition:transform .2s}
+.tog-sw input:checked+.tog-track::before{transform:translateX(16px)}
+.inst-del{background:none;border:none;color:var(--muted);cursor:pointer;font-size:.9rem;padding:0 2px;transition:color .15s;line-height:1;margin-top:1px}
+.inst-del:hover{color:#e53935}
 
-/* Post form modal */
-.post-status-select { width: 100%; padding: .75rem 1rem; border: 1.5px solid var(--border2); border-radius: var(--radius-sm); font-size: .92rem; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--body); outline: none; }
-.post-status-select:focus { border-color: var(--primary); }
+/* ─── AI STUDIO ──────────────────────────── */
+.studio-wrap{max-width:840px}
+.studio-step{margin-bottom:2rem}
+.studio-step-hdr{display:flex;align-items:center;gap:.75rem;margin-bottom:1.25rem}
+.studio-num{width:28px;height:28px;border-radius:50%;background:var(--primary-light);color:var(--primary);font-family:'Inter',sans-serif;font-size:.8rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.studio-step-title{font-family:'Fraunces',serif;font-size:1.1rem;font-weight:600;color:var(--h2);letter-spacing:-.01em}
+.studio-step-meta{font-family:'Inter',sans-serif;font-size:.78rem;color:var(--muted);margin-left:auto}
+.studio-area{width:100%;padding:.75rem 1rem;border:1.5px solid var(--border2);border-radius:var(--radius-sm);font-family:'Inter',sans-serif;font-size:.88rem;background:var(--bg);color:var(--body);outline:none;resize:vertical;line-height:1.5;min-height:80px;transition:border-color .2s;box-sizing:border-box}
+.studio-area:focus{border-color:var(--primary)}
+.char-ct{font-family:'Inter',sans-serif;font-size:.7rem;color:var(--muted);text-align:right;margin-top:.3rem}
+.studio-row{display:flex;align-items:flex-end;justify-content:space-between;gap:.75rem;margin-top:.5rem}
+.fmt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1rem;margin-top:1.25rem}
+.fmt-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem}
+.fmt-name{font-family:'Fraunces',serif;font-size:.98rem;font-weight:600;color:var(--h2);margin-bottom:.875rem;letter-spacing:-.01em}
+.hook-item{display:flex;align-items:flex-start;justify-content:space-between;gap:.5rem;padding:.5rem 0;border-bottom:1px solid var(--border)}
+.hook-item:last-child{border-bottom:none;padding-bottom:0}
+.hook-text{font-family:'Inter',sans-serif;font-size:.82rem;color:var(--body);line-height:1.4;flex:1}
+.hook-use{font-family:'Inter',sans-serif;font-size:.7rem;font-weight:600;padding:4px 9px;border-radius:var(--radius-pill);background:var(--primary-light);color:var(--primary);border:none;cursor:pointer;white-space:nowrap;transition:all .15s;flex-shrink:0}
+.hook-use:hover{background:var(--primary);color:white}
+.hook-use.sel{background:var(--primary);color:white}
+.sel-hook-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.75rem 1rem;margin-bottom:1rem}
+.sel-hook-lbl{font-family:'Inter',sans-serif;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--primary);margin-bottom:.3rem}
+.sel-hook-txt{font-family:'Inter',sans-serif;font-size:.88rem;color:var(--h2);line-height:1.5}
+.dur-btns{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1rem}
+.dur-btn{padding:.45rem .9rem;border-radius:var(--radius-pill);border:1.5px solid var(--border2);background:none;font-family:'Inter',sans-serif;font-size:.8rem;font-weight:600;color:var(--muted);cursor:pointer;transition:all .15s}
+.dur-btn:hover{border-color:var(--primary);color:var(--primary)}
+.dur-btn.act{background:var(--primary);color:white;border-color:var(--primary)}
+.script-out{border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-top:1.25rem}
+.script-sec{border-bottom:1px solid var(--border)}
+.script-sec:last-child{border-bottom:none}
+.script-sec-hdr{display:flex;align-items:center;gap:.5rem;padding:.7rem 1rem;background:var(--bg2)}
+.script-sec-lbl{font-family:'Inter',sans-serif;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
+.script-meta{font-family:'Inter',sans-serif;font-size:.72rem;color:var(--muted);margin-left:auto}
+.regen-btn{background:none;border:1px solid var(--border2);border-radius:var(--radius-pill);padding:3px 10px;font-family:'Inter',sans-serif;font-size:.7rem;font-weight:600;color:var(--muted);cursor:pointer;display:flex;align-items:center;gap:.3rem;transition:all .15s;white-space:nowrap}
+.regen-btn:hover{border-color:var(--primary);color:var(--primary);background:var(--primary-light)}
+.regen-btn.busy{opacity:.45;pointer-events:none}
+.script-body-txt{padding:1rem;font-family:'Inter',sans-serif;font-size:.88rem;color:var(--body);line-height:1.7;white-space:pre-wrap}
+.shot-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:var(--radius);margin-top:1.25rem}
+.shot-tbl{width:100%;border-collapse:collapse;min-width:640px}
+.shot-th{padding:.6rem 1rem;font-family:'Inter',sans-serif;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);text-align:left;background:var(--bg2);border-bottom:1px solid var(--border)}
+.shot-td{padding:.75rem 1rem;font-family:'Inter',sans-serif;font-size:.82rem;color:var(--body);border-bottom:1px solid var(--border);vertical-align:top;line-height:1.5}
+.shot-tbl tr:last-child .shot-td{border-bottom:none}
+.shot-num-circle{width:26px;height:26px;border-radius:50%;background:var(--primary-light);color:var(--primary);font-family:'Inter',sans-serif;font-size:.75rem;font-weight:700;display:flex;align-items:center;justify-content:center}
+.shot-type-badge{font-family:'Inter',sans-serif;font-size:.72rem;font-weight:600;padding:2px 7px;border-radius:6px;background:var(--bg2);color:var(--muted);border:1px solid var(--border);display:inline-block;white-space:nowrap}
+.studio-divider{height:1px;background:var(--border);margin:0 0 2rem}
+.studio-locked{opacity:.35;pointer-events:none;user-select:none}
+.api-warn{background:rgba(247,183,49,.08);border:1px solid rgba(247,183,49,.3);border-radius:var(--radius-sm);padding:.75rem 1rem;margin-bottom:1.5rem;font-family:'Inter',sans-serif;font-size:.82rem;color:var(--amber);display:none;align-items:center;gap:.6rem}
+.api-warn.show{display:flex}
+.shot-foot{display:flex;justify-content:flex-end;margin-top:.875rem}
 
-/* Mobile nav wrap */
-.mobile-nav-wrap { display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 300; background: var(--card); border-top: 1px solid var(--border); padding: .35rem .5rem env(safe-area-inset-bottom,.5rem); }
-.mobile-nav-inner { display: flex; align-items: center; justify-content: space-around; max-width: 480px; margin: 0 auto; }
+/* ─── EMPTY STATE ─── */
+.empty-st{text-align:center;padding:2.5rem 1rem;font-family:'Inter',sans-serif;color:var(--muted)}
+.empty-st-h{font-family:'Fraunces',serif;font-size:1.05rem;font-weight:600;color:var(--h2);margin-bottom:.4rem}
 
-/* Responsive */
-@media(max-width: 768px) {
-  .social-hub-wrap { padding: 1rem; }
-  .avatar-grid { grid-template-columns: 1fr; }
-  .vault-grid { grid-template-columns: 1fr; }
-  .memory-cols { grid-template-columns: 1fr; }
-  .workspace-content { padding: 1rem; }
-  .avatar-mode-bar { padding: .75rem 1rem; }
-  .avatar-identity-bar { padding: 1rem; }
-  .workspace-tabs { padding: 0 1rem; }
-  .social-page-header { flex-direction: column; align-items: flex-start; }
+/* ─── MODAL EXTRAS ─── */
+.clr-swatches{display:flex;gap:.5rem;flex-wrap:wrap}
+.clr-swatch{width:30px;height:30px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:all .15s}
+.clr-swatch.sel{border-color:var(--h2);transform:scale(1.15)}
+.plat-checks{display:flex;gap:1rem}
+.plat-chk{display:flex;align-items:center;gap:.4rem;font-family:'Inter',sans-serif;font-size:.88rem;color:var(--body);cursor:pointer}
+.plat-chk input{accent-color:var(--primary);width:15px;height:15px}
+.post-st-sel{width:100%;padding:.75rem 1rem;border:1.5px solid var(--border2);border-radius:var(--radius-sm);font-size:.92rem;font-family:'Inter',sans-serif;background:var(--bg);color:var(--body);outline:none;transition:border-color .2s}
+.post-st-sel:focus{border-color:var(--primary)}
+
+/* ─── MOBILE NAV ─── */
+.mnav-wrap{display:none;position:fixed;bottom:0;left:0;right:0;z-index:300;background:var(--card);border-top:1px solid var(--border);padding:.35rem .5rem env(safe-area-inset-bottom,.5rem)}
+.mnav-inner{display:flex;align-items:center;justify-content:space-around;max-width:480px;margin:0 auto}
+
+/* ─── RESPONSIVE ─── */
+@media(max-width:768px){
+  .s-wrap{padding:0 1rem 2rem}
+  .av-grid{grid-template-columns:1fr}
+  .vault-grid{grid-template-columns:1fr}
+  .mem-cols{grid-template-columns:1fr}
+  .av-body{padding:1rem}
+  .av-back{padding:.65rem 1rem}
+  .av-ident{padding:1rem}
+  .av-tabs{padding:0 1rem}
+  .fmt-grid{grid-template-columns:1fr}
+  .mnav-wrap{display:block}
 }
 </style>
 </head>
@@ -260,154 +313,206 @@ body.nav-hidden #avatar-mode { top: 0; }
     </div>
   </nav>
 
-  <!-- MODE 1: SOCIAL HUB -->
+  <!-- ── SOCIAL HUB ── -->
   <div id="social-hub">
     <div id="storage-alert-banner">
       <span id="storage-alert-icon" style="font-size:.9rem;flex-shrink:0">!</span>
       <span style="flex:1;font-family:'Inter',sans-serif"><span id="storage-alert-pct" style="font-weight:700"></span><span id="storage-alert-msg"></span><span style="color:var(--muted);font-size:.75rem"> (Only you can see this)</span></span>
       <button class="storage-alert-close" onclick="dismissStorageAlert()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
-    <div class="social-hub-wrap">
-      <div class="social-page-header">
+    <div class="s-wrap">
+      <div class="s-hdr">
         <div>
-          <div class="social-page-title">Content &amp; Socials</div>
-          <div class="social-page-sub">Manage your AI personas and brand accounts</div>
+          <div class="s-title">Content &amp; Socials</div>
+          <div class="s-sub">AI personas, brand accounts &amp; content pipeline</div>
         </div>
-        <!-- Admin only - shown via JS -->
         <button class="btn-primary" id="btn-add-avatar" style="display:none" onclick="openAvatarModal()">+ Add Avatar</button>
       </div>
-      <div class="avatar-grid" id="avatar-grid-container">
-        <div class="empty-state" id="avatars-loading">Loading...</div>
+      <div class="av-grid" id="avatar-grid-container">
+        <div class="empty-st">Loading...</div>
       </div>
     </div>
   </div>
 
-  <!-- MODE 2: AVATAR WORKSPACE -->
+  <!-- ── AVATAR WORKSPACE ── -->
   <div id="avatar-mode">
-    <div class="av-nav-spacer"></div>
-    <div class="avatar-mode-bar">
-      <button class="back-btn" onclick="backToHub()">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    <div class="av-spacer"></div>
+
+    <div class="av-back">
+      <button class="av-back-btn" onclick="backToHub()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
         Back
       </button>
-      <div class="breadcrumb">Content &amp; Socials <span style="color:var(--border2);margin:0 .35rem">/</span> <span class="breadcrumb-current" id="av-breadcrumb"></span></div>
+      <div class="av-crumb">Content &amp; Socials <span style="color:var(--border2);margin:0 .3rem">/</span> <span class="av-crumb-cur" id="av-breadcrumb"></span></div>
     </div>
 
-    <div class="avatar-identity-bar">
-      <div class="avatar-identity-initials" id="av-initials-wrap"></div>
+    <div class="av-ident">
+      <div class="av-id-circle" id="av-initials-wrap"></div>
       <div>
-        <div class="avatar-identity-name" id="av-name"></div>
-        <div class="avatar-identity-meta">
-          <span id="av-type-badge" class="avatar-type-badge"></span>
-          <div class="avatar-platforms" id="av-platform-badges"></div>
+        <div class="av-id-name" id="av-name"></div>
+        <div class="av-id-meta">
+          <span id="av-type-badge" class="av-type-bdg"></span>
+          <div id="av-platform-badges" style="display:flex;gap:.3rem;flex-wrap:wrap;margin-left:.2rem"></div>
         </div>
       </div>
     </div>
 
-    <div class="workspace-tab-bar">
-      <div class="workspace-tabs">
-        <div class="workspace-tab active" data-tab="vault" onclick="showTab('vault')">Profile</div>
-        <div class="workspace-tab" data-tab="train" onclick="showTab('train')">Train AI</div>
-        <div class="workspace-tab" data-tab="calendar" onclick="showTab('calendar')">Calendar</div>
-        <div class="workspace-tab" data-tab="review" onclick="showTab('review')">Review Desk</div>
-        <div class="workspace-tab" data-tab="memory" onclick="showTab('memory')">Performance</div>
-        <div class="workspace-tab" data-tab="instruct" onclick="showTab('instruct')">Instructions</div>
+    <div class="av-tabbar">
+      <div class="av-tabs">
+        <div class="av-tab active" data-tab="vault" onclick="showTab('vault')">Profile</div>
+        <div class="av-tab" data-tab="studio" onclick="showTab('studio')">AI Studio</div>
+        <div class="av-tab" data-tab="calendar" onclick="showTab('calendar')">Calendar</div>
+        <div class="av-tab" data-tab="review" onclick="showTab('review')">Review Desk</div>
+        <div class="av-tab" data-tab="memory" onclick="showTab('memory')">Performance</div>
+        <div class="av-tab" data-tab="instruct" onclick="showTab('instruct')">Instructions</div>
       </div>
     </div>
 
-    <div class="workspace-content">
-    <div class="workspace-inner">
+    <div class="av-body">
 
-      <!-- VAULT TAB -->
-      <div class="tab-panel active" data-panel="vault">
+      <!-- PROFILE TAB -->
+      <div class="av-panel active" data-panel="vault">
         <div class="vault-grid">
           <div>
-            <div class="vault-section-title">Identity &amp; Voice</div>
+            <div class="vault-sec">Identity &amp; Voice</div>
             <div class="form-field"><label class="form-label">Bio</label><textarea class="form-textarea" id="vault-bio" rows="3" placeholder="Who is this avatar? Background, personality..."></textarea></div>
             <div class="form-field"><label class="form-label">Face Description</label><textarea class="form-textarea" id="vault-face" rows="3" placeholder="Visual appearance for image generation..."></textarea></div>
             <div class="form-field"><label class="form-label">Voice &amp; Tone</label><textarea class="form-textarea" id="vault-voice" rows="3" placeholder="How does this avatar write and speak?"></textarea></div>
             <div class="form-field"><label class="form-label">Example Captions</label><textarea class="form-textarea" id="vault-captions" rows="4" placeholder="Paste example captions that match this voice..."></textarea></div>
           </div>
           <div>
-            <div class="vault-section-title">Posting Schedule</div>
+            <div class="vault-sec">Posting Schedule</div>
             <div class="form-field"><label class="form-label">Instagram Schedule</label><input class="form-input" id="vault-ig-sched" type="text" placeholder="e.g. Mon, Wed, Fri at 7pm HKT"/></div>
             <div class="form-field"><label class="form-label">TikTok Schedule</label><input class="form-input" id="vault-tt-sched" type="text" placeholder="e.g. Daily at 6pm HKT"/></div>
-            <div class="vault-section-title" style="margin-top:1.5rem">Custom Prompts</div>
-            <div class="form-field"><label class="form-label">Image Generation Prompt Base</label><textarea class="form-textarea" id="vault-img-prompt" rows="4" placeholder="Base prompt for generating images of this avatar..."></textarea></div>
+            <div class="vault-sec" style="margin-top:1.5rem">Custom Prompts</div>
+            <div class="form-field"><label class="form-label">Image Generation Base</label><textarea class="form-textarea" id="vault-img-prompt" rows="4" placeholder="Base prompt for generating images of this avatar..."></textarea></div>
             <div class="form-field"><label class="form-label">Caption Prompt Base</label><textarea class="form-textarea" id="vault-cap-prompt" rows="3" placeholder="Instructions for caption generation AI..."></textarea></div>
           </div>
         </div>
-        <div class="vault-actions">
-          <button class="btn-ghost" onclick="loadVault(socialState.currentAvatar.id)">Discard Changes</button>
+        <div class="vault-foot">
+          <button class="btn-ghost" onclick="loadVault(socialState.currentAvatar.id)">Discard</button>
           <button class="btn-primary" onclick="saveVault()">Save Profile</button>
         </div>
       </div>
 
-      <!-- TRAIN AI TAB -->
-      <div class="tab-panel" data-panel="train">
-        <div class="coming-soon-card">
-          <div class="coming-soon-icon-wrap">
-            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      <!-- AI STUDIO TAB -->
+      <div class="av-panel" data-panel="studio">
+        <div class="studio-wrap">
+          <div class="api-warn" id="api-warn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Gemini API key not configured. Add your key to <code style="background:rgba(247,183,49,.15);padding:1px 5px;border-radius:4px;font-size:.78rem">shared/hub.js</code> to enable AI features.
           </div>
-          <div class="coming-soon-card-title">Train AI — Coming Soon</div>
-          <div class="coming-soon-card-sub">Upload reference images, videos, and style guides to train the AI on this avatar's specific aesthetic. Requires Gemini API integration.</div>
+
+          <!-- STEP 1 -->
+          <div class="studio-step">
+            <div class="studio-step-hdr">
+              <div class="studio-num">1</div>
+              <div class="studio-step-title">Format &amp; Hook Generator</div>
+              <div class="studio-step-meta">3 formats · 3 hooks each</div>
+            </div>
+            <textarea class="studio-area" id="studio-niche" maxlength="500" placeholder="Describe your niche — e.g. &quot;Personal trainer helping women over 40 lose weight without the gym&quot;" oninput="updateNicheCount()" rows="3"></textarea>
+            <div class="studio-row">
+              <div class="char-ct" id="niche-cc">0 / 500</div>
+              <button class="btn-primary" id="btn-gen-hooks" onclick="generateHooks()">Generate Formats &amp; Hooks</button>
+            </div>
+            <div id="formats-output"></div>
+          </div>
+
+          <div class="studio-divider"></div>
+
+          <!-- STEP 2 -->
+          <div class="studio-step" id="studio-step2">
+            <div class="studio-step-hdr">
+              <div class="studio-num">2</div>
+              <div class="studio-step-title">Script Generator</div>
+              <div class="studio-step-meta" id="step2-meta">Select a hook above first</div>
+            </div>
+            <div id="studio-step2-body" class="studio-locked">
+              <div class="sel-hook-box" id="sel-hook-box" style="display:none">
+                <div class="sel-hook-lbl">Selected Hook</div>
+                <div class="sel-hook-txt" id="sel-hook-txt"></div>
+              </div>
+              <div class="dur-btns">
+                <button class="dur-btn act" data-dur="15" onclick="setDuration(this)">15s</button>
+                <button class="dur-btn" data-dur="30" onclick="setDuration(this)">30s</button>
+                <button class="dur-btn" data-dur="45" onclick="setDuration(this)">45s</button>
+                <button class="dur-btn" data-dur="60" onclick="setDuration(this)">60s</button>
+                <button class="dur-btn" data-dur="75" onclick="setDuration(this)">75s</button>
+                <button class="dur-btn" data-dur="90" onclick="setDuration(this)">90s</button>
+              </div>
+              <button class="btn-primary" id="btn-gen-script" onclick="generateScript()">Generate Script</button>
+              <div id="script-output"></div>
+            </div>
+          </div>
+
+          <div class="studio-divider"></div>
+
+          <!-- STEP 3 -->
+          <div class="studio-step" id="studio-step3">
+            <div class="studio-step-hdr">
+              <div class="studio-num">3</div>
+              <div class="studio-step-title">Shot Plan Generator</div>
+              <div class="studio-step-meta" id="step3-meta">Generate a script first</div>
+            </div>
+            <div id="studio-step3-body" class="studio-locked">
+              <button class="btn-primary" id="btn-gen-shots" onclick="generateShotPlan()">Generate Shot Plan</button>
+              <div id="shot-plan-output"></div>
+            </div>
+          </div>
+
         </div>
       </div>
 
       <!-- CALENDAR TAB -->
-      <div class="tab-panel" data-panel="calendar">
-        <div class="cal-header">
-          <div class="week-nav">
-            <button class="week-nav-btn" onclick="goWeek(-1)">&#8249;</button>
-            <span class="week-label" id="week-label">Loading...</span>
-            <button class="week-nav-btn" onclick="goWeek(1)">&#8250;</button>
+      <div class="av-panel" data-panel="calendar">
+        <div class="cal-top">
+          <div class="wk-nav">
+            <button class="wk-btn" onclick="goWeek(-1)">&#8249;</button>
+            <span class="wk-lbl" id="week-label">Loading...</span>
+            <button class="wk-btn" onclick="goWeek(1)">&#8250;</button>
           </div>
-          <button class="btn-ghost" onclick="goToday()" style="padding:.4rem .85rem;font-size:.8rem">Today</button>
+          <button class="btn-ghost" onclick="goToday()" style="padding:.4rem .85rem;font-size:.78rem">Today</button>
         </div>
-        <div class="cal-table-wrap">
-          <table class="cal-table">
+        <div class="cal-wrap">
+          <table class="cal-tbl">
             <thead>
               <tr>
-                <th class="cal-th" style="width:80px">Day</th>
+                <th class="cal-th" style="width:76px">Day</th>
                 <th class="cal-th">Instagram</th>
                 <th class="cal-th">TikTok</th>
               </tr>
             </thead>
-            <tbody id="cal-body">
-              <!-- JS rendered -->
-            </tbody>
+            <tbody id="cal-body"></tbody>
           </table>
         </div>
       </div>
 
       <!-- REVIEW DESK TAB -->
-      <div class="tab-panel" data-panel="review">
-        <div class="review-header">
+      <div class="av-panel" data-panel="review">
+        <div class="rev-hdr">
           <div>
-            <div class="review-title">Review Desk</div>
-            <div class="review-sub" id="review-sub">Loading pending posts...</div>
+            <div class="rev-title">Review Desk</div>
+            <div class="rev-sub" id="review-sub">Loading...</div>
           </div>
           <button class="btn-ghost" onclick="approveAll()" id="btn-approve-all" style="display:none">Approve All</button>
         </div>
-        <div class="review-list" id="review-list">
-          <!-- JS rendered -->
-        </div>
+        <div class="rev-list" id="review-list"></div>
       </div>
 
-      <!-- PERFORMANCE MEMORY TAB -->
-      <div class="tab-panel" data-panel="memory">
+      <!-- PERFORMANCE TAB -->
+      <div class="av-panel" data-panel="memory">
         <div style="margin-bottom:1.25rem">
-          <div style="font-family:'Fraunces',serif;font-size:1.2rem;font-weight:600;color:var(--h2);margin-bottom:.25rem">Performance Patterns</div>
-          <div style="font-family:'Inter',sans-serif;font-size:.82rem;color:var(--muted)">Record what works and what to avoid for this avatar's content.</div>
+          <div style="font-family:'Fraunces',serif;font-size:1.2rem;font-weight:600;color:var(--h2);margin-bottom:.2rem">Performance Patterns</div>
+          <div style="font-family:'Inter',sans-serif;font-size:.82rem;color:var(--muted)">Track what's working and what to avoid for this avatar.</div>
         </div>
-        <div class="memory-cols">
+        <div class="mem-cols">
           <div>
-            <div class="memory-col-header"><div class="memory-col-dot" style="background:var(--green)"></div><div class="memory-col-title">What's Working</div></div>
-            <div id="patterns-working"><!-- JS rendered --></div>
-            <button class="cal-add-btn" style="margin-top:.5rem" onclick="showAddPattern('working')">+ Add Pattern</button>
+            <div class="mem-col-hdr"><div class="mem-dot" style="background:var(--green)"></div><div class="mem-lbl">What's Working</div></div>
+            <div id="patterns-working"></div>
+            <button class="cal-add" style="margin-top:.5rem" onclick="showAddPattern('working')">+ Add Pattern</button>
             <div id="add-pattern-working" style="display:none;margin-top:.65rem">
-              <textarea class="instruct-textarea" id="pattern-text-working" rows="2" placeholder="Describe what's performing well..."></textarea>
-              <input class="form-input" id="pattern-tags-working" style="margin-top:.5rem" type="text" placeholder="Tags (comma-separated, e.g. imagery, timing)"/>
+              <textarea class="inst-area" id="pattern-text-working" rows="2" placeholder="Describe what's performing well..."></textarea>
+              <input class="form-input" id="pattern-tags-working" style="margin-top:.5rem" type="text" placeholder="Tags (comma-separated)"/>
               <div style="display:flex;gap:.5rem;margin-top:.5rem;justify-content:flex-end">
                 <button class="btn-ghost" style="font-size:.78rem;padding:.4rem .75rem" onclick="hideAddPattern('working')">Cancel</button>
                 <button class="btn-primary" style="font-size:.78rem;padding:.4rem .75rem" onclick="addPattern('working')">Add</button>
@@ -415,12 +520,12 @@ body.nav-hidden #avatar-mode { top: 0; }
             </div>
           </div>
           <div>
-            <div class="memory-col-header"><div class="memory-col-dot" style="background:#e53935"></div><div class="memory-col-title">What to Avoid</div></div>
-            <div id="patterns-avoid"><!-- JS rendered --></div>
-            <button class="cal-add-btn" style="margin-top:.5rem" onclick="showAddPattern('avoid')">+ Add Pattern</button>
+            <div class="mem-col-hdr"><div class="mem-dot" style="background:#e53935"></div><div class="mem-lbl">What to Avoid</div></div>
+            <div id="patterns-avoid"></div>
+            <button class="cal-add" style="margin-top:.5rem" onclick="showAddPattern('avoid')">+ Add Pattern</button>
             <div id="add-pattern-avoid" style="display:none;margin-top:.65rem">
-              <textarea class="instruct-textarea" id="pattern-text-avoid" rows="2" placeholder="Describe what's underperforming or to avoid..."></textarea>
-              <input class="form-input" id="pattern-tags-avoid" style="margin-top:.5rem" type="text" placeholder="Tags (comma-separated, e.g. tiktok, voice)"/>
+              <textarea class="inst-area" id="pattern-text-avoid" rows="2" placeholder="Describe what's underperforming or to avoid..."></textarea>
+              <input class="form-input" id="pattern-tags-avoid" style="margin-top:.5rem" type="text" placeholder="Tags (comma-separated)"/>
               <div style="display:flex;gap:.5rem;margin-top:.5rem;justify-content:flex-end">
                 <button class="btn-ghost" style="font-size:.78rem;padding:.4rem .75rem" onclick="hideAddPattern('avoid')">Cancel</button>
                 <button class="btn-primary" style="font-size:.78rem;padding:.4rem .75rem" onclick="addPattern('avoid')">Add</button>
@@ -430,29 +535,26 @@ body.nav-hidden #avatar-mode { top: 0; }
         </div>
       </div>
 
-      <!-- INSTRUCT AVATAR TAB -->
-      <div class="tab-panel" data-panel="instruct">
-        <div class="instruct-compose">
-          <div class="instruct-compose-label">Add New Instruction</div>
-          <div class="instruct-compose-hint">Permanent rules the AI will always follow when generating content for this avatar.</div>
-          <div class="instruct-input-row">
-            <textarea class="instruct-textarea" id="instruct-new-text" rows="2" placeholder="e.g. Always end captions with a question to drive comments..."></textarea>
+      <!-- INSTRUCTIONS TAB -->
+      <div class="av-panel" data-panel="instruct">
+        <div class="inst-compose">
+          <div class="inst-ttl">Add New Instruction</div>
+          <div class="inst-hint">Permanent rules the AI will always follow when generating content for this avatar.</div>
+          <div class="inst-row">
+            <textarea class="inst-area" id="instruct-new-text" rows="2" placeholder="e.g. Always end captions with a question to drive comments..."></textarea>
             <button class="btn-primary" onclick="addInstruction()">Add</button>
           </div>
         </div>
-        <div class="instruction-list-header" id="instruct-header">Active Instructions</div>
-        <div class="instruction-items" id="instruction-list">
-          <!-- JS rendered -->
-        </div>
+        <div class="inst-list-hdr" id="instruct-header">Active Instructions</div>
+        <div class="inst-items" id="instruction-list"></div>
       </div>
 
-    </div><!-- /workspace-inner -->
-    </div><!-- /workspace-content -->
+    </div><!-- /av-body -->
   </div><!-- /avatar-mode -->
 
   <!-- MOBILE NAV -->
-  <div class="mobile-nav-wrap" id="mobile-nav">
-    <div class="mobile-nav-inner">
+  <div class="mnav-wrap" id="mobile-nav">
+    <div class="mnav-inner">
       <a href="index.html" class="mnav-item"><span class="mnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/><polyline points="9 21 9 12 15 12 15 21"/></svg></span><span class="mnav-label">Home</span></a>
       <a href="taskflow.html" class="mnav-item"><span class="mnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="9" y1="7" x2="20" y2="7"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="17" x2="20" y2="17"/><polyline points="4 7 5 8 7 6"/><polyline points="4 12 5 13 7 11"/><polyline points="4 17 5 18 7 16"/></svg></span><span class="mnav-label">Tasks</span></a>
       <span class="mnav-item active"><span class="mnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></span><span class="mnav-label">Social</span></span>
@@ -464,7 +566,6 @@ body.nav-hidden #avatar-mode { top: 0; }
 
 </div><!-- /app -->
 
-<!-- TOAST -->
 <div class="toast" id="toast"></div>
 
 <!-- AVATAR FORM MODAL -->
@@ -485,22 +586,22 @@ body.nav-hidden #avatar-mode { top: 0; }
     </div>
     <div class="form-field">
       <label class="form-label">Color</label>
-      <div class="color-swatches" id="color-swatches">
-        <div class="color-swatch selected" data-color="#ff30cc" style="background:#ff30cc" onclick="selectColor(this)"></div>
-        <div class="color-swatch" data-color="#8854d0" style="background:#8854d0" onclick="selectColor(this)"></div>
-        <div class="color-swatch" data-color="#2d7dd2" style="background:#2d7dd2" onclick="selectColor(this)"></div>
-        <div class="color-swatch" data-color="#3bb273" style="background:#3bb273" onclick="selectColor(this)"></div>
-        <div class="color-swatch" data-color="#f7b731" style="background:#f7b731" onclick="selectColor(this)"></div>
-        <div class="color-swatch" data-color="#e09000" style="background:#e09000" onclick="selectColor(this)"></div>
-        <div class="color-swatch" data-color="#ff6b35" style="background:#ff6b35" onclick="selectColor(this)"></div>
-        <div class="color-swatch" data-color="#0097a7" style="background:#0097a7" onclick="selectColor(this)"></div>
+      <div class="clr-swatches" id="color-swatches">
+        <div class="clr-swatch sel" data-color="#ff30cc" style="background:#ff30cc" onclick="selectColor(this)"></div>
+        <div class="clr-swatch" data-color="#8854d0" style="background:#8854d0" onclick="selectColor(this)"></div>
+        <div class="clr-swatch" data-color="#2d7dd2" style="background:#2d7dd2" onclick="selectColor(this)"></div>
+        <div class="clr-swatch" data-color="#3bb273" style="background:#3bb273" onclick="selectColor(this)"></div>
+        <div class="clr-swatch" data-color="#f7b731" style="background:#f7b731" onclick="selectColor(this)"></div>
+        <div class="clr-swatch" data-color="#e09000" style="background:#e09000" onclick="selectColor(this)"></div>
+        <div class="clr-swatch" data-color="#ff6b35" style="background:#ff6b35" onclick="selectColor(this)"></div>
+        <div class="clr-swatch" data-color="#0097a7" style="background:#0097a7" onclick="selectColor(this)"></div>
       </div>
     </div>
     <div class="form-field">
       <label class="form-label">Platforms</label>
-      <div class="platform-checks">
-        <label class="platform-check"><input type="checkbox" id="av-plat-ig" value="IG" checked> Instagram</label>
-        <label class="platform-check"><input type="checkbox" id="av-plat-tt" value="TikTok" checked> TikTok</label>
+      <div class="plat-checks">
+        <label class="plat-chk"><input type="checkbox" id="av-plat-ig" value="IG" checked> Instagram</label>
+        <label class="plat-chk"><input type="checkbox" id="av-plat-tt" value="TikTok" checked> TikTok</label>
       </div>
     </div>
     <div class="modal-footer">
@@ -536,7 +637,7 @@ body.nav-hidden #avatar-mode { top: 0; }
     <div class="form-row">
       <div class="form-field">
         <label class="form-label">Status</label>
-        <select class="post-status-select" id="post-form-status">
+        <select class="post-st-sel" id="post-form-status">
           <option value="draft">Draft</option>
           <option value="pending">Pending Review</option>
           <option value="scheduled">Scheduled</option>
@@ -557,9 +658,9 @@ body.nav-hidden #avatar-mode { top: 0; }
 </div>
 
 <script>
-// ═══════════════════════════
-// SOCIAL HUB STATE
-// ═══════════════════════════
+// ══════════════════════════════════════
+// STATE
+// ══════════════════════════════════════
 var socialState = {
   avatars: [],
   currentAvatar: null,
@@ -568,51 +669,45 @@ var socialState = {
   pendingPostDate: null
 };
 
-// ═══════════════════════════
+var studioState = {
+  niche: '',
+  selectedHook: null,
+  duration: 15,
+  script: null   // { hook, body, cta } each { text, word_count, read_time }
+};
+
+// ══════════════════════════════════════
 // PAGE READY
-// ═══════════════════════════
+// ══════════════════════════════════════
 function onPageReady() {
-  // Show admin "Add Avatar" button
   if (hubState.currentUser && hubState.currentUser.role === 'admin') {
     var btn = document.getElementById('btn-add-avatar');
     if (btn) btn.style.display = 'block';
   }
   loadAvatars();
-  initThemeToggleLocal();
+  // Check Gemini key
+  if (!GEMINI_API_KEY) {
+    document.getElementById('api-warn').classList.add('show');
+  }
 }
 
-function initThemeToggleLocal() {
-  var btn = document.getElementById('theme-toggle');
-  if (!btn) return;
-  var isLight = document.documentElement.getAttribute('data-theme') === 'light';
-  var MOON = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>';
-  var SUN = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>';
-  btn.innerHTML = isLight ? SUN : MOON;
-}
-
-// ═══════════════════════════
+// ══════════════════════════════════════
 // AVATAR GRID
-// ═══════════════════════════
+// ══════════════════════════════════════
 async function loadAvatars() {
   var container = document.getElementById('avatar-grid-container');
   try {
     var avResult = await db.from('social_avatars').select('*').order('created_at');
     if (avResult.error) throw avResult.error;
     socialState.avatars = avResult.data || [];
-
-    // Get post stats for current week
     var weekStart = getWeekMonday(new Date());
-    var weekEnd = new Date(weekStart);
-    weekEnd.setDate(weekEnd.getDate() + 7);
-
-    var postResult = await db.from('social_posts')
-      .select('avatar_id, status')
+    var weekEnd = new Date(weekStart); weekEnd.setDate(weekEnd.getDate() + 7);
+    var postResult = await db.from('social_posts').select('avatar_id, status')
       .gte('week_start', weekStart.toISOString().slice(0,10))
       .lt('week_start', weekEnd.toISOString().slice(0,10));
-
     renderAvatarCards(socialState.avatars, postResult.data || []);
   } catch(e) {
-    container.innerHTML = '<div class="empty-state"><div class="empty-state-title">Could not load avatars</div><div>' + esc(e.message || '') + '</div></div>';
+    container.innerHTML = '<div class="empty-st"><div class="empty-st-h">Could not load avatars</div><div>' + esc(e.message || '') + '</div></div>';
   }
 }
 
@@ -623,112 +718,89 @@ function getInitials(name) {
 function renderAvatarCards(avatars, posts) {
   var container = document.getElementById('avatar-grid-container');
   var isAdmin = hubState.currentUser && hubState.currentUser.role === 'admin';
-
   if (!avatars.length) {
-    container.innerHTML = '<div class="empty-state"><div class="empty-state-title">No avatars yet</div><div>Add your first avatar to get started.</div></div>';
+    container.innerHTML = '<div class="empty-st"><div class="empty-st-h">No avatars yet</div><div>Add your first avatar to get started.</div></div>';
     return;
   }
-
   container.innerHTML = avatars.map(function(av) {
     var color = av.color || '#ff30cc';
     var initials = getInitials(av.name);
     var platforms = (av.platforms || 'IG,TikTok').split(',').map(function(p){ return p.trim(); });
-    var platBadges = platforms.map(function(p){ return '<span class="plat-badge">' + esc(p) + '</span>'; }).join('');
-
-    // Stats
+    var platBadges = platforms.map(function(p){ return '<span class="av-plat">' + esc(p) + '</span>'; }).join('');
     var avPosts = posts.filter(function(p){ return p.avatar_id === av.id; });
     var postedCount = avPosts.filter(function(p){ return p.status === 'posted'; }).length;
     var pendingCount = avPosts.filter(function(p){ return p.status === 'pending'; }).length;
-
-    // Type badge colors
     var isBrand = av.type === 'Brand Account';
     var typeBg = isBrand ? 'rgba(247,183,49,.15)' : 'rgba(255,48,204,.15)';
     var typeColor = isBrand ? 'var(--amber)' : 'var(--primary)';
-
     var adminHtml = isAdmin
-      ? '<div class="card-admin-row">' +
-          '<button class="card-admin-btn" onclick="openAvatarModal(\'' + av.id + '\')">Edit</button>' +
-          '<button class="card-admin-btn danger" onclick="confirmDeleteAvatar(\'' + av.id + '\',\'' + esc(av.name).replace(/'/g,'&#39;') + '\')">Delete</button>' +
-        '</div>'
-      : '';
-
-    // Use data-id attribute for safe avatar opening
-    return '<div class="avatar-card" style="--avc:' + color + '">' +
-      '<div class="avatar-card-inner">' +
+      ? '<div class="av-card-admin">' +
+          '<button class="av-adm-btn" onclick="openAvatarModal(\'' + av.id + '\')">Edit</button>' +
+          '<button class="av-adm-btn del" onclick="confirmDeleteAvatar(\'' + av.id + '\',\'' + esc(av.name).replace(/'/g,'&#39;') + '\')">Delete</button>' +
+        '</div>' : '';
+    return '<div class="av-card" style="--avc:' + color + '">' +
+      '<div class="av-card-in">' +
         adminHtml +
-        '<div class="avatar-card-top">' +
-          '<div class="avatar-initials-wrap" style="background:' + color + '">' + initials + '</div>' +
+        '<div class="av-card-top">' +
+          '<div class="av-circle" style="background:' + color + '">' + initials + '</div>' +
           '<div>' +
-            '<div class="avatar-card-name">' + esc(av.name) + '</div>' +
-            '<div class="avatar-type-badge" style="background:' + typeBg + ';color:' + typeColor + '">' + esc(av.type || 'AI Persona') + '</div>' +
-            '<div class="avatar-platforms">' + platBadges + '</div>' +
+            '<div class="av-card-name">' + esc(av.name) + '</div>' +
+            '<div class="av-type-bdg" style="background:' + typeBg + ';color:' + typeColor + '">' + esc(av.type || 'AI Persona') + '</div>' +
+            '<div class="av-plat-row">' + platBadges + '</div>' +
           '</div>' +
         '</div>' +
-        '<div class="avatar-card-stats">' +
-          '<div class="avatar-stat"><span class="avatar-stat-num">' + postedCount + '</span><span class="avatar-stat-label">Posted this week</span></div>' +
-          '<div class="avatar-stat"><span class="avatar-stat-num">' + pendingCount + '</span><span class="avatar-stat-label">Pending review</span></div>' +
+        '<div class="av-stats">' +
+          '<div class="av-stat"><span class="av-stat-n">' + postedCount + '</span><span class="av-stat-l">Posted this week</span></div>' +
+          '<div class="av-stat"><span class="av-stat-n">' + pendingCount + '</span><span class="av-stat-l">Pending review</span></div>' +
         '</div>' +
-        '<button class="btn-open-avatar" style="background:' + color + '" data-avid="' + av.id + '" onclick="openAvatarById(this.dataset.avid)">Open Workspace</button>' +
+        '<button class="av-open" style="background:' + color + '" data-avid="' + av.id + '" onclick="openAvatarById(this.dataset.avid)">Open Workspace</button>' +
       '</div>' +
     '</div>';
   }).join('');
 }
 
-// ═══════════════════════════
-// AVATAR MODAL (Add/Edit)
-// ═══════════════════════════
+// ══════════════════════════════════════
+// AVATAR MODAL
+// ══════════════════════════════════════
 async function openAvatarModal(avatarId) {
   var titleEl = document.getElementById('avatar-modal-title');
   var nameEl = document.getElementById('avatar-form-name');
   var typeEl = document.getElementById('avatar-form-type');
   var editIdEl = document.getElementById('avatar-edit-id');
   var deleteBtn = document.getElementById('btn-delete-avatar');
-
-  // Reset
-  nameEl.value = '';
-  typeEl.value = 'AI Persona';
-  editIdEl.value = '';
+  nameEl.value = ''; typeEl.value = 'AI Persona'; editIdEl.value = '';
   deleteBtn.style.display = 'none';
   selectColorByValue('#ff30cc');
   document.getElementById('av-plat-ig').checked = true;
   document.getElementById('av-plat-tt').checked = true;
   titleEl.textContent = 'Add Avatar';
-
   if (avatarId) {
     var av = socialState.avatars.find(function(a){ return a.id === avatarId; });
-    if (!av) {
-      var result = await db.from('social_avatars').select('*').eq('id', avatarId).single();
-      av = result.data;
-    }
+    if (!av) { var r = await db.from('social_avatars').select('*').eq('id', avatarId).single(); av = r.data; }
     if (av) {
       titleEl.textContent = 'Edit Avatar';
       editIdEl.value = av.id;
       nameEl.value = av.name || '';
       typeEl.value = av.type || 'AI Persona';
       selectColorByValue(av.color || '#ff30cc');
-      var platforms = (av.platforms || 'IG,TikTok').split(',').map(function(p){ return p.trim(); });
-      document.getElementById('av-plat-ig').checked = platforms.indexOf('IG') !== -1;
-      document.getElementById('av-plat-tt').checked = platforms.indexOf('TikTok') !== -1;
+      var plats = (av.platforms || 'IG,TikTok').split(',').map(function(p){ return p.trim(); });
+      document.getElementById('av-plat-ig').checked = plats.indexOf('IG') !== -1;
+      document.getElementById('av-plat-tt').checked = plats.indexOf('TikTok') !== -1;
       deleteBtn.style.display = 'block';
     }
   }
-
   openModal('modal-avatar-form');
 }
 
 function selectColor(el) {
-  document.querySelectorAll('.color-swatch').forEach(function(s){ s.classList.remove('selected'); });
-  el.classList.add('selected');
+  document.querySelectorAll('.clr-swatch').forEach(function(s){ s.classList.remove('sel'); });
+  el.classList.add('sel');
 }
-
 function selectColorByValue(color) {
-  document.querySelectorAll('.color-swatch').forEach(function(s){
-    s.classList.toggle('selected', s.dataset.color === color);
-  });
+  document.querySelectorAll('.clr-swatch').forEach(function(s){ s.classList.toggle('sel', s.dataset.color === color); });
 }
-
 function getSelectedColor() {
-  var sel = document.querySelector('.color-swatch.selected');
+  var sel = document.querySelector('.clr-swatch.sel');
   return sel ? sel.dataset.color : '#ff30cc';
 }
 
@@ -740,56 +812,47 @@ async function saveAvatar() {
   var platforms = [];
   if (document.getElementById('av-plat-ig').checked) platforms.push('IG');
   if (document.getElementById('av-plat-tt').checked) platforms.push('TikTok');
-
   if (!name) { showToast('Please enter a name.', 'error'); return; }
   if (!platforms.length) { showToast('Select at least one platform.', 'error'); return; }
-
   var payload = { name: name, type: type, color: color, platforms: platforms.join(',') };
-
   try {
     if (editId) {
-      var upResult = await db.from('social_avatars').update(payload).eq('id', editId);
-      if (upResult.error) throw upResult.error;
+      var r = await db.from('social_avatars').update(payload).eq('id', editId);
+      if (r.error) throw r.error;
       showToast('Avatar updated.', 'success');
     } else {
-      var insResult = await db.from('social_avatars').insert(payload);
-      if (insResult.error) throw insResult.error;
+      var r2 = await db.from('social_avatars').insert(payload);
+      if (r2.error) throw r2.error;
       showToast('Avatar added!', 'success');
     }
     closeModal('modal-avatar-form');
     loadAvatars();
-  } catch(e) {
-    showToast('Save failed: ' + (e.message || 'Unknown error'), 'error');
-  }
+  } catch(e) { showToast('Save failed: ' + (e.message || ''), 'error'); }
 }
 
-function confirmDeleteAvatar(avatarId, name) {
+function confirmDeleteAvatar(id, name) {
   if (!confirm('Delete ' + name + '? This will also delete all their posts and instructions.')) return;
-  deleteAvatarById(avatarId, name);
+  deleteAvatarById(id, name);
 }
-
-async function deleteAvatarById(avatarId, name) {
+async function deleteAvatarById(id, name) {
   try {
-    var delResult = await db.from('social_avatars').delete().eq('id', avatarId);
-    if (delResult.error) throw delResult.error;
+    var r = await db.from('social_avatars').delete().eq('id', id);
+    if (r.error) throw r.error;
     showToast((name || 'Avatar') + ' deleted.', 'success');
     closeModal('modal-avatar-form');
     loadAvatars();
-  } catch(e) {
-    showToast('Delete failed.', 'error');
-  }
+  } catch(e) { showToast('Delete failed.', 'error'); }
 }
-
 async function deleteAvatar() {
-  var editId = document.getElementById('avatar-edit-id').value;
+  var id = document.getElementById('avatar-edit-id').value;
   var name = document.getElementById('avatar-form-name').value;
-  if (!editId) return;
-  confirmDeleteAvatar(editId, name);
+  if (!id) return;
+  confirmDeleteAvatar(id, name);
 }
 
-// ═══════════════════════════
-// AVATAR WORKSPACE
-// ═══════════════════════════
+// ══════════════════════════════════════
+// WORKSPACE
+// ══════════════════════════════════════
 function openAvatarById(avId) {
   var av = socialState.avatars.find(function(a){ return a.id === avId; });
   if (!av) { showToast('Avatar not found.', 'error'); return; }
@@ -801,60 +864,55 @@ function openAvatar(av) {
   var color = av.color || '#ff30cc';
   var initials = getInitials(av.name);
 
-  // Update identity bar
   document.getElementById('av-name').textContent = av.name;
   document.getElementById('av-breadcrumb').textContent = av.name;
 
-  var initialsWrap = document.getElementById('av-initials-wrap');
-  initialsWrap.textContent = initials;
-  initialsWrap.style.background = color;
+  var ic = document.getElementById('av-initials-wrap');
+  ic.textContent = initials;
+  ic.style.background = color;
 
-  var typeBadge = document.getElementById('av-type-badge');
-  typeBadge.textContent = av.type || 'AI Persona';
+  var tb = document.getElementById('av-type-badge');
+  tb.textContent = av.type || 'AI Persona';
   var isBrand = av.type === 'Brand Account';
-  typeBadge.style.background = isBrand ? 'rgba(247,183,49,.15)' : 'rgba(255,48,204,.15)';
-  typeBadge.style.color = isBrand ? 'var(--amber)' : 'var(--primary)';
+  tb.style.background = isBrand ? 'rgba(247,183,49,.15)' : 'rgba(255,48,204,.15)';
+  tb.style.color = isBrand ? 'var(--amber)' : 'var(--primary)';
 
   var platforms = (av.platforms || 'IG,TikTok').split(',').map(function(p){ return p.trim(); });
   document.getElementById('av-platform-badges').innerHTML = platforms.map(function(p){
-    return '<span class="plat-badge">' + esc(p) + '</span>';
+    return '<span class="av-plat">' + esc(p) + '</span>';
   }).join('');
 
-  // Set avatar color variable for tab active states
   document.getElementById('avatar-mode').style.setProperty('--avc', color);
-
-  // Show workspace
   document.getElementById('social-hub').style.display = 'none';
+
   var avMode = document.getElementById('avatar-mode');
-  avMode.style.display = '';
   avMode.classList.add('is-open');
   avMode.scrollTop = 0;
+
+  // Wire scroll → hide pill nav
   if (!avMode._scrollWired) {
-    avMode.addEventListener('scroll', function(){ if (typeof handleNavScroll === 'function') handleNavScroll(this.scrollTop); }, { passive: true });
+    avMode.addEventListener('scroll', function(){
+      if (typeof handleNavScroll === 'function') handleNavScroll(avMode.scrollTop);
+    }, { passive: true });
     avMode._scrollWired = true;
   }
 
-  // Load first tab
   showTab('vault');
 }
 
 function backToHub() {
   var avMode = document.getElementById('avatar-mode');
   avMode.classList.remove('is-open');
-  avMode.style.display = 'none';
   document.getElementById('social-hub').style.display = 'block';
   socialState.currentAvatar = null;
-  window.scrollTo(0,0);
+  // Restore nav if hidden
+  var nav = document.querySelector('.topnav');
+  if (nav) { nav.classList.remove('nav-hidden'); document.body.classList.remove('nav-hidden'); }
 }
 
 function showTab(tab) {
-  document.querySelectorAll('.workspace-tab').forEach(function(t){
-    t.classList.toggle('active', t.dataset.tab === tab);
-  });
-  document.querySelectorAll('.tab-panel').forEach(function(p){
-    p.classList.toggle('active', p.dataset.panel === tab);
-  });
-
+  document.querySelectorAll('.av-tab').forEach(function(t){ t.classList.toggle('active', t.dataset.tab === tab); });
+  document.querySelectorAll('.av-panel').forEach(function(p){ p.classList.toggle('active', p.dataset.panel === tab); });
   if (tab === 'vault' && socialState.currentAvatar) loadVault(socialState.currentAvatar.id);
   if (tab === 'calendar' && socialState.currentAvatar) {
     if (!socialState.calWeekStart) socialState.calWeekStart = getWeekMonday(new Date());
@@ -865,25 +923,23 @@ function showTab(tab) {
   if (tab === 'memory' && socialState.currentAvatar) loadPatterns(socialState.currentAvatar.id);
 }
 
-// ═══════════════════════════
+// ══════════════════════════════════════
 // VAULT
-// ═══════════════════════════
+// ══════════════════════════════════════
 async function loadVault(avatarId) {
   try {
-    var result = await db.from('social_avatars').select('*').eq('id', avatarId).single();
-    if (result.error) throw result.error;
-    var data = result.data;
-    document.getElementById('vault-bio').value = data.bio || '';
-    document.getElementById('vault-face').value = data.face_desc || '';
-    document.getElementById('vault-voice').value = data.voice_tone || '';
-    document.getElementById('vault-captions').value = data.example_captions || '';
-    document.getElementById('vault-ig-sched').value = data.ig_schedule || '';
-    document.getElementById('vault-tt-sched').value = data.tiktok_schedule || '';
-    document.getElementById('vault-img-prompt').value = data.img_prompt_base || '';
-    document.getElementById('vault-cap-prompt').value = data.caption_prompt_base || '';
-  } catch(e) {
-    showToast('Could not load profile.', 'error');
-  }
+    var r = await db.from('social_avatars').select('*').eq('id', avatarId).single();
+    if (r.error) throw r.error;
+    var d = r.data;
+    document.getElementById('vault-bio').value = d.bio || '';
+    document.getElementById('vault-face').value = d.face_desc || '';
+    document.getElementById('vault-voice').value = d.voice_tone || '';
+    document.getElementById('vault-captions').value = d.example_captions || '';
+    document.getElementById('vault-ig-sched').value = d.ig_schedule || '';
+    document.getElementById('vault-tt-sched').value = d.tiktok_schedule || '';
+    document.getElementById('vault-img-prompt').value = d.img_prompt_base || '';
+    document.getElementById('vault-cap-prompt').value = d.caption_prompt_base || '';
+  } catch(e) { showToast('Could not load profile.', 'error'); }
 }
 
 async function saveVault() {
@@ -899,20 +955,259 @@ async function saveVault() {
     caption_prompt_base: document.getElementById('vault-cap-prompt').value
   };
   try {
-    var result = await db.from('social_avatars').update(payload).eq('id', socialState.currentAvatar.id);
-    if (result.error) throw result.error;
+    var r = await db.from('social_avatars').update(payload).eq('id', socialState.currentAvatar.id);
+    if (r.error) throw r.error;
     showToast('Profile saved.', 'success');
-  } catch(e) {
-    showToast('Save failed.', 'error');
-  }
+  } catch(e) { showToast('Save failed.', 'error'); }
 }
 
-// ═══════════════════════════
+// ══════════════════════════════════════
+// AI STUDIO
+// ══════════════════════════════════════
+function updateNicheCount() {
+  var el = document.getElementById('studio-niche');
+  var cc = document.getElementById('niche-cc');
+  if (cc) cc.textContent = (el.value.length) + ' / 500';
+}
+
+async function callGemini(prompt) {
+  var key = (typeof GEMINI_API_KEY !== 'undefined') ? GEMINI_API_KEY : '';
+  if (!key) throw new Error('NO_KEY');
+  var url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' + key;
+  var resp = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+  });
+  var data = await resp.json();
+  if (!resp.ok || data.error) throw new Error(data.error ? data.error.message : 'Gemini error');
+  return data.candidates[0].content.parts[0].text;
+}
+
+function extractJSON(text) {
+  var match = text.match(/\{[\s\S]*\}/);
+  if (match) return JSON.parse(match[0]);
+  return JSON.parse(text);
+}
+
+function setBtnLoading(id, loading, label) {
+  var btn = document.getElementById(id);
+  if (!btn) return;
+  btn.disabled = loading;
+  btn.textContent = loading ? 'Generating...' : label;
+}
+
+// Step 1 — Format & Hook Generator
+async function generateHooks() {
+  var niche = (document.getElementById('studio-niche').value || '').trim();
+  if (!niche) { showToast('Describe your niche first.', 'error'); return; }
+  var key = (typeof GEMINI_API_KEY !== 'undefined') ? GEMINI_API_KEY : '';
+  if (!key) { showToast('Configure your Gemini API key first.', 'error'); return; }
+  studioState.niche = niche;
+  setBtnLoading('btn-gen-hooks', true, 'Generate Formats & Hooks');
+  var prompt = 'You are an expert social media content strategist for short-form video.\n\n' +
+    'Niche: ' + niche + '\n\n' +
+    'Generate 3 unique short-form video content formats tailored to this niche. For each format provide:\n' +
+    '1. A creative, memorable format name (e.g. "The Myth Buster", "Hot Take Tuesday")\n' +
+    '2. Exactly 3 scroll-stopping hooks, each under 12 words, optimized for TikTok and Instagram Reels\n\n' +
+    'Respond ONLY with valid JSON, no markdown, no explanation:\n' +
+    '{"formats":[{"name":"...","hooks":["...","...","..."]},{"name":"...","hooks":["...","...","..."]},{"name":"...","hooks":["...","...","..."]}]}';
+  try {
+    var text = await callGemini(prompt);
+    var data = extractJSON(text);
+    renderFormats(data.formats || []);
+  } catch(e) {
+    showToast('Generation failed: ' + (e.message === 'NO_KEY' ? 'No API key configured.' : e.message), 'error');
+  }
+  setBtnLoading('btn-gen-hooks', false, 'Generate Formats & Hooks');
+}
+
+function renderFormats(formats) {
+  var out = document.getElementById('formats-output');
+  if (!formats.length) { out.innerHTML = ''; return; }
+  out.innerHTML = '<div class="fmt-grid">' + formats.map(function(f) {
+    return '<div class="fmt-card">' +
+      '<div class="fmt-name">' + esc(f.name) + '</div>' +
+      f.hooks.map(function(h) {
+        return '<div class="hook-item">' +
+          '<div class="hook-text">' + esc(h) + '</div>' +
+          '<button class="hook-use" data-hook="' + esc(h).replace(/"/g,'&quot;') + '" onclick="selectHook(this)">' +
+            'Use' +
+          '</button>' +
+        '</div>';
+      }).join('') +
+    '</div>';
+  }).join('') + '</div>';
+}
+
+function selectHook(btn) {
+  // Deselect all
+  document.querySelectorAll('.hook-use').forEach(function(b){ b.classList.remove('sel'); b.textContent = 'Use'; });
+  btn.classList.add('sel');
+  btn.textContent = 'Selected';
+  studioState.selectedHook = btn.dataset.hook;
+  // Show Step 2
+  var box = document.getElementById('sel-hook-box');
+  document.getElementById('sel-hook-txt').textContent = studioState.selectedHook;
+  box.style.display = 'block';
+  document.getElementById('studio-step2-body').classList.remove('studio-locked');
+  document.getElementById('step2-meta').textContent = 'Hook selected — choose duration & generate';
+}
+
+function setDuration(btn) {
+  document.querySelectorAll('.dur-btn').forEach(function(b){ b.classList.remove('act'); });
+  btn.classList.add('act');
+  studioState.duration = parseInt(btn.dataset.dur);
+}
+
+// Step 2 — Script Generator
+async function generateScript(variation) {
+  if (!studioState.selectedHook) { showToast('Select a hook first.', 'error'); return; }
+  var key = (typeof GEMINI_API_KEY !== 'undefined') ? GEMINI_API_KEY : '';
+  if (!key) { showToast('No API key configured.', 'error'); return; }
+  setBtnLoading('btn-gen-script', true, 'Generate Script');
+  var prompt = 'You are an expert short-form video scriptwriter.\n\n' +
+    'Hook: ' + studioState.selectedHook + '\n' +
+    'Target Duration: ' + studioState.duration + ' seconds\n' +
+    'Niche: ' + (studioState.niche || 'general') + '\n\n' +
+    'Write a complete ' + studioState.duration + '-second video script in 3 parts:\n' +
+    '- HOOK: use the provided hook as the opening line exactly\n' +
+    '- BODY: the main content that delivers value, builds on the hook\n' +
+    '- CTA: a compelling 1-2 sentence call to action\n\n' +
+    'For each part calculate word_count and read_time (string like "8s") at 150 words per minute.\n\n' +
+    (variation ? 'Generate a COMPLETELY DIFFERENT variation. Rewrite the body and CTA. Do not repeat phrasing.\n\n' : '') +
+    'Respond ONLY with valid JSON, no markdown:\n' +
+    '{"hook":{"text":"...","word_count":0,"read_time":"0s"},"body":{"text":"...","word_count":0,"read_time":"0s"},"cta":{"text":"...","word_count":0,"read_time":"0s"}}';
+  try {
+    var text = await callGemini(prompt);
+    studioState.script = extractJSON(text);
+    renderScript(studioState.script);
+    // Unlock step 3
+    document.getElementById('studio-step3-body').classList.remove('studio-locked');
+    document.getElementById('step3-meta').textContent = 'Script ready — generate shot plan below';
+  } catch(e) {
+    showToast('Script generation failed: ' + e.message, 'error');
+  }
+  setBtnLoading('btn-gen-script', false, 'Generate Script');
+}
+
+function renderScript(s) {
+  var out = document.getElementById('script-output');
+  out.innerHTML = '<div class="script-out">' +
+    renderScriptSection('hook', 'Hook', s.hook) +
+    renderScriptSection('body', 'Body', s.body) +
+    renderScriptSection('cta', 'CTA', s.cta) +
+  '</div>';
+}
+
+function renderScriptSection(key, label, data) {
+  return '<div class="script-sec" id="script-sec-' + key + '">' +
+    '<div class="script-sec-hdr">' +
+      '<span class="script-sec-lbl">' + label + '</span>' +
+      '<span class="script-meta">' + (data.word_count || 0) + ' words · ' + (data.read_time || '—') + '</span>' +
+      '<button class="regen-btn" id="regen-' + key + '" onclick="regenSection(\'' + key + '\')">' +
+        '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>' +
+        'Regen' +
+      '</button>' +
+    '</div>' +
+    '<div class="script-body-txt" id="script-text-' + key + '">' + esc(data.text || '') + '</div>' +
+  '</div>';
+}
+
+async function regenSection(key) {
+  if (!studioState.script || !studioState.selectedHook) return;
+  var keyGemini = (typeof GEMINI_API_KEY !== 'undefined') ? GEMINI_API_KEY : '';
+  if (!keyGemini) { showToast('No API key configured.', 'error'); return; }
+  var btn = document.getElementById('regen-' + key);
+  if (btn) btn.classList.add('busy');
+  var s = studioState.script;
+  var prompt = 'You are an expert short-form video scriptwriter.\n\n' +
+    'Current script:\nHook: ' + (s.hook ? s.hook.text : '') + '\nBody: ' + (s.body ? s.body.text : '') + '\nCTA: ' + (s.cta ? s.cta.text : '') + '\n\n' +
+    'Rewrite ONLY the ' + key.toUpperCase() + ' section for a ' + studioState.duration + 's ' + (studioState.niche || '') + ' video.\n' +
+    'Make it completely different. Do not repeat any phrasing from the existing version.\n\n' +
+    'Respond ONLY with valid JSON, no markdown:\n' +
+    '{"text":"...","word_count":0,"read_time":"0s"}';
+  try {
+    var text = await callGemini(prompt);
+    var data = extractJSON(text);
+    studioState.script[key] = data;
+    // Update just this section
+    var textEl = document.getElementById('script-text-' + key);
+    var sec = document.getElementById('script-sec-' + key);
+    if (textEl) textEl.textContent = data.text || '';
+    if (sec) {
+      var meta = sec.querySelector('.script-meta');
+      if (meta) meta.textContent = (data.word_count || 0) + ' words · ' + (data.read_time || '—');
+    }
+  } catch(e) { showToast('Regen failed: ' + e.message, 'error'); }
+  if (btn) btn.classList.remove('busy');
+}
+
+// Step 3 — Shot Plan Generator
+async function generateShotPlan(variation) {
+  if (!studioState.script) { showToast('Generate a script first.', 'error'); return; }
+  var keyGemini = (typeof GEMINI_API_KEY !== 'undefined') ? GEMINI_API_KEY : '';
+  if (!keyGemini) { showToast('No API key configured.', 'error'); return; }
+  setBtnLoading('btn-gen-shots', true, 'Generate Shot Plan');
+  var s = studioState.script;
+  var prompt = 'You are a professional video director for short-form social media content.\n\n' +
+    'Script:\nHook: ' + (s.hook ? s.hook.text : '') + '\nBody: ' + (s.body ? s.body.text : '') + '\nCTA: ' + (s.cta ? s.cta.text : '') + '\n\n' +
+    'Create a detailed numbered shot plan. For each shot provide:\n' +
+    '- number (integer)\n- type (e.g. Close-up, Wide shot, POV, Talking head, B-roll, Overhead)\n' +
+    '- duration_s (e.g. "3s")\n- camera (e.g. handheld, static, slow zoom in)\n' +
+    '- script (the exact script words delivered in this shot)\n' +
+    '- note (what the creator should show or do)\n\n' +
+    (variation ? 'Create a COMPLETELY DIFFERENT shot sequence with different angles and pacing.\n\n' : '') +
+    'Respond ONLY with valid JSON, no markdown:\n' +
+    '{"shots":[{"number":1,"type":"...","duration_s":"...","camera":"...","script":"...","note":"..."},...]}';
+  try {
+    var text = await callGemini(prompt);
+    var data = extractJSON(text);
+    renderShotPlan(data.shots || []);
+  } catch(e) { showToast('Shot plan failed: ' + e.message, 'error'); }
+  setBtnLoading('btn-gen-shots', false, 'Generate Shot Plan');
+}
+
+function renderShotPlan(shots) {
+  var out = document.getElementById('shot-plan-output');
+  if (!shots.length) { out.innerHTML = ''; return; }
+  out.innerHTML = '<div class="shot-wrap">' +
+    '<table class="shot-tbl">' +
+      '<thead><tr>' +
+        '<th class="shot-th">#</th>' +
+        '<th class="shot-th">Type</th>' +
+        '<th class="shot-th">Dur</th>' +
+        '<th class="shot-th">Camera</th>' +
+        '<th class="shot-th">Script</th>' +
+        '<th class="shot-th">Director Note</th>' +
+      '</tr></thead>' +
+      '<tbody>' + shots.map(function(s) {
+        return '<tr>' +
+          '<td class="shot-td"><div class="shot-num-circle">' + s.number + '</div></td>' +
+          '<td class="shot-td"><span class="shot-type-badge">' + esc(s.type || '') + '</span></td>' +
+          '<td class="shot-td" style="white-space:nowrap">' + esc(s.duration_s || '') + '</td>' +
+          '<td class="shot-td">' + esc(s.camera || '') + '</td>' +
+          '<td class="shot-td">' + esc(s.script || '') + '</td>' +
+          '<td class="shot-td">' + esc(s.note || '') + '</td>' +
+        '</tr>';
+      }).join('') +
+      '</tbody>' +
+    '</table>' +
+  '</div>' +
+  '<div class="shot-foot">' +
+    '<button class="regen-btn" onclick="generateShotPlan(true)">' +
+      '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>' +
+      'Regenerate Shot Plan' +
+    '</button>' +
+  '</div>';
+}
+
+// ══════════════════════════════════════
 // CALENDAR
-// ═══════════════════════════
+// ══════════════════════════════════════
 function getWeekMonday(date) {
   var d = new Date(date);
-  var day = d.getDay(); // 0=Sun
+  var day = d.getDay();
   var diff = (day === 0) ? -6 : 1 - day;
   d.setDate(d.getDate() + diff);
   d.setHours(0,0,0,0);
@@ -920,9 +1215,8 @@ function getWeekMonday(date) {
 }
 
 function formatWeekLabel(monday) {
-  var end = new Date(monday);
-  end.setDate(end.getDate() + 6);
-  var opts = { month: 'short', day: 'numeric' };
+  var end = new Date(monday); end.setDate(end.getDate() + 6);
+  var opts = { month:'short', day:'numeric' };
   return monday.toLocaleDateString('en-HK', opts) + ' \u2013 ' + end.toLocaleDateString('en-HK', opts) + ', ' + end.getFullYear();
 }
 
@@ -932,51 +1226,36 @@ function goWeek(dir) {
   socialState.calWeekStart = d;
   loadCalendar();
 }
-
-function goToday() {
-  socialState.calWeekStart = getWeekMonday(new Date());
-  loadCalendar();
-}
+function goToday() { socialState.calWeekStart = getWeekMonday(new Date()); loadCalendar(); }
 
 async function loadCalendar() {
   if (!socialState.currentAvatar || !socialState.calWeekStart) return;
   var monday = socialState.calWeekStart;
   var weekStr = monday.toISOString().slice(0,10);
-
   document.getElementById('week-label').textContent = formatWeekLabel(monday);
-
   try {
-    var result = await db.from('social_posts')
-      .select('*')
-      .eq('avatar_id', socialState.currentAvatar.id)
-      .eq('week_start', weekStr);
-    if (result.error) throw result.error;
-    renderCalendar(monday, result.data || []);
-  } catch(e) {
-    showToast('Could not load calendar.', 'error');
-  }
+    var r = await db.from('social_posts').select('*').eq('avatar_id', socialState.currentAvatar.id).eq('week_start', weekStr);
+    if (r.error) throw r.error;
+    renderCalendar(monday, r.data || []);
+  } catch(e) { showToast('Could not load calendar.', 'error'); }
 }
 
 function renderCalendar(monday, posts) {
   var days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-  var today = new Date();
-  today.setHours(0,0,0,0);
+  var today = new Date(); today.setHours(0,0,0,0);
   var weekStr = monday.toISOString().slice(0,10);
   var tbody = document.getElementById('cal-body');
-
   tbody.innerHTML = days.map(function(dayName, i) {
-    var date = new Date(monday);
-    date.setDate(date.getDate() + i);
+    var date = new Date(monday); date.setDate(date.getDate() + i);
     var dateStr = date.toISOString().slice(0,10);
     var isToday = date.getTime() === today.getTime();
-
     return '<tr>' +
-      '<td class="cal-day-cell' + (isToday ? ' today' : '') + '">' +
-        '<div class="cal-day-name">' + dayName + '</div>' +
-        '<div class="cal-day-date">' + date.toLocaleDateString('en-HK',{month:'short',day:'numeric'}) + '</div>' +
+      '<td class="cal-day' + (isToday ? ' today' : '') + '">' +
+        '<div class="cal-day-n">' + dayName + '</div>' +
+        '<div class="cal-day-d">' + date.toLocaleDateString('en-HK',{month:'short',day:'numeric'}) + '</div>' +
       '</td>' +
-      '<td class="cal-content-cell">' + renderCalCell('ig', dateStr, weekStr, posts) + '</td>' +
-      '<td class="cal-content-cell">' + renderCalCell('tiktok', dateStr, weekStr, posts) + '</td>' +
+      '<td class="cal-cell">' + renderCalCell('ig', dateStr, weekStr, posts) + '</td>' +
+      '<td class="cal-cell">' + renderCalCell('tiktok', dateStr, weekStr, posts) + '</td>' +
     '</tr>';
   }).join('');
 }
@@ -991,68 +1270,56 @@ function renderCalCell(platform, dateStr, weekStr, posts) {
   var cellPosts = posts.filter(function(p){
     return p.platform === platform && isSameDay(p.scheduled_for, new Date(dateStr));
   });
-
   var html = cellPosts.map(function(p) {
     var color = p.status === 'posted' ? 'var(--green)' : p.status === 'scheduled' ? 'var(--blue)' : p.status === 'pending' ? 'var(--amber)' : 'var(--muted)';
-    return '<div class="cal-post-card" data-postid="' + p.id + '" data-platform="' + esc(platform) + '" data-date="' + esc(dateStr) + '" onclick="openPostModalFromCard(this)">' +
+    return '<div class="cal-post" data-postid="' + p.id + '" data-platform="' + esc(platform) + '" data-date="' + esc(dateStr) + '" onclick="openPostModalFromCard(this)">' +
       '<div class="cal-post-type" style="color:' + color + '">' + esc(p.post_type || platform.toUpperCase()) + '</div>' +
-      '<div class="cal-post-caption">' + esc(p.caption || '') + '</div>' +
-      '<span class="cal-status ' + esc(p.status) + '">' + esc(p.status) + '</span>' +
+      '<div class="cal-post-cap">' + esc(p.caption || '') + '</div>' +
+      '<span class="cal-st ' + esc(p.status) + '">' + esc(p.status) + '</span>' +
     '</div>';
   }).join('');
-
-  html += '<button class="cal-add-btn" data-platform="' + esc(platform) + '" data-date="' + esc(dateStr) + '" onclick="openPostModalFromAdd(this)">+ Add</button>';
+  html += '<button class="cal-add" data-platform="' + esc(platform) + '" data-date="' + esc(dateStr) + '" onclick="openPostModalFromAdd(this)">+ Add</button>';
   return html;
 }
 
-// Safe wrappers for calendar onclick
-function openPostModalFromCard(el) {
-  openPostModal(el.dataset.platform, el.dataset.date, el.dataset.postid);
-}
-function openPostModalFromAdd(el) {
-  openPostModal(el.dataset.platform, el.dataset.date, null);
-}
+function openPostModalFromCard(el) { openPostModal(el.dataset.platform, el.dataset.date, el.dataset.postid); }
+function openPostModalFromAdd(el) { openPostModal(el.dataset.platform, el.dataset.date, null); }
 
-// ═══════════════════════════
+// ══════════════════════════════════════
 // POST MODAL
-// ═══════════════════════════
+// ══════════════════════════════════════
 async function openPostModal(platform, dateStr, postId) {
   var titleEl = document.getElementById('post-modal-title');
   var deleteBtn = document.getElementById('btn-delete-post');
   var editIdEl = document.getElementById('post-edit-id');
-
-  // Reset
   document.getElementById('post-form-platform').value = platform || 'ig';
   document.getElementById('post-form-type').value = '';
   document.getElementById('post-form-caption').value = '';
   document.getElementById('post-form-status').value = 'draft';
   document.getElementById('post-form-date').value = dateStr ? (dateStr + 'T19:00') : '';
-  editIdEl.value = '';
-  deleteBtn.style.display = 'none';
+  editIdEl.value = ''; deleteBtn.style.display = 'none';
   titleEl.textContent = 'Add Post';
   socialState.pendingPostDate = dateStr;
-
   if (postId) {
     titleEl.textContent = 'Edit Post';
     editIdEl.value = postId;
     deleteBtn.style.display = 'block';
     try {
-      var result = await db.from('social_posts').select('*').eq('id', postId).single();
-      if (result.data) {
-        var data = result.data;
-        document.getElementById('post-form-platform').value = data.platform || platform;
-        document.getElementById('post-form-type').value = data.post_type || '';
-        document.getElementById('post-form-caption').value = data.caption || '';
-        document.getElementById('post-form-status').value = data.status || 'draft';
-        if (data.scheduled_for) {
-          var dt = new Date(data.scheduled_for);
+      var r = await db.from('social_posts').select('*').eq('id', postId).single();
+      if (r.data) {
+        var d = r.data;
+        document.getElementById('post-form-platform').value = d.platform || platform;
+        document.getElementById('post-form-type').value = d.post_type || '';
+        document.getElementById('post-form-caption').value = d.caption || '';
+        document.getElementById('post-form-status').value = d.status || 'draft';
+        if (d.scheduled_for) {
+          var dt = new Date(d.scheduled_for);
           var local = new Date(dt.getTime() - dt.getTimezoneOffset()*60000).toISOString().slice(0,16);
           document.getElementById('post-form-date').value = local;
         }
       }
     } catch(e) {}
   }
-
   openModal('modal-post-form');
 }
 
@@ -1067,105 +1334,81 @@ async function savePost() {
   var weekStr = socialState.calWeekStart
     ? socialState.calWeekStart.toISOString().slice(0,10)
     : getWeekMonday(scheduledFor ? new Date(scheduledFor) : new Date()).toISOString().slice(0,10);
-
   var payload = {
     avatar_id: socialState.currentAvatar.id,
-    platform: platform,
-    post_type: postType,
-    caption: caption,
-    status: status,
+    platform: platform, post_type: postType, caption: caption, status: status,
     scheduled_for: scheduledFor ? new Date(scheduledFor).toISOString() : null,
     week_start: weekStr
   };
-
   try {
     if (postId) {
-      var upResult = await db.from('social_posts').update(payload).eq('id', postId);
-      if (upResult.error) throw upResult.error;
+      var r = await db.from('social_posts').update(payload).eq('id', postId);
+      if (r.error) throw r.error;
       showToast('Post updated.', 'success');
     } else {
-      var insResult = await db.from('social_posts').insert(payload);
-      if (insResult.error) throw insResult.error;
+      var r2 = await db.from('social_posts').insert(payload);
+      if (r2.error) throw r2.error;
       showToast('Post added!', 'success');
     }
     closeModal('modal-post-form');
     loadCalendar();
-    if (document.querySelector('[data-panel="review"].active')) {
-      loadReviewDesk(socialState.currentAvatar.id);
-    }
-  } catch(e) {
-    showToast('Save failed: ' + (e.message || ''), 'error');
-  }
+    if (document.querySelector('[data-panel="review"].active')) loadReviewDesk(socialState.currentAvatar.id);
+  } catch(e) { showToast('Save failed: ' + (e.message || ''), 'error'); }
 }
 
 async function deletePost() {
   var postId = document.getElementById('post-edit-id').value;
   if (!postId || !confirm('Delete this post?')) return;
   try {
-    var result = await db.from('social_posts').delete().eq('id', postId);
-    if (result.error) throw result.error;
+    var r = await db.from('social_posts').delete().eq('id', postId);
+    if (r.error) throw r.error;
     showToast('Post deleted.', 'success');
     closeModal('modal-post-form');
     loadCalendar();
-    if (document.querySelector('[data-panel="review"].active')) {
-      loadReviewDesk(socialState.currentAvatar.id);
-    }
-  } catch(e) {
-    showToast('Delete failed.', 'error');
-  }
+    if (document.querySelector('[data-panel="review"].active')) loadReviewDesk(socialState.currentAvatar.id);
+  } catch(e) { showToast('Delete failed.', 'error'); }
 }
 
-// ═══════════════════════════
+// ══════════════════════════════════════
 // REVIEW DESK
-// ═══════════════════════════
+// ══════════════════════════════════════
 async function loadReviewDesk(avatarId) {
   var list = document.getElementById('review-list');
   var sub = document.getElementById('review-sub');
-  var approveAllBtn = document.getElementById('btn-approve-all');
-  list.innerHTML = '<div class="empty-state" style="padding:1.5rem">Loading...</div>';
-  sub.textContent = '';
-  approveAllBtn.style.display = 'none';
-
+  var allBtn = document.getElementById('btn-approve-all');
+  list.innerHTML = '<div class="empty-st" style="padding:1.5rem">Loading...</div>';
+  sub.textContent = ''; allBtn.style.display = 'none';
   try {
-    var result = await db.from('social_posts')
-      .select('*')
-      .eq('avatar_id', avatarId)
-      .eq('status', 'pending')
-      .order('scheduled_for');
-    if (result.error) throw result.error;
-    renderReviewDesk(result.data || []);
-  } catch(e) {
-    list.innerHTML = '<div class="empty-state"><div class="empty-state-title">Could not load posts</div></div>';
-  }
+    var r = await db.from('social_posts').select('*').eq('avatar_id', avatarId).eq('status', 'pending').order('scheduled_for');
+    if (r.error) throw r.error;
+    renderReviewDesk(r.data || []);
+  } catch(e) { list.innerHTML = '<div class="empty-st"><div class="empty-st-h">Could not load</div></div>'; }
 }
 
 function renderReviewDesk(posts) {
   var list = document.getElementById('review-list');
   var sub = document.getElementById('review-sub');
-  var approveAllBtn = document.getElementById('btn-approve-all');
-
+  var allBtn = document.getElementById('btn-approve-all');
   sub.textContent = posts.length + ' post' + (posts.length !== 1 ? 's' : '') + ' pending review';
-  approveAllBtn.style.display = posts.length > 1 ? 'block' : 'none';
-
+  allBtn.style.display = posts.length > 1 ? 'block' : 'none';
   if (!posts.length) {
-    list.innerHTML = '<div class="empty-state"><div class="empty-state-title">All clear</div><div>No posts pending review.</div></div>';
+    list.innerHTML = '<div class="empty-st"><div class="empty-st-h">All clear</div><div>No posts pending review.</div></div>';
     return;
   }
-
   list.innerHTML = posts.map(function(p) {
     var platLabel = p.platform === 'ig' ? 'Instagram' : 'TikTok';
-    var platBadgeClass = p.platform === 'ig' ? 'badge-pink' : 'badge-purple';
+    var platClass = p.platform === 'ig' ? 'badge-pink' : 'badge-purple';
     var dateStr = p.scheduled_for ? new Date(p.scheduled_for).toLocaleDateString('en-HK',{weekday:'short',month:'short',day:'numeric'}) : 'No date';
-    return '<div class="review-post" id="review-post-' + p.id + '">' +
-      '<div class="review-post-header">' +
-        '<span class="badge ' + platBadgeClass + '">' + platLabel + '</span>' +
+    return '<div class="rev-card" id="review-post-' + p.id + '">' +
+      '<div class="rev-card-hdr">' +
+        '<span class="badge ' + platClass + '">' + platLabel + '</span>' +
         '<span class="badge badge-amber">Pending</span>' +
         (p.post_type ? '<span class="badge badge-gray">' + esc(p.post_type) + '</span>' : '') +
-        '<span class="review-post-date">' + dateStr + '</span>' +
+        '<span class="rev-date">' + dateStr + '</span>' +
       '</div>' +
-      '<div class="review-section-label">Caption</div>' +
-      '<div class="review-caption-text">' + esc(p.caption || 'No caption') + '</div>' +
-      '<div class="review-actions">' +
+      '<div class="rev-lbl">Caption</div>' +
+      '<div class="rev-cap">' + esc(p.caption || 'No caption') + '</div>' +
+      '<div class="rev-btns">' +
         '<button class="btn-approve" data-pid="' + p.id + '" onclick="approvePost(this.dataset.pid)">Approve</button>' +
         '<button class="btn-reject" data-pid="' + p.id + '" onclick="rejectPost(this.dataset.pid)">Reject</button>' +
         '<button class="btn-edit-sm" data-platform="' + esc(p.platform) + '" data-pid="' + p.id + '" onclick="openPostModal(this.dataset.platform,null,this.dataset.pid)">Edit</button>' +
@@ -1176,82 +1419,74 @@ function renderReviewDesk(posts) {
 
 async function approvePost(postId) {
   try {
-    var result = await db.from('social_posts').update({ status: 'scheduled' }).eq('id', postId);
-    if (result.error) throw result.error;
-    showToast('Post approved \u2014 marked as Scheduled.', 'success');
+    await db.from('social_posts').update({ status:'scheduled' }).eq('id', postId);
+    showToast('Approved — marked Scheduled.', 'success');
     var el = document.getElementById('review-post-' + postId);
     if (el) el.remove();
-    var remaining = document.querySelectorAll('.review-post');
-    var sub = document.getElementById('review-sub');
-    if (sub) sub.textContent = remaining.length + ' post' + (remaining.length !== 1 ? 's' : '') + ' pending review';
-    if (!remaining.length) {
-      document.getElementById('review-list').innerHTML = '<div class="empty-state"><div class="empty-state-title">All clear</div><div>No posts pending review.</div></div>';
+    var rem = document.querySelectorAll('.rev-card');
+    document.getElementById('review-sub').textContent = rem.length + ' post' + (rem.length !== 1 ? 's' : '') + ' pending review';
+    if (!rem.length) {
+      document.getElementById('review-list').innerHTML = '<div class="empty-st"><div class="empty-st-h">All clear</div><div>No posts pending review.</div></div>';
       document.getElementById('btn-approve-all').style.display = 'none';
     }
-  } catch(e) { showToast('Failed to approve.', 'error'); }
+  } catch(e) { showToast('Failed.', 'error'); }
 }
 
 async function rejectPost(postId) {
   try {
-    var result = await db.from('social_posts').update({ status: 'draft' }).eq('id', postId);
-    if (result.error) throw result.error;
-    showToast('Post sent back to Draft.', 'success');
+    await db.from('social_posts').update({ status:'draft' }).eq('id', postId);
+    showToast('Sent back to Draft.', 'success');
     var el = document.getElementById('review-post-' + postId);
     if (el) el.remove();
-    var remaining = document.querySelectorAll('.review-post');
-    var sub = document.getElementById('review-sub');
-    if (sub) sub.textContent = remaining.length + ' post' + (remaining.length !== 1 ? 's' : '') + ' pending review';
-    if (!remaining.length) {
-      document.getElementById('review-list').innerHTML = '<div class="empty-state"><div class="empty-state-title">All clear</div><div>No posts pending review.</div></div>';
+    var rem = document.querySelectorAll('.rev-card');
+    document.getElementById('review-sub').textContent = rem.length + ' post' + (rem.length !== 1 ? 's' : '') + ' pending review';
+    if (!rem.length) {
+      document.getElementById('review-list').innerHTML = '<div class="empty-st"><div class="empty-st-h">All clear</div><div>No posts pending review.</div></div>';
       document.getElementById('btn-approve-all').style.display = 'none';
     }
-  } catch(e) { showToast('Failed to reject.', 'error'); }
+  } catch(e) { showToast('Failed.', 'error'); }
 }
 
 async function approveAll() {
   if (!socialState.currentAvatar) return;
   if (!confirm('Approve all pending posts for this avatar?')) return;
   try {
-    var result = await db.from('social_posts').update({ status: 'scheduled' }).eq('avatar_id', socialState.currentAvatar.id).eq('status', 'pending');
-    if (result.error) throw result.error;
+    var r = await db.from('social_posts').update({ status:'scheduled' }).eq('avatar_id', socialState.currentAvatar.id).eq('status','pending');
+    if (r.error) throw r.error;
     showToast('All posts approved!', 'success');
     loadReviewDesk(socialState.currentAvatar.id);
   } catch(e) { showToast('Failed.', 'error'); }
 }
 
-// ═══════════════════════════
+// ══════════════════════════════════════
 // INSTRUCTIONS
-// ═══════════════════════════
+// ══════════════════════════════════════
 async function loadInstructions(avatarId) {
   var list = document.getElementById('instruction-list');
   list.innerHTML = '<div style="color:var(--muted);font-family:Inter,sans-serif;font-size:.85rem">Loading...</div>';
   try {
-    var result = await db.from('social_instructions').select('*').eq('avatar_id', avatarId).order('created_at');
-    if (result.error) throw result.error;
-    renderInstructions(result.data || []);
-  } catch(e) {
-    list.innerHTML = '<div style="color:var(--muted);font-family:Inter,sans-serif;font-size:.85rem">Could not load instructions.</div>';
-  }
+    var r = await db.from('social_instructions').select('*').eq('avatar_id', avatarId).order('created_at');
+    if (r.error) throw r.error;
+    renderInstructions(r.data || []);
+  } catch(e) { list.innerHTML = '<div style="color:var(--muted);font-family:Inter,sans-serif;font-size:.85rem">Could not load.</div>'; }
 }
 
 function renderInstructions(instructions) {
   var list = document.getElementById('instruction-list');
-  var header = document.getElementById('instruct-header');
-  if (header) header.textContent = 'Active Instructions (' + instructions.length + ')';
-
+  var hdr = document.getElementById('instruct-header');
+  if (hdr) hdr.textContent = 'Active Instructions (' + instructions.length + ')';
   if (!instructions.length) {
-    list.innerHTML = '<div class="empty-state" style="padding:1.5rem"><div class="empty-state-title">No instructions yet</div><div>Add rules the AI will always follow for this avatar.</div></div>';
+    list.innerHTML = '<div class="empty-st" style="padding:1.5rem"><div class="empty-st-h">No instructions yet</div><div>Add rules the AI will always follow for this avatar.</div></div>';
     return;
   }
-
   list.innerHTML = instructions.map(function(inst) {
-    return '<div class="instruction-item' + (inst.enabled ? '' : ' disabled') + '" id="inst-' + inst.id + '">' +
-      '<div class="instruction-text">' + esc(inst.text) + '</div>' +
-      '<label class="toggle-switch" title="Enable/disable">' +
+    return '<div class="inst-item' + (inst.enabled ? '' : ' off') + '" id="inst-' + inst.id + '">' +
+      '<div class="inst-text">' + esc(inst.text) + '</div>' +
+      '<label class="tog-sw" title="Enable/disable">' +
         '<input type="checkbox"' + (inst.enabled ? ' checked' : '') + ' data-instid="' + inst.id + '" onchange="toggleInstruction(this.dataset.instid,this.checked)">' +
-        '<span class="toggle-slider"></span>' +
+        '<span class="tog-track"></span>' +
       '</label>' +
-      '<button class="instruction-delete" data-instid="' + inst.id + '" onclick="deleteInstruction(this.dataset.instid)" title="Delete">&#215;</button>' +
+      '<button class="inst-del" data-instid="' + inst.id + '" onclick="deleteInstruction(this.dataset.instid)" title="Delete">&#215;</button>' +
     '</div>';
   }).join('');
 }
@@ -1261,36 +1496,36 @@ async function addInstruction() {
   var text = (document.getElementById('instruct-new-text').value || '').trim();
   if (!text) { showToast('Enter an instruction first.', 'error'); return; }
   try {
-    var result = await db.from('social_instructions').insert({ avatar_id: socialState.currentAvatar.id, text: text, enabled: true });
-    if (result.error) throw result.error;
+    var r = await db.from('social_instructions').insert({ avatar_id: socialState.currentAvatar.id, text: text, enabled: true });
+    if (r.error) throw r.error;
     document.getElementById('instruct-new-text').value = '';
     showToast('Instruction added.', 'success');
     loadInstructions(socialState.currentAvatar.id);
-  } catch(e) { showToast('Failed to add instruction.', 'error'); }
+  } catch(e) { showToast('Failed.', 'error'); }
 }
 
 async function toggleInstruction(id, enabled) {
   var el = document.getElementById('inst-' + id);
   try {
-    var result = await db.from('social_instructions').update({ enabled: enabled }).eq('id', id);
-    if (result.error) throw result.error;
-    if (el) el.classList.toggle('disabled', !enabled);
-  } catch(e) { showToast('Failed to update.', 'error'); }
+    var r = await db.from('social_instructions').update({ enabled: enabled }).eq('id', id);
+    if (r.error) throw r.error;
+    if (el) el.classList.toggle('off', !enabled);
+  } catch(e) { showToast('Failed.', 'error'); }
 }
 
 async function deleteInstruction(id) {
   if (!confirm('Delete this instruction?')) return;
   try {
-    var result = await db.from('social_instructions').delete().eq('id', id);
-    if (result.error) throw result.error;
+    var r = await db.from('social_instructions').delete().eq('id', id);
+    if (r.error) throw r.error;
     showToast('Instruction deleted.', 'success');
     if (socialState.currentAvatar) loadInstructions(socialState.currentAvatar.id);
-  } catch(e) { showToast('Failed to delete.', 'error'); }
+  } catch(e) { showToast('Failed.', 'error'); }
 }
 
-// ═══════════════════════════
+// ══════════════════════════════════════
 // PERFORMANCE PATTERNS
-// ═══════════════════════════
+// ══════════════════════════════════════
 async function loadPatterns(avatarId) {
   var wEl = document.getElementById('patterns-working');
   var aEl = document.getElementById('patterns-avoid');
@@ -1298,9 +1533,9 @@ async function loadPatterns(avatarId) {
   wEl.innerHTML = '<div style="color:var(--muted);font-size:.8rem;padding:.5rem 0">Loading...</div>';
   aEl.innerHTML = '';
   try {
-    var result = await db.from('social_patterns').select('*').eq('avatar_id', avatarId).order('created_at', { ascending: true });
-    if (result.error) throw result.error;
-    renderPatterns(result.data || []);
+    var r = await db.from('social_patterns').select('*').eq('avatar_id', avatarId).order('created_at', { ascending: true });
+    if (r.error) throw r.error;
+    renderPatterns(r.data || []);
   } catch(e) { showToast('Failed to load patterns.', 'error'); }
 }
 
@@ -1314,12 +1549,12 @@ function renderPatterns(patterns) {
 
 function patternCardHTML(p) {
   var tags = p.tags ? p.tags.split(',').map(function(t){ return t.trim(); }).filter(Boolean) : [];
-  return '<div class="pattern-card">' +
+  return '<div class="pat-card">' +
     '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:.5rem">' +
-      '<div class="pattern-card-text">' + esc(p.text) + '</div>' +
+      '<div class="pat-text">' + esc(p.text) + '</div>' +
       '<button onclick="deletePattern(\'' + p.id + '\')" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem;padding:0 2px;flex-shrink:0;line-height:1;transition:color .2s" onmouseover="this.style.color=\'#e53935\'" onmouseout="this.style.color=\'var(--muted)\'">&#215;</button>' +
     '</div>' +
-    (tags.length ? '<div class="pattern-tags">' + tags.map(function(t){ return '<span class="pattern-tag">' + esc(t) + '</span>'; }).join('') + '</div>' : '') +
+    (tags.length ? '<div class="pat-tags">' + tags.map(function(t){ return '<span class="pat-tag">' + esc(t) + '</span>'; }).join('') + '</div>' : '') +
   '</div>';
 }
 
@@ -1327,7 +1562,6 @@ function showAddPattern(type) {
   document.getElementById('add-pattern-' + type).style.display = 'block';
   document.getElementById('pattern-text-' + type).focus();
 }
-
 function hideAddPattern(type) {
   document.getElementById('add-pattern-' + type).style.display = 'none';
   document.getElementById('pattern-text-' + type).value = '';
@@ -1340,25 +1574,25 @@ async function addPattern(type) {
   var tags = document.getElementById('pattern-tags-' + type).value.trim();
   if (!text) return;
   try {
-    var result = await db.from('social_patterns').insert({ avatar_id: socialState.currentAvatar.id, type: type, text: text, tags: tags || null });
-    if (result.error) throw result.error;
+    var r = await db.from('social_patterns').insert({ avatar_id: socialState.currentAvatar.id, type: type, text: text, tags: tags || null });
+    if (r.error) throw r.error;
     hideAddPattern(type);
     loadPatterns(socialState.currentAvatar.id);
-  } catch(e) { showToast('Failed to add pattern.', 'error'); }
+  } catch(e) { showToast('Failed to add.', 'error'); }
 }
 
 async function deletePattern(id) {
   if (!confirm('Delete this pattern?')) return;
   try {
-    var result = await db.from('social_patterns').delete().eq('id', id);
-    if (result.error) throw result.error;
+    var r = await db.from('social_patterns').delete().eq('id', id);
+    if (r.error) throw r.error;
     if (socialState.currentAvatar) loadPatterns(socialState.currentAvatar.id);
-  } catch(e) { showToast('Failed to delete pattern.', 'error'); }
+  } catch(e) { showToast('Failed.', 'error'); }
 }
 
-// ═══════════════════════════
+// ══════════════════════════════════════
 // BOOT
-// ═══════════════════════════
+// ══════════════════════════════════════
 bootHub();
 </script>
 </body>

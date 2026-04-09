@@ -119,9 +119,10 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--body);min-h
   display:flex;align-items:center;
   z-index:200;
   box-shadow:0 4px 24px rgba(40,40,38,0.09),0 1px 3px rgba(40,40,38,0.06);
-  transition:box-shadow .3s;
+  transition:box-shadow .3s,transform .3s cubic-bezier(.4,0,.2,1),opacity .3s;
 }
 .topnav:hover{box-shadow:0 8px 32px rgba(40,40,38,0.13),0 1px 3px rgba(40,40,38,0.06)}
+.topnav.nav-hidden{transform:translateX(-50%) translateY(calc(-100% - 1.5rem));opacity:0;pointer-events:none}
 .nav-brand{font-family:'Fraunces',serif;font-size:1.25rem;font-weight:600;color:var(--primary);margin-right:1.5rem;letter-spacing:-.02em;flex-shrink:0;cursor:pointer;text-decoration:none;transition:opacity .2s}
 .nav-brand:hover{opacity:.8}
 .nav-links{display:flex;align-items:center;flex:1;gap:.15rem;height:100%}
@@ -1434,6 +1435,20 @@ async function initApp() {
   checkRewards();
   checkRecap();
   checkStorage();
+  // Hide pill nav on scroll in board-main
+  (function(){
+    var bm = document.getElementById('board-main-content');
+    if (!bm) return;
+    var lastY = 0, hidden = false;
+    bm.addEventListener('scroll', function(){
+      var nav = document.querySelector('.topnav');
+      if (!nav) return;
+      var y = bm.scrollTop, delta = y - lastY;
+      if (delta > 6 && y > 60 && !hidden){ nav.classList.add('nav-hidden'); hidden = true; }
+      else if (delta < -6 && hidden){ nav.classList.remove('nav-hidden'); hidden = false; }
+      lastY = y;
+    }, { passive: true });
+  })();
 }
 
 // ═══════════════════════════════════════
