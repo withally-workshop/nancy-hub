@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>(function(){var t=localStorage.getItem('nancy_theme');if(t==='light')document.documentElement.setAttribute('data-theme','light');})()</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nancy — Brand Guidelines</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared/styles.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="shared/hub.js"></script>
+<script src="shared/chat.js"></script>
+<style>
+.brand-wrap{max-width:1060px;margin:0 auto;padding:0 2rem 5rem}
+.brand-hero{padding:2.5rem 0 2rem}
+.brand-hero-label{font-family:'Inter',sans-serif;font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--primary);margin-bottom:.75rem}
+.brand-hero-title{font-family:'Fraunces',serif;font-size:2.4rem;font-weight:600;color:var(--h2);letter-spacing:-.03em;margin-bottom:.5rem;line-height:1.15}
+.brand-hero-sub{font-family:'Inter',sans-serif;font-size:.95rem;color:var(--muted);max-width:600px;line-height:1.7}
+
+.brand-section{margin-bottom:2.5rem}
+.brand-section-hdr{display:flex;align-items:center;gap:.75rem;margin-bottom:1.25rem}
+.brand-section-icon{width:36px;height:36px;border-radius:10px;background:color-mix(in srgb,var(--primary) 12%,transparent);color:var(--primary);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.brand-section-title{font-family:'Fraunces',serif;font-size:1.35rem;font-weight:600;color:var(--h2);letter-spacing:-.02em}
+.brand-card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:1.75rem}
+
+/* Overview */
+.brand-overview-text{font-family:'Inter',sans-serif;font-size:.93rem;color:var(--body);line-height:1.8}
+
+/* Values */
+.brand-values-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.85rem}
+@media(max-width:640px){.brand-values-grid{grid-template-columns:repeat(2,1fr)}}
+.brand-value-item{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:1.1rem 1.25rem}
+.brand-value-icon{font-size:1.3rem;margin-bottom:.6rem}
+.brand-value-name{font-family:'Fraunces',serif;font-size:.95rem;font-weight:600;color:var(--h2);margin-bottom:.25rem}
+.brand-value-desc{font-family:'Inter',sans-serif;font-size:.78rem;color:var(--muted);line-height:1.55}
+
+/* Personality Grid */
+.brand-personality-grid{display:grid;grid-template-columns:1fr 1fr;gap:0}
+.brand-pers-header{display:grid;grid-template-columns:1fr 1fr;gap:0;margin-bottom:.5rem;padding:0 1.75rem}
+.brand-pers-col-label{font-family:'Inter',sans-serif;font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.brand-pers-col-label.not{color:rgba(229,57,53,.7)}
+.brand-pers-row{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--border);padding:.85rem 1.75rem}
+.brand-pers-row:last-child{border-bottom:none}
+.brand-pers-we{font-family:'Inter',sans-serif;font-size:.9rem;font-weight:600;color:var(--h2);display:flex;align-items:center;gap:.5rem}
+.brand-pers-we::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--primary);flex-shrink:0}
+.brand-pers-not{font-family:'Inter',sans-serif;font-size:.9rem;color:var(--muted);display:flex;align-items:center;gap:.5rem;text-decoration:line-through;text-decoration-color:rgba(229,57,53,.4);opacity:.75}
+
+/* Voice Tones */
+.brand-tones-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem}
+@media(max-width:640px){.brand-tones-grid{grid-template-columns:1fr}}
+.brand-tone-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:1.25rem}
+.brand-tone-label{font-family:'Inter',sans-serif;font-size:.67rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:.35rem}
+.brand-tone-name{font-family:'Fraunces',serif;font-size:1.05rem;font-weight:600;color:var(--h2);margin-bottom:.3rem}
+.brand-tone-desc{font-family:'Inter',sans-serif;font-size:.78rem;color:var(--muted);margin-bottom:.85rem;line-height:1.5}
+.brand-tone-example{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:.75rem 1rem;font-family:'Inter',sans-serif;font-size:.82rem;color:var(--body);line-height:1.6;font-style:italic}
+.brand-tone-example::before{content:'"';color:var(--primary);font-style:normal;font-weight:700;margin-right:2px}
+.brand-tone-example::after{content:'"';color:var(--primary);font-style:normal;font-weight:700;margin-left:2px}
+
+/* Products */
+.brand-products-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.85rem}
+@media(max-width:760px){.brand-products-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:480px){.brand-products-grid{grid-template-columns:1fr}}
+.brand-product-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:1.1rem 1.25rem;transition:border-color .2s}
+.brand-product-card:hover{border-color:var(--border2)}
+.brand-product-emoji{font-size:1.6rem;margin-bottom:.6rem;line-height:1}
+.brand-product-name{font-family:'Fraunces',serif;font-size:1rem;font-weight:600;color:var(--h2);margin-bottom:.3rem}
+.brand-product-desc{font-family:'Inter',sans-serif;font-size:.78rem;color:var(--muted);line-height:1.55}
+
+/* Audience */
+.brand-audience-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem}
+@media(max-width:600px){.brand-audience-grid{grid-template-columns:1fr}}
+.brand-audience-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:1.25rem}
+.brand-audience-label{font-family:'Inter',sans-serif;font-size:.67rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--primary);margin-bottom:.6rem}
+.brand-audience-title{font-family:'Fraunces',serif;font-size:1.05rem;font-weight:600;color:var(--h2);margin-bottom:.5rem}
+.brand-audience-list{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:.3rem}
+.brand-audience-list li{font-family:'Inter',sans-serif;font-size:.82rem;color:var(--body);display:flex;align-items:flex-start;gap:.5rem;line-height:1.5}
+.brand-audience-list li::before{content:'·';color:var(--primary);font-weight:700;margin-top:1px;flex-shrink:0}
+
+/* Pillars */
+.brand-pillars-list{display:flex;flex-direction:column;gap:.65rem}
+.brand-pillar-item{display:flex;align-items:flex-start;gap:1rem;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:1rem 1.25rem}
+.brand-pillar-num{width:28px;height:28px;border-radius:8px;background:color-mix(in srgb,var(--primary) 12%,transparent);color:var(--primary);font-family:'Fraunces',serif;font-size:.85rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.brand-pillar-body{flex:1}
+.brand-pillar-name{font-family:'Inter',sans-serif;font-size:.88rem;font-weight:700;color:var(--h2);margin-bottom:.2rem}
+.brand-pillar-desc{font-family:'Inter',sans-serif;font-size:.8rem;color:var(--muted);line-height:1.5}
+
+/* Platforms */
+.brand-platforms-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+@media(max-width:580px){.brand-platforms-grid{grid-template-columns:1fr}}
+.brand-platform-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:1.25rem}
+.brand-platform-name{display:flex;align-items:center;gap:.6rem;font-family:'Fraunces',serif;font-size:1.05rem;font-weight:600;color:var(--h2);margin-bottom:.75rem}
+.brand-platform-rules{display:flex;flex-direction:column;gap:.35rem}
+.brand-platform-rule{font-family:'Inter',sans-serif;font-size:.82rem;color:var(--body);display:flex;align-items:flex-start;gap:.5rem;line-height:1.5}
+.brand-platform-rule::before{content:'→';color:var(--primary);flex-shrink:0;font-weight:600}
+
+/* Vocabulary */
+.brand-vocab-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem}
+@media(max-width:580px){.brand-vocab-grid{grid-template-columns:1fr}}
+.brand-vocab-col{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:1.25rem}
+.brand-vocab-label{font-family:'Inter',sans-serif;font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:.85rem;display:flex;align-items:center;gap:.5rem}
+.brand-vocab-label.use{color:#3bb273}
+.brand-vocab-label.avoid{color:#e53935}
+.brand-vocab-tags{display:flex;flex-wrap:wrap;gap:.4rem}
+.brand-vocab-tag{font-family:'Inter',sans-serif;font-size:.8rem;padding:.3rem .7rem;border-radius:100px}
+.brand-vocab-tag.use{background:rgba(59,178,115,.1);color:#3bb273;border:1px solid rgba(59,178,115,.25)}
+.brand-vocab-tag.avoid{background:rgba(229,57,53,.08);color:#e57373;border:1px solid rgba(229,57,53,.2);text-decoration:line-through;text-decoration-color:rgba(229,57,53,.4)}
+
+/* Do's and Don'ts */
+.brand-dos-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem}
+@media(max-width:580px){.brand-dos-grid{grid-template-columns:1fr}}
+.brand-dos-col{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:1.25rem}
+.brand-dos-label{font-family:'Inter',sans-serif;font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:.85rem;display:flex;align-items:center;gap:.5rem}
+.brand-dos-label.do{color:#3bb273}
+.brand-dos-label.dont{color:#e53935}
+.brand-dos-list{display:flex;flex-direction:column;gap:.5rem}
+.brand-dos-item{font-family:'Inter',sans-serif;font-size:.82rem;color:var(--body);display:flex;align-items:flex-start;gap:.6rem;line-height:1.55}
+.brand-dos-check{width:18px;height:18px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.brand-dos-check.do{background:rgba(59,178,115,.15);color:#3bb273}
+.brand-dos-check.dont{background:rgba(229,57,53,.1);color:#e57373}
+
+/* Mission pill */
+.brand-mission-box{background:color-mix(in srgb,var(--primary) 8%,transparent);border:1px solid color-mix(in srgb,var(--primary) 22%,transparent);border-radius:14px;padding:1.25rem 1.5rem;margin-bottom:1.25rem}
+.brand-mission-label{font-family:'Inter',sans-serif;font-size:.67rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--primary);margin-bottom:.4rem}
+.brand-mission-text{font-family:'Fraunces',serif;font-size:1.1rem;font-weight:500;color:var(--h2);line-height:1.55;font-style:italic}
+</style>
+</head>
+<body>
+
+<div id="gate">
+  <div class="gate-card">
+    <div class="gate-logo">Nancy</div>
+    <div class="gate-sub">CareNBloom Marketing Hub</div>
+    <div class="gate-label">Enter hub password</div>
+    <input class="gate-input" type="password" id="gate-pw" placeholder="••••••••" onkeydown="if(event.key==='Enter')checkPassword()"/>
+    <div class="gate-error" id="gate-error"></div>
+    <button class="gate-btn" onclick="checkPassword()">Enter Hub</button>
+  </div>
+</div>
+
+<div id="auth-screen">
+  <div class="auth-card">
+    <div class="auth-logo">Nancy</div>
+    <div class="auth-sub">CareNBloom Marketing Hub</div>
+    <div class="auth-tabs">
+      <div class="auth-tab active" id="signin-tab" onclick="switchAuthTab('signin')">Sign In</div>
+      <div class="auth-tab" id="signup-tab" onclick="switchAuthTab('signup')">Join Team</div>
+    </div>
+    <div id="signin-form">
+      <div class="auth-field"><label class="auth-label">Email</label><input class="auth-input" type="email" id="signin-email" placeholder="you@carenbloom.com" onkeydown="if(event.key==='Enter')signIn()"/></div>
+      <div class="auth-field"><label class="auth-label">Password</label><input class="auth-input" type="password" id="signin-password" placeholder="Your password" onkeydown="if(event.key==='Enter')signIn()"/><span class="auth-forgot" onclick="showForgotPassword()">Forgot password?</span></div>
+      <div class="auth-error" id="signin-error"></div>
+      <button class="auth-btn" id="signin-btn" onclick="signIn()">Sign In</button>
+    </div>
+    <div id="signup-form" style="display:none">
+      <div class="auth-field"><label class="auth-label">Your Name</label><input class="auth-input" type="text" id="signup-name" placeholder="e.g. Crystal"/></div>
+      <div class="auth-field"><label class="auth-label">Work Email</label><input class="auth-input" type="email" id="signup-email" placeholder="you@carenbloom.com"/><div class="auth-domain-hint">Only @carenbloom.com emails allowed</div></div>
+      <div class="auth-field"><label class="auth-label">Password</label><input class="auth-input" type="password" id="signup-password" placeholder="Min 6 characters"/></div>
+      <div class="auth-error" id="signup-error"></div>
+      <div class="auth-success" id="signup-success"></div>
+      <button class="auth-btn" id="signup-btn" onclick="signUp()">Join Team</button>
+    </div>
+    <div id="forgot-form" style="display:none">
+      <div class="auth-field"><label class="auth-label">Work Email</label><input class="auth-input" type="email" id="forgot-email" placeholder="you@carenbloom.com"/></div>
+      <div class="auth-error" id="forgot-error"></div>
+      <div class="auth-success" id="forgot-success"></div>
+      <button class="auth-btn" id="forgot-btn" onclick="sendResetEmail()">Send Reset Link</button>
+      <div style="text-align:center;margin-top:1rem"><span class="auth-forgot" onclick="switchAuthTab('signin')">← Back to Sign In</span></div>
+    </div>
+  </div>
+</div>
+
+<div id="app" style="display:none">
+
+  <nav class="topnav">
+    <a class="nav-brand" href="index.html">Nancy</a>
+    <div class="nav-links">
+      <a class="nav-link" href="index.html">Home</a>
+      <a class="nav-link" href="taskflow.html">Task Hub</a>
+      <a class="nav-link" href="social.html">Content & Socials</a>
+      <a class="nav-link" href="learning.html">Learning</a>
+      <a class="nav-link active" href="brand.html">Brand</a>
+      <a class="nav-link" href="creators.html">Creators</a>
+    </div>
+    <div class="nav-right">
+      <div class="nav-time" id="pht-clock">HKT --:--</div>
+      <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme"></button>
+      <div id="admin-nav-link" style="display:none"><a class="nav-link" href="admin.html" style="color:var(--primary);font-weight:600">Admin</a></div>
+      <div class="user-nav-btn" onclick="openUserMenu()">
+        <div class="user-avatar-small" id="user-avatar-nav">?</div>
+        <span id="user-name-nav">Me</span>
+        <span style="font-size:.7rem;color:var(--muted)">▾</span>
+      </div>
+    </div>
+  </nav>
+
+  <div class="brand-wrap">
+
+    <!-- Hero -->
+    <div class="brand-hero">
+      <div class="brand-hero-label">Hello Nancy · Brand Guidelines</div>
+      <div class="brand-hero-title">Brand Handbook</div>
+      <div class="brand-hero-sub">Everything the team needs to communicate, create, and stay on-brand — voice, tone, products, audience, and content strategy in one place.</div>
+    </div>
+
+    <!-- 1. Overview -->
+    <div class="brand-section">
+      <div class="brand-section-hdr">
+        <div class="brand-section-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+        </div>
+        <div class="brand-section-title">About Hello Nancy</div>
+      </div>
+      <div class="brand-card">
+        <div class="brand-overview-text">
+          Hello Nancy is CareNBloom's sexual wellness brand — here to make pleasure approachable, fun, and completely shame-free. We believe that exploring your own pleasure is a form of self-care, and that everyone deserves access to quality products and honest education to do it on their own terms.<br><br>
+          Our products are thoughtfully designed, beginner-friendly, and packaged with privacy in mind. Our brand is built on the belief that wellness includes the full spectrum of joy — and that conversations about pleasure should feel as natural as any other part of health. From TikTok-viral toys to carefully curated bundles, Hello Nancy meets people where they are: curious, open, and ready to explore.
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. Mission & Values -->
+    <div class="brand-section">
+      <div class="brand-section-hdr">
+        <div class="brand-section-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </div>
+        <div class="brand-section-title">Mission &amp; Values</div>
+      </div>
+      <div class="brand-card">
+        <div class="brand-mission-box">
+          <div class="brand-mission-label">Mission</div>
+          <div class="brand-mission-text">Make pleasure accessible, inclusive, and empowering for everyone.</div>
+        </div>
+        <div class="brand-values-grid">
+          <div class="brand-value-item">
+            <div class="brand-value-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            </div>
+            <div class="brand-value-name">Empowerment</div>
+            <div class="brand-value-desc">We make people feel capable, confident, and in control of their own pleasure and wellness journey.</div>
+          </div>
+          <div class="brand-value-item">
+            <div class="brand-value-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3bb273" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            </div>
+            <div class="brand-value-name">Inclusivity</div>
+            <div class="brand-value-desc">Pleasure is for everyone. Our language, imagery, and products are designed to include all bodies and identities.</div>
+          </div>
+          <div class="brand-value-item">
+            <div class="brand-value-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f7b731" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            </div>
+            <div class="brand-value-name">Quality</div>
+            <div class="brand-value-desc">Every product is body-safe, thoughtfully engineered, and built to actually work. No compromises.</div>
+          </div>
+          <div class="brand-value-item">
+            <div class="brand-value-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5e81f4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </div>
+            <div class="brand-value-name">Privacy</div>
+            <div class="brand-value-desc">Discreet packaging, no judgment. We protect our customers' privacy at every touchpoint.</div>
+          </div>
+          <div class="brand-value-item">
+            <div class="brand-value-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e67e22" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+            </div>
+            <div class="brand-value-name">Education</div>
+            <div class="brand-value-desc">We believe informed people make better choices. We share real, honest, helpful content about wellness and pleasure.</div>
+          </div>
+          <div class="brand-value-item">
+            <div class="brand-value-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e91e8c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+            </div>
+            <div class="brand-value-name">Playfulness</div>
+            <div class="brand-value-desc">Pleasure should be fun! We bring lightness, humor, and joy to every conversation and product experience.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. Brand Personality -->
+    <div class="brand-section">
+      <div class="brand-section-hdr">
+        <div class="brand-section-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        </div>
+        <div class="brand-section-title">Brand Personality</div>
+      </div>
+      <div class="brand-card" style="padding:0;overflow:hidden">
+        <div style="display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--border)">
+          <div style="padding:.85rem 1.75rem;font-family:'Inter',sans-serif;font-size:.67rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--primary)">We are</div>
+          <div style="padding:.85rem 1.75rem;font-family:'Inter',sans-serif;font-size:.67rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#e57373;border-left:1px solid var(--border)">We are not</div>
+        </div>
+        <div class="brand-pers-row">
+          <div class="brand-pers-we">Playful</div>
+          <div class="brand-pers-not" style="border-left:1px solid var(--border);padding-left:1.75rem;margin-left:-1.75rem">Crude</div>
+        </div>
+        <div class="brand-pers-row">
+          <div class="brand-pers-we">Empowering</div>
+          <div class="brand-pers-not" style="border-left:1px solid var(--border);padding-left:1.75rem;margin-left:-1.75rem">Preachy</div>
+        </div>
+        <div class="brand-pers-row">
+          <div class="brand-pers-we">Educational</div>
+          <div class="brand-pers-not" style="border-left:1px solid var(--border);padding-left:1.75rem;margin-left:-1.75rem">Clinical</div>
+        </div>
+        <div class="brand-pers-row">
+          <div class="brand-pers-we">Inclusive</div>
+          <div class="brand-pers-not" style="border-left:1px solid var(--border);padding-left:1.75rem;margin-left:-1.75rem">Gendered</div>
+        </div>
+        <div class="brand-pers-row">
+          <div class="brand-pers-we">Warm</div>
+          <div class="brand-pers-not" style="border-left:1px solid var(--border);padding-left:1.75rem;margin-left:-1.75rem">Formal</div>
+        </div>
+        <div class="brand-pers-row" style="border-bottom:none">
+          <div class="brand-pers-we">Fun</div>
+          <div class="brand-pers-not" style="border-left:1px solid var(--border);padding-left:1.75rem;margin-left:-1.75rem">Explicit</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. Voice & Tone -->
+    <div class="brand-section">
+      <div class="brand-section-hdr">
+        <div class="brand-section-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        </div>
+        <div class="brand-section-title">Voice &amp; Tone</div>
+      </div>
+      <div class="brand-tones-grid">
+        <div class="brand-tone-card">
+          <div class="brand-tone-label" style="color:#f7b731">Celebratory</div>
+          <div class="brand-tone-name">Launches &amp; Wins</div>
+          <div class="brand-tone-desc">Excited, proud, high-energy. We celebrate product drops and milestones with genuine enthusiasm.</div>
+          <div class="brand-tone-example">Meet Berri — the massager that turns up the tease. She's here, she's Patent Pending, and she's absolutely not playing around.</div>
+        </div>
+        <div class="brand-tone-card">
+          <div class="brand-tone-label" style="color:#3bb273">Educational</div>
+          <div class="brand-tone-name">How-To &amp; Guides</div>
+          <div class="brand-tone-desc">Clear, helpful, never clinical. We explain things like a knowledgeable friend, not a textbook.</div>
+          <div class="brand-tone-example">Not sure where to start? Avo's 12 graduated patterns are designed to take you from curious to completely obsessed — at your own pace.</div>
+        </div>
+        <div class="brand-tone-card">
+          <div class="brand-tone-label" style="color:var(--primary)">Empowering</div>
+          <div class="brand-tone-name">Campaign Copy</div>
+          <div class="brand-tone-desc">Bold, affirming, confident. We remind our audience that their pleasure matters and they deserve it.</div>
+          <div class="brand-tone-example">You don't need permission to feel good. You just need the right tool.</div>
+        </div>
+        <div class="brand-tone-card">
+          <div class="brand-tone-label" style="color:#e91e8c">Playful</div>
+          <div class="brand-tone-name">Social &amp; Captions</div>
+          <div class="brand-tone-desc">Cheeky, fun, punny. This is where we get a little witty and let the brand personality shine.</div>
+          <div class="brand-tone-example">Lolly is pocket-sized and absolutely not innocent. Perfect for travel, adventures, and nights in.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. Product Line -->
+    <div class="brand-section">
+      <div class="brand-section-hdr">
+        <div class="brand-section-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13" rx="2"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+        </div>
+        <div class="brand-section-title">Product Line</div>
+      </div>
+      <div class="brand-products-grid">
+        <div class="brand-product-card">
+          <div class="brand-product-emoji">🥑</div>
+          <div class="brand-product-name">Avo</div>
+          <div class="brand-product-desc">Clitoral air-suction massager, avocado-shaped with 12 graduating patterns. The crowd favourite.</div>
+        </div>
+        <div class="brand-product-card">
+          <div class="brand-product-emoji">🍋</div>
+          <div class="brand-product-name">Lem</div>
+          <div class="brand-product-desc">Compact clitoral massager. Pairs with Avo in the Tutti Frutti bundle.</div>
+        </div>
+        <div class="brand-product-card">
+          <div class="brand-product-emoji">🍭</div>
+          <div class="brand-product-name">Lolly</div>
+          <div class="brand-product-desc">Mini wand, pocket-sized travel companion. 10 intensities in a sleek, travel-ready design.</div>
+        </div>
+        <div class="brand-product-card">
+          <div class="brand-product-emoji">🌈</div>
+          <div class="brand-product-name">Lumii</div>
+          <div class="brand-product-desc">Suction toy with 7 intensities, rainbow glow finish, and a beautifully simple 1-button interface.</div>
+        </div>
+        <div class="brand-product-card">
+          <div class="brand-product-emoji">✨</div>
+          <div class="brand-product-name">Namii 2</div>
+          <div class="brand-product-desc">2-in-1 clitoral stimulator — 7 suction modes + 6 vibe modes, hands-free, magnetic charging base doubles as a mood light.</div>
+        </div>
+        <div class="brand-product-card">
+          <div class="brand-product-emoji">🍓</div>
+          <div class="brand-product-name">Berri</div>
+          <div class="brand-product-desc">Edging clitoral massager with Patent Pending TapSphere™ Technology. 12 rhythmic patterns that build sensation gradually.</div>
+        </div>
+        <div class="brand-product-card">
+          <div class="brand-product-emoji">💫</div>
+          <div class="brand-product-name">Gii / Gii Glow</div>
+          <div class="brand-product-desc">Internal + external stimulation, 9 vibe modes, 8 strength settings. The dual-action workhorse.</div>
+        </div>
+        <div class="brand-product-card">
+          <div class="brand-product-emoji">🎮</div>
+          <div class="brand-product-name">Pixie</div>
+          <div class="brand-product-desc">Remote-controlled panty vibrator, magnetic attachment, 10 settings, fully waterproof.</div>
+        </div>
+        <div class="brand-product-card">
+          <div class="brand-product-emoji">💎</div>
+          <div class="brand-product-name">Kalii</div>
+          <div class="brand-product-desc">Glass G-spot dildo with smooth curves and ribs. Comes with a free vegan leather case.</div>
+        </div>
+        <div class="brand-product-card">
+          <div class="brand-product-emoji">🔮</div>
+          <div class="brand-product-name">Anii</div>
+          <div class="brand-product-desc">Glass plug in hypoallergenic borosilicate glass. Includes vegan leather case.</div>
+        </div>
+        <div class="brand-product-card">
+          <div class="brand-product-emoji">🪞</div>
+          <div class="brand-product-name">Ohwii (by Wicul)</div>
+          <div class="brand-product-desc">Double-ended glass dildo, designed for G-spot and P-spot stimulation.</div>
+        </div>
+        <div class="brand-product-card">
+          <div class="brand-product-emoji">🃏</div>
+          <div class="brand-product-name">Together</div>
+          <div class="brand-product-desc">180-card intimacy deck for couples. From playful questions to bold confessions — get closer, have fun, explore.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6. Target Audience -->
+    <div class="brand-section">
+      <div class="brand-section-hdr">
+        <div class="brand-section-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <div class="brand-section-title">Target Audience</div>
+      </div>
+      <div class="brand-audience-grid">
+        <div class="brand-audience-card">
+          <div class="brand-audience-label">Primary</div>
+          <div class="brand-audience-title">Women &amp; Vulva-Owners, 20–40</div>
+          <ul class="brand-audience-list">
+            <li>Based in Philippines and Hong Kong</li>
+            <li>Curious, open-minded, and TikTok-savvy</li>
+            <li>Value quality, discretion, and education</li>
+            <li>Beginner to intermediate in their wellness journey</li>
+            <li>Respond to relatable humor and empowering messaging</li>
+          </ul>
+        </div>
+        <div class="brand-audience-card">
+          <div class="brand-audience-label">Secondary</div>
+          <div class="brand-audience-title">Couples Exploring Together</div>
+          <ul class="brand-audience-list">
+            <li>Looking to deepen intimacy and connection</li>
+            <li>Interested in couples products and intimacy guides</li>
+            <li>Value approachable, non-intimidating content</li>
+            <li>Geography: Philippines, Hong Kong, Asia-Pacific</li>
+            <li>Mindset: open, curious, wellness-forward</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- 7. Content Pillars -->
+    <div class="brand-section">
+      <div class="brand-section-hdr">
+        <div class="brand-section-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        </div>
+        <div class="brand-section-title">Content Pillars</div>
+      </div>
+      <div class="brand-card" style="padding:1.25rem">
+        <div class="brand-pillars-list">
+          <div class="brand-pillar-item">
+            <div class="brand-pillar-num">1</div>
+            <div class="brand-pillar-body">
+              <div class="brand-pillar-name">Pleasure Education</div>
+              <div class="brand-pillar-desc">How-to guides, tips, and sex-positive education. Clear, helpful, never clinical. Positions Hello Nancy as the trusted expert friend.</div>
+            </div>
+          </div>
+          <div class="brand-pillar-item">
+            <div class="brand-pillar-num">2</div>
+            <div class="brand-pillar-body">
+              <div class="brand-pillar-name">Product Spotlights</div>
+              <div class="brand-pillar-desc">Features, demos, and unboxings. Show the products in action — real use cases, real benefits, with personality.</div>
+            </div>
+          </div>
+          <div class="brand-pillar-item">
+            <div class="brand-pillar-num">3</div>
+            <div class="brand-pillar-body">
+              <div class="brand-pillar-name">Relatable Moments</div>
+              <div class="brand-pillar-desc">Lifestyle, humor, and day-in-the-life content. Make the brand feel human, warm, and part of everyday life.</div>
+            </div>
+          </div>
+          <div class="brand-pillar-item">
+            <div class="brand-pillar-num">4</div>
+            <div class="brand-pillar-body">
+              <div class="brand-pillar-name">Community &amp; Relationships</div>
+              <div class="brand-pillar-desc">Intimacy tips, couples content, and community moments. Builds connection and reinforces the Together product line and brand values.</div>
+            </div>
+          </div>
+          <div class="brand-pillar-item">
+            <div class="brand-pillar-num">5</div>
+            <div class="brand-pillar-body">
+              <div class="brand-pillar-name">Trending Formats</div>
+              <div class="brand-pillar-desc">TikTok trends and viral formats adapted to the Hello Nancy brand. Stay culturally relevant while always keeping content on-brand and compliant.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 8. Platform Guidance -->
+    <div class="brand-section">
+      <div class="brand-section-hdr">
+        <div class="brand-section-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        </div>
+        <div class="brand-section-title">Platform Guidance</div>
+      </div>
+      <div class="brand-platforms-grid">
+        <div class="brand-platform-card">
+          <div class="brand-platform-name">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"/></svg>
+            TikTok
+          </div>
+          <div class="brand-platform-rules">
+            <div class="brand-platform-rule">Hook in the first 3 seconds — no slow intros</div>
+            <div class="brand-platform-rule">Use trending audio where it fits naturally</div>
+            <div class="brand-platform-rule">Blend educational + entertaining ("edutainment")</div>
+            <div class="brand-platform-rule">No explicit content — follow Community Guidelines strictly</div>
+            <div class="brand-platform-rule">Captions should reinforce the hook, not repeat it</div>
+            <div class="brand-platform-rule">Comments are part of the content strategy — reply and engage</div>
+          </div>
+        </div>
+        <div class="brand-platform-card">
+          <div class="brand-platform-name">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg>
+            Instagram
+          </div>
+          <div class="brand-platform-rules">
+            <div class="brand-platform-rule">Maintain an aesthetic, cohesive grid — colors and mood matter</div>
+            <div class="brand-platform-rule">Product highlights and lifestyle content in equal measure</div>
+            <div class="brand-platform-rule">Stories for polls, questions, and behind-the-scenes</div>
+            <div class="brand-platform-rule">Reels for reach — treat like short TikToks with grid appeal</div>
+            <div class="brand-platform-rule">Captions can be longer and more storytelling-forward than TikTok</div>
+            <div class="brand-platform-rule">Hashtag strategy: mix brand, category, and trending tags</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 9. Vocabulary Guide -->
+    <div class="brand-section">
+      <div class="brand-section-hdr">
+        <div class="brand-section-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        </div>
+        <div class="brand-section-title">Vocabulary Guide</div>
+      </div>
+      <div class="brand-vocab-grid">
+        <div class="brand-vocab-col">
+          <div class="brand-vocab-label use">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            Words We Use
+          </div>
+          <div class="brand-vocab-tags">
+            <span class="brand-vocab-tag use">pleasure</span>
+            <span class="brand-vocab-tag use">stimulation</span>
+            <span class="brand-vocab-tag use">sensation</span>
+            <span class="brand-vocab-tag use">explore</span>
+            <span class="brand-vocab-tag use">discover</span>
+            <span class="brand-vocab-tag use">feel</span>
+            <span class="brand-vocab-tag use">intimacy</span>
+            <span class="brand-vocab-tag use">wellness</span>
+            <span class="brand-vocab-tag use">self-care</span>
+            <span class="brand-vocab-tag use">empowering</span>
+            <span class="brand-vocab-tag use">fun</span>
+            <span class="brand-vocab-tag use">play</span>
+            <span class="brand-vocab-tag use">beginner-friendly</span>
+            <span class="brand-vocab-tag use">body-safe</span>
+            <span class="brand-vocab-tag use">discreet</span>
+            <span class="brand-vocab-tag use">intentional</span>
+          </div>
+        </div>
+        <div class="brand-vocab-col">
+          <div class="brand-vocab-label avoid">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            Words We Avoid
+          </div>
+          <div class="brand-vocab-tags">
+            <span class="brand-vocab-tag avoid">explicit adult slang</span>
+            <span class="brand-vocab-tag avoid">clinical medical jargon</span>
+            <span class="brand-vocab-tag avoid">shame language</span>
+            <span class="brand-vocab-tag avoid">gendered exclusions</span>
+            <span class="brand-vocab-tag avoid">dirty / naughty</span>
+            <span class="brand-vocab-tag avoid">pornographic terms</span>
+            <span class="brand-vocab-tag avoid">taboo / forbidden</span>
+            <span class="brand-vocab-tag avoid">sinful / guilty</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 10. Do's and Don'ts -->
+    <div class="brand-section">
+      <div class="brand-section-hdr">
+        <div class="brand-section-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        </div>
+        <div class="brand-section-title">Do's &amp; Don'ts</div>
+      </div>
+      <div class="brand-dos-grid">
+        <div class="brand-dos-col">
+          <div class="brand-dos-label do">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            Do
+          </div>
+          <div class="brand-dos-list">
+            <div class="brand-dos-item">
+              <div class="brand-dos-check do"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+              Use inclusive, body-neutral language that welcomes all identities
+            </div>
+            <div class="brand-dos-item">
+              <div class="brand-dos-check do"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+              Lead with the benefit or feeling, not just the feature
+            </div>
+            <div class="brand-dos-item">
+              <div class="brand-dos-check do"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+              Keep social content educational AND entertaining
+            </div>
+            <div class="brand-dos-item">
+              <div class="brand-dos-check do"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+              Emphasise privacy, discretion, and safety at every touchpoint
+            </div>
+            <div class="brand-dos-item">
+              <div class="brand-dos-check do"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+              Be playful, punny, and cheeky — the brand has a sense of humor
+            </div>
+            <div class="brand-dos-item">
+              <div class="brand-dos-check do"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+              Follow platform community guidelines — always
+            </div>
+            <div class="brand-dos-item">
+              <div class="brand-dos-check do"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+              Celebrate the full range of bodies, relationships, and identities
+            </div>
+            <div class="brand-dos-item">
+              <div class="brand-dos-check do"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+              Use real product names (Avo, Berri, Namii 2) consistently
+            </div>
+          </div>
+        </div>
+        <div class="brand-dos-col">
+          <div class="brand-dos-label dont">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            Don't
+          </div>
+          <div class="brand-dos-list">
+            <div class="brand-dos-item">
+              <div class="brand-dos-check dont"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>
+              Use explicit sexual language or graphic descriptions in public-facing content
+            </div>
+            <div class="brand-dos-item">
+              <div class="brand-dos-check dont"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>
+              Use shame, guilt, or embarrassment as a hook — even jokingly
+            </div>
+            <div class="brand-dos-item">
+              <div class="brand-dos-check dont"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>
+              Write in a clinical, medical, or overly formal tone
+            </div>
+            <div class="brand-dos-item">
+              <div class="brand-dos-check dont"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>
+              Default to gendered language that excludes non-binary or trans audiences
+            </div>
+            <div class="brand-dos-item">
+              <div class="brand-dos-check dont"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>
+              Make product claims that can't be substantiated (e.g. medical benefits)
+            </div>
+            <div class="brand-dos-item">
+              <div class="brand-dos-check dont"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>
+              Copy competitor styles or voice — Hello Nancy has its own distinct personality
+            </div>
+            <div class="brand-dos-item">
+              <div class="brand-dos-check dont"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>
+              Post on platforms without checking content guidelines first
+            </div>
+            <div class="brand-dos-item">
+              <div class="brand-dos-check dont"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>
+              Be preachy or lecture-y — we educate and empower, we don't lecture
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /.brand-wrap -->
+
+</div><!-- /#app -->
+
+</body>
+</html>
