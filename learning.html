@@ -81,15 +81,13 @@
 .gem-cat-btn.active{background:#8854d0;color:white;border-color:#8854d0}
 .gem-cat-btn:hover:not(.active){background:var(--bg2);color:var(--body)}
 .gem-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem}
-.gem-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.25rem;transition:border-color .2s,box-shadow .2s;display:flex;flex-direction:column;border-left:3px solid var(--gc,#8854d0)}
-.gem-card:hover{border-color:var(--border2);box-shadow:0 4px 24px rgba(0,0,0,.15)}
+.gem-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.25rem;transition:border-color .2s,box-shadow .2s,transform .18s;display:flex;flex-direction:column;border-left:3px solid var(--gc,#8854d0);cursor:pointer}
+.gem-card:hover{border-color:var(--border2);box-shadow:0 6px 28px rgba(0,0,0,.18);transform:translateY(-2px)}
 .gem-top{display:flex;align-items:flex-start;gap:.75rem;margin-bottom:.75rem}
 .gem-init{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;font-size:.7rem;font-weight:700;color:white;flex-shrink:0;letter-spacing:.02em}
 .gem-cat-bdg{font-family:'Inter',sans-serif;font-size:.63rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--gc,#8854d0);background:rgba(136,84,208,.1);border:1px solid rgba(136,84,208,.2);border-radius:100px;padding:2px 8px;margin-bottom:.3rem;display:inline-block}
 .gem-ttl{font-family:'Fraunces',serif;font-size:1rem;font-weight:600;color:var(--h2);letter-spacing:-.01em}
 .gem-excerpt{font-family:'Inter',sans-serif;font-size:.82rem;color:var(--muted);line-height:1.6;margin-bottom:.75rem;flex:1}
-.gem-body{font-family:'Inter',sans-serif;font-size:.83rem;color:var(--body);line-height:1.75;display:none;border-top:1px solid var(--border);padding-top:.85rem;margin-top:.85rem;white-space:pre-wrap}
-.gem-body.open{display:block;animation:lhFadeIn .2s ease}
 .gem-foot{display:flex;align-items:center;justify-content:space-between;gap:.5rem;margin-top:auto;padding-top:.5rem}
 .gem-expand{font-family:'Inter',sans-serif;font-size:.78rem;font-weight:600;color:#8854d0;background:none;border:none;cursor:pointer;padding:0;transition:opacity .15s}
 .gem-expand:hover{opacity:.7}
@@ -97,6 +95,20 @@
 .gem-link:hover{color:#8854d0}
 .gem-acts{display:flex;gap:.25rem;flex-shrink:0}
 .gem-act-btn{background:none;border:1px solid var(--border);border-radius:6px;padding:.2rem .5rem;font-family:'Inter',sans-serif;font-size:.7rem;color:var(--muted);cursor:pointer;transition:all .15s}
+/* Gem popup modal */
+.gem-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(4px);z-index:1000;display:flex;align-items:center;justify-content:center;padding:1.5rem;opacity:0;pointer-events:none;transition:opacity .22s ease}
+.gem-modal-overlay.open{opacity:1;pointer-events:all}
+.gem-modal{background:var(--card);border:1px solid var(--border2);border-radius:22px;width:100%;max-width:580px;max-height:85vh;overflow-y:auto;padding:2rem;position:relative;transform:translateY(16px) scale(.97);transition:transform .25s cubic-bezier(.34,1.3,.64,1);border-left:4px solid var(--gm-col,#8854d0)}
+.gem-modal-overlay.open .gem-modal{transform:translateY(0) scale(1)}
+.gem-modal-close{position:absolute;top:1.25rem;right:1.25rem;background:var(--bg2);border:1px solid var(--border);border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--muted);transition:all .15s}
+.gem-modal-close:hover{background:var(--border);color:var(--h2)}
+.gem-modal-cat{font-family:'Inter',sans-serif;font-size:.63rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gm-col,#8854d0);margin-bottom:.6rem;display:block}
+.gem-modal-title{font-family:'Fraunces',serif;font-size:1.45rem;font-weight:600;color:var(--h2);letter-spacing:-.02em;margin-bottom:.5rem;line-height:1.25}
+.gem-modal-excerpt{font-family:'Inter',sans-serif;font-size:.88rem;color:var(--muted);line-height:1.6;margin-bottom:1.25rem;padding-bottom:1.25rem;border-bottom:1px solid var(--border)}
+.gem-modal-body{font-family:'Inter',sans-serif;font-size:.88rem;color:var(--body);line-height:1.85;white-space:pre-wrap;word-break:break-word}
+.gem-modal-link{display:inline-flex;align-items:center;gap:.4rem;margin-top:1.25rem;font-family:'Inter',sans-serif;font-size:.82rem;font-weight:600;color:var(--gm-col,#8854d0);text-decoration:none;opacity:.85;transition:opacity .15s}
+.gem-modal-link:hover{opacity:1}
+.gem-modal-admin{display:flex;gap:.5rem;margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--border)}
 .gem-act-btn:hover{background:var(--bg2);color:var(--body)}
 .gem-act-btn.del:hover{color:#e53935;border-color:rgba(229,57,53,.3)}
 
@@ -392,6 +404,16 @@
       </div>
     </div>
     <div id="vdoc-body"></div>
+  </div>
+</div>
+
+<!-- GEM POPUP MODAL -->
+<div class="gem-modal-overlay" id="gem-modal-overlay" onclick="closeGemModal(event)">
+  <div class="gem-modal" id="gem-modal-inner">
+    <button class="gem-modal-close" onclick="closeGemModal()" aria-label="Close">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <div id="gem-modal-content"></div>
   </div>
 </div>
 
@@ -931,20 +953,23 @@ function gemCardHTML(g, isCustom) {
   var init = catInit(g.cat || '');
   var badgeBg = col + '18';
   var badgeBorder = col + '35';
-  var html = '<div class="gem-card" id="gem-' + g.id + '" style="--gc:' + col + '">'
+  var hasBody = !!(g.body || g.content);
+  var html = '<div class="gem-card" id="gem-' + g.id + '" style="--gc:' + col + '" onclick="openGemModal(\'' + g.id + '\',' + isCustom + ')">'
     + '<div class="gem-top">'
     + '<div class="gem-init" style="background:' + col + '">' + esc(init) + '</div>'
     + '<div><div class="gem-cat-bdg" style="color:' + col + ';background:' + badgeBg + ';border-color:' + badgeBorder + '">' + esc(g.cat || 'General') + '</div>'
     + '<div class="gem-ttl">' + esc(g.title) + '</div></div>'
     + '</div>'
     + '<div class="gem-excerpt">' + esc(g.excerpt || g.description || '') + '</div>'
-    + '<div class="gem-body" id="gem-body-' + g.id + '">' + esc(g.body || g.content || '') + '</div>'
-    + '<div class="gem-foot">'
-    + '<button class="gem-expand" id="gem-btn-' + g.id + '" onclick="toggleGem(\'' + g.id + '\')">Read more ↓</button>';
-  if (g.link) html += '<a class="gem-link" href="' + esc(g.link) + '" target="_blank">' + esc(g.linkLabel || 'Learn more') + '</a>';
-  if (g.links && g.links.length) html += '<a class="gem-link" href="' + esc(g.links[0].url) + '" target="_blank">' + esc(g.links[0].label || 'Source') + '</a>';
+    + '<div class="gem-foot">';
+  if (hasBody) html += '<span class="gem-expand">Read more ↓</span>';
+  if (g.link) html += '<span class="gem-link">' + esc(g.linkLabel || 'Learn more') + ' →</span>';
+  else if (g.links && g.links.length) html += '<span class="gem-link">' + esc(g.links[0].label || 'Source') + ' →</span>';
   if (isCustom && hubState.currentUser && hubState.currentUser.role === 'admin') {
-    html += '<div class="gem-acts"><button class="gem-act-btn" onclick="openEditGemModal(\'' + esc(g.id) + '\')">Edit</button><button class="gem-act-btn del" onclick="deleteGemById(\'' + esc(g.id) + '\',\'' + esc((g.title||'').replace(/'/g,"\\'")) + '\')">Delete</button></div>';
+    html += '<div class="gem-acts">'
+      + '<button class="gem-act-btn" onclick="event.stopPropagation();openEditGemModal(\'' + esc(g.id) + '\')">Edit</button>'
+      + '<button class="gem-act-btn del" onclick="event.stopPropagation();deleteGemById(\'' + esc(g.id) + '\',\'' + esc((g.title||'').replace(/'/g,"\\'")) + '\')">Delete</button>'
+      + '</div>';
   }
   html += '</div></div>';
   return html;
@@ -1003,24 +1028,42 @@ async function loadCustomGems() {
   }
 }
 
-function toggleGem(id) {
-  var body = document.getElementById('gem-body-' + id);
-  var btn = document.getElementById('gem-btn-' + id);
-  if (!body || !btn) return;
-  var isOpen = body.classList.contains('open');
-  // Close all open gems first
-  document.querySelectorAll('.gem-body.open').forEach(function(el) {
-    el.classList.remove('open');
-    var otherId = el.id.replace('gem-body-', '');
-    var otherBtn = document.getElementById('gem-btn-' + otherId);
-    if (otherBtn) otherBtn.textContent = 'Read more ↓';
-  });
-  // Toggle the clicked one (open if it was closed)
-  if (!isOpen) {
-    body.classList.add('open');
-    btn.textContent = 'Show less ↑';
-    body.closest('.gem-card').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+function openGemModal(id, isCustom) {
+  // Find gem data — check static GEMS first, then customGems
+  var g = GEMS.find(function(x){ return x.id === id; });
+  if (!g) g = lhState.customGems.find(function(x){ return x.id === id; });
+  if (!g) return;
+
+  var col = catColor(g.cat || g.tags || '');
+  var body = g.body || g.content || '';
+  var excerpt = g.excerpt || g.description || '';
+  var link = g.link || (g.links && g.links.length ? g.links[0].url : null);
+  var linkLabel = g.linkLabel || (g.links && g.links.length ? (g.links[0].label || 'Learn more') : 'Learn more');
+  var canEdit = hubState.currentUser && hubState.currentUser.role === 'admin';
+
+  var html = '<span class="gem-modal-cat">' + esc(g.cat || g.tags || 'Gem') + '</span>'
+    + '<div class="gem-modal-title">' + esc(g.title) + '</div>';
+  if (excerpt) html += '<div class="gem-modal-excerpt">' + esc(excerpt) + '</div>';
+  if (body) html += '<div class="gem-modal-body">' + esc(body) + '</div>';
+  if (link) html += '<a class="gem-modal-link" href="' + esc(link) + '" target="_blank" onclick="event.stopPropagation()">' + esc(linkLabel) + ' →</a>';
+  if (isCustom && canEdit) {
+    html += '<div class="gem-modal-admin">'
+      + '<button class="btn-ghost" style="font-size:.78rem;padding:.35rem .85rem" onclick="event.stopPropagation();closeGemModal();openEditGemModal(\'' + esc(id) + '\')">Edit</button>'
+      + '<button class="btn-ghost" style="font-size:.78rem;padding:.35rem .85rem;color:#e53935" onclick="event.stopPropagation();closeGemModal();deleteGemById(\'' + esc(id) + '\',\'' + esc((g.title||'').replace(/'/g,"\\'")) + '\')">Delete</button>'
+      + '</div>';
   }
+
+  var modal = document.getElementById('gem-modal-inner');
+  modal.style.setProperty('--gm-col', col);
+  document.getElementById('gem-modal-content').innerHTML = html;
+  document.getElementById('gem-modal-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeGemModal(e) {
+  if (e && e.target !== document.getElementById('gem-modal-overlay')) return;
+  document.getElementById('gem-modal-overlay').classList.remove('open');
+  document.body.style.overflow = '';
 }
 
 // ── ADD/EDIT GEM ─────────────────────────────────────────
@@ -1265,13 +1308,7 @@ async function openDocFromSearch(docId, section) {
 function openGemFromSearch(gemId) {
   clearSearch();
   openSection('gems');
-  setTimeout(function(){
-    var bodyEl = document.getElementById('gem-body-' + gemId);
-    var btnEl = document.getElementById('gem-btn-' + gemId);
-    if (bodyEl) { bodyEl.classList.add('open'); if (btnEl) btnEl.textContent = 'Show less ↑'; }
-    var card = document.getElementById('gem-' + gemId);
-    if (card) card.scrollIntoView({ behavior:'smooth', block:'center' });
-  }, 400);
+  setTimeout(function(){ openGemModal(gemId, false); }, 400);
 }
 
 function clearSearch() {
@@ -1283,6 +1320,16 @@ function clearSearch() {
   document.getElementById('lh-search-results').innerHTML = '';
   if (!lhState.section) document.getElementById('lh-home').style.display = '';
 }
+
+document.addEventListener('keydown', function(e){
+  if (e.key === 'Escape') {
+    var overlay = document.getElementById('gem-modal-overlay');
+    if (overlay && overlay.classList.contains('open')) {
+      overlay.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+  }
+});
 
 bootHub();
 </script>
