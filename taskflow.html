@@ -3531,7 +3531,7 @@ initMobileNav();
 // alter table boards add column if not exists slack_user_id text;
 // ══════════════════════════════════════
 
-var slackState = {
+window.slackState = {
   inited: false,
   ownToken: '',
   ownUserId: '',
@@ -3945,7 +3945,18 @@ async function slackPullAll() {
   if (btn) { btn.disabled = true; btn.textContent = 'Pulling...'; }
 
   try {
+    if (!window.slackState) {
+      showToast('Slack not ready — please refresh the page.');
+      return;
+    }
+
     var token = slackState.ownToken;
+    if (!token) {
+      // Try re-reading from current user in case token was just saved
+      var cu2 = hubState && hubState.currentUser ? hubState.currentUser : null;
+      token = (cu2 && cu2.slack_token) || '';
+      if (token) slackState.ownToken = token;
+    }
     if (!token) {
       showToast('No Slack token set — click your avatar → My Slack to add one.');
       return;
