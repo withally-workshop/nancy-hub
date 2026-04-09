@@ -71,14 +71,50 @@ var STARTERS = [
 function injectStyles() {
   var s = document.createElement('style');
   s.textContent = [
-    // Bubble button — transparent frosted circle with Hi
-    '.nc-bubble{position:fixed;bottom:1.75rem;right:1.75rem;z-index:900;width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,.07);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.15);cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:none;transition:transform .2s cubic-bezier(.34,1.56,.64,1),background .2s,border-color .2s;padding:0}',
-    '.nc-bubble:hover{transform:scale(1.08);background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.25)}',
-    '.nc-bubble.open{transform:scale(1);background:rgba(255,255,255,.09);border-color:rgba(255,255,255,.18)}',
-    '.nc-bubble-icon{display:none}',
-    '.nc-bubble-label{font-family:Inter,sans-serif;font-size:.78rem;font-weight:600;color:rgba(255,255,255,.88);letter-spacing:.02em;line-height:1}',
-    '.nc-bubble-dot{position:absolute;top:3px;right:3px;width:8px;height:8px;background:#f7b731;border-radius:50%;border:1.5px solid rgba(0,0,0,.3);display:none}',
+    // ── Bot bubble ──────────────────────────────────────────────────
+    // Outer wrapper: transparent, overflow:visible so bot sticks out above
+    '.nc-bubble{position:fixed;bottom:1.5rem;right:1.75rem;z-index:900;width:58px;height:76px;background:transparent;border:none;cursor:pointer;padding:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;transition:transform .25s cubic-bezier(.34,1.56,.64,1);overflow:visible}',
+    '.nc-bubble:hover{transform:scale(1.07) translateY(-3px)}',
+    '.nc-bubble.open{transform:scale(1)}',
+
+    // Speech bubble shell (bottom portion)
+    '.nc-bbl{position:absolute;bottom:0;left:0;right:0;height:50px;background:rgba(255,255,255,.1);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1.5px solid rgba(255,255,255,.22);border-radius:50% 50% 38% 50%/50% 50% 62% 50%;display:flex;align-items:flex-end;justify-content:center;padding-bottom:7px}',
+
+    // "Hi" / × label inside bubble
+    '.nc-bbl-lbl{font-family:Inter,sans-serif;font-size:.73rem;font-weight:700;color:rgba(255,255,255,.88);letter-spacing:.04em;line-height:1;transition:opacity .15s}',
+
+    // Notification dot
+    '.nc-bubble-dot{position:absolute;top:18px;right:2px;width:9px;height:9px;background:#f7b731;border-radius:50%;border:2px solid rgba(0,0,0,.4);display:none;z-index:2}',
     '.nc-bubble-dot.show{display:block}',
+
+    // Bot character wrapper — bobs gently, sits above the bubble
+    '.nc-bot{position:absolute;bottom:32px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:1px;animation:ncBotBob 3s ease-in-out infinite}',
+    '.nc-bubble.open .nc-bot{animation:none}',
+    '@keyframes ncBotBob{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-4px)}}',
+
+    // Antenna
+    '.nc-bot-ant-ball{width:7px;height:7px;background:#fbbf24;border-radius:50%;border:1.5px solid rgba(255,255,255,.5)}',
+    '.nc-bot-ant-stick{width:2px;height:6px;background:#fbbf24;border-radius:2px}',
+
+    // Head
+    '.nc-bot-head{width:30px;height:22px;background:#fbbf24;border-radius:7px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:2px 3px;position:relative}',
+
+    // Ear nubs
+    '.nc-bot-head::before,.nc-bot-head::after{content:"";position:absolute;top:50%;transform:translateY(-50%);width:4px;height:8px;background:#f0a800;border-radius:2px}',
+    '.nc-bot-head::before{left:-4px;border-radius:3px 0 0 3px}',
+    '.nc-bot-head::after{right:-4px;border-radius:0 3px 3px 0}',
+
+    // Visor (white eye panel)
+    '.nc-bot-visor{width:22px;height:12px;background:rgba(255,255,255,.95);border-radius:4px;display:flex;align-items:center;justify-content:space-evenly;padding:0 3px}',
+    '.nc-bot-eye{width:4px;height:4px;background:#1a1a2e;border-radius:50%;transition:transform .15s}',
+    '.nc-bubble:hover .nc-bot-eye{transform:scaleY(0.6)}', // squint on hover
+
+    // Mouth
+    '.nc-bot-mouth{width:10px;height:0;border-bottom:2.5px solid rgba(0,0,0,.28);border-radius:0 0 5px 5px}',
+
+    // Body (just the top of shoulders)
+    '.nc-bot-body{width:22px;height:7px;background:#fbbf24;border-radius:0 0 7px 7px;opacity:.9}',
+    // ── end bot bubble ───────────────────────────────────────────────
 
     // Panel
     '.nc-panel{position:fixed;bottom:calc(1.75rem + 52px + .75rem);right:1.75rem;z-index:900;width:380px;max-height:560px;background:var(--card,#1a1a1a);border:1px solid var(--border2,rgba(255,255,255,.12));border-radius:20px;display:flex;flex-direction:column;box-shadow:0 24px 60px rgba(0,0,0,.45);opacity:0;pointer-events:none;transform:translateY(12px) scale(.97);transition:opacity .22s ease,transform .25s cubic-bezier(.34,1.3,.64,1);overflow:hidden}',
@@ -150,8 +186,8 @@ function injectStyles() {
 
     // Mobile
     '@media(max-width:480px){',
-    '.nc-panel{width:calc(100vw - 2rem);right:1rem;bottom:calc(1rem + 52px + .75rem)}',
-    '.nc-bubble{bottom:1rem;right:1rem;width:46px;height:46px}',
+    '.nc-panel{width:calc(100vw - 2rem);right:1rem;bottom:calc(1rem + 76px + .5rem)}',
+    '.nc-bubble{bottom:1rem;right:1rem}',
     '}'
   ].join('');
   document.head.appendChild(s);
@@ -195,10 +231,26 @@ function injectHTML() {
       '</div>',
     '</div>',
 
-    // Bubble button — frosted circle
+    // Bot bubble button
     '<button class="nc-bubble" id="nc-bubble" onclick="ncToggle()" title="Chat with Nancy AI">',
       '<span class="nc-bubble-dot" id="nc-dot"></span>',
-      '<span class="nc-bubble-label" id="nc-bubble-ico">Hi</span>',
+      // Bot character (overlaps above the bubble)
+      '<span class="nc-bot" id="nc-bot-char">',
+        '<span class="nc-bot-ant-ball"></span>',
+        '<span class="nc-bot-ant-stick"></span>',
+        '<span class="nc-bot-head">',
+          '<span class="nc-bot-visor">',
+            '<span class="nc-bot-eye"></span>',
+            '<span class="nc-bot-eye"></span>',
+          '</span>',
+          '<span class="nc-bot-mouth"></span>',
+        '</span>',
+        '<span class="nc-bot-body"></span>',
+      '</span>',
+      // Speech bubble shell with "Hi" label
+      '<span class="nc-bbl">',
+        '<span class="nc-bbl-lbl" id="nc-bubble-ico">Hi</span>',
+      '</span>',
     '</button>'
   ].join('');
 
@@ -241,9 +293,8 @@ function ncToggle() {
     bubble.classList.add('open');
     dot.classList.remove('show');
     nc.unread = false;
-    // Show close × in label
-    ico.style.fontSize = '';
-    ico.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+    ico.textContent = '×';
+    ico.style.fontSize = '1rem';
     setTimeout(function() {
       var input = document.getElementById('nc-input');
       if (input) input.focus();
@@ -252,8 +303,8 @@ function ncToggle() {
   } else {
     panel.classList.remove('open');
     bubble.classList.remove('open');
+    ico.textContent = 'Hi';
     ico.style.fontSize = '';
-    ico.innerHTML = 'Hi';
   }
 }
 
