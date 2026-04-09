@@ -584,12 +584,12 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--body);min-h
 ══════════════════════════════════════ */
 :root{--radius-pill:100px;--green:#3bb273}
 /* Slack floating transparent bubble — matches chat bubble style */
-.slack-open-btn{position:fixed;right:1.75rem;bottom:8rem;z-index:350;width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,.07);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1.5px solid rgba(255,255,255,.15);cursor:pointer;display:none;flex-direction:column;align-items:center;justify-content:center;gap:3px;transition:transform .2s cubic-bezier(.34,1.56,.64,1),background .2s,border-color .2s;box-shadow:none;padding:0}
-.slack-open-btn:hover{transform:scale(1.08) translateY(-2px);background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.25)}
-.slack-side-icon{color:rgba(255,255,255,.7);transition:color .15s;line-height:1;display:flex;align-items:center;justify-content:center}
-.slack-open-btn:hover .slack-side-icon{color:rgba(255,255,255,.95)}
-.slack-side-label{font-family:'Inter',sans-serif;font-size:.55rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.55);transition:color .15s;line-height:1}
-.slack-open-btn:hover .slack-side-label{color:rgba(255,255,255,.85)}
+.slack-open-btn{position:fixed;right:1.75rem;bottom:8rem;z-index:350;width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,rgba(217,70,171,.88),rgba(236,72,153,.92));backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1.5px solid rgba(255,255,255,.25);cursor:pointer;display:none;flex-direction:column;align-items:center;justify-content:center;gap:3px;transition:transform .2s cubic-bezier(.34,1.56,.64,1),box-shadow .2s;box-shadow:0 4px 18px rgba(236,72,153,.45);padding:0}
+.slack-open-btn:hover{transform:scale(1.08) translateY(-2px);box-shadow:0 6px 24px rgba(236,72,153,.62)}
+.slack-side-icon{color:rgba(255,255,255,.92);transition:color .15s;line-height:1;display:flex;align-items:center;justify-content:center}
+.slack-open-btn:hover .slack-side-icon{color:#fff}
+.slack-side-label{font-family:'Inter',sans-serif;font-size:.55rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.78);transition:color .15s;line-height:1}
+.slack-open-btn:hover .slack-side-label{color:#fff}
 .slack-open-badge{position:absolute;top:-3px;right:-3px;background:#e53935;color:white;font-size:.55rem;font-weight:700;padding:2px 4px;border-radius:var(--radius-pill);min-width:15px;text-align:center;display:none}
 .slack-drawer{position:fixed;top:0;right:-480px;width:460px;height:100vh;z-index:400;background:var(--card);border-left:1px solid var(--border);display:flex;flex-direction:column;transition:right .28s cubic-bezier(.4,0,.2,1);box-shadow:-8px 0 32px rgba(0,0,0,.2)}
 .slack-drawer.open{right:0}
