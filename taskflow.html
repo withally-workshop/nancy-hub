@@ -629,6 +629,9 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--body);min-h
 .slack-channel-pulled{font-family:'Inter',sans-serif;font-size:.62rem;color:var(--muted);margin-top:1px}
 .slack-channel-badge{font-family:'Inter',sans-serif;font-size:.62rem;font-weight:700;background:#e53935;color:white;border-radius:var(--radius-pill);padding:1px 6px;min-width:18px;text-align:center;flex-shrink:0;display:none}
 .slack-channel-badge.show{display:block}
+.slack-date-row{display:flex;align-items:center;gap:.5rem;padding:.5rem 1.1rem;border-bottom:1px solid var(--border);flex-shrink:0;background:var(--bg2)}
+.slack-date-input{font-family:'Inter',sans-serif;font-size:.78rem;color:var(--body);background:var(--card);border:1px solid var(--border2);border-radius:7px;padding:.25rem .55rem;outline:none;cursor:pointer;flex:1;max-width:150px}
+.slack-date-label{font-family:'Inter',sans-serif;font-size:.72rem;color:var(--muted);margin-left:.1rem}
 .slack-channel-view{display:flex;flex-direction:column;flex:1;overflow:hidden}
 .slack-ch-hdr{display:flex;align-items:center;gap:.5rem;padding:.65rem 1rem;border-bottom:1px solid var(--border);flex-shrink:0;flex-wrap:wrap}
 .slack-back-btn{background:none;border:none;font-family:'Inter',sans-serif;font-size:.78rem;color:var(--muted);cursor:pointer;padding:0;transition:color .15s;white-space:nowrap}
@@ -1402,13 +1405,20 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--body);min-h
     <div class="slack-drawer-hdr">
       <div class="slack-drawer-title">Slack</div>
       <div class="slack-hdr-actions">
-        <button class="slack-hdr-btn" id="slack-pull-all-btn" onclick="slackPullAll()">Pull Mentions</button>
+        <button class="slack-hdr-btn" id="slack-pull-ch-hdr-btn" onclick="slackPullChannel()" style="display:none">Pull Channel</button>
+        <button class="slack-hdr-btn" id="slack-pull-all-btn" onclick="slackPullAll()">Pull All</button>
         <button class="slack-close-btn" onclick="closeSlackDrawer()">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
       </div>
     </div>
     <div id="slack-ws-tabs" class="slack-ws-tabs"></div>
+    <!-- DATE PICKER ROW -->
+    <div class="slack-date-row" id="slack-date-row">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      <input type="date" id="slack-date-input" class="slack-date-input" />
+      <span class="slack-date-label" id="slack-date-label">Today</span>
+    </div>
     <div id="slack-mentions-strip" class="slack-mentions-strip" style="display:none">
       <div class="slack-strip-label">Mentions &amp; DMs</div>
       <div id="slack-mentions-list"></div>
@@ -3544,11 +3554,22 @@ var SLACK_SUMMARY_SYSTEM = 'You summarize Slack channel conversations for the Ca
   + '{"summary":"2-3 sentence overview of what was discussed","items":[{"tag":"ACTION","text":"one clear action item"},{"tag":"FYI","text":"one key info or decision"}]} '
   + 'Rules: Only ACTION and FYI tags. Skip casual chat and noise entirely. Max 7 items. Be concise. One sentence per item.';
 
+function slackTutorialStep(num, title, desc) {
+  return '<div style="display:flex;gap:.75rem;align-items:flex-start">' +
+    '<div style="width:22px;height:22px;border-radius:50%;background:var(--primary);color:white;font-family:\'Inter\',sans-serif;font-size:.7rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px">' + num + '</div>' +
+    '<div>' +
+      '<div style="font-family:\'Inter\',sans-serif;font-size:.82rem;font-weight:600;color:var(--h2);margin-bottom:.2rem">' + title + '</div>' +
+      '<div style="font-family:\'Inter\',sans-serif;font-size:.78rem;color:var(--muted);line-height:1.55">' + desc + '</div>' +
+    '</div>' +
+  '</div>';
+}
+
 function openSlackDrawer() {
   document.getElementById('slack-drawer').classList.add('open');
   document.getElementById('slack-backdrop').classList.add('show');
   if (!slackState.inited) {
     slackState.inited = true;
+    slackInitDatePicker();
     initSlack();
   }
 }
@@ -3565,10 +3586,20 @@ async function initSlack() {
   slackState.ownUserId = (cu && cu.slack_user_id) || '';
 
   if (!slackState.ownToken) {
-    document.getElementById('slack-channel-list').innerHTML =
-      '<div class="slack-empty"><strong>Connect your Slack</strong>Click your profile icon → My Slack → paste your xoxp- token to get started.</div>';
+    document.getElementById('slack-ws-tabs').innerHTML = '';
     document.getElementById('slack-ch-meta').textContent = '';
-    renderSlackWorkspaceTabs();
+    document.getElementById('slack-channel-list').innerHTML = [
+      '<div style="padding:1.5rem 1.25rem">',
+        '<div style="font-family:\'Fraunces\',serif;font-size:1rem;font-weight:600;color:var(--h2);margin-bottom:.35rem">Connect your Slack</div>',
+        '<div style="font-family:\'Inter\',sans-serif;font-size:.82rem;color:var(--muted);margin-bottom:1.25rem;line-height:1.5">Follow these steps to link your personal Slack account.</div>',
+        '<div style="display:flex;flex-direction:column;gap:.75rem">',
+          slackTutorialStep('1','Create a Slack App','Go to <a href="https://api.slack.com/apps" target="_blank" style="color:var(--primary)">api.slack.com/apps</a> → Create New App → From scratch → name it "Nancy Hub" → select your workspace'),
+          slackTutorialStep('2','Add User Token Scopes','OAuth & Permissions → User Token Scopes → add: <code style="font-size:.75rem;background:var(--bg3);padding:1px 5px;border-radius:4px">channels:read</code> <code style="font-size:.75rem;background:var(--bg3);padding:1px 5px;border-radius:4px">channels:history</code> <code style="font-size:.75rem;background:var(--bg3);padding:1px 5px;border-radius:4px">im:read</code> <code style="font-size:.75rem;background:var(--bg3);padding:1px 5px;border-radius:4px">im:history</code> <code style="font-size:.75rem;background:var(--bg3);padding:1px 5px;border-radius:4px">users:read</code>'),
+          slackTutorialStep('3','Install to Workspace','Click <strong>Install to Workspace</strong> → authorize → copy the <strong>User OAuth Token</strong> (starts with <code style="font-size:.75rem;background:var(--bg3);padding:1px 5px;border-radius:4px">xoxp-</code>)'),
+          slackTutorialStep('4','Paste your token','Click your <strong>avatar</strong> (top-right) → <strong>My Slack</strong> → paste your token → Save'),
+        '</div>',
+      '</div>'
+    ].join('');
     return;
   }
 
@@ -3637,7 +3668,7 @@ async function slackLoadChannels(workspaceId) {
 
   try {
     var data = await slackAPI(token, 'conversations.list', {
-      types: 'public_channel,private_channel,mpim',
+      types: 'public_channel',
       exclude_archived: true,
       limit: 200
     });
@@ -3647,7 +3678,7 @@ async function slackLoadChannels(workspaceId) {
       limit: 50
     });
 
-    if (!data.ok) throw new Error(data.error || 'conversations.list failed');
+    if (!data.ok) throw new Error(data.error || 'conversations.list failed — check your token scopes');
 
     slackState.channels = (data.channels || []).filter(function(c) { return c.is_member; });
     slackState.dms = dmData.ok ? (dmData.channels || []) : [];
@@ -3721,6 +3752,10 @@ async function openSlackChannel(channelId, channelName) {
   document.getElementById('slack-summary-card').style.display = 'none';
   document.getElementById('slack-messages').innerHTML = '<div class="slack-empty">Loading messages...</div>';
 
+  // Show "Pull Channel" button in header
+  var phBtn = document.getElementById('slack-pull-ch-hdr-btn');
+  if (phBtn) phBtn.style.display = 'inline-flex';
+
   // Clear mention badge for this channel
   slackState.mentionCounts[channelId] = 0;
   renderSlackChannelList();
@@ -3736,18 +3771,63 @@ function closeSlackChannel() {
   document.getElementById('slack-channel-view').style.display = 'none';
   document.getElementById('slack-ch-section').style.display = 'flex';
   document.getElementById('slack-summary-card').style.display = 'none';
+  // Hide "Pull Channel" header button when no channel open
+  var phBtn = document.getElementById('slack-pull-ch-hdr-btn');
+  if (phBtn) phBtn.style.display = 'none';
+}
+
+function slackGetSelectedOldest() {
+  var input = document.getElementById('slack-date-input');
+  if (!input || !input.value) {
+    // Default: start of today in local time
+    var today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return today.getTime() / 1000;
+  }
+  // Parse the date picker value as local midnight
+  var parts = input.value.split('-');
+  var d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]), 0, 0, 0, 0);
+  return d.getTime() / 1000;
+}
+
+function slackInitDatePicker() {
+  var input = document.getElementById('slack-date-input');
+  if (!input) return;
+  // Set default to today
+  var today = new Date();
+  var yyyy = today.getFullYear();
+  var mm = String(today.getMonth() + 1).padStart(2, '0');
+  var dd = String(today.getDate()).padStart(2, '0');
+  input.value = yyyy + '-' + mm + '-' + dd;
+  input.max = yyyy + '-' + mm + '-' + dd; // can't go to future
+  updateSlackDateLabel();
+  input.addEventListener('change', updateSlackDateLabel);
+}
+
+function updateSlackDateLabel() {
+  var input = document.getElementById('slack-date-input');
+  var label = document.getElementById('slack-date-label');
+  if (!input || !label) return;
+  var today = new Date();
+  var yyyy = today.getFullYear();
+  var mm = String(today.getMonth() + 1).padStart(2, '0');
+  var dd = String(today.getDate()).padStart(2, '0');
+  var todayStr = yyyy + '-' + mm + '-' + dd;
+  if (input.value === todayStr) {
+    label.textContent = 'Today';
+  } else if (input.value) {
+    var d = new Date(input.value + 'T00:00:00');
+    label.textContent = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  } else {
+    label.textContent = '';
+  }
 }
 
 async function slackLoadMessages(channelId) {
   var token = getActiveToken();
   if (!token) return;
 
-  // Today midnight HKT (UTC+8)
-  var now = new Date();
-  var hktOffset = 8 * 60 * 60 * 1000;
-  var utcMidnight = new Date(now.getTime() + hktOffset);
-  utcMidnight.setUTCHours(0, 0, 0, 0);
-  var oldest = (utcMidnight.getTime() - hktOffset) / 1000;
+  var oldest = slackGetSelectedOldest();
 
   document.getElementById('slack-messages').innerHTML = '<div class="slack-empty">Loading...</div>';
 
@@ -3804,7 +3884,9 @@ function renderSlackMessages() {
   if (!el) return;
 
   if (!slackState.messages.length) {
-    el.innerHTML = '<div class="slack-empty">No messages today in this channel.</div>';
+    var lbl = document.getElementById('slack-date-label');
+    var dateStr = lbl ? lbl.textContent : 'the selected date';
+    el.innerHTML = '<div class="slack-empty">No messages for ' + esc(dateStr) + ' in this channel.</div>';
     return;
   }
 
@@ -3842,10 +3924,13 @@ function renderSlackMessages() {
 
 async function slackPullChannel() {
   if (!slackState.activeChannelId) return;
+  // Update both the in-channel button and the header button
   var btn = document.getElementById('slack-pull-ch-btn');
-  if (btn) { btn.disabled = true; btn.textContent = 'Pulling...'; }
+  var hdrBtn = document.getElementById('slack-pull-ch-hdr-btn');
+  [btn, hdrBtn].forEach(function(b){ if(b){ b.disabled = true; b.textContent = 'Pulling...'; } });
   await slackLoadMessages(slackState.activeChannelId);
   if (btn) { btn.disabled = false; btn.textContent = 'Pull'; }
+  if (hdrBtn) { hdrBtn.disabled = false; hdrBtn.textContent = 'Pull Channel'; }
 }
 
 async function slackPullAll() {
@@ -3854,54 +3939,43 @@ async function slackPullAll() {
 
   var token = slackState.ownToken;
   if (!token) {
-    if (btn) { btn.disabled = false; btn.textContent = 'Pull Mentions'; }
+    if (btn) { btn.disabled = false; btn.textContent = 'Pull All'; }
     showToast('No Slack token set. Add one in your profile.');
     return;
   }
 
   slackState.mentions = [];
-
-  // Today midnight HKT
-  var now = new Date();
-  var hktOffset = 8 * 60 * 60 * 1000;
-  var utcMidnight = new Date(now.getTime() + hktOffset);
-  utcMidnight.setUTCHours(0, 0, 0, 0);
-  var oldest = (utcMidnight.getTime() - hktOffset) / 1000;
-
+  var oldest = slackGetSelectedOldest();
   var ownId = slackState.ownUserId;
-  var channelsToCheck = slackState.channels.slice(0, 15); // cap at 15
+  var channelsToCheck = slackState.channels.slice(0, 15); // cap at 15 for rate limits
 
   for (var i = 0; i < channelsToCheck.length; i++) {
     var ch = channelsToCheck[i];
     try {
-      var data = await slackAPI(token, 'conversations.history', { channel: ch.id, oldest: oldest, limit: 30 });
+      var data = await slackAPI(token, 'conversations.history', { channel: ch.id, oldest: oldest, limit: 50 });
       if (!data.ok) continue;
-      var msgs = data.messages || [];
+      var msgs = (data.messages || []).filter(function(m){ return m.type === 'message' && !m.subtype; });
 
-      // Collect new user IDs
+      // Resolve user IDs we haven't seen
       var newIds = msgs.map(function(m){ return m.user; }).filter(function(uid) {
         return uid && !slackState.userCache[uid];
-      });
-      if (newIds.length) {
-        var uniqueIds = newIds.filter(function(v,i,a){ return a.indexOf(v)===i; });
-        await resolveSlackUsers(token, uniqueIds);
-      }
+      }).filter(function(v,i,a){ return a.indexOf(v)===i; });
+      if (newIds.length) await resolveSlackUsers(token, newIds);
 
       msgs.forEach(function(msg) {
-        if (msg.type !== 'message' || msg.subtype) return;
-        if (ownId && (msg.text || '').indexOf('<@' + ownId + '>') !== -1) {
-          slackState.mentions.push({ msg: msg, channelId: ch.id, channelName: ch.name, type: 'mention' });
-        }
+        var isMention = ownId && (msg.text || '').indexOf('<@' + ownId + '>') !== -1;
+        // Include: @mentions AND all messages (so user sees full picture)
+        slackState.mentions.push({ msg: msg, channelId: ch.id, channelName: ch.name, type: isMention ? 'mention' : 'message' });
       });
     } catch(e) { /* skip failed channel */ }
     if (i < channelsToCheck.length - 1) await slackSleep(200);
   }
 
-  // Check DMs
+  // DMs
   for (var j = 0; j < slackState.dms.length && j < 10; j++) {
     var dm = slackState.dms[j];
     try {
-      var dmData = await slackAPI(token, 'conversations.history', { channel: dm.id, oldest: oldest, limit: 10 });
+      var dmData = await slackAPI(token, 'conversations.history', { channel: dm.id, oldest: oldest, limit: 20 });
       if (!dmData.ok) continue;
       (dmData.messages || []).forEach(function(msg) {
         if (msg.type !== 'message' || msg.subtype || msg.user === ownId) return;
@@ -3922,8 +3996,10 @@ async function slackPullAll() {
   renderMentionsStrip();
   updateSlackOpenBadge();
 
-  if (btn) { btn.disabled = false; btn.textContent = 'Pull Mentions'; }
-  showToast('Pulled — ' + slackState.mentions.length + ' mention' + (slackState.mentions.length !== 1 ? 's' : '') + ' found');
+  if (btn) { btn.disabled = false; btn.textContent = 'Pull All'; }
+  var mentionCount = slackState.mentions.filter(function(m){ return m.type === 'mention'; }).length;
+  var total = slackState.mentions.length;
+  showToast('Pulled ' + total + ' message' + (total !== 1 ? 's' : '') + (mentionCount ? ' · ' + mentionCount + ' @mention' + (mentionCount !== 1 ? 's' : '') : ''));
 }
 
 async function slackPullClientWorkspace(ws, oldest) {
@@ -3968,6 +4044,7 @@ function updateMentionCounts() {
 function renderMentionsStrip() {
   var strip = document.getElementById('slack-mentions-strip');
   var list = document.getElementById('slack-mentions-list');
+  var label = strip ? strip.querySelector('.slack-strip-label') : null;
   if (!strip || !list) return;
 
   if (!slackState.mentions.length) {
@@ -3976,26 +4053,58 @@ function renderMentionsStrip() {
   }
 
   strip.style.display = 'block';
-  var html = slackState.mentions.map(function(m) {
-    var text = (m.msg.text || '').replace(/<@([A-Z0-9]+)>/g, function(_, uid) {
-      return '@' + (slackState.userCache[uid] || uid);
-    });
-    var sender = slackState.userCache[m.msg.user] || m.msg.user || 'Someone';
-    var ts = m.msg.ts ? new Date(parseFloat(m.msg.ts)*1000).toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',hour12:true}) : '';
-    var chLabel = m.type === 'client' ? '[' + esc(m.clientName) + '] #' + esc(m.channelName) : (m.type === 'dm' ? 'DM' : '#' + esc(m.channelName));
-    var taskText = text.replace(/\n/g,' ').slice(0, 120);
-    var source = (m.type === 'dm' ? 'DM' : '#' + m.channelName) + (m.type === 'client' ? ' (' + m.clientName + ')' : '');
 
-    return '<div class="slack-mention-card">' +
-      '<div class="slack-mention-meta">' +
-        '<span class="slack-mention-ch">' + chLabel + '</span>' +
-        '<span>' + esc(sender) + '</span>' +
-        '<span>' + ts + '</span>' +
-      '</div>' +
-      '<div class="slack-mention-text">' + esc(text).slice(0, 200) + (text.length > 200 ? '…' : '') + '</div>' +
-      '<div class="slack-mention-actions">' +
-        '<button class="slack-add-task-btn" onclick="slackAddAsTask(' + JSON.stringify(taskText) + ',' + JSON.stringify(source) + ')">+ Add as Task</button>' +
-      '</div>' +
+  // Group by channel
+  var groups = {};
+  var groupOrder = [];
+  slackState.mentions.forEach(function(m) {
+    var key = m.type === 'client' ? 'client_' + m.clientId + '_' + m.channelId : m.channelId;
+    if (!groups[key]) {
+      groups[key] = { items: [], channelName: m.channelName, type: m.type, clientName: m.clientName || '' };
+      groupOrder.push(key);
+    }
+    groups[key].items.push(m);
+  });
+
+  var mentionCount = slackState.mentions.filter(function(m){ return m.type === 'mention'; }).length;
+  var dmCount = slackState.mentions.filter(function(m){ return m.type === 'dm'; }).length;
+  var totalCount = slackState.mentions.length;
+  if (label) {
+    label.textContent = totalCount + ' Message' + (totalCount !== 1 ? 's' : '') +
+      (mentionCount ? ' · ' + mentionCount + ' @mention' + (mentionCount !== 1 ? 's' : '') : '') +
+      (dmCount ? ' · ' + dmCount + ' DM' + (dmCount !== 1 ? 's' : '') : '');
+  }
+
+  var html = groupOrder.map(function(key) {
+    var g = groups[key];
+    var chLabel = g.type === 'client' ? '<span style="color:var(--amber,#f59e0b)">[' + esc(g.clientName) + ']</span> #' + esc(g.channelName)
+                : g.type === 'dm' ? '💬 ' + esc(g.channelName)
+                : '#' + esc(g.channelName);
+    var rows = g.items.map(function(m) {
+      var text = (m.msg.text || '').replace(/<@([A-Z0-9]+)>/g, function(_, uid) {
+        return '@' + (slackState.userCache[uid] || uid);
+      });
+      var sender = slackState.userCache[m.msg.user] || m.msg.user || 'Someone';
+      var ts = m.msg.ts ? new Date(parseFloat(m.msg.ts)*1000).toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',hour12:true}) : '';
+      var isMention = m.type === 'mention';
+      var taskText = text.replace(/\n/g,' ').slice(0, 120);
+      var source = (m.type === 'dm' ? 'DM from ' + sender : '#' + m.channelName) + (m.type === 'client' ? ' (' + m.clientName + ')' : '');
+      return '<div class="slack-mention-card' + (isMention ? ' is-mention' : '') + '">' +
+        '<div class="slack-mention-meta">' +
+          (isMention ? '<span style="font-size:.6rem;font-weight:700;color:var(--primary);margin-right:.3rem">@YOU</span>' : '') +
+          '<span style="font-weight:600;color:var(--body)">' + esc(sender) + '</span>' +
+          '<span>' + ts + '</span>' +
+        '</div>' +
+        '<div class="slack-mention-text">' + esc(text).slice(0, 220) + (text.length > 220 ? '…' : '') + '</div>' +
+        '<div class="slack-mention-actions">' +
+          '<button class="slack-add-task-btn" onclick="slackAddAsTask(' + JSON.stringify(taskText) + ',' + JSON.stringify(source) + ')">+ Add as Task</button>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+
+    return '<div style="margin-bottom:.75rem">' +
+      '<div style="font-family:\'Inter\',sans-serif;font-size:.65rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:.2rem 0 .4rem">' + chLabel + '</div>' +
+      rows +
     '</div>';
   }).join('');
 
