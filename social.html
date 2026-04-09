@@ -57,7 +57,8 @@
 .workspace-tab { padding: .8rem 1.1rem; font-family: 'Inter', sans-serif; font-size: .82rem; font-weight: 600; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; white-space: nowrap; transition: all .2s; }
 .workspace-tab:hover { color: var(--body); }
 .workspace-tab.active { color: var(--avc, var(--primary)); border-bottom-color: var(--avc, var(--primary)); }
-.workspace-content { flex: 1; overflow-y: auto; max-width: 1100px; margin: 0 auto; padding: 2rem; width: 100%; box-sizing: border-box; }
+.workspace-content { flex: 1 1 0; min-height: 0; overflow-y: auto; padding: 2rem; width: 100%; box-sizing: border-box; }
+.workspace-inner { max-width: 1100px; margin: 0 auto; }
 .tab-panel { display: none; }
 .tab-panel.active { display: block; }
 
@@ -175,7 +176,8 @@
   .avatar-grid { grid-template-columns: 1fr; }
   .vault-grid { grid-template-columns: 1fr; }
   .memory-cols { grid-template-columns: 1fr; }
-  .workspace-content { padding: 1rem; width: 100%; }
+  .workspace-content { padding: 1rem; }
+  .workspace-inner { padding: 0; }
   .avatar-mode-bar { padding: .75rem 1rem; }
   .avatar-identity-bar { padding: 1rem; }
   .workspace-tabs { padding: 0 1rem; }
@@ -311,6 +313,7 @@
     </div>
 
     <div class="workspace-content">
+    <div class="workspace-inner">
 
       <!-- VAULT TAB -->
       <div class="tab-panel active" data-panel="vault">
@@ -440,6 +443,7 @@
         </div>
       </div>
 
+    </div><!-- /workspace-inner -->
     </div><!-- /workspace-content -->
   </div><!-- /avatar-mode -->
 

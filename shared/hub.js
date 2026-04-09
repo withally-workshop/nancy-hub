@@ -343,13 +343,17 @@ window.addEventListener('resize', function() {
 
 // ── HIDE NAV ON SCROLL ──
 var _navLastY = 0;
+var _navHidden = false;
 function handleNavScroll(y) {
   var nav = document.querySelector('.topnav');
   if (!nav) return;
-  if (y > _navLastY + 4 && y > 80) {
+  var delta = y - _navLastY;
+  if (delta > 6 && y > 60 && !_navHidden) {
     nav.classList.add('nav-hidden');
-  } else if (y < _navLastY - 4) {
+    _navHidden = true;
+  } else if (delta < -6 && _navHidden) {
     nav.classList.remove('nav-hidden');
+    _navHidden = false;
   }
   _navLastY = y;
 }
