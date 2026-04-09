@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script>(function(){var t=localStorage.getItem('nancy_theme');if(t==='light')document.documentElement.setAttribute('data-theme','light');})()</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Nancy — Marketing Hub</title>
@@ -70,7 +71,7 @@
 /* Mobile nav */
 .mobile-nav-wrap{
   position:fixed;bottom:.75rem;left:50%;transform:translateX(-50%);
-  background:rgba(252,247,237,.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  background:var(--nav-bg,rgba(30,30,28,0.88));backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
   border:1px solid var(--border);border-radius:var(--radius-pill);
   padding:.4rem .6rem;
   box-shadow:0 8px 32px rgba(40,40,38,.12);
@@ -86,7 +87,7 @@
 }
 .mnav-item.active{background:var(--primary-light);color:var(--primary)}
 .mnav-item:hover{background:var(--bg2);color:var(--body)}
-.mnav-icon{font-size:1.1rem;line-height:1}
+.mnav-icon{display:flex;align-items:center;justify-content:center}
 .mnav-label{font-family:'Inter',sans-serif;font-size:.56rem;font-weight:600;letter-spacing:.01em}
 
 @media(max-width:768px){
@@ -189,11 +190,12 @@
     </div>
     <div class="nav-right">
       <div class="nav-time" id="pht-clock">HKT --:--</div>
+      <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme"></button>
       <div id="admin-nav-link" style="display:none">
-        <a class="nav-link" href="admin.html" style="color:var(--primary);font-weight:600">👑 Admin</a>
+        <a class="nav-link" href="admin.html" style="color:var(--primary);font-weight:600">Admin</a>
       </div>
       <div class="user-nav-btn" onclick="openUserMenu()">
-        <div class="user-avatar-small" id="user-avatar-nav">👤</div>
+        <div class="user-avatar-small" id="user-avatar-nav">?</div>
         <span id="user-name-nav">Me</span>
         <span style="font-size:.7rem;color:var(--muted)">▾</span>
       </div>
@@ -208,7 +210,7 @@
       <span id="storage-alert-msg"></span>
       <span style="color:var(--muted);font-size:.75rem"> (Only you can see this)</span>
     </span>
-    <button class="storage-alert-close" onclick="dismissStorageAlert()">✕</button>
+    <button class="storage-alert-close" onclick="dismissStorageAlert()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
   </div>
 
   <!-- HOME CONTENT -->
@@ -220,9 +222,9 @@
 
     <div class="hub-grid">
 
-      <a href="taskflow.html" class="hub-card" style="--card-color:#ff30cc;--card-glow:rgba(255,48,204,.08);--card-icon-bg:#ffe0f7">
+      <a href="taskflow.html" class="hub-card" style="--card-color:#ff30cc;--card-glow:rgba(255,48,204,.08);--card-icon-bg:rgba(255,48,204,0.15)">
         <div class="hub-card-top">
-          <div class="hub-card-icon">📋</div>
+          <div class="hub-card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="9" y1="7" x2="20" y2="7"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="17" x2="20" y2="17"/><polyline points="4 7 5 8 7 6"/><polyline points="4 12 5 13 7 11"/><polyline points="4 17 5 18 7 16"/></svg></div>
           <span class="hub-card-arrow">↗</span>
         </div>
         <div class="hub-card-title">Task Hub</div>
@@ -232,9 +234,9 @@
         </div>
       </a>
 
-      <a href="social.html" class="hub-card" style="--card-color:#8854d0;--card-glow:rgba(136,84,208,.07);--card-icon-bg:#ede7f6">
+      <a href="social.html" class="hub-card" style="--card-color:#8854d0;--card-glow:rgba(136,84,208,.07);--card-icon-bg:rgba(136,84,208,0.15)">
         <div class="hub-card-top">
-          <div class="hub-card-icon">📱</div>
+          <div class="hub-card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></div>
           <span class="hub-card-arrow">↗</span>
         </div>
         <div class="hub-card-title">Content & Socials</div>
@@ -244,9 +246,9 @@
         </div>
       </a>
 
-      <a href="learning.html" class="hub-card" style="--card-color:#2d7dd2;--card-glow:rgba(45,125,210,.07);--card-icon-bg:#e3f2fd">
+      <a href="learning.html" class="hub-card" style="--card-color:#2d7dd2;--card-glow:rgba(45,125,210,.07);--card-icon-bg:rgba(45,125,210,0.15)">
         <div class="hub-card-top">
-          <div class="hub-card-icon">📚</div>
+          <div class="hub-card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg></div>
           <span class="hub-card-arrow">↗</span>
         </div>
         <div class="hub-card-title">Learning & Playbook</div>
@@ -256,9 +258,9 @@
         </div>
       </a>
 
-      <a href="creators.html" class="hub-card" style="--card-color:#3bb273;--card-glow:rgba(59,178,115,.07);--card-icon-bg:#e8f5e9">
+      <a href="creators.html" class="hub-card" style="--card-color:#3bb273;--card-glow:rgba(59,178,115,.07);--card-icon-bg:rgba(59,178,115,0.15)">
         <div class="hub-card-top">
-          <div class="hub-card-icon">🤝</div>
+          <div class="hub-card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div>
           <span class="hub-card-arrow">↗</span>
         </div>
         <div class="hub-card-title">Creators & Onboarding</div>
@@ -275,27 +277,27 @@
   <div class="mobile-nav-wrap" id="mobile-nav">
     <div class="mobile-nav-inner">
       <a href="index.html" class="mnav-item active">
-        <span class="mnav-icon">🏠</span>
+        <span class="mnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/><polyline points="9 21 9 12 15 12 15 21"/></svg></span>
         <span class="mnav-label">Home</span>
       </a>
       <a href="taskflow.html" class="mnav-item">
-        <span class="mnav-icon">📋</span>
+        <span class="mnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="9" y1="7" x2="20" y2="7"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="17" x2="20" y2="17"/><polyline points="4 7 5 8 7 6"/><polyline points="4 12 5 13 7 11"/><polyline points="4 17 5 18 7 16"/></svg></span>
         <span class="mnav-label">Tasks</span>
       </a>
       <a href="social.html" class="mnav-item">
-        <span class="mnav-icon">📱</span>
+        <span class="mnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></span>
         <span class="mnav-label">Social</span>
       </a>
       <a href="learning.html" class="mnav-item">
-        <span class="mnav-icon">📚</span>
+        <span class="mnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg></span>
         <span class="mnav-label">Learn</span>
       </a>
       <a href="creators.html" class="mnav-item">
-        <span class="mnav-icon">🤝</span>
+        <span class="mnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></span>
         <span class="mnav-label">Creators</span>
       </a>
       <a id="mnav-admin" href="admin.html" class="mnav-item" style="display:none">
-        <span class="mnav-icon">👑</span>
+        <span class="mnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span>
         <span class="mnav-label">Admin</span>
       </a>
     </div>
@@ -312,7 +314,7 @@ function onPageReady() {
   var greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
   var name = hubState.currentUser ? hubState.currentUser.name : '';
   var el = document.getElementById('welcome-msg');
-  if (el) el.textContent = greeting + (name ? ', ' + name + '!' : '!') + ' 👋';
+  if (el) el.textContent = greeting + (name ? ', ' + name + '!' : '!');
 }
 bootHub();
 </script>

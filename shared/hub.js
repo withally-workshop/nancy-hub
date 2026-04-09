@@ -1,3 +1,9 @@
+// ── THEME ──
+(function(){
+  var t = localStorage.getItem('nancy_theme');
+  if (t === 'light') document.documentElement.setAttribute('data-theme','light');
+})();
+
 // ══════════════════════════════════════
 // NANCY HUB — SHARED CONFIG & AUTH
 // ══════════════════════════════════════
@@ -236,6 +242,7 @@ async function onAuthSuccess(authUser) {
   var app = document.getElementById('app');
   if (app) { app.style.display = 'flex'; app.style.flexDirection = 'column'; }
   startClock();
+  initThemeToggle();
   initMobileNav();
   if (typeof onPageReady === 'function') onPageReady();
   setTimeout(function() { try { checkStorageAlert(); } catch(e) {} }, 5000);
@@ -278,7 +285,15 @@ function updateNavUser() {
   var adminLink = document.getElementById('admin-nav-link');
   var mobileAdminBtn = document.getElementById('mnav-admin');
   if (nameEl) nameEl.textContent = hubState.currentUser.name || 'Me';
-  if (avatarEl) avatarEl.textContent = hubState.currentUser.avatar || '👤';
+  if (avatarEl) {
+    var initials = (hubState.currentUser.name || 'U').split(' ').map(function(w){return w[0];}).join('').toUpperCase().slice(0,2);
+    avatarEl.textContent = initials;
+    avatarEl.style.background = hubState.currentUser.avatar || 'var(--primary-light)';
+    avatarEl.style.color = 'white';
+    avatarEl.style.fontFamily = 'Inter,sans-serif';
+    avatarEl.style.fontWeight = '700';
+    avatarEl.style.fontSize = '.7rem';
+  }
   if (adminLink) {
     adminLink.style.display = hubState.currentUser.role === 'admin' ? 'flex' : 'none';
     adminLink.style.alignItems = 'center';
@@ -299,7 +314,7 @@ function openUserMenu() {
   info += '<div style="font-family:sans-serif;font-size:.85rem;font-weight:600;color:var(--h2)">' + esc(hubState.currentUser ? hubState.currentUser.name : 'User') + '</div>';
   info += '<div style="font-family:sans-serif;font-size:.72rem;color:var(--muted)">' + esc(hubState.currentUser ? hubState.currentUser.email : '') + '</div>';
   if (hubState.currentUser && hubState.currentUser.role === 'admin') {
-    info += '<div style="font-family:sans-serif;font-size:.68rem;font-weight:700;color:var(--primary);margin-top:2px">👑 Admin</div>';
+    info += '<div style="font-family:sans-serif;font-size:.68rem;font-weight:700;color:var(--primary);margin-top:2px">Admin</div>';
   }
   info += '</div>';
   var signout = '<div onclick="signOut()" style="padding:.75rem 1rem;font-family:sans-serif;font-size:.85rem;color:#e53935;cursor:pointer">Sign Out</div>';
@@ -346,7 +361,7 @@ async function checkStorageAlert() {
       var icon = document.getElementById('storage-alert-icon');
       var pctEl = document.getElementById('storage-alert-pct');
       var msgEl = document.getElementById('storage-alert-msg');
-      if (icon) icon.textContent = '🔴';
+      if (icon) icon.textContent = '!';
       if (pctEl) pctEl.textContent = 'CRITICAL: Storage at ' + pct + '% —';
       if (msgEl) msgEl.textContent = 'Uploads may fail. Upgrade immediately.';
     } else if (pct >= 90) {
@@ -371,8 +386,8 @@ function dismissStorageAlert() {
 
 // ── HELPERS ──
 function getAvatarForName(name) {
-  var avatars = ['🌸','⚡','🌙','🔥','🌊','🎯','💫','🦋','🌺','✨'];
-  return avatars[name.charCodeAt(0) % avatars.length];
+  var colors = ['#ff30cc','#ff6b35','#2d7dd2','#3bb273','#f7b731','#8854d0','#e53935','#0097a7','#f06292','#66bb6a'];
+  return colors[name.charCodeAt(0) % colors.length];
 }
 
 function formatDate(ts) {
@@ -390,6 +405,30 @@ async function logActivity(action, type, details) {
       action: action, details: details || '', section: type || 'general'
     });
   } catch(e) {}
+}
+
+// ── THEME TOGGLE ──
+var ICON_MOON = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>';
+var ICON_SUN = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>';
+
+function toggleTheme() {
+  var isLight = document.documentElement.getAttribute('data-theme') === 'light';
+  if (isLight) {
+    document.documentElement.removeAttribute('data-theme');
+    localStorage.setItem('nancy_theme', 'dark');
+  } else {
+    document.documentElement.setAttribute('data-theme', 'light');
+    localStorage.setItem('nancy_theme', 'light');
+  }
+  var btn = document.getElementById('theme-toggle');
+  if (btn) btn.innerHTML = isLight ? ICON_MOON : ICON_SUN;
+}
+
+function initThemeToggle() {
+  var btn = document.getElementById('theme-toggle');
+  if (!btn) return;
+  var isLight = document.documentElement.getAttribute('data-theme') === 'light';
+  btn.innerHTML = isLight ? ICON_SUN : ICON_MOON;
 }
 
 // ── BOOT ──

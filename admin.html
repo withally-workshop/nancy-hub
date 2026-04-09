@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script>(function(){var t=localStorage.getItem('nancy_theme');if(t==='light')document.documentElement.setAttribute('data-theme','light');})()</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin Base — Nancy Hub</title>
@@ -204,11 +205,12 @@
     </div>
     <div class="nav-right">
       <div class="nav-time" id="pht-clock">HKT --:--</div>
+      <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme"></button>
       <div id="admin-nav-link" style="display:none;align-items:center;height:100%">
-        <a class="nav-link active" href="admin.html" style="color:var(--primary);font-weight:700">👑 Admin</a>
+        <a class="nav-link active" href="admin.html" style="color:var(--primary);font-weight:700">Admin</a>
       </div>
       <div class="user-nav-btn" onclick="openUserMenu()">
-        <div class="user-avatar-small" id="user-avatar-nav">👤</div>
+        <div class="user-avatar-small" id="user-avatar-nav">?</div>
         <span id="user-name-nav">Me</span>
         <span>▾</span>
       </div>
@@ -221,7 +223,7 @@
     <div class="admin-header">
       <a href="index.html" class="admin-back">← Back to Hub</a>
       <div class="admin-title-block">
-        <div class="admin-title">👑 Admin Base</div>
+        <div class="admin-title">Admin Base</div>
         <div class="admin-sub">Your private control room — only you can see this</div>
       </div>
     </div>
@@ -393,7 +395,7 @@
     <!-- ── ACTIVITY LOG ── -->
     <div class="admin-section">
       <div class="admin-section-header">
-        <div class="admin-section-title">📋 Recent Activity</div>
+        <div class="admin-section-title">Recent Activity</div>
         <button class="admin-section-action" onclick="loadActivity()">↻ Refresh</button>
       </div>
       <div id="activity-wrap">
@@ -404,18 +406,18 @@
   </div><!-- /admin-container -->
 
   <!-- Mobile bottom nav -->
-  <div id="mobile-nav" style="display:none;position:fixed;bottom:0;left:0;right:0;background:var(--white);border-top:1px solid var(--border);z-index:300;padding:.4rem 0 .5rem">
+  <div id="mobile-nav" style="display:none;position:fixed;bottom:0;left:0;right:0;background:var(--nav-bg,rgba(30,30,28,0.88));border-top:1px solid var(--border);z-index:300;padding:.4rem 0 .5rem;backdrop-filter:blur(16px)">
     <div style="display:flex;justify-content:space-around;align-items:center">
       <a href="index.html" style="display:flex;flex-direction:column;align-items:center;gap:2px;padding:.3rem .5rem;color:var(--muted);text-decoration:none">
-        <span style="font-size:1.2rem">🏠</span>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/><polyline points="9 21 9 12 15 12 15 21"/></svg>
         <span style="font-family:sans-serif;font-size:.58rem;font-weight:600">Home</span>
       </a>
       <a href="taskflow.html" style="display:flex;flex-direction:column;align-items:center;gap:2px;padding:.3rem .5rem;color:var(--muted);text-decoration:none">
-        <span style="font-size:1.2rem">📋</span>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="9" y1="7" x2="20" y2="7"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="17" x2="20" y2="17"/><polyline points="4 7 5 8 7 6"/><polyline points="4 12 5 13 7 11"/><polyline points="4 17 5 18 7 16"/></svg>
         <span style="font-family:sans-serif;font-size:.58rem;font-weight:600">Tasks</span>
       </a>
       <a id="mnav-admin" href="admin.html" style="display:none;flex-direction:column;align-items:center;gap:2px;padding:.3rem .5rem;color:var(--primary);text-decoration:none">
-        <span style="font-size:1.2rem">👑</span>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
         <span style="font-family:sans-serif;font-size:.58rem;font-weight:600">Admin</span>
       </a>
     </div>
@@ -667,10 +669,11 @@ async function loadTeam() {
       var isMe = hubState.currentUser && member.email === hubState.currentUser.email;
       var isAdmin = member.role === 'admin';
       html += '<div class="team-row">';
-      html += '<div class="team-avatar">' + esc(member.avatar || '👤') + '</div>';
+      var initials2 = (member.name || 'U').split(' ').map(function(w){return w[0]||'';}).join('').toUpperCase().slice(0,2);
+      html += '<div class="team-avatar" style="background:' + (member.avatar && member.avatar.startsWith('#') ? member.avatar : 'var(--primary-light)') + ';color:white;font-family:Inter,sans-serif;font-weight:700;font-size:.75rem">' + initials2 + '</div>';
       html += '<div class="team-info"><div class="team-name">' + esc(member.name || 'Unknown') + (isMe ? ' <span style="font-size:.7rem;color:var(--muted)">(you)</span>' : '') + '</div>';
       html += '<div class="team-email">' + esc(member.email || '') + '</div></div>';
-      html += '<span class="team-role-badge ' + (isAdmin ? 'admin' : 'member') + '">' + (isAdmin ? '👑 Admin' : 'Member') + '</span>';
+      html += '<span class="team-role-badge ' + (isAdmin ? 'admin' : 'member') + '">' + (isAdmin ? 'Admin' : 'Member') + '</span>';
       if (!isMe) {
         html += '<div class="team-actions">';
         if (isAdmin) {

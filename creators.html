@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script>(function(){var t=localStorage.getItem('nancy_theme');if(t==='light')document.documentElement.setAttribute('data-theme','light');})()</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Nancy — Creators & Onboarding</title>
@@ -90,11 +91,12 @@
     </div>
     <div class="nav-right">
       <div class="nav-time" id="pht-clock">HKT --:--</div>
+      <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme"></button>
       <div id="admin-nav-link" style="display:none">
-        <a class="nav-link" href="admin.html" style="color:var(--primary);font-weight:600">👑 Admin</a>
+        <a class="nav-link" href="admin.html" style="color:var(--primary);font-weight:600">Admin</a>
       </div>
       <div class="user-nav-btn" onclick="openUserMenu()">
-        <div class="user-avatar-small" id="user-avatar-nav">👤</div>
+        <div class="user-avatar-small" id="user-avatar-nav">?</div>
         <span id="user-name-nav">Me</span>
         <span style="font-size:.7rem;color:var(--muted)">▾</span>
       </div>
@@ -107,7 +109,7 @@
       <span id="storage-alert-pct" style="font-weight:700"></span>
       <span id="storage-alert-msg"></span>
     </span>
-    <button class="storage-alert-close" onclick="dismissStorageAlert()">✕</button>
+    <button class="storage-alert-close" onclick="dismissStorageAlert()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
   </div>
 
   <!-- PAGE CONTENT -->
@@ -121,38 +123,38 @@
 
     <div class="fp-cards">
 
-      <div class="fp-card" style="--fp-icon-bg:#e8f5e9;--fp-card-glow:rgba(59,178,115,.07)">
-        <div class="fp-card-icon">🤝</div>
+      <div class="fp-card" style="--fp-icon-bg:rgba(59,178,115,0.15);--fp-card-glow:rgba(59,178,115,.07)">
+        <div class="fp-card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div>
         <div class="fp-card-title">Creator Directory</div>
         <div class="fp-card-desc">A searchable database of all current and prospective creators — contact info, niches, rates, past campaigns, and performance metrics.</div>
       </div>
 
-      <div class="fp-card" style="--fp-icon-bg:#ffe0f7;--fp-card-glow:rgba(255,48,204,.06)">
-        <div class="fp-card-icon">📬</div>
+      <div class="fp-card" style="--fp-icon-bg:rgba(255,48,204,0.15);--fp-card-glow:rgba(255,48,204,.06)">
+        <div class="fp-card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
         <div class="fp-card-title">Outreach Pipelines</div>
         <div class="fp-card-desc">Track every partnership from first contact to signed deal. Move creators through stages: prospecting, outreach, negotiation, active, complete.</div>
       </div>
 
-      <div class="fp-card" style="--fp-icon-bg:#e3f2fd;--fp-card-glow:rgba(45,125,210,.06)">
-        <div class="fp-card-icon">📋</div>
+      <div class="fp-card" style="--fp-icon-bg:rgba(45,125,210,0.15);--fp-card-glow:rgba(45,125,210,.06)">
+        <div class="fp-card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="9" y1="7" x2="20" y2="7"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="17" x2="20" y2="17"/><polyline points="4 7 5 8 7 6"/><polyline points="4 12 5 13 7 11"/><polyline points="4 17 5 18 7 16"/></svg></div>
         <div class="fp-card-title">Onboarding Checklists</div>
         <div class="fp-card-desc">Automatically send onboarding tasks when a creator is approved. Contracts, briefing docs, brand kit, and posting guidelines — all in one flow.</div>
       </div>
 
-      <div class="fp-card" style="--fp-icon-bg:#fff8e1;--fp-card-glow:rgba(247,183,49,.06)">
-        <div class="fp-card-icon">📈</div>
+      <div class="fp-card" style="--fp-icon-bg:rgba(247,183,49,0.15);--fp-card-glow:rgba(247,183,49,.06)">
+        <div class="fp-card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
         <div class="fp-card-title">Performance Tracking</div>
         <div class="fp-card-desc">Log content deliverables, engagement rates, and ROI per creator. See at a glance who's driving results and who needs follow-up.</div>
       </div>
 
-      <div class="fp-card" style="--fp-icon-bg:#f3e5f5;--fp-card-glow:rgba(136,84,208,.06)">
-        <div class="fp-card-icon">💸</div>
+      <div class="fp-card" style="--fp-icon-bg:rgba(136,84,208,0.15);--fp-card-glow:rgba(136,84,208,.06)">
+        <div class="fp-card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></div>
         <div class="fp-card-title">Payments & Deliverables</div>
         <div class="fp-card-desc">Track what's owed, what's been paid, and what's still pending. Link each payment to a specific content deliverable.</div>
       </div>
 
-      <div class="fp-card" style="--fp-icon-bg:#e0f7fa;--fp-card-glow:rgba(0,188,212,.06)">
-        <div class="fp-card-icon">🔗</div>
+      <div class="fp-card" style="--fp-icon-bg:rgba(0,188,212,0.15);--fp-card-glow:rgba(0,188,212,.06)">
+        <div class="fp-card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg></div>
         <div class="fp-card-title">Affiliate Links</div>
         <div class="fp-card-desc">Generate, track, and manage affiliate links for each creator. Monitor clicks, conversions, and commissions in real time.</div>
       </div>
@@ -170,27 +172,27 @@
   <div class="mobile-nav-wrap" id="mobile-nav">
     <div class="mobile-nav-inner">
       <a href="index.html" class="mnav-item">
-        <span class="mnav-icon">🏠</span>
+        <span class="mnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/><polyline points="9 21 9 12 15 12 15 21"/></svg></span>
         <span class="mnav-label">Home</span>
       </a>
       <a href="taskflow.html" class="mnav-item">
-        <span class="mnav-icon">📋</span>
+        <span class="mnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="9" y1="7" x2="20" y2="7"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="17" x2="20" y2="17"/><polyline points="4 7 5 8 7 6"/><polyline points="4 12 5 13 7 11"/><polyline points="4 17 5 18 7 16"/></svg></span>
         <span class="mnav-label">Tasks</span>
       </a>
       <a href="social.html" class="mnav-item">
-        <span class="mnav-icon">📱</span>
+        <span class="mnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></span>
         <span class="mnav-label">Social</span>
       </a>
       <a href="learning.html" class="mnav-item">
-        <span class="mnav-icon">📚</span>
+        <span class="mnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg></span>
         <span class="mnav-label">Learn</span>
       </a>
       <a href="creators.html" class="mnav-item active">
-        <span class="mnav-icon">🤝</span>
+        <span class="mnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></span>
         <span class="mnav-label">Creators</span>
       </a>
       <a id="mnav-admin" href="admin.html" class="mnav-item" style="display:none">
-        <span class="mnav-icon">👑</span>
+        <span class="mnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span>
         <span class="mnav-label">Admin</span>
       </a>
     </div>

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script>(function(){var t=localStorage.getItem('nancy_theme');if(t==='light')document.documentElement.setAttribute('data-theme','light');})()</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Nancy — Content & Socials</title>
@@ -256,22 +257,22 @@ tr:last-child .cal-day-cell,tr:last-child .cal-content-cell{border-bottom:none}
     </div>
     <div class="nav-right">
       <div class="nav-time" id="pht-clock">HKT --:--</div>
+      <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme"></button>
       <div id="admin-nav-link" style="display:none;align-items:center;height:100%">
-        <a class="nav-link" href="admin.html" style="color:var(--primary);font-weight:700">👑 Admin</a>
+        <a class="nav-link" href="admin.html" style="color:var(--primary);font-weight:700">Admin</a>
       </div>
       <div class="user-nav-btn" onclick="openUserMenu()">
-        <div class="user-avatar-small" id="user-avatar-nav">👤</div>
+        <div class="user-avatar-small" id="user-avatar-nav">?</div>
         <span id="user-name-nav">Me</span>
         <span>▾</span>
       </div>
-      <button class="nav-btn" onclick="window.location.href='admin.html'">⚙</button>
     </div>
   </nav>
 
   <div id="storage-alert-banner">
     <span id="storage-alert-icon">⚠️</span>
     <span style="flex:1;font-family:sans-serif"><span id="storage-alert-pct" style="font-weight:700"></span><span id="storage-alert-msg"></span><span style="color:var(--muted);font-size:.75rem"> (Only you can see this)</span></span>
-    <button class="storage-alert-close" onclick="dismissStorageAlert()">✕</button>
+    <button class="storage-alert-close" onclick="dismissStorageAlert()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
   </div>
 
   <!-- ════════════════════════════════════
@@ -799,14 +800,14 @@ tr:last-child .cal-day-cell,tr:last-child .cal-content-cell{border-bottom:none}
   </div><!-- /avatar-mode -->
 
   <!-- MOBILE BOTTOM NAV -->
-  <div id="mobile-nav" style="display:none;position:fixed;bottom:0;left:0;right:0;background:var(--white);border-top:1px solid var(--border);z-index:300;padding:.4rem 0 .5rem">
+  <div id="mobile-nav" style="display:none;position:fixed;bottom:0;left:0;right:0;background:var(--nav-bg,rgba(30,30,28,0.88));border-top:1px solid var(--border);z-index:300;padding:.4rem 0 .5rem;backdrop-filter:blur(16px)">
     <div style="display:flex;justify-content:space-around;align-items:center">
-      <a href="index.html" style="display:flex;flex-direction:column;align-items:center;gap:2px;padding:.3rem .5rem;color:var(--muted);text-decoration:none"><span style="font-size:1.2rem">🏠</span><span style="font-family:sans-serif;font-size:.58rem;font-weight:600">Home</span></a>
-      <a href="taskflow.html" style="display:flex;flex-direction:column;align-items:center;gap:2px;padding:.3rem .5rem;color:var(--muted);text-decoration:none"><span style="font-size:1.2rem">📋</span><span style="font-family:sans-serif;font-size:.58rem;font-weight:600">Tasks</span></a>
-      <a href="social.html" style="display:flex;flex-direction:column;align-items:center;gap:2px;padding:.3rem .5rem;color:var(--primary);text-decoration:none"><span style="font-size:1.2rem">📱</span><span style="font-family:sans-serif;font-size:.58rem;font-weight:600">Social</span></a>
-      <a href="learning.html" style="display:flex;flex-direction:column;align-items:center;gap:2px;padding:.3rem .5rem;color:var(--muted);text-decoration:none"><span style="font-size:1.2rem">📚</span><span style="font-family:sans-serif;font-size:.58rem;font-weight:600">Learning</span></a>
-      <a href="creators.html" style="display:flex;flex-direction:column;align-items:center;gap:2px;padding:.3rem .5rem;color:var(--muted);text-decoration:none"><span style="font-size:1.2rem">🤝</span><span style="font-family:sans-serif;font-size:.58rem;font-weight:600">Creators</span></a>
-      <a id="mnav-admin" href="admin.html" style="display:none;flex-direction:column;align-items:center;gap:2px;padding:.3rem .5rem;color:var(--muted);text-decoration:none"><span style="font-size:1.2rem">👑</span><span style="font-family:sans-serif;font-size:.58rem;font-weight:600">Admin</span></a>
+      <a href="index.html" style="display:flex;flex-direction:column;align-items:center;gap:2px;padding:.3rem .5rem;color:var(--muted);text-decoration:none"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/><polyline points="9 21 9 12 15 12 15 21"/></svg><span style="font-family:sans-serif;font-size:.58rem;font-weight:600">Home</span></a>
+      <a href="taskflow.html" style="display:flex;flex-direction:column;align-items:center;gap:2px;padding:.3rem .5rem;color:var(--muted);text-decoration:none"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="9" y1="7" x2="20" y2="7"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="17" x2="20" y2="17"/><polyline points="4 7 5 8 7 6"/><polyline points="4 12 5 13 7 11"/><polyline points="4 17 5 18 7 16"/></svg><span style="font-family:sans-serif;font-size:.58rem;font-weight:600">Tasks</span></a>
+      <a href="social.html" style="display:flex;flex-direction:column;align-items:center;gap:2px;padding:.3rem .5rem;color:var(--primary);text-decoration:none"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg><span style="font-family:sans-serif;font-size:.58rem;font-weight:600">Social</span></a>
+      <a href="learning.html" style="display:flex;flex-direction:column;align-items:center;gap:2px;padding:.3rem .5rem;color:var(--muted);text-decoration:none"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg><span style="font-family:sans-serif;font-size:.58rem;font-weight:600">Learning</span></a>
+      <a href="creators.html" style="display:flex;flex-direction:column;align-items:center;gap:2px;padding:.3rem .5rem;color:var(--muted);text-decoration:none"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg><span style="font-family:sans-serif;font-size:.58rem;font-weight:600">Creators</span></a>
+      <a id="mnav-admin" href="admin.html" style="display:none;flex-direction:column;align-items:center;gap:2px;padding:.3rem .5rem;color:var(--muted);text-decoration:none"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><span style="font-family:sans-serif;font-size:.58rem;font-weight:600">Admin</span></a>
     </div>
   </div>
 
