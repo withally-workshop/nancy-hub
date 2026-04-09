@@ -3400,7 +3400,7 @@ function isMobile() { return window.innerWidth <= 768; }
 function initMobileNav() {
   // Mobile nav visibility is CSS-controlled via media query
   var adminLink = document.getElementById('mnav-admin');
-  if (adminLink && hubState && hubState.isAdmin) adminLink.style.display = 'flex';
+  if (adminLink && state && state.isAdmin) adminLink.style.display = 'flex';
 }
 
 function mobileNav(page) {
@@ -3559,7 +3559,7 @@ function openSlackDrawer() {
   document.getElementById('slack-backdrop').classList.add('show');
 
   // Always re-read token from current user in case it was just saved
-  var cu = hubState && hubState.currentUser ? hubState.currentUser : null;
+  var cu = state && state.currentUser ? state.currentUser : null;
   var freshToken = (cu && cu.slack_token) || '';
   if (freshToken && freshToken !== slackState.ownToken) {
     // Token was just saved — re-init fully
@@ -3586,7 +3586,7 @@ function closeSlackDrawer() {
 
 async function initSlack() {
   // Load own token from current user profile
-  var cu = hubState && hubState.currentUser ? hubState.currentUser : (state && state.currentUser ? state.currentUser : null);
+  var cu = state && state.currentUser ? state.currentUser : null;
   slackState.ownToken = (cu && cu.slack_token) || '';
   slackState.ownUserId = (cu && cu.slack_user_id) || '';
 
@@ -3956,7 +3956,7 @@ async function slackPullAll() {
     var token = slackState.ownToken;
     if (!token) {
       // Try re-reading from current user in case token was just saved
-      var cu2 = hubState && hubState.currentUser ? hubState.currentUser : null;
+      var cu2 = state && state.currentUser ? state.currentUser : null;
       token = (cu2 && cu2.slack_token) || '';
       if (token) slackState.ownToken = token;
     }
