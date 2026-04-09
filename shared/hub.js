@@ -341,7 +341,7 @@ window.addEventListener('resize', function() {
   if (nav) nav.style.display = isMobile() ? 'block' : 'none';
 });
 
-// ── HIDE NAV ON SCROLL ──
+// ── HIDE NAV ON SCROLL (capture phase catches any scrollable element) ──
 var _navLastY = 0;
 var _navHidden = false;
 function handleNavScroll(y) {
@@ -357,9 +357,13 @@ function handleNavScroll(y) {
   }
   _navLastY = y;
 }
-window.addEventListener('scroll', function() {
-  handleNavScroll(window.scrollY || document.documentElement.scrollTop);
-}, { passive: true });
+document.addEventListener('scroll', function(e) {
+  var t = e.target;
+  var y = (t === document || t === document.documentElement || t === document.body)
+    ? (window.scrollY || document.documentElement.scrollTop)
+    : t.scrollTop;
+  handleNavScroll(y);
+}, { passive: true, capture: true });
 
 // ── STORAGE ALERT ──
 var storageDismissed = false;

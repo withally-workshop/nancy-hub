@@ -38,8 +38,9 @@
 .card-admin-btn:hover { background: var(--bg2); color: var(--body); }
 .card-admin-btn.danger:hover { background: rgba(229,57,53,.1); color: #e53935; border-color: #e53935; }
 
-/* Avatar mode — fixed app-shell, positioned flush below nav */
-#avatar-mode { display: none; flex-direction: column; position: fixed; top: calc(1rem + var(--nav-h)); left: 0; right: 0; bottom: 0; overflow: hidden; background: var(--bg); z-index: 50; }
+/* Avatar mode — full viewport overlay, spacer pushes content below nav */
+#avatar-mode { display: none; flex-direction: column; position: fixed; inset: 0; z-index: 50; background: var(--bg); overflow: hidden; }
+.av-nav-spacer { flex-shrink: 0; height: calc(1rem + var(--nav-h)); }
 .avatar-mode-bar { display: flex; align-items: center; gap: 1rem; padding: .75rem 2rem; background: var(--card); border-bottom: 1px solid var(--border); flex-shrink: 0; }
 .back-btn { font-family: 'Inter', sans-serif; font-size: .82rem; color: var(--muted); background: none; border: none; cursor: pointer; padding: 4px 0; display: flex; align-items: center; gap: .3rem; transition: color .2s; }
 .back-btn:hover { color: var(--body); }
@@ -282,6 +283,7 @@
 
   <!-- MODE 2: AVATAR WORKSPACE -->
   <div id="avatar-mode">
+    <div class="av-nav-spacer"></div>
     <div class="avatar-mode-bar">
       <button class="back-btn" onclick="backToHub()">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
@@ -823,10 +825,8 @@ function openAvatar(av) {
   // Show workspace
   document.getElementById('social-hub').style.display = 'none';
   document.getElementById('avatar-mode').style.display = 'flex';
-  window.scrollTo(0,0);
-  // Wire inner scroll to nav hide/show
   var wc = document.querySelector('.workspace-content');
-  if (wc) { wc.addEventListener('scroll', function(){ handleNavScroll(this.scrollTop); }, { passive: true }); }
+  if (wc) wc.scrollTop = 0;
 
   // Load first tab
   showTab('vault');
