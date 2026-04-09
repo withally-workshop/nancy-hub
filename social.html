@@ -350,6 +350,22 @@
 .tool-hashtag-tag{background:rgba(255,48,204,.1);color:var(--primary);border-radius:20px;padding:3px 10px;font-size:.78rem;font-weight:500;cursor:pointer;}
 .tool-hashtag-tag:hover{background:rgba(255,48,204,.2);}
 
+/* ─── SOCIAL LANDING HUB ─── */
+.social-hub-cards{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-top:.25rem}
+.social-hub-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:2rem;cursor:pointer;transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease}
+.social-hub-card:hover{transform:translateY(-4px);box-shadow:0 16px 40px rgba(0,0,0,.18);border-color:var(--border2)}
+.shc-icon{width:46px;height:46px;border-radius:13px;background:var(--bg2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--muted);margin-bottom:1.25rem}
+.shc-title{font-family:'Fraunces',serif;font-size:1.2rem;font-weight:600;color:var(--h2);letter-spacing:-.02em;margin-bottom:.4rem}
+.shc-desc{font-family:'Inter',sans-serif;font-size:.84rem;color:var(--muted);line-height:1.55;margin-bottom:1rem}
+.shc-count{font-family:'Inter',sans-serif;font-size:.72rem;color:var(--muted);margin-bottom:1.25rem}
+.shc-btn{background:none;border:none;font-family:'Inter',sans-serif;font-size:.84rem;font-weight:600;color:var(--primary);cursor:pointer;padding:0;display:inline-flex;align-items:center;gap:.3rem;opacity:.85;transition:opacity .15s}
+.shc-btn:hover{opacity:1}
+.social-sec-hdr{display:flex;align-items:center;gap:.5rem;margin-bottom:1.75rem}
+.social-sec-back-btn{font-family:'Inter',sans-serif;font-size:.82rem;color:var(--muted);background:none;border:none;cursor:pointer;padding:4px 0;display:flex;align-items:center;gap:.3rem;transition:color .2s;white-space:nowrap}
+.social-sec-back-btn:hover{color:var(--body)}
+.social-sec-crumb{font-family:'Inter',sans-serif;font-size:.82rem;color:var(--muted)}
+.social-sec-crumb-cur{color:var(--h2);font-weight:600}
+
 /* ─── RESPONSIVE ─── */
 @media(max-width:768px){
   .s-wrap{padding:0 1rem 2rem}
@@ -362,6 +378,7 @@
   .av-tabs{padding:0 1rem}
   .fmt-grid{grid-template-columns:1fr}
   .mnav-wrap{display:block}
+  .social-hub-cards{grid-template-columns:1fr}
 }
 </style>
 </head>
@@ -445,26 +462,64 @@
       <span style="flex:1;font-family:'Inter',sans-serif"><span id="storage-alert-pct" style="font-weight:700"></span><span id="storage-alert-msg"></span><span style="color:var(--muted);font-size:.75rem"> (Only you can see this)</span></span>
       <button class="storage-alert-close" onclick="dismissStorageAlert()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
-    <div class="s-wrap">
+    <!-- ── LANDING: 2-card hub ── -->
+    <div id="social-landing" class="s-wrap">
       <div class="s-hdr">
         <div>
           <div class="s-title">Content &amp; Socials</div>
           <div class="s-sub">AI personas, brand accounts &amp; content pipeline</div>
         </div>
-        <button class="btn-primary" id="btn-add-avatar" style="display:none" onclick="openAvatarModal()">+ Add Avatar</button>
+      </div>
+      <div class="social-hub-cards">
+
+        <!-- Card: Avatars -->
+        <div class="social-hub-card" onclick="showSocialSection('avatars')">
+          <div class="shc-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          <div class="shc-title">Avatars</div>
+          <div class="shc-desc">Manage AI personas and brand accounts. Each avatar has its own voice, niche, and full content studio.</div>
+          <div class="shc-count" id="shc-avatar-count">Loading avatars...</div>
+          <button class="shc-btn">Open Avatars →</button>
+        </div>
+
+        <!-- Card: Social Tools -->
+        <div class="social-hub-card" onclick="showSocialSection('tools')">
+          <div class="shc-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/></svg>
+          </div>
+          <div class="shc-title">Social Tools</div>
+          <div class="shc-desc">AI-powered tools for content creation — captions, hashtags, hooks, bio optimizer, and more. No avatar required.</div>
+          <div class="shc-count">6 tools available</div>
+          <button class="shc-btn">Open Tools →</button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── AVATARS SECTION ── -->
+    <div id="social-avatars-section" class="s-wrap" style="display:none">
+      <div class="social-sec-hdr">
+        <button class="social-sec-back-btn" onclick="showSocialLanding()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          Content &amp; Socials
+        </button>
+        <span class="social-sec-crumb">/ <span class="social-sec-crumb-cur">Avatars</span></span>
+        <button class="btn-primary" id="btn-add-avatar" style="display:none;margin-left:auto" onclick="openAvatarModal()">+ Add Avatar</button>
       </div>
       <div class="av-grid" id="avatar-grid-container">
         <div class="empty-st">Loading...</div>
       </div>
     </div>
 
-    <!-- ── SOCIAL TOOLS (always visible, all members) ── -->
-    <div class="s-wrap" id="hub-tools-section" style="margin-top:2rem;padding-bottom:3rem">
-      <div class="s-hdr" style="margin-bottom:1.25rem">
-        <div>
-          <div class="s-title" style="font-size:1.1rem">Social Tools</div>
-          <div class="s-sub">AI-powered tools for content creation — no avatar required</div>
-        </div>
+    <!-- ── SOCIAL TOOLS SECTION ── -->
+    <div id="social-tools-section" class="s-wrap" style="display:none;padding-bottom:3rem">
+      <div class="social-sec-hdr">
+        <button class="social-sec-back-btn" onclick="showSocialLanding()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          Content &amp; Socials
+        </button>
+        <span class="social-sec-crumb">/ <span class="social-sec-crumb-cur">Social Tools</span></span>
       </div>
       <div class="tools-grid">
 
@@ -1199,15 +1254,40 @@ var studioState = {
 };
 
 // ══════════════════════════════════════
+// SOCIAL HUB NAVIGATION (landing ↔ sections)
+// ══════════════════════════════════════
+function showSocialSection(section) {
+  document.getElementById('social-landing').style.display = 'none';
+  document.getElementById('social-avatars-section').style.display = section === 'avatars' ? '' : 'none';
+  document.getElementById('social-tools-section').style.display = section === 'tools' ? '' : 'none';
+  socialState.activeSection = section;
+  // Show add-avatar button for admins when in avatars section
+  if (section === 'avatars') {
+    var btn = document.getElementById('btn-add-avatar');
+    if (btn && hubState.currentUser && hubState.currentUser.role === 'admin') btn.style.display = 'block';
+  }
+}
+
+function showSocialLanding() {
+  document.getElementById('social-landing').style.display = '';
+  document.getElementById('social-avatars-section').style.display = 'none';
+  document.getElementById('social-tools-section').style.display = 'none';
+  socialState.activeSection = null;
+  // Refresh avatar count on card
+  var cards = document.querySelectorAll('#avatar-grid-container .av-card');
+  var el = document.getElementById('shc-avatar-count');
+  if (el) {
+    var n = cards.length;
+    el.textContent = n ? n + ' avatar' + (n !== 1 ? 's' : '') + ' active' : 'No avatars yet';
+  }
+}
+
+// ══════════════════════════════════════
 // PAGE READY
 // ══════════════════════════════════════
 function onPageReady() {
-  if (hubState.currentUser && hubState.currentUser.role === 'admin') {
-    var btn = document.getElementById('btn-add-avatar');
-    if (btn) btn.style.display = 'block';
-  }
   loadAvatars();
-  // Check Gemini key
+  // Check Groq key
   if (!GROQ_API_KEY) {
     document.getElementById('api-warn').classList.add('show');
   }
@@ -1253,6 +1333,10 @@ function renderAvatarCards(avatars, posts) {
     container.innerHTML = '<div class="empty-st"><div class="empty-st-h">No avatars yet</div><div>Add your first avatar to get started.</div></div>';
     return;
   }
+  // Update landing card count
+  var countEl = document.getElementById('shc-avatar-count');
+  if (countEl) countEl.textContent = avatars.length + ' avatar' + (avatars.length !== 1 ? 's' : '') + ' active';
+
   container.innerHTML = avatars.map(function(av) {
     var color = av.color || '#ff30cc';
     var initials = getInitials(av.name);
@@ -1482,6 +1566,8 @@ function backToHub() {
   avMode.classList.remove('is-open');
   document.getElementById('social-hub').style.display = 'block';
   socialState.currentAvatar = null;
+  // Return to avatars section (not root landing)
+  showSocialSection('avatars');
   // Restore nav if hidden
   var nav = document.querySelector('.topnav');
   if (nav) { nav.classList.remove('nav-hidden'); document.body.classList.remove('nav-hidden'); }
