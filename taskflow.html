@@ -4139,25 +4139,44 @@ function getWeekStart() {
   return pht.getTime() - 8*3600000;
 }
 
+function getMonthStart() {
+  const pht = getHKT();
+  pht.setUTCDate(1);
+  pht.setUTCHours(0,0,0,0);
+  return pht.getTime() - 8*3600000;
+}
+
 function calcDailyPct() {
-  // Count ALL tasks completed since 7 AM HKT today vs total tasks logged since 7 AM HKT today
+  // Daily = Focus Today tier only (created or completed today since 7 AM HKT)
   const windowStart = getDayStart7am();
-  // Tasks that were created OR completed within today's window
-  const logged = state.tasks.filter(t => {
-    const created = t.created_at || 0;
-    const completed_at = t.completed_at || 0;
-    return created >= windowStart || completed_at >= windowStart;
-  });
-  if (!logged.length) return 0;
-  const done = logged.filter(t => t.completed && (t.completed_at || 0) >= windowStart);
-  return Math.round((done.length / logged.length) * 100);
+  const focusToday = state.tasks.filter(t =>
+    t.tier === 'focus-today' &&
+    ((t.created_at || 0) >= windowStart || (t.completed_at || 0) >= windowStart)
+  );
+  if (!focusToday.length) return 0;
+  const done = focusToday.filter(t => t.completed && (t.completed_at || 0) >= windowStart);
+  return Math.round((done.length / focusToday.length) * 100);
 }
 
 function calcWeeklyPct() {
+  // Weekly = Focus Today + Focus This Week (created this week)
   const start = getWeekStart();
-  const week = state.tasks.filter(t => t.created_at >= start && ['focus-today','focus-week','recurring'].includes(t.tier));
+  const week = state.tasks.filter(t =>
+    (t.created_at || 0) >= start && ['focus-today','focus-week'].includes(t.tier)
+  );
   if (!week.length) return 0;
   return Math.round((week.filter(t => t.completed).length / week.length) * 100);
+}
+
+function calcMonthlyPct() {
+  // Monthly = Top 3 + Founder assignments + Focus Today + Focus This Week (created this month)
+  const start = getMonthStart();
+  const monthly = state.tasks.filter(t =>
+    (t.created_at || 0) >= start &&
+    ['top3','founder','focus-today','focus-week'].includes(t.tier)
+  );
+  if (!monthly.length) return 0;
+  return Math.round((monthly.filter(t => t.completed).length / monthly.length) * 100);
 }
 
 // ─── TIER ICONS (above head clipart) ───
@@ -4261,14 +4280,13 @@ function checkRewards() {
     }
   }
 
-  // Auto-show reward at 6 PM (once per day)
+  // Auto-show reward + daily recap at 6 PM (once per day)
   if (dailyOk) {
     const pht = getHKT();
     const todayKey = `${pht.getUTCFullYear()}-${pht.getUTCMonth()}-${pht.getUTCDate()}`;
     const shownKey = localStorage.getItem('reward_shown_date');
     if (shownKey !== todayKey) {
       localStorage.setItem('reward_shown_date', todayKey);
-      // Save streak then show
       saveStreak(dp).then(() => {
         setTimeout(() => openRewards(), 1200);
       });
@@ -4283,8 +4301,10 @@ async function openRewards() {
   const weeklyOk = isHKTAfter(17, 5);
   const dp = calcDailyPct();
   const wp = calcWeeklyPct();
+  const mp = calcMonthlyPct();
   const dt = getRewardTier(dp);
   const wt = getRewardTier(wp);
+  const mt = getRewardTier(mp);
 
   const modal = document.getElementById('modal-rewards');
   if (!modal) return;
@@ -4294,6 +4314,39 @@ async function openRewards() {
   const streakHtml = streak > 0
     ? `<div class="rwd-streak">🔥 ${streak}-day streak${streak >= 7 ? ' — You\'re on fire!' : streak >= 3 ? ' — Keep it up!' : ''}</div>`
     : `<div class="rwd-streak" style="opacity:.5">No streak yet — complete 49%+ today to start one!</div>`;
+
+  // Build daily recap section (shown at 6 PM)
+  let recapHtml = '';
+  if (dailyOk) {
+    const dayStart = getDayStart7am();
+    const completedToday = state.tasks.filter(t => t.completed && (t.completed_at || 0) >= dayStart);
+    const focusDone = completedToday.filter(t => t.tier === 'focus-today');
+    const weekDone = completedToday.filter(t => t.tier === 'focus-week');
+    const top3Done = completedToday.filter(t => t.tier === 'top3');
+    const founderDone = completedToday.filter(t => t.tier === 'founder');
+    const otherDone = completedToday.filter(t => !['focus-today','focus-week','top3','founder'].includes(t.tier));
+
+    const recapListHtml = (label, tasks, color) => tasks.length
+      ? `<div style="margin-bottom:.5rem"><div style="font-family:sans-serif;font-size:.65rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:${color};margin-bottom:.25rem">${label}</div>` +
+        tasks.map(t => `<div style="font-family:sans-serif;font-size:.78rem;color:var(--body);padding:.15rem 0;border-bottom:1px solid var(--border)">✓ ${esc(t.title)}</div>`).join('') + '</div>'
+      : '';
+
+    recapHtml = `
+      <div style="margin-top:1.25rem;border-top:1px solid var(--border);padding-top:1rem">
+        <div style="font-family:'Fraunces',serif;font-size:.95rem;font-weight:600;color:var(--h2);margin-bottom:.75rem">📋 Today's Recap</div>
+        ${completedToday.length === 0
+          ? `<div style="font-family:sans-serif;font-size:.82rem;color:var(--muted);text-align:center;padding:1rem 0">No tasks completed today yet.</div>`
+          : recapListHtml('Focus Today', focusDone, 'var(--focus-today)') +
+            recapListHtml('Focus This Week', weekDone, 'var(--focus-week)') +
+            recapListHtml('Top 3', top3Done, 'var(--top3)') +
+            recapListHtml('Founder', founderDone, 'var(--founder)') +
+            recapListHtml('Other', otherDone, 'var(--muted)')
+        }
+        <div id="rwd-ai-recap" style="margin-top:.75rem;font-family:sans-serif;font-size:.8rem;color:var(--muted);font-style:italic">
+          ${completedToday.length > 0 ? 'Generating AI summary...' : ''}
+        </div>
+      </div>`;
+  }
 
   body.innerHTML = `
     <div class="rwd-top">
@@ -4310,7 +4363,7 @@ async function openRewards() {
       </div>
       <div class="rwd-tier-info">
         <div class="rwd-tier-name" style="color:${dailyOk ? dt.color : 'var(--muted)'}">${dailyOk ? dt.name : 'Pending...'}</div>
-        <div class="rwd-tier-sub">${dailyOk ? 'Today\'s reward' : 'Revealed at 6 PM HKT'}</div>
+        <div class="rwd-tier-sub">${dailyOk ? 'Today\'s reward · Focus Today' : 'Revealed at 6 PM HKT'}</div>
         ${streakHtml}
         <div class="rwd-quote">${dailyOk ? dt.daily : 'Keep pushing — you\'re building something great!'}</div>
         ${dailyOk ? `<div class="rwd-advice">💡 ${dt.advice}</div>` : ''}
@@ -4319,26 +4372,67 @@ async function openRewards() {
 
     <div class="rwd-stats-row">
       <div class="rwd-stat-card">
-        <div class="rwd-stat-label">Today</div>
+        <div class="rwd-stat-label">Daily</div>
+        <div style="font-family:sans-serif;font-size:.6rem;color:var(--muted);margin-bottom:.2rem">Focus Today</div>
         <div class="rwd-stat-val" style="color:${dailyOk ? dt.color : 'var(--muted)'}">${dailyOk ? dp+'%' : dp+'% so far'}</div>
         <div class="rwd-progress-bar"><div class="rwd-progress-fill" style="width:${dp}%;background:${dt.color}"></div></div>
         <div class="rwd-stat-sub">${dailyOk ? dt.name : 'In progress'}</div>
       </div>
       <div class="rwd-stat-card">
-        <div class="rwd-stat-label">This Week</div>
+        <div class="rwd-stat-label">Weekly</div>
+        <div style="font-family:sans-serif;font-size:.6rem;color:var(--muted);margin-bottom:.2rem">Today + This Week</div>
         <div class="rwd-stat-val" style="color:${weeklyOk ? wt.color : 'var(--muted)'}">${weeklyOk ? wp+'%' : wp+'% so far'}</div>
         <div class="rwd-progress-bar"><div class="rwd-progress-fill" style="width:${wp}%;background:${wt.color}"></div></div>
         <div class="rwd-stat-sub">${weeklyOk ? wt.name : 'In progress'}</div>
       </div>
       <div class="rwd-stat-card">
-        <div class="rwd-stat-label">7-Day Avg</div>
-        <div class="rwd-stat-val" style="color:${getRewardTier(weekAvg).color}">${weekAvg}%</div>
-        <div class="rwd-progress-bar"><div class="rwd-progress-fill" style="width:${weekAvg}%;background:${getRewardTier(weekAvg).color}"></div></div>
-        <div class="rwd-stat-sub">${getRewardTier(weekAvg).name}</div>
+        <div class="rwd-stat-label">Monthly</div>
+        <div style="font-family:sans-serif;font-size:.6rem;color:var(--muted);margin-bottom:.2rem">Top 3 + Founder + Focus</div>
+        <div class="rwd-stat-val" style="color:${mt.color}">${mp}%</div>
+        <div class="rwd-progress-bar"><div class="rwd-progress-fill" style="width:${mp}%;background:${mt.color}"></div></div>
+        <div class="rwd-stat-sub">${mt.name}</div>
       </div>
-    </div>`;
+    </div>
+    ${recapHtml}`;
 
   openModal('modal-rewards');
+
+  // Generate AI recap if it's 6 PM and there are completed tasks
+  if (dailyOk) {
+    const dayStart = getDayStart7am();
+    const completedToday = state.tasks.filter(t => t.completed && (t.completed_at || 0) >= dayStart);
+    if (completedToday.length > 0) generateDailyRecap(completedToday);
+  }
+}
+
+async function generateDailyRecap(completedToday) {
+  const el = document.getElementById('rwd-ai-recap');
+  if (!el) return;
+  if (!window.GROQ_API_KEY) {
+    try {
+      const r = await db.from('settings').select('value').eq('key','groq_api_key').single();
+      if (r.data && r.data.value) window.GROQ_API_KEY = r.data.value;
+    } catch(e) {}
+  }
+  if (!window.GROQ_API_KEY) { el.textContent = ''; return; }
+
+  const taskList = completedToday.map(t => `- ${t.title} (${t.tier})`).join('\n');
+  const prompt = `The team at CareNBloom completed these tasks today:\n${taskList}\n\nWrite a warm, energetic 2-sentence recap of what was accomplished. Be specific, mention task highlights. Keep it under 40 words. No bullet points.`;
+
+  try {
+    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + window.GROQ_API_KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ model: 'llama-3.3-70b-versatile', messages: [{ role: 'user', content: prompt }], max_tokens: 80, temperature: 0.7 })
+    });
+    const data = await res.json();
+    const summary = data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
+    if (summary && el) {
+      el.style.fontStyle = 'normal';
+      el.style.color = 'var(--body)';
+      el.innerHTML = `<div style="background:var(--bg2);border-radius:10px;padding:.65rem .85rem;border-left:3px solid var(--primary);margin-top:.25rem">✨ ${esc(summary.trim())}</div>`;
+    }
+  } catch(e) { if (el) el.textContent = ''; }
 }
 
 // ═══════════════════════════════════════
