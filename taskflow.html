@@ -405,6 +405,36 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--body);min-h
 /* LABEL */
 .rtp-label{font-family:'Inter',sans-serif;font-size:.52rem;font-weight:700;text-align:center;white-space:nowrap;letter-spacing:.01em}
 
+/* ASSIGNEE PICKER (task modal) */
+.assign-picker{display:flex;gap:.5rem;flex-wrap:wrap;padding:.15rem 0}
+.assign-chip{display:flex;align-items:center;gap:.4rem;padding:.3rem .75rem;border-radius:100px;border:1.5px solid var(--border2);cursor:pointer;font-family:'Inter',sans-serif;font-size:.78rem;font-weight:500;color:var(--muted);background:var(--bg);transition:all .15s;user-select:none}
+.assign-chip:hover{border-color:var(--primary);color:var(--body)}
+.assign-chip.selected{border-color:var(--primary);background:var(--primary-light);color:var(--primary)}
+.assign-av{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.62rem;font-weight:700;color:white;flex-shrink:0}
+
+/* TASK ASSIGNEE BADGES (on cards) */
+.task-assigned-badge{font-family:'Inter',sans-serif;font-size:.68rem;font-weight:600;padding:1px 7px;border-radius:4px;background:var(--primary-light);color:var(--primary)}
+.task-from-badge{font-family:'Inter',sans-serif;font-size:.68rem;font-weight:600;padding:1px 7px;border-radius:4px;background:rgba(45,125,210,.12);color:#4a9edd}
+
+/* NOTIFICATION PANEL */
+.notif-trigger{position:relative}
+.notif-panel{position:absolute;top:calc(100% + 8px);right:0;width:320px;background:var(--card);border:1px solid var(--border2);border-radius:14px;box-shadow:var(--shadow-lg);z-index:500;overflow:hidden;animation:fadeIn .15s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+.notif-panel-hdr{display:flex;align-items:center;justify-content:space-between;padding:.7rem 1rem;border-bottom:1px solid var(--border)}
+.notif-panel-title{font-family:'Inter',sans-serif;font-size:.85rem;font-weight:700;color:var(--h2)}
+.notif-mark-btn{font-size:.72rem;color:var(--primary);background:none;border:none;cursor:pointer;font-family:'Inter',sans-serif;font-weight:600;padding:0}
+.notif-mark-btn:hover{text-decoration:underline}
+.notif-list{max-height:340px;overflow-y:auto}
+.notif-item{display:flex;gap:.65rem;align-items:flex-start;padding:.7rem 1rem;border-bottom:1px solid var(--border);transition:background .12s}
+.notif-item:last-child{border-bottom:none}
+.notif-item.unread{background:rgba(255,48,204,.04)}
+.notif-icon{font-size:1rem;flex-shrink:0;margin-top:1px}
+.notif-body{flex:1;min-width:0}
+.notif-text{font-family:'Inter',sans-serif;font-size:.8rem;color:var(--body);line-height:1.45}
+.notif-text b{color:var(--h2)}
+.notif-time{font-family:'Inter',sans-serif;font-size:.68rem;color:var(--muted);margin-top:.2rem}
+.notif-empty{font-family:'Inter',sans-serif;font-size:.84rem;color:var(--muted);text-align:center;padding:2rem 1rem}
+
 /* IDEAS */
 .ideas-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1rem;margin-top:1rem}
 .idea-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;transition:box-shadow .2s;position:relative}
@@ -807,10 +837,21 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--body);min-h
           </div>
         </div>
         <div class="board-header-right">
-          <button class="hdr-btn" id="bell-btn" onclick="openNotifications()" style="position:relative">
-            🔔
-            <span id="notif-badge" style="display:none;position:absolute;top:-5px;right:-5px;background:#e53935;color:white;font-family:sans-serif;font-size:.58rem;font-weight:800;min-width:16px;height:16px;border-radius:8px;padding:0 3px;align-items:center;justify-content:center">0</span>
-          </button>
+          <div class="notif-trigger">
+            <button class="hdr-btn" id="bell-btn" onclick="openNotifications()" style="position:relative">
+              🔔
+              <span id="notif-badge" style="display:none;position:absolute;top:-5px;right:-5px;background:#e53935;color:white;font-family:sans-serif;font-size:.58rem;font-weight:800;min-width:16px;height:16px;border-radius:8px;padding:0 3px;display:none;align-items:center;justify-content:center;line-height:16px">0</span>
+            </button>
+            <div id="notif-panel" class="notif-panel" style="display:none">
+              <div class="notif-panel-hdr">
+                <span class="notif-panel-title">Notifications</span>
+                <button class="notif-mark-btn" onclick="markAllRead()">Mark all read</button>
+              </div>
+              <div class="notif-list" id="notif-list">
+                <div class="notif-empty">No notifications yet</div>
+              </div>
+            </div>
+          </div>
           <button class="hdr-btn" onclick="openShareModal()">🔗 Share</button>
           <button class="hdr-btn" onclick="openModal('modal-ideas')">💡 Ideas</button>
           <button class="hdr-btn" onclick="openDeliverables()">📦 Deliverables</button>
@@ -1085,6 +1126,10 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--body);min-h
     <div class="form-field">
       <label class="form-label">Description</label>
       <textarea class="form-textarea" id="new-task-desc" placeholder="Add details, links, or notes..."></textarea>
+    </div>
+    <div class="form-field" id="assign-field">
+      <label class="form-label">Assign to</label>
+      <div class="assign-picker" id="assign-picker"><div style="font-size:.78rem;color:var(--muted)">Loading members...</div></div>
     </div>
     <div class="form-row">
       <div class="form-field">
@@ -1445,9 +1490,12 @@ let state = {
   tasks: [],
   ideas: [],
   deliverables: [],
+  members: [],
+  notifications: [],
   currentBoard: 'personal',
   pendingTierId: null,
   pendingCompleteId: null,
+  pendingAssignee: null,
   selectedAvatar: '#ff30cc',
   completeFiles: [],
   ideaFiles: []
@@ -1623,10 +1671,14 @@ async function showTaskHub() {
       `${state.currentUser.name} · Code: ${state.currentUser.shareCode}`;
   }
 
+  await loadMembers();
   await loadTasks();
   await loadIdeas();
   await loadDeliverables();
+  await loadNotifications();
   refreshRecurring();
+  // Refresh notifications every 60s
+  setInterval(loadNotifications, 60000);
 }
 
 // ═══════════════════════════════════════
@@ -1658,8 +1710,10 @@ async function saveTaskToDB(task) {
       due_date: task.dueDate || task.due_date || null,
       is_personal: task.isPersonal || task.is_personal || false,
       shared_to_dashboard: task.sharedToDashboard || task.shared_to_dashboard || false,
-      owner_id: state.currentUser?.id?.startsWith('local_') ? null : state.currentUser?.id,
-      board_type: task.boardType || 'main'
+      owner_id: (state.currentUser?.id?.startsWith('local_') ? null : task.owner_id) || null,
+      board_type: task.boardType || 'main',
+      assigned_to: task.assigned_to || null,
+      assigned_by: task.assigned_by || null
     }).select().single();
     if (error) throw error;
     return data;
@@ -1707,11 +1761,13 @@ function getVisibleTasks() {
   if (state.currentBoard === 'shared') {
     return state.tasks.filter(t => t.shared_to_dashboard);
   }
-  // Personal board = all tasks owned by current user (personal + non-personal)
+  // Personal board = tasks I own + tasks assigned to me
+  const uid = state.currentUser?.id;
   return state.tasks.filter(t =>
-    t.owner_id === state.currentUser?.id ||
+    t.owner_id === uid ||
     t.owner_id === null ||
-    t.owner_id === undefined
+    t.owner_id === undefined ||
+    t.assigned_to === uid
   );
 }
 
@@ -1763,6 +1819,16 @@ function createTaskCard(task, tier) {
   if (task.due_date) metaHtml += `<span class="task-tag tag-due">📅 ${task.due_date}</span>`;
   if (task.is_personal) metaHtml += `<span class="task-tag tag-personal">👤 Personal</span>`;
   if (task.shared_to_dashboard) metaHtml += `<span class="task-tag tag-shared">👥 Shared</span>`;
+  // Assignment badges
+  const uid = state.currentUser?.id;
+  if (task.assigned_to && task.assigned_to !== uid) {
+    const m = state.members.find(x => x.id === task.assigned_to);
+    if (m) metaHtml += `<span class="task-assigned-badge">→ ${esc(m.name)}</span>`;
+  }
+  if (task.assigned_to === uid && task.assigned_by && task.assigned_by !== uid) {
+    const m = state.members.find(x => x.id === task.assigned_by);
+    if (m) metaHtml += `<span class="task-from-badge">from ${esc(m.name)}</span>`;
+  }
 
   card.innerHTML = `
     <div class="task-top">
@@ -1794,6 +1860,132 @@ function renderSidebar(tasks) {
 }
 
 // ═══════════════════════════════════════
+// MEMBERS & ASSIGN
+// SQL required: alter table tasks add column if not exists assigned_to text;
+//               alter table tasks add column if not exists assigned_by text;
+//               create table if not exists notifications (id uuid primary key default gen_random_uuid(), to_user text not null, from_user text, from_name text, type text not null, task_id text, task_title text not null, read boolean default false, created_at bigint default (extract(epoch from now())*1000)::bigint);
+// ═══════════════════════════════════════
+async function loadMembers() {
+  if (!state.currentUser?.id) return;
+  try {
+    const { data } = await db.from('boards').select('id,name,avatar,email,role').order('created_at');
+    state.members = data || [];
+  } catch(e) { state.members = []; }
+}
+
+function renderAssigneePicker() {
+  const picker = document.getElementById('assign-picker');
+  if (!picker) return;
+  const me = state.currentUser;
+  const others = (state.members || []).filter(m => m.id !== me?.id);
+  const selectedId = state.pendingAssignee || me?.id;
+  const chips = [`<div class="assign-chip ${selectedId === me?.id ? 'selected' : ''}" onclick="selectAssignee('${me?.id}')">
+    <div class="assign-av" style="background:${me?.avatar || '#ff30cc'}">${(me?.name||'M')[0].toUpperCase()}</div>Mine
+  </div>`].concat(others.map(m =>
+    `<div class="assign-chip ${selectedId === m.id ? 'selected' : ''}" onclick="selectAssignee('${m.id}')">
+      <div class="assign-av" style="background:${m.avatar||'#888'}">${(m.name||'?')[0].toUpperCase()}</div>${esc(m.name)}
+    </div>`
+  ));
+  picker.innerHTML = chips.join('');
+}
+
+function selectAssignee(id) {
+  state.pendingAssignee = id;
+  renderAssigneePicker();
+}
+
+// ═══════════════════════════════════════
+// NOTIFICATIONS
+// ═══════════════════════════════════════
+async function createNotification({ to_user, from_user, from_name, type, task_id, task_title }) {
+  try {
+    await db.from('notifications').insert({ to_user, from_user, from_name, type, task_id, task_title, read: false, created_at: Date.now() });
+  } catch(e) { console.warn('Notification insert failed:', e); }
+}
+
+async function loadNotifications() {
+  if (!state.currentUser?.id || state.currentUser.id.startsWith('local_')) return;
+  try {
+    const { data } = await db.from('notifications').select('*').eq('to_user', state.currentUser.id).order('created_at', { ascending: false }).limit(30);
+    state.notifications = data || [];
+    updateNotifBadge();
+  } catch(e) { state.notifications = []; }
+}
+
+function updateNotifBadge() {
+  const unread = (state.notifications || []).filter(n => !n.read).length;
+  const badge = document.getElementById('notif-badge');
+  if (!badge) return;
+  badge.textContent = unread;
+  badge.style.display = unread > 0 ? 'flex' : 'none';
+}
+
+function openNotifications() {
+  const panel = document.getElementById('notif-panel');
+  if (!panel) return;
+  const isOpen = panel.style.display !== 'none';
+  // Close if already open
+  if (isOpen) { panel.style.display = 'none'; return; }
+  renderNotifPanel();
+  panel.style.display = 'block';
+  // Close when clicking outside
+  setTimeout(() => {
+    document.addEventListener('click', function closePanel(e) {
+      const trigger = document.querySelector('.notif-trigger');
+      if (trigger && !trigger.contains(e.target)) {
+        panel.style.display = 'none';
+        document.removeEventListener('click', closePanel);
+      }
+    });
+  }, 10);
+  // Mark as read after brief delay
+  setTimeout(() => { markAllRead(); }, 800);
+}
+
+function renderNotifPanel() {
+  const list = document.getElementById('notif-list');
+  if (!list) return;
+  if (!state.notifications?.length) {
+    list.innerHTML = '<div class="notif-empty">No notifications yet 🎉</div>';
+    return;
+  }
+  list.innerHTML = state.notifications.map(n => {
+    const icon = n.type === 'assigned' ? '📋' : '✅';
+    const text = n.type === 'assigned'
+      ? `<b>${esc(n.from_name||'Someone')}</b> assigned you: "<em>${esc(n.task_title)}</em>"`
+      : `<b>${esc(n.from_name||'Someone')}</b> completed your task: "<em>${esc(n.task_title)}</em>"`;
+    return `<div class="notif-item ${n.read ? '' : 'unread'}">
+      <div class="notif-icon">${icon}</div>
+      <div class="notif-body">
+        <div class="notif-text">${text}</div>
+        <div class="notif-time">${formatRelTime(n.created_at)}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function markAllRead() {
+  const unread = (state.notifications || []).filter(n => !n.read);
+  if (!unread.length) return;
+  try {
+    await db.from('notifications').update({ read: true }).in('id', unread.map(n => n.id));
+    state.notifications.forEach(n => n.read = true);
+    updateNotifBadge();
+  } catch(e) {}
+}
+
+function formatRelTime(ts) {
+  if (!ts) return '';
+  const diff = Date.now() - Number(ts);
+  const m = Math.floor(diff / 60000);
+  if (m < 1) return 'just now';
+  if (m < 60) return `${m}m ago`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h}h ago`;
+  return `${Math.floor(h / 24)}d ago`;
+}
+
+// ═══════════════════════════════════════
 // TASK OPERATIONS
 // ═══════════════════════════════════════
 function onTierChange() {
@@ -1808,6 +2000,7 @@ function onPersonalChange() {
 
 function openAddTask(tier) {
   state.pendingTierId = tier || 'focus-today';
+  state.pendingAssignee = state.currentUser?.id; // default: mine
   document.getElementById('new-task-tier').value = state.pendingTierId;
   document.getElementById('new-task-title').value = '';
   document.getElementById('new-task-desc').value = '';
@@ -1816,6 +2009,7 @@ function openAddTask(tier) {
   document.getElementById('new-task-shared').checked = false;
   document.getElementById('share-toggle').style.display = 'none';
   document.getElementById('recurring-opts').style.display = state.pendingTierId === 'recurring' ? 'block' : 'none';
+  renderAssigneePicker();
   openModal('modal-add-task');
 }
 
@@ -1837,6 +2031,9 @@ async function saveTask() {
   btn.disabled = true;
   btn.textContent = 'Saving...';
 
+  const assigneeId = state.pendingAssignee || state.currentUser?.id;
+  const isAssigningToOther = assigneeId && assigneeId !== state.currentUser?.id;
+
   const task = {
     id: crypto.randomUUID(),
     title,
@@ -1853,14 +2050,34 @@ async function saveTask() {
     due_date: document.getElementById('new-task-due').value || null,
     is_personal: document.getElementById('new-task-personal').checked,
     shared_to_dashboard: document.getElementById('new-task-shared').checked,
-    owner_id: state.currentUser?.id
+    owner_id: isAssigningToOther ? assigneeId : state.currentUser?.id,
+    assigned_to: assigneeId,
+    assigned_by: isAssigningToOther ? state.currentUser?.id : null
   };
 
   await saveTaskToDB(task);
+
+  // Notify assignee if assigning to someone else
+  if (isAssigningToOther) {
+    await createNotification({
+      to_user: assigneeId,
+      from_user: state.currentUser.id,
+      from_name: state.currentUser.name,
+      type: 'assigned',
+      task_id: task.id,
+      task_title: task.title
+    });
+  }
+
   state.tasks.push(task);
   closeModal('modal-add-task');
   renderBoard();
-  showToast(`"${title}" added! ✓`, 'success');
+  if (isAssigningToOther) {
+    const member = state.members.find(m => m.id === assigneeId);
+    showToast(`Task assigned to ${member?.name || 'teammate'} ✓`, 'success');
+  } else {
+    showToast(`"${title}" added! ✓`, 'success');
+  }
   btn.disabled = false;
   btn.textContent = 'Add Task';
 }
@@ -1897,6 +2114,18 @@ async function confirmComplete() {
   task.completed_at = Date.now();
 
   await updateTaskInDB(task.id, { completed: true, completed_at: Date.now() });
+
+  // Notify the person who assigned this task (if not self)
+  if (task.assigned_by && task.assigned_by !== state.currentUser?.id) {
+    await createNotification({
+      to_user: task.assigned_by,
+      from_user: state.currentUser.id,
+      from_name: state.currentUser.name,
+      type: 'completed',
+      task_id: task.id,
+      task_title: task.title
+    });
+  }
 
   const notes = document.getElementById('complete-notes').value.trim();
   const links = document.getElementById('complete-links').value.trim();
