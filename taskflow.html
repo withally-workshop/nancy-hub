@@ -1693,10 +1693,16 @@ async function showTaskHub() {
 // TASKS — SUPABASE
 // ═══════════════════════════════════════
 async function loadTasks() {
+  const uid = state.currentUser?.id;
   try {
-    const { data, error } = await db.from('tasks').select('*').order('task_order');
-    if (error) throw error;
-    state.tasks = data || [];
+    // Fetch all tasks + explicitly fetch tasks assigned to me (handles Supabase RLS scenarios)
+    const [allRes, assignedRes] = await Promise.all([
+      db.from('tasks').select('*').order('task_order'),
+      uid ? db.from('tasks').select('*').ilike('assigned_to', `%${uid}%`).order('task_order') : Promise.resolve({ data: [] })
+    ]);
+    const combined = [...(allRes.data || []), ...(assignedRes.data || [])];
+    const seen = new Set();
+    state.tasks = combined.filter(t => { if (seen.has(t.id)) return false; seen.add(t.id); return true; });
   } catch(e) {
     state.tasks = JSON.parse(localStorage.getItem('nancy_tasks') || '[]');
   }
@@ -1758,11 +1764,17 @@ async function deleteTaskFromDB(id) {
 // ═══════════════════════════════════════
 // BOARD RENDER
 // ═══════════════════════════════════════
-function switchBoard(board, el) {
+async function switchBoard(board, el) {
   state.currentBoard = board;
   document.querySelectorAll('.board-tab').forEach(t => t.classList.remove('active'));
   if (el) el.classList.add('active');
-  renderBoard();
+  if (board === 'personal') {
+    // Reset shared board tab label and reload own tasks fresh
+    document.getElementById('shared-boards-tab').textContent = 'Shared Boards ▾';
+    await loadTasks();
+  } else {
+    renderBoard();
+  }
 }
 
 function getVisibleTasks() {
