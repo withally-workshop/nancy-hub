@@ -288,6 +288,13 @@ async function signOut() {
   window.location.href = 'index.html';
 }
 
+// ── ADMIN LEVELS ──
+// Superadmin (level 1): danielle@carenbloom.com — full access incl. admin.html
+// Admin (level 2): any user with role=admin — hub admin features but NOT admin.html
+function isSuperAdmin() {
+  return !!(hubState.currentUser && hubState.currentUser.email === 'danielle@carenbloom.com');
+}
+
 // ── NAV USER ──
 function updateNavUser() {
   if (!hubState.currentUser) return;
@@ -306,12 +313,12 @@ function updateNavUser() {
     avatarEl.style.fontSize = '.7rem';
   }
   if (adminLink) {
-    adminLink.style.display = hubState.currentUser.role === 'admin' ? 'flex' : 'none';
+    adminLink.style.display = isSuperAdmin() ? 'flex' : 'none';
     adminLink.style.alignItems = 'center';
     adminLink.style.height = '100%';
   }
   if (mobileAdminBtn) {
-    mobileAdminBtn.style.display = hubState.currentUser.role === 'admin' ? 'flex' : 'none';
+    mobileAdminBtn.style.display = isSuperAdmin() ? 'flex' : 'none';
   }
 }
 

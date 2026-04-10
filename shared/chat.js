@@ -272,8 +272,17 @@ function ncRenderStarters() {
     '</div>'
   ].join('');
 
+  // Build starters with dynamic first item based on logged-in user
+  var starters = STARTERS.slice(); // copy
+  try {
+    var cu = window.hubState && window.hubState.currentUser;
+    if (cu && cu.name) {
+      starters[0] = 'What are my pending tasks?';
+    }
+  } catch(e) {}
+
   var html = infoNote + '<div class="nc-starters"><div class="nc-starter-lbl">Try asking</div>';
-  STARTERS.forEach(function(s) {
+  starters.forEach(function(s) {
     html += '<button class="nc-starter" onclick="ncUseStarter(this.textContent)">' + s + '</button>';
   });
   html += '</div>';

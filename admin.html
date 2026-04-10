@@ -467,7 +467,9 @@
 <script>
 // ── PAGE READY ──
 async function onPageReady() {
-  if (!hubState.currentUser || hubState.currentUser.role !== 'admin') {
+  // Only superadmin (danielle@carenbloom.com) can access Admin Base
+  // Other admins (level 2) have hub admin features but not this page
+  if (!hubState.currentUser || !isSuperAdmin()) {
     window.location.href = 'index.html';
     return;
   }
