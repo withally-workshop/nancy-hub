@@ -864,6 +864,11 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--body);min-h
               </div>
             </div>
           </div>
+          <button class="hdr-btn" id="slack-open-btn" onclick="openSlackDrawer()" style="display:none">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+            Slack
+            <span id="slack-open-badge" style="display:none;background:#e53935;color:white;font-size:.55rem;font-weight:800;min-width:14px;height:14px;border-radius:7px;padding:0 3px;line-height:14px;text-align:center">!</span>
+          </button>
           <button class="hdr-btn" onclick="openShareModal()">🔗 Share</button>
           <button class="hdr-btn" onclick="openModal('modal-ideas')">💡 Ideas</button>
           <button class="hdr-btn" onclick="openDeliverables()">📦 Deliverables</button>
@@ -1695,6 +1700,16 @@ async function showTaskHub() {
   refreshRecurring();
   // Refresh notifications every 60s
   setInterval(loadNotifications, 60000);
+  // Show Slack button for admins
+  var slackBtn = document.getElementById('slack-open-btn');
+  if (slackBtn && state.currentUser && state.currentUser.role === 'admin') {
+    slackBtn.style.display = 'flex';
+  }
+}
+
+// ─── SLACK DRAWER (stub — full implementation pending) ───
+function openSlackDrawer() {
+  showToast('Slack panel coming soon!', 'info');
 }
 
 // ═══════════════════════════════════════
@@ -3637,6 +3652,10 @@ async function onAuthSuccess(authUser) {
   setTimeout(function() { try { checkStorageAlert(); } catch(e) {} }, 5000); // Check storage silently
 }
 
+function isSuperAdminUser() {
+  return !!(state.currentUser && state.currentUser.email === 'danielle@carenbloom.com');
+}
+
 function updateNavUser() {
   if (!state.currentUser) return;
   var nameEl = document.getElementById('user-name-nav');
@@ -3653,15 +3672,15 @@ function updateNavUser() {
     avatarEl.style.fontWeight = '700';
     avatarEl.style.fontSize = '.7rem';
   }
+  // Only superadmin (danielle@carenbloom.com) sees Admin Base link
+  var canSeeAdmin = isSuperAdminUser();
   if (adminLink) {
-    var isAdmin = state.currentUser.role === 'admin';
-    adminLink.style.display = isAdmin ? 'flex' : 'none';
+    adminLink.style.display = canSeeAdmin ? 'flex' : 'none';
     adminLink.style.alignItems = 'center';
     adminLink.style.height = '100%';
   }
-  // Show admin in mobile bottom nav only for admins
   if (mobileAdminBtn) {
-    mobileAdminBtn.style.display = state.currentUser.role === 'admin' ? 'flex' : 'none';
+    mobileAdminBtn.style.display = canSeeAdmin ? 'flex' : 'none';
   }
 }
 
@@ -3866,9 +3885,9 @@ async function adminChangeDomain() {
 function isMobile() { return window.innerWidth <= 768; }
 
 function initMobileNav() {
-  // Mobile nav visibility is CSS-controlled via media query
+  // Mobile nav admin link — superadmin only
   var adminLink = document.getElementById('mnav-admin');
-  if (adminLink && hubState && hubState.isAdmin) adminLink.style.display = 'flex';
+  if (adminLink) adminLink.style.display = isSuperAdminUser() ? 'flex' : 'none';
 }
 
 function mobileNav(page) {
@@ -4001,7 +4020,7 @@ boot();
 initMobileNav();
 </script>
 <script src="shared/hub.js"></script>
-<script src="shared/chat.js?v=10"></script>
+<script src="shared/chat.js?v=11"></script>
 <script>if(typeof initNancyChat==='function')initNancyChat();</script>
 </body>
 </html>

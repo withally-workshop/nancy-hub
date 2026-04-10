@@ -778,24 +778,33 @@ async function loadTeam() {
       wrap.innerHTML = '<div class="activity-empty">No team members found.</div>';
       return;
     }
-    var html = '<div class="team-list">';
+    var html = '<div style="font-family:sans-serif;font-size:.75rem;color:var(--muted);margin-bottom:.75rem;line-height:1.5;padding:.5rem .75rem;background:var(--bg);border-radius:var(--radius-sm);border:1px solid var(--border)">'
+      + '🔐 <strong>Admin Levels:</strong> '
+      + '<strong>Superadmin</strong> = danielle@carenbloom.com (full access + Admin Base) · '
+      + '<strong>Admin Lv2</strong> = hub admin features only (My Slack, task board admin) · '
+      + '<strong>Member</strong> = standard access. Use buttons below to grant/revoke Lv2 admin.'
+      + '</div>';
+    html += '<div class="team-list">';
     result.data.forEach(function(member) {
       var isMe = hubState.currentUser && member.email === hubState.currentUser.email;
       var isAdmin = member.role === 'admin';
+      var isSuperAdm = member.email === 'danielle@carenbloom.com';
       html += '<div class="team-row">';
       var initials2 = (member.name || 'U').split(' ').map(function(w){return w[0]||'';}).join('').toUpperCase().slice(0,2);
       html += '<div class="team-avatar" style="background:' + (member.avatar && member.avatar.startsWith('#') ? member.avatar : 'var(--primary-light)') + ';color:white;font-family:Inter,sans-serif;font-weight:700;font-size:.75rem">' + initials2 + '</div>';
       html += '<div class="team-info"><div class="team-name">' + esc(member.name || 'Unknown') + (isMe ? ' <span style="font-size:.7rem;color:var(--muted)">(you)</span>' : '') + '</div>';
       html += '<div class="team-email">' + esc(member.email || '') + '</div></div>';
-      html += '<span class="team-role-badge ' + (isAdmin ? 'admin' : 'member') + '">' + (isAdmin ? 'Admin' : 'Member') + '</span>';
-      if (!isMe) {
+      // Role badge: Superadmin / Admin Lv2 / Member
+      var badgeLabel = isSuperAdm ? '⭐ Superadmin' : (isAdmin ? 'Admin Lv2' : 'Member');
+      var badgeClass = isSuperAdm ? 'admin' : (isAdmin ? 'admin' : 'member');
+      html += '<span class="team-role-badge ' + badgeClass + '" style="' + (isSuperAdm ? 'background:rgba(255,48,204,.2);color:var(--primary-dark)' : '') + '">' + badgeLabel + '</span>';
+      if (!isMe && !isSuperAdm) {
         html += '<div class="team-actions">';
         if (isAdmin) {
-          html += '<button class="team-role-btn danger" onclick="changeRole(\'' + esc(member.id) + '\',\'member\',\'' + esc(member.name) + '\')">Remove admin</button>';
+          html += '<button class="team-role-btn danger" onclick="changeRole(\'' + esc(member.id) + '\',\'member\',\'' + esc(member.name) + '\')">Revoke Lv2</button>';
         } else {
-          html += '<button class="team-role-btn" onclick="changeRole(\'' + esc(member.id) + '\',\'admin\',\'' + esc(member.name) + '\')">Make admin</button>';
+          html += '<button class="team-role-btn" onclick="changeRole(\'' + esc(member.id) + '\',\'admin\',\'' + esc(member.name) + '\')">Grant Lv2</button>';
         }
-        // Only admins can delete (hubState.currentUser.role === 'admin' checked server-side by admin page access)
         html += '<button class="team-role-btn danger" onclick="deleteUser(\'' + esc(member.id) + '\',\'' + esc(member.name).replace(/'/g,"&#39;") + '\')">Delete</button>';
         html += '</div>';
       }
