@@ -3152,8 +3152,10 @@ async function loadTasks() {
     const combined = [...(allRes.data || []), ...(assignedRes.data || [])];
     const seen = new Set();
     state.tasks = combined.filter(t => { if (seen.has(t.id)) return false; seen.add(t.id); return true; });
+    state.myTasks = state.tasks.slice(); // snapshot of own tasks for reward calc
   } catch(e) {
     state.tasks = JSON.parse(localStorage.getItem('nancy_tasks') || '[]');
+    state.myTasks = state.tasks.slice();
   }
   renderBoard();
 }
@@ -3356,6 +3358,24 @@ function getVisibleTasks() {
       return true;
     }
     // Task created by someone else but assigned to me → show it
+    return assignedToMe;
+  });
+}
+
+// Always returns the logged-in user's own tasks — never the viewed board's tasks.
+// Used for reward calculations so scores stay personal even when viewing another board.
+function getMyOwnTasks() {
+  const uid = state.currentUser?.id;
+  if (!uid) return [];
+  // state.myTasks is a snapshot saved at loadTasks() time, kept in sync with mutations
+  const pool = state.myTasks || state.tasks;
+  return pool.filter(t => {
+    const assignees = parseAssignees(t.assigned_to);
+    const assignedToMe = assignees.includes(uid);
+    if (t.owner_id === uid || t.owner_id === null || t.owner_id === undefined) {
+      if (assignees.length > 0 && !assignedToMe) return false;
+      return true;
+    }
     return assignedToMe;
   });
 }
@@ -3753,6 +3773,7 @@ async function saveTask() {
   }
 
   state.tasks.push(task);
+  if (state.myTasks) state.myTasks.push(task);
   closeModal('modal-add-task');
   renderBoard();
   if (othersAssigned.length) {
@@ -3857,6 +3878,7 @@ async function deleteTask(id) {
   if (!confirm('Delete this task?')) return;
   await deleteTaskFromDB(id);
   state.tasks = state.tasks.filter(t => t.id !== id);
+  if (state.myTasks) state.myTasks = state.myTasks.filter(t => t.id !== id);
   renderBoard();
   showToast('Task deleted.');
 }
@@ -3866,6 +3888,7 @@ async function clearCompleted() {
   const completed = state.tasks.filter(t => t.completed);
   for (const t of completed) await deleteTaskFromDB(t.id);
   state.tasks = state.tasks.filter(t => !t.completed);
+  if (state.myTasks) state.myTasks = state.myTasks.filter(t => !t.completed);
   renderBoard();
   showToast('Completed tasks cleared.');
 }
@@ -4073,6 +4096,7 @@ async function promoteIdea(id) {
   };
   await saveTaskToDB(task);
   state.tasks.push(task);
+  if (state.myTasks) state.myTasks.push(task);
   renderIdeas();
   renderBoard();
   showToast('Idea promoted to task! ✓', 'success');
@@ -4328,17 +4352,17 @@ function getMonthStart() {
 }
 
 function calcDailyPct() {
-  // Daily = my visible Focus Today tasks only (excludes tasks assigned out to others)
-  const focusToday = getVisibleTasks().filter(t => t.tier === 'focus-today');
+  // Daily = my own Focus Today tasks only — always based on logged-in user, not viewed board
+  const focusToday = getMyOwnTasks().filter(t => t.tier === 'focus-today');
   if (!focusToday.length) return 0;
   const done = focusToday.filter(t => t.completed);
   return Math.round((done.length / focusToday.length) * 100);
 }
 
 function calcWeeklyPct() {
-  // Weekly = my visible Focus Today + Focus This Week tasks created this week
+  // Weekly = my own Focus Today + Focus This Week tasks created this week
   const start = getWeekStart();
-  const week = getVisibleTasks().filter(t =>
+  const week = getMyOwnTasks().filter(t =>
     (t.created_at || 0) >= start && ['focus-today','focus-week'].includes(t.tier)
   );
   if (!week.length) return 0;
@@ -4346,9 +4370,9 @@ function calcWeeklyPct() {
 }
 
 function calcMonthlyPct() {
-  // Monthly = my visible Top 3 + Founder + Focus Today + Focus This Week created this month
+  // Monthly = my own Top 3 + Founder + Focus Today + Focus This Week created this month
   const start = getMonthStart();
-  const monthly = getVisibleTasks().filter(t =>
+  const monthly = getMyOwnTasks().filter(t =>
     (t.created_at || 0) >= start &&
     ['top3','founder','focus-today','focus-week'].includes(t.tier)
   );
