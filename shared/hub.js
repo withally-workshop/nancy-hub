@@ -328,19 +328,23 @@ function openUserMenu() {
     info += '<div style="font-family:sans-serif;font-size:.68rem;font-weight:700;color:var(--primary);margin-top:2px">Admin</div>';
   }
   info += '</div>';
-  var slackConnected = hubState.currentUser && hubState.currentUser.slack_token;
-  var slackStatusText = slackConnected ? 'Connected ✓' : 'Not connected';
-  var slackStatusColor = slackConnected ? 'var(--green,#3bb273)' : 'var(--muted)';
-  var mySlack = '<div style="padding:.75rem 1rem;border-top:1px solid var(--border)">' +
-    '<div style="font-family:sans-serif;font-size:.65rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:.5rem">My Slack</div>' +
-    '<div id="user-slack-status" style="font-family:sans-serif;font-size:.75rem;color:' + slackStatusColor + ';margin-bottom:.5rem">' + slackStatusText + '</div>' +
-    '<div style="display:flex;gap:.4rem">' +
-      '<input id="user-slack-token-input" type="password" placeholder="xoxp-••••••••" ' +
-        'style="flex:1;font-size:.78rem;padding:.35rem .6rem;border:1px solid var(--border2);border-radius:7px;background:var(--bg);color:var(--body);font-family:sans-serif;outline:none" />' +
-      '<button onclick="saveMySlackToken()" ' +
-        'style="font-size:.75rem;font-weight:600;padding:.35rem .7rem;border-radius:7px;background:var(--primary);color:white;border:none;cursor:pointer;font-family:sans-serif">Save</button>' +
-    '</div>' +
-  '</div>';
+  var isAdmin = hubState.currentUser && hubState.currentUser.role === 'admin';
+  var mySlack = '';
+  if (isAdmin) {
+    var slackConnected = hubState.currentUser.slack_token;
+    var slackStatusText = slackConnected ? 'Connected ✓' : 'Not connected';
+    var slackStatusColor = slackConnected ? 'var(--green,#3bb273)' : 'var(--muted)';
+    mySlack = '<div style="padding:.75rem 1rem;border-top:1px solid var(--border)">' +
+      '<div style="font-family:sans-serif;font-size:.65rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:.5rem">My Slack</div>' +
+      '<div id="user-slack-status" style="font-family:sans-serif;font-size:.75rem;color:' + slackStatusColor + ';margin-bottom:.5rem">' + slackStatusText + '</div>' +
+      '<div style="display:flex;gap:.4rem">' +
+        '<input id="user-slack-token-input" type="password" placeholder="xoxp-••••••••" ' +
+          'style="flex:1;font-size:.78rem;padding:.35rem .6rem;border:1px solid var(--border2);border-radius:7px;background:var(--bg);color:var(--body);font-family:sans-serif;outline:none" />' +
+        '<button onclick="saveMySlackToken()" ' +
+          'style="font-size:.75rem;font-weight:600;padding:.35rem .7rem;border-radius:7px;background:var(--primary);color:white;border:none;cursor:pointer;font-family:sans-serif">Save</button>' +
+      '</div>' +
+    '</div>';
+  }
   var signout = '<div onclick="signOut()" style="padding:.75rem 1rem;font-family:sans-serif;font-size:.85rem;color:#e53935;cursor:pointer;border-top:1px solid var(--border)">Sign Out</div>';
   menu.innerHTML = info + mySlack + signout;
   document.body.appendChild(menu);
