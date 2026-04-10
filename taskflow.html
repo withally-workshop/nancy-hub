@@ -3362,12 +3362,17 @@ function getVisibleTasks() {
   });
 }
 
-// Always returns the logged-in user's own tasks — never the viewed board's tasks.
-// Used for reward calculations so scores stay personal even when viewing another board.
+// Returns the tasks for reward calculation:
+// - Viewing a member's board → their tasks (so you see their performance)
+// - Own board → your own tasks only (excludes tasks assigned out)
 function getMyOwnTasks() {
+  if (state.currentBoard === 'viewing') {
+    // When viewing someone's board, show their performance using their tasks
+    return state.tasks;
+  }
   const uid = state.currentUser?.id;
   if (!uid) return [];
-  // state.myTasks is a snapshot saved at loadTasks() time, kept in sync with mutations
+  // Own board: use myTasks snapshot (unaffected by board switches)
   const pool = state.myTasks || state.tasks;
   return pool.filter(t => {
     const assignees = parseAssignees(t.assigned_to);
@@ -3378,6 +3383,14 @@ function getMyOwnTasks() {
     }
     return assignedToMe;
   });
+}
+
+// Returns the name of whose performance is shown in rewards
+function getRewardSubjectName() {
+  if (state.currentBoard === 'viewing' && state.viewingBoardName) {
+    return state.viewingBoardName;
+  }
+  return state.currentUser?.name || 'You';
 }
 
 function renderBoard() {
@@ -4459,6 +4472,8 @@ function checkRewards() {
     }).join('') + `</div>`;
 
   const banner = document.getElementById('reward-banner');
+  const subjectName = getRewardSubjectName();
+  const isViewing = state.currentBoard === 'viewing';
   if (banner) {
     if (dailyOk) {
       banner.innerHTML = `
@@ -4467,15 +4482,15 @@ function checkRewards() {
           <div class="rbot-body"></div>
         </div>
         <div class="reward-info">
-          <div class="reward-title" style="color:${dt.color}">${dt.name} Day <span style="font-size:.9em">${dt.item}</span></div>
+          <div class="reward-title" style="color:${dt.color}">${isViewing ? esc(subjectName) + ' · ' : ''}${dt.name} Day <span style="font-size:.9em">${dt.item}</span></div>
           <div class="reward-quote">${dt.daily}</div>
         </div>
         ${tierPreviewHTML}`;
     } else {
       banner.innerHTML = `
         <div class="reward-info">
-          <div class="reward-title">Daily Reward Pending ⏳</div>
-          <div class="reward-quote">Keep working — revealed at 6 PM HKT · ${dp > 0 ? dp + '% completed so far' : 'Start completing tasks!'}</div>
+          <div class="reward-title">${isViewing ? '👤 ' + esc(subjectName) + ' · ' : ''}Daily Reward Pending ⏳</div>
+          <div class="reward-quote">${isViewing ? subjectName + ' is at' : 'Keep working —'} ${dp > 0 ? dp + '% completed so far' : (isViewing ? '0% today' : 'Start completing tasks!')}</div>
         </div>
         ${tierPreviewHTML}`;
     }
@@ -4511,6 +4526,13 @@ async function openRewards() {
   if (!modal) return;
   const body = modal.querySelector('.reward-modal-body');
   if (!body) return;
+  // Update modal title to reflect whose rewards are shown
+  const titleEl = modal.querySelector('.rwd-modal-hdr div');
+  if (titleEl) {
+    titleEl.textContent = state.currentBoard === 'viewing'
+      ? `🏆 ${getRewardSubjectName()}'s Rewards`
+      : '🏆 Daily Rewards';
+  }
 
   const streakHtml = streak > 0
     ? `<div class="rwd-streak">🔥 ${streak}-day streak${streak >= 7 ? ' — You\'re on fire!' : streak >= 3 ? ' — Keep it up!' : ''}</div>`
@@ -4520,7 +4542,7 @@ async function openRewards() {
   let recapHtml = '';
   if (dailyOk) {
     const dayStart = getDayStart7am();
-    const completedToday = state.tasks.filter(t => t.completed && (t.completed_at || 0) >= dayStart);
+    const completedToday = getMyOwnTasks().filter(t => t.completed && (t.completed_at || 0) >= dayStart);
     const focusDone = completedToday.filter(t => t.tier === 'focus-today');
     const weekDone = completedToday.filter(t => t.tier === 'focus-week');
     const top3Done = completedToday.filter(t => t.tier === 'top3');
@@ -4562,6 +4584,7 @@ async function openRewards() {
         <div class="rbot-item">${dailyOk ? dt.item : '⏳'}</div>
       </div>
       <div class="rwd-tier-info">
+        ${state.currentBoard === 'viewing' ? `<div style="font-family:sans-serif;font-size:.72rem;font-weight:700;color:var(--muted);letter-spacing:.05em;text-transform:uppercase;margin-bottom:.3rem">👤 ${esc(getRewardSubjectName())}'s Performance</div>` : ''}
         <div class="rwd-tier-name" style="color:${dailyOk ? dt.color : 'var(--muted)'}">${dailyOk ? dt.name : 'Pending...'}</div>
         <div class="rwd-tier-sub">${dailyOk ? 'Today\'s reward · Focus Today' : 'Revealed at 6 PM HKT'}</div>
         ${streakHtml}
@@ -4600,7 +4623,7 @@ async function openRewards() {
   // Generate AI recap if it's 6 PM and there are completed tasks
   if (dailyOk) {
     const dayStart = getDayStart7am();
-    const completedToday = state.tasks.filter(t => t.completed && (t.completed_at || 0) >= dayStart);
+    const completedToday = getMyOwnTasks().filter(t => t.completed && (t.completed_at || 0) >= dayStart);
     if (completedToday.length > 0) generateDailyRecap(completedToday);
   }
 }
