@@ -1858,9 +1858,13 @@ function openSlackDrawer() {
   document.getElementById('slack-drawer').classList.add('open');
   document.getElementById('slack-backdrop').classList.add('show');
 
-  // Always re-read token from current user in case it was just saved
+  // Always re-read token — check state, then hubState (hub.js), then DB
   var cu = state && state.currentUser ? state.currentUser : null;
   var freshToken = (cu && cu.slack_token) || '';
+  if (!freshToken && window.hubState && window.hubState.currentUser && window.hubState.currentUser.slack_token) {
+    freshToken = window.hubState.currentUser.slack_token;
+    if (cu) cu.slack_token = freshToken; // sync back to state
+  }
   if (freshToken && freshToken !== slackState.ownToken) {
     // Token was just saved — re-init fully
     slackState.ownToken = freshToken;
@@ -1887,9 +1891,30 @@ function closeSlackDrawer() {
 }
 
 async function initSlack() {
-  // Load own token from current user profile
+  // Load own token — check state first, then hubState (hub.js), then fetch fresh from DB
+  // (state.currentUser is loaded from localStorage which may not have slack_token)
   var cu = state && state.currentUser ? state.currentUser : null;
-  slackState.ownToken = (cu && cu.slack_token) || '';
+  var token = (cu && cu.slack_token) || '';
+
+  // Also check hubState (hub.js saves token there when user uses My Slack)
+  if (!token && window.hubState && window.hubState.currentUser && window.hubState.currentUser.slack_token) {
+    token = window.hubState.currentUser.slack_token;
+  }
+
+  // If still empty, fetch fresh from DB — token was saved after initial login
+  if (!token && cu && cu.id) {
+    try {
+      var dbRes = await db.from('boards').select('slack_token,slack_user_id').eq('id', cu.id).single();
+      if (dbRes.data && dbRes.data.slack_token) {
+        token = dbRes.data.slack_token;
+        cu.slack_token = token;
+        cu.slack_user_id = dbRes.data.slack_user_id || '';
+        try { localStorage.setItem('nancy_user', JSON.stringify(cu)); } catch(e) {}
+      }
+    } catch(e) {}
+  }
+
+  slackState.ownToken = token;
   slackState.ownUserId = (cu && cu.slack_user_id) || '';
   try { slackState.dmNames = JSON.parse(localStorage.getItem('slack_dm_names') || '{}'); } catch(e) {}
   try { slackState.starred = JSON.parse(localStorage.getItem('slack_starred') || '[]'); } catch(e) {}
