@@ -398,6 +398,8 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--body);min-h
 .mood-dead .rtp-eye::before,.mood-dead .rtp-eye::after{content:'';position:absolute;width:3px;height:1px;background:#1a1a1a;border-radius:1px;top:50%;left:0;transform-origin:center}
 .mood-dead .rtp-eye::before{transform:translateY(-50%) rotate(45deg)}
 .mood-dead .rtp-eye::after{transform:translateY(-50%) rotate(-45deg)}
+/* Happy: upward-curved arcs (squint) */
+.mood-happy .rtp-eye{width:4px;height:2px;background:transparent;border-top:1.5px solid #1a1a1a;border-radius:4px 4px 0 0}
 /* Lemonade: wink left eye */
 .mood-ecstatic .rtp-eye:first-child{width:4px;height:0;background:transparent;border-bottom:1.5px solid #1a1a1a;border-radius:0}
 /* LABEL */
@@ -834,7 +836,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--body);min-h
             <div class="rtp-label" style="color:#79b854">Guacamole</div>
           </div>
           <div class="rtp-bot mood-happy" onclick="openRewards()" title="BeRRilicious · 69–88%">
-            <svg class="rtp-icon" width="14" height="11" viewBox="0 0 14 11"><circle cx="4" cy="7.5" r="3.2" fill="#c0192e"/><circle cx="10" cy="7.5" r="3.2" fill="#c0192e"/><circle cx="7" cy="4" r="3.2" fill="#d42040"/><circle cx="5" cy="6.2" r=".85" fill="rgba(255,255,255,.35)"/><circle cx="11" cy="6.2" r=".85" fill="rgba(255,255,255,.35)"/><circle cx="8" cy="2.7" r=".85" fill="rgba(255,255,255,.35)"/><line x1="7" y1=".8" x2="7" y2=".2" stroke="#5a8040" stroke-width="1.2" stroke-linecap="round"/></svg>
+            <svg class="rtp-icon" width="12" height="14" viewBox="0 0 12 14"><line x1="6" y1="0" x2="6" y2="1.5" stroke="#5a9030" stroke-width="1.1" stroke-linecap="round"/><path d="M3 4 C3 2.2 5 2.6 6 3.5 C7 2.6 9 2.2 9 4 C8 3.6 7 3.5 6 4 C5 3.5 4 3.6 3 4Z" fill="#4aaa28"/><path d="M2.5 5 C1 7 1.5 10 3.5 12 C4.5 13 5.2 13.5 6 13.5 C6.8 13.5 7.5 13 8.5 12 C10.5 10 11 7 9.5 5 C8 4.5 7 4.5 6 5 C5 4.5 4 4.5 2.5 5Z" fill="#d42020"/><path d="M4 6.5 C3.5 7.5 3.5 9.5 4.5 11" stroke="rgba(255,255,255,.28)" stroke-width=".9" stroke-linecap="round" fill="none"/><ellipse cx="5" cy="8" rx=".55" ry=".65" fill="#f5d840"/><ellipse cx="7.5" cy="7.5" rx=".55" ry=".65" fill="#f5d840"/><ellipse cx="6.2" cy="10.5" rx=".55" ry=".65" fill="#f5d840"/></svg>
             <div class="rtp-head"><div class="rtp-eyes"><span class="rtp-eye"></span><span class="rtp-eye"></span></div></div>
             <div class="rtp-label" style="color:#e05470">BeRRilicious</div>
           </div>
@@ -2264,7 +2266,7 @@ function getTopIcon(name) {
   const icons = {
     'Dead Rose': '<svg class="rtp-icon" width="12" height="14" viewBox="0 0 12 14"><path d="M6 13 C6 10 5 8 5.5 6.5" stroke="#6a9a40" stroke-width="1.3" fill="none" stroke-linecap="round"/><path d="M5.5 6.5 C4 5.5 3 3.5 4.5 2.2 C5.5 1.5 6.5 2.3 6.2 4 C7 5 7.5 6.5 5.5 6.5Z" fill="#c97aa0"/><path d="M5.5 6.5 C7 5.5 8.5 4 7.5 2.2 C6.5 1 5.5 2 5.8 4" fill="#d990b5"/><circle cx="5.5" cy="4.2" r="1.2" fill="#a05070"/></svg>',
     'Guacamole': '<svg class="rtp-icon" width="10" height="14" viewBox="0 0 10 14"><path d="M5 1 C2.5 1 1 4.5 1 8.5 C1 11.5 2.5 13 5 13 C7.5 13 9 11.5 9 8.5 C9 4.5 7.5 1 5 1Z" fill="#2e6b1a"/><path d="M5 4 C3.5 4 2.5 6.5 2.5 9 C2.5 11 3.5 12 5 12 C6.5 12 7.5 11 7.5 9 C7.5 6.5 6.5 4 5 4Z" fill="#a8cc50"/><circle cx="5" cy="9.5" r="1.8" fill="#6b3a1e"/></svg>',
-    'BeRRilicious': '<svg class="rtp-icon" width="14" height="11" viewBox="0 0 14 11"><circle cx="4" cy="7.5" r="3.2" fill="#c0192e"/><circle cx="10" cy="7.5" r="3.2" fill="#c0192e"/><circle cx="7" cy="4" r="3.2" fill="#d42040"/><circle cx="5" cy="6.2" r=".85" fill="rgba(255,255,255,.35)"/><circle cx="11" cy="6.2" r=".85" fill="rgba(255,255,255,.35)"/><circle cx="8" cy="2.7" r=".85" fill="rgba(255,255,255,.35)"/><line x1="7" y1=".8" x2="7" y2=".2" stroke="#5a8040" stroke-width="1.2" stroke-linecap="round"/></svg>',
+    'BeRRilicious': '<svg class="rtp-icon" width="12" height="14" viewBox="0 0 12 14"><line x1="6" y1="0" x2="6" y2="1.5" stroke="#5a9030" stroke-width="1.1" stroke-linecap="round"/><path d="M3 4 C3 2.2 5 2.6 6 3.5 C7 2.6 9 2.2 9 4 C8 3.6 7 3.5 6 4 C5 3.5 4 3.6 3 4Z" fill="#4aaa28"/><path d="M2.5 5 C1 7 1.5 10 3.5 12 C4.5 13 5.2 13.5 6 13.5 C6.8 13.5 7.5 13 8.5 12 C10.5 10 11 7 9.5 5 C8 4.5 7 4.5 6 5 C5 4.5 4 4.5 2.5 5Z" fill="#d42020"/><path d="M4 6.5 C3.5 7.5 3.5 9.5 4.5 11" stroke="rgba(255,255,255,.28)" stroke-width=".9" stroke-linecap="round" fill="none"/><ellipse cx="5" cy="8" rx=".55" ry=".65" fill="#f5d840"/><ellipse cx="7.5" cy="7.5" rx=".55" ry=".65" fill="#f5d840"/><ellipse cx="6.2" cy="10.5" rx=".55" ry=".65" fill="#f5d840"/></svg>',
     'Lemonade': '<svg class="rtp-icon" width="14" height="10" viewBox="0 0 14 10"><ellipse cx="7" cy="5.5" rx="5.5" ry="3.8" fill="#f0c018"/><ellipse cx="1.5" cy="5.5" rx="1.1" ry="1.3" fill="#daa800"/><ellipse cx="12.5" cy="5.5" rx="1.1" ry="1.3" fill="#daa800"/><line x1="7" y1="1.8" x2="7" y2="9.2" stroke="rgba(255,255,255,.38)" stroke-width=".8"/><line x1="3.2" y1="3.5" x2="10.8" y2="7.5" stroke="rgba(255,255,255,.38)" stroke-width=".8"/><line x1="10.8" y1="3.5" x2="3.2" y2="7.5" stroke="rgba(255,255,255,.38)" stroke-width=".8"/></svg>'
   };
   return icons[name] || '';
