@@ -383,48 +383,23 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--body);min-h
 
 /* REWARD TIER PREVIEW ROW (banner right side) */
 .reward-tier-preview{display:flex;gap:.9rem;align-items:flex-end;flex-shrink:0;padding:.1rem .2rem}
-.rtp-bot{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;transition:transform .2s,opacity .2s;opacity:.65}
+.rtp-bot{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;transition:transform .2s,opacity .2s;opacity:.65}
 .rtp-bot:hover{transform:translateY(-3px) scale(1.12);opacity:1}
 .rtp-bot.active{opacity:1;transform:translateY(-4px) scale(1.16)}
-/* Held row: character + item side by side */
-.rtp-held-row{display:flex;align-items:center;gap:2px}
-.rtp-char{display:flex;flex-direction:column;align-items:center;gap:0}
-/* HEAD — 14px */
-.rtp-head{width:14px;height:13px;background:linear-gradient(160deg,#fce4f6 0%,#f472b6 45%,#ec4899 100%);border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.5px;box-shadow:0 1px 4px rgba(236,72,153,.35)}
+/* ICON above head */
+.rtp-icon{display:block;flex-shrink:0;margin-bottom:1px}
+/* HEAD — 16px round, eyes only */
+.rtp-head{width:16px;height:15px;background:linear-gradient(160deg,#fce4f6 0%,#f472b6 45%,#ec4899 100%);border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(236,72,153,.35)}
 /* EYES */
-.rtp-eyes{display:flex;gap:2px;align-items:center}
-.rtp-eye{width:1.5px;height:1.5px;background:#1a1a1a;border-radius:50%;display:block}
+.rtp-eyes{display:flex;gap:3px;align-items:center}
+.rtp-eye{width:2px;height:2px;background:#1a1a1a;border-radius:50%;display:block}
 /* Dead: X eyes */
-.mood-dead .rtp-eye{width:3.5px;height:3.5px;background:transparent;position:relative}
-.mood-dead .rtp-eye::before,.mood-dead .rtp-eye::after{content:'';position:absolute;width:3.5px;height:1px;background:#1a1a1a;border-radius:1px;top:50%;left:0;transform-origin:center}
+.mood-dead .rtp-eye{width:3px;height:3px;background:transparent;position:relative}
+.mood-dead .rtp-eye::before,.mood-dead .rtp-eye::after{content:'';position:absolute;width:3px;height:1px;background:#1a1a1a;border-radius:1px;top:50%;left:0;transform-origin:center}
 .mood-dead .rtp-eye::before{transform:translateY(-50%) rotate(45deg)}
 .mood-dead .rtp-eye::after{transform:translateY(-50%) rotate(-45deg)}
-/* MOUTH */
-.rtp-mouth{display:block}
-.mood-dead .rtp-mouth{width:5px;border-top:1px solid #1a1a1a;border-radius:3px 3px 0 0;margin-top:1px}
-.mood-ok .rtp-mouth{width:4px;height:2px;border-bottom:1px solid #1a1a1a;border-radius:0 0 3px 3px;margin-top:1px}
-.mood-happy .rtp-mouth{width:6px;height:2px;border-bottom:1px solid #1a1a1a;border-radius:0 0 3px 3px;margin-top:1px}
-/* Lemonade: left eye = wink (closed line), right eye = normal dot */
+/* Lemonade: wink left eye */
 .mood-ecstatic .rtp-eye:first-child{width:4px;height:0;background:transparent;border-bottom:1.5px solid #1a1a1a;border-radius:0}
-/* Lemonade: small smile */
-.mood-ecstatic .rtp-mouth{width:5px;height:2px;border-bottom:1px solid #1a1a1a;border-radius:0 0 3px 3px;margin-top:1px}
-/* BODY SECTION */
-.rtp-body-section{display:flex;align-items:center;gap:1px;margin-top:1px}
-.rtp-torso{width:10px;height:9px;background:linear-gradient(160deg,#fce4f6 0%,#f472b6 45%,#ec4899 100%);border-radius:2px;box-shadow:0 1px 3px rgba(236,72,153,.2)}
-.rtp-arm{width:3.5px;height:8px;background:linear-gradient(180deg,#f9c8ee,#ec4899);border-radius:2px}
-.rtp-arm.left{transform:rotate(-10deg);transform-origin:top right}
-.rtp-arm.right{transform:rotate(10deg);transform-origin:top left}
-.mood-dead .rtp-arm.left{transform:rotate(-35deg) translateY(2px);transform-origin:top right}
-.mood-dead .rtp-arm.right{transform:rotate(35deg) translateY(2px);transform-origin:top left}
-.mood-ecstatic .rtp-arm.left{transform:rotate(-50deg) translateY(-2px);transform-origin:top right}
-.mood-ecstatic .rtp-arm.right{transform:rotate(50deg) translateY(-2px);transform-origin:top left}
-/* LEGS */
-.rtp-legs{display:flex;gap:2px;margin-top:1px}
-.rtp-leg{width:3.5px;height:7px;background:linear-gradient(180deg,#f472b6,#ec4899);border-radius:0 0 2px 2px}
-.mood-dead .rtp-leg:first-child{transform:rotate(-12deg);transform-origin:top center}
-.mood-dead .rtp-leg:last-child{transform:rotate(12deg);transform-origin:top center}
-/* ITEM SVG */
-.rtp-item-svg{display:block;flex-shrink:0}
 /* LABEL */
 .rtp-label{font-family:'Inter',sans-serif;font-size:.52rem;font-weight:700;text-align:center;white-space:nowrap;letter-spacing:.01em}
 
@@ -849,47 +824,23 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--body);min-h
         </div>
         <div class="reward-tier-preview" id="reward-tier-preview">
           <div class="rtp-bot mood-dead" onclick="openRewards()" title="Dead Rose · 0–48%">
-            <div class="rtp-held-row">
-              <div class="rtp-char">
-                <div class="rtp-head"><div class="rtp-eyes"><span class="rtp-eye"></span><span class="rtp-eye"></span></div><div class="rtp-mouth"></div></div>
-                <div class="rtp-body-section"><div class="rtp-arm left"></div><div class="rtp-torso"></div><div class="rtp-arm right"></div></div>
-                <div class="rtp-legs"><div class="rtp-leg"></div><div class="rtp-leg"></div></div>
-              </div>
-              <svg class="rtp-item-svg" width="8" height="12" viewBox="0 0 11 17"><path d="M5.5 16 C5.5 12 7.5 9 5.5 5.5" stroke="#7aaa5a" stroke-width="1.5" fill="none" stroke-linecap="round"/><ellipse cx="5.5" cy="4.5" rx="3.5" ry="3" fill="#c97aa0" opacity=".8"/><circle cx="5.5" cy="4.5" r="1.8" fill="#a05070"/><path d="M2 6.5 C.5 8.5 1.5 9.5 3.5 8" fill="#c97aa0" opacity=".55"/><path d="M9 6.5 C10.5 8.5 9.5 9.5 7.5 8" fill="#c97aa0" opacity=".55"/></svg>
-            </div>
+            <svg class="rtp-icon" width="12" height="14" viewBox="0 0 12 14"><path d="M6 13 C6 10 5 8 5.5 6.5" stroke="#6a9a40" stroke-width="1.3" fill="none" stroke-linecap="round"/><path d="M5.5 6.5 C4 5.5 3 3.5 4.5 2.2 C5.5 1.5 6.5 2.3 6.2 4 C7 5 7.5 6.5 5.5 6.5Z" fill="#c97aa0"/><path d="M5.5 6.5 C7 5.5 8.5 4 7.5 2.2 C6.5 1 5.5 2 5.8 4" fill="#d990b5"/><circle cx="5.5" cy="4.2" r="1.2" fill="#a05070"/></svg>
+            <div class="rtp-head"><div class="rtp-eyes"><span class="rtp-eye"></span><span class="rtp-eye"></span></div></div>
             <div class="rtp-label" style="color:#c97aa0">Dead Rose</div>
           </div>
           <div class="rtp-bot mood-ok" onclick="openRewards()" title="Guacamole · 49–68%">
-            <div class="rtp-held-row">
-              <div class="rtp-char">
-                <div class="rtp-head"><div class="rtp-eyes"><span class="rtp-eye"></span><span class="rtp-eye"></span></div><div class="rtp-mouth"></div></div>
-                <div class="rtp-body-section"><div class="rtp-arm left"></div><div class="rtp-torso"></div><div class="rtp-arm right"></div></div>
-                <div class="rtp-legs"><div class="rtp-leg"></div><div class="rtp-leg"></div></div>
-              </div>
-              <svg class="rtp-item-svg" width="7" height="12" viewBox="0 0 10 16"><path d="M5 1 C2 1 1 5 1 9 C1 13 2.5 15 5 15 C7.5 15 9 13 9 9 C9 5 8 1 5 1Z" fill="#3d7a28"/><path d="M5 4.5 C3.5 4.5 2.5 7 2.5 10 C2.5 13 3.5 14 5 14 C6.5 14 7.5 13 7.5 10 C7.5 7 6.5 4.5 5 4.5Z" fill="#b8d460"/><circle cx="5" cy="10.5" r="2" fill="#7a4a28"/></svg>
-            </div>
+            <svg class="rtp-icon" width="10" height="14" viewBox="0 0 10 14"><path d="M5 1 C2.5 1 1 4.5 1 8.5 C1 11.5 2.5 13 5 13 C7.5 13 9 11.5 9 8.5 C9 4.5 7.5 1 5 1Z" fill="#2e6b1a"/><path d="M5 4 C3.5 4 2.5 6.5 2.5 9 C2.5 11 3.5 12 5 12 C6.5 12 7.5 11 7.5 9 C7.5 6.5 6.5 4 5 4Z" fill="#a8cc50"/><circle cx="5" cy="9.5" r="1.8" fill="#6b3a1e"/></svg>
+            <div class="rtp-head"><div class="rtp-eyes"><span class="rtp-eye"></span><span class="rtp-eye"></span></div></div>
             <div class="rtp-label" style="color:#79b854">Guacamole</div>
           </div>
           <div class="rtp-bot mood-happy" onclick="openRewards()" title="BeRRilicious · 69–88%">
-            <div class="rtp-held-row">
-              <div class="rtp-char">
-                <div class="rtp-head"><div class="rtp-eyes"><span class="rtp-eye"></span><span class="rtp-eye"></span></div><div class="rtp-mouth"></div></div>
-                <div class="rtp-body-section"><div class="rtp-arm left"></div><div class="rtp-torso"></div><div class="rtp-arm right"></div></div>
-                <div class="rtp-legs"><div class="rtp-leg"></div><div class="rtp-leg"></div></div>
-              </div>
-              <svg class="rtp-item-svg" width="10" height="10" viewBox="0 0 13 13"><circle cx="4" cy="8.5" r="3.5" fill="#c0192e"/><circle cx="9" cy="8.5" r="3.5" fill="#d42040"/><circle cx="6.5" cy="4.5" r="3.5" fill="#b01428"/><circle cx="3.2" cy="7" r=".9" fill="rgba(255,255,255,.32)"/><circle cx="8.2" cy="7" r=".9" fill="rgba(255,255,255,.32)"/><circle cx="5.8" cy="3.2" r=".9" fill="rgba(255,255,255,.32)"/><line x1="4" y1="5" x2="3.5" y2="2.5" stroke="#5a8040" stroke-width="1" stroke-linecap="round"/><line x1="9" y1="5" x2="9.5" y2="2.5" stroke="#5a8040" stroke-width="1" stroke-linecap="round"/></svg>
-            </div>
+            <svg class="rtp-icon" width="14" height="11" viewBox="0 0 14 11"><circle cx="4" cy="7.5" r="3.2" fill="#c0192e"/><circle cx="10" cy="7.5" r="3.2" fill="#c0192e"/><circle cx="7" cy="4" r="3.2" fill="#d42040"/><circle cx="5" cy="6.2" r=".85" fill="rgba(255,255,255,.35)"/><circle cx="11" cy="6.2" r=".85" fill="rgba(255,255,255,.35)"/><circle cx="8" cy="2.7" r=".85" fill="rgba(255,255,255,.35)"/><line x1="7" y1=".8" x2="7" y2=".2" stroke="#5a8040" stroke-width="1.2" stroke-linecap="round"/></svg>
+            <div class="rtp-head"><div class="rtp-eyes"><span class="rtp-eye"></span><span class="rtp-eye"></span></div></div>
             <div class="rtp-label" style="color:#e05470">BeRRilicious</div>
           </div>
           <div class="rtp-bot mood-ecstatic" onclick="openRewards()" title="Lemonade · 89–100%">
-            <div class="rtp-held-row">
-              <div class="rtp-char">
-                <div class="rtp-head"><div class="rtp-eyes"><span class="rtp-eye"></span><span class="rtp-eye"></span></div><div class="rtp-mouth"></div></div>
-                <div class="rtp-body-section"><div class="rtp-arm left"></div><div class="rtp-torso"></div><div class="rtp-arm right"></div></div>
-                <div class="rtp-legs"><div class="rtp-leg"></div><div class="rtp-leg"></div></div>
-              </div>
-              <svg class="rtp-item-svg" width="8" height="12" viewBox="0 0 12 17"><path d="M2.5 5.5 L3.5 15.5 L8.5 15.5 L9.5 5.5Z" fill="rgba(247,226,107,.8)"/><path d="M2.5 5.5 L3.5 15.5 L8.5 15.5 L9.5 5.5Z" stroke="#c8a820" stroke-width=".9" fill="none" stroke-linejoin="round"/><line x1="2" y1="5.5" x2="10" y2="5.5" stroke="#c8a820" stroke-width="1.5" stroke-linecap="round"/><line x1="8" y1="2" x2="7" y2="15" stroke="#f472b6" stroke-width="1.5" stroke-linecap="round"/><path d="M1.5 4.5 C1.5 1.5 4.5 1.5 4.5 4.5" fill="#f7e26b" stroke="#c8a820" stroke-width=".8"/><line x1="1.5" y1="4.5" x2="4.5" y2="4.5" stroke="#c8a820" stroke-width=".8"/></svg>
-            </div>
+            <svg class="rtp-icon" width="14" height="10" viewBox="0 0 14 10"><ellipse cx="7" cy="5.5" rx="5.5" ry="3.8" fill="#f0c018"/><ellipse cx="1.5" cy="5.5" rx="1.1" ry="1.3" fill="#daa800"/><ellipse cx="12.5" cy="5.5" rx="1.1" ry="1.3" fill="#daa800"/><line x1="7" y1="1.8" x2="7" y2="9.2" stroke="rgba(255,255,255,.38)" stroke-width=".8"/><line x1="3.2" y1="3.5" x2="10.8" y2="7.5" stroke="rgba(255,255,255,.38)" stroke-width=".8"/><line x1="10.8" y1="3.5" x2="3.2" y2="7.5" stroke="rgba(255,255,255,.38)" stroke-width=".8"/></svg>
+            <div class="rtp-head"><div class="rtp-eyes"><span class="rtp-eye"></span><span class="rtp-eye"></span></div></div>
             <div class="rtp-label" style="color:#d4a820">Lemonade</div>
           </div>
         </div>
@@ -1508,27 +1459,27 @@ const TIER_COLORS = {
 };
 const REWARD_TIERS = [
   {
-    min: 0, max: 48, name: 'Dead Rose', color: '#9b5e7a', item: '🌹', mood: 'sad',
-    daily: 'Today was rough... but tomorrow is a brand new day. You\'ve got this!',
-    weekly: 'A tough week. Let\'s reset, regroup, and bloom again. 🌹',
+    min: 0, max: 48, name: 'Dead Rose', color: '#c97aa0', mood: 'dead',
+    daily: 'Can you at least try?',
+    weekly: 'A tough week. Let\'s reset and bloom again.',
     advice: 'Try breaking tasks into tiny steps — even 1% counts!'
   },
   {
-    min: 49, max: 68, name: 'Guacamole', color: '#5f8c4a', item: '🥑', mood: 'ok',
-    daily: 'Not bad! You\'re getting there. Keep that momentum going!',
-    weekly: 'Solid progress this week. You\'re finding your groove! 🥑',
-    advice: 'You\'re close to BeRRilicious territory — push a little harder tomorrow!'
+    min: 49, max: 68, name: 'Guacamole', color: '#79b854', mood: 'ok',
+    daily: 'Holy Guacamole! At least you tried...',
+    weekly: 'Solid progress. You\'re finding your groove!',
+    advice: 'You\'re close to BeRRilicious territory — push a little harder!'
   },
   {
-    min: 69, max: 88, name: 'BeRRilicious', color: '#c0344f', item: '🫐', mood: 'happy',
-    daily: 'Now THAT\'S how you do it! You\'re absolutely crushing it!',
-    weekly: 'Berry impressive week! The committee is seriously pleased. 🫐',
+    min: 69, max: 88, name: 'BeRRilicious', color: '#e05470', mood: 'happy',
+    daily: 'BeRRi good!',
+    weekly: 'Berry impressive week! The committee is pleased.',
     advice: 'You\'re one push away from Lemonade — you can do it!'
   },
   {
-    min: 89, max: 100, name: 'Lemonade', color: '#c8960a', item: '🍋', mood: 'ecstatic',
-    daily: 'LEGENDARY. You are completely unstoppable. Sip that lemonade!',
-    weekly: 'A LEGENDARY week. The entire team is in absolute awe. 🍋',
+    min: 89, max: 100, name: 'Lemonade', color: '#d4a820', mood: 'ecstatic',
+    daily: 'When life gives you lemons, you slay!',
+    weekly: 'A LEGENDARY week. The entire team is in awe.',
     advice: 'You\'re at the top — keep it up and inspire the whole team!'
   }
 ];
@@ -2308,15 +2259,15 @@ function calcWeeklyPct() {
   return Math.round((week.filter(t => t.completed).length / week.length) * 100);
 }
 
-// ─── ITEM SVGs ───
-function getItemSVG(name) {
-  const items = {
-    'Dead Rose': '<svg class="rtp-item-svg" width="8" height="12" viewBox="0 0 11 17"><path d="M5.5 16 C5.5 12 7.5 9 5.5 5.5" stroke="#7aaa5a" stroke-width="1.5" fill="none" stroke-linecap="round"/><ellipse cx="5.5" cy="4.5" rx="3.5" ry="3" fill="#c97aa0" opacity=".8"/><circle cx="5.5" cy="4.5" r="1.8" fill="#a05070"/><path d="M2 6.5 C.5 8.5 1.5 9.5 3.5 8" fill="#c97aa0" opacity=".55"/><path d="M9 6.5 C10.5 8.5 9.5 9.5 7.5 8" fill="#c97aa0" opacity=".55"/></svg>',
-    'Guacamole': '<svg class="rtp-item-svg" width="7" height="12" viewBox="0 0 10 16"><path d="M5 1 C2 1 1 5 1 9 C1 13 2.5 15 5 15 C7.5 15 9 13 9 9 C9 5 8 1 5 1Z" fill="#3d7a28"/><path d="M5 4.5 C3.5 4.5 2.5 7 2.5 10 C2.5 13 3.5 14 5 14 C6.5 14 7.5 13 7.5 10 C7.5 7 6.5 4.5 5 4.5Z" fill="#b8d460"/><circle cx="5" cy="10.5" r="2" fill="#7a4a28"/></svg>',
-    'BeRRilicious': '<svg class="rtp-item-svg" width="10" height="10" viewBox="0 0 13 13"><circle cx="4" cy="8.5" r="3.5" fill="#c0192e"/><circle cx="9" cy="8.5" r="3.5" fill="#d42040"/><circle cx="6.5" cy="4.5" r="3.5" fill="#b01428"/><circle cx="3.2" cy="7" r=".9" fill="rgba(255,255,255,.32)"/><circle cx="8.2" cy="7" r=".9" fill="rgba(255,255,255,.32)"/><circle cx="5.8" cy="3.2" r=".9" fill="rgba(255,255,255,.32)"/><line x1="4" y1="5" x2="3.5" y2="2.5" stroke="#5a8040" stroke-width="1" stroke-linecap="round"/><line x1="9" y1="5" x2="9.5" y2="2.5" stroke="#5a8040" stroke-width="1" stroke-linecap="round"/></svg>',
-    'Lemonade': '<svg class="rtp-item-svg" width="8" height="12" viewBox="0 0 12 17"><path d="M2.5 5.5 L3.5 15.5 L8.5 15.5 L9.5 5.5Z" fill="rgba(247,226,107,.8)"/><path d="M2.5 5.5 L3.5 15.5 L8.5 15.5 L9.5 5.5Z" stroke="#c8a820" stroke-width=".9" fill="none" stroke-linejoin="round"/><line x1="2" y1="5.5" x2="10" y2="5.5" stroke="#c8a820" stroke-width="1.5" stroke-linecap="round"/><line x1="8" y1="2" x2="7" y2="15" stroke="#f472b6" stroke-width="1.5" stroke-linecap="round"/><path d="M1.5 4.5 C1.5 1.5 4.5 1.5 4.5 4.5" fill="#f7e26b" stroke="#c8a820" stroke-width=".8"/><line x1="1.5" y1="4.5" x2="4.5" y2="4.5" stroke="#c8a820" stroke-width=".8"/></svg>'
+// ─── TIER ICONS (above head clipart) ───
+function getTopIcon(name) {
+  const icons = {
+    'Dead Rose': '<svg class="rtp-icon" width="12" height="14" viewBox="0 0 12 14"><path d="M6 13 C6 10 5 8 5.5 6.5" stroke="#6a9a40" stroke-width="1.3" fill="none" stroke-linecap="round"/><path d="M5.5 6.5 C4 5.5 3 3.5 4.5 2.2 C5.5 1.5 6.5 2.3 6.2 4 C7 5 7.5 6.5 5.5 6.5Z" fill="#c97aa0"/><path d="M5.5 6.5 C7 5.5 8.5 4 7.5 2.2 C6.5 1 5.5 2 5.8 4" fill="#d990b5"/><circle cx="5.5" cy="4.2" r="1.2" fill="#a05070"/></svg>',
+    'Guacamole': '<svg class="rtp-icon" width="10" height="14" viewBox="0 0 10 14"><path d="M5 1 C2.5 1 1 4.5 1 8.5 C1 11.5 2.5 13 5 13 C7.5 13 9 11.5 9 8.5 C9 4.5 7.5 1 5 1Z" fill="#2e6b1a"/><path d="M5 4 C3.5 4 2.5 6.5 2.5 9 C2.5 11 3.5 12 5 12 C6.5 12 7.5 11 7.5 9 C7.5 6.5 6.5 4 5 4Z" fill="#a8cc50"/><circle cx="5" cy="9.5" r="1.8" fill="#6b3a1e"/></svg>',
+    'BeRRilicious': '<svg class="rtp-icon" width="14" height="11" viewBox="0 0 14 11"><circle cx="4" cy="7.5" r="3.2" fill="#c0192e"/><circle cx="10" cy="7.5" r="3.2" fill="#c0192e"/><circle cx="7" cy="4" r="3.2" fill="#d42040"/><circle cx="5" cy="6.2" r=".85" fill="rgba(255,255,255,.35)"/><circle cx="11" cy="6.2" r=".85" fill="rgba(255,255,255,.35)"/><circle cx="8" cy="2.7" r=".85" fill="rgba(255,255,255,.35)"/><line x1="7" y1=".8" x2="7" y2=".2" stroke="#5a8040" stroke-width="1.2" stroke-linecap="round"/></svg>',
+    'Lemonade': '<svg class="rtp-icon" width="14" height="10" viewBox="0 0 14 10"><ellipse cx="7" cy="5.5" rx="5.5" ry="3.8" fill="#f0c018"/><ellipse cx="1.5" cy="5.5" rx="1.1" ry="1.3" fill="#daa800"/><ellipse cx="12.5" cy="5.5" rx="1.1" ry="1.3" fill="#daa800"/><line x1="7" y1="1.8" x2="7" y2="9.2" stroke="rgba(255,255,255,.38)" stroke-width=".8"/><line x1="3.2" y1="3.5" x2="10.8" y2="7.5" stroke="rgba(255,255,255,.38)" stroke-width=".8"/><line x1="10.8" y1="3.5" x2="3.2" y2="7.5" stroke="rgba(255,255,255,.38)" stroke-width=".8"/></svg>'
   };
-  return items[name] || '';
+  return icons[name] || '';
 }
 
 // ─── STREAK TRACKING ───
@@ -2380,14 +2331,8 @@ function checkRewards() {
     REWARD_TIERS.map(function(t) {
       const isActive = dailyOk && dt.name === t.name;
       return `<div class="rtp-bot mood-${t.mood}${isActive ? ' active' : ''}" onclick="openRewards()" title="${t.name} · ${t.min}–${t.max}%">
-        <div class="rtp-held-row">
-          <div class="rtp-char">
-            <div class="rtp-head"><div class="rtp-eyes"><span class="rtp-eye"></span><span class="rtp-eye"></span></div><div class="rtp-mouth"></div></div>
-            <div class="rtp-body-section"><div class="rtp-arm left"></div><div class="rtp-torso"></div><div class="rtp-arm right"></div></div>
-            <div class="rtp-legs"><div class="rtp-leg"></div><div class="rtp-leg"></div></div>
-          </div>
-          ${getItemSVG(t.name)}
-        </div>
+        ${getTopIcon(t.name)}
+        <div class="rtp-head"><div class="rtp-eyes"><span class="rtp-eye"></span><span class="rtp-eye"></span></div></div>
         <div class="rtp-label" style="color:${t.color}">${t.name}</div>
       </div>`;
     }).join('') + `</div>`;
