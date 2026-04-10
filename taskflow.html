@@ -382,57 +382,50 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--body);min-h
 @keyframes rbotWave{0%,100%{transform:rotate(-15deg)}50%{transform:rotate(-35deg)}}
 
 /* REWARD TIER PREVIEW ROW (banner right side) */
-.reward-tier-preview{display:flex;gap:1.1rem;align-items:flex-end;flex-shrink:0;padding:.1rem .3rem}
-.rtp-bot{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;transition:transform .2s,opacity .2s;opacity:.6;animation:rbotFloat 2.8s ease-in-out infinite}
-.rtp-bot:nth-child(2){animation-delay:.4s}
-.rtp-bot:nth-child(3){animation-delay:.8s}
-.rtp-bot:nth-child(4){animation-delay:1.2s}
-.rtp-bot:hover{transform:translateY(-4px) scale(1.1)!important;opacity:1!important;animation:none}
-.rtp-bot.active{opacity:1;transform:translateY(-5px) scale(1.14)!important;animation:none}
+.reward-tier-preview{display:flex;gap:.9rem;align-items:flex-end;flex-shrink:0;padding:.1rem .2rem}
+.rtp-bot{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;transition:transform .2s,opacity .2s;opacity:.65}
+.rtp-bot:hover{transform:translateY(-3px) scale(1.12);opacity:1}
+.rtp-bot.active{opacity:1;transform:translateY(-4px) scale(1.16)}
 /* Held row: character + item side by side */
-.rtp-held-row{display:flex;align-items:center;gap:3px}
+.rtp-held-row{display:flex;align-items:center;gap:2px}
 .rtp-char{display:flex;flex-direction:column;align-items:center;gap:0}
-/* HEAD */
-.rtp-head{width:20px;height:18px;background:linear-gradient(160deg,#fce4f6 0%,#f472b6 45%,#ec4899 100%);border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;box-shadow:0 2px 6px rgba(236,72,153,.35)}
+/* HEAD — 14px */
+.rtp-head{width:14px;height:13px;background:linear-gradient(160deg,#fce4f6 0%,#f472b6 45%,#ec4899 100%);border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.5px;box-shadow:0 1px 4px rgba(236,72,153,.35)}
 /* EYES */
-.rtp-eyes{display:flex;gap:4px;align-items:center}
-.rtp-eye{width:3px;height:3px;background:#1a1a1a;border-radius:50%;display:block}
+.rtp-eyes{display:flex;gap:3px;align-items:center}
+.rtp-eye{width:2px;height:2px;background:#1a1a1a;border-radius:50%;display:block}
 /* Dead: X eyes */
-.mood-dead .rtp-eye{width:5px;height:5px;background:transparent;position:relative}
-.mood-dead .rtp-eye::before,.mood-dead .rtp-eye::after{content:'';position:absolute;width:5px;height:1.5px;background:#1a1a1a;border-radius:1px;top:50%;left:0;transform-origin:center}
+.mood-dead .rtp-eye{width:3.5px;height:3.5px;background:transparent;position:relative}
+.mood-dead .rtp-eye::before,.mood-dead .rtp-eye::after{content:'';position:absolute;width:3.5px;height:1px;background:#1a1a1a;border-radius:1px;top:50%;left:0;transform-origin:center}
 .mood-dead .rtp-eye::before{transform:translateY(-50%) rotate(45deg)}
 .mood-dead .rtp-eye::after{transform:translateY(-50%) rotate(-45deg)}
 /* Ecstatic: squint eyes */
-.mood-ecstatic .rtp-eye{width:5px;height:2px;border-radius:3px 3px 0 0;background:#1a1a1a}
+.mood-ecstatic .rtp-eye{width:3.5px;height:1.5px;border-radius:2px 2px 0 0;background:#1a1a1a}
 /* MOUTH */
 .rtp-mouth{display:block}
-.mood-dead .rtp-mouth{width:9px;height:3px;border-top:1.5px solid #1a1a1a;border-radius:4px 4px 0 0;margin-top:1px}
-.mood-ok .rtp-mouth{width:7px;height:3px;border-bottom:1.5px solid #1a1a1a;border-radius:0 0 4px 4px;margin-top:1px}
-.mood-happy .rtp-mouth{width:10px;height:4px;border-bottom:2px solid #1a1a1a;border-radius:0 0 5px 5px;margin-top:1px}
-.mood-ecstatic .rtp-mouth{width:12px;height:5px;border-bottom:2px solid #1a1a1a;border-radius:0 0 6px 6px;background:rgba(255,255,255,.25);margin-top:1px}
+.mood-dead .rtp-mouth{width:6px;height:2px;border-top:1px solid #1a1a1a;border-radius:3px 3px 0 0;margin-top:1px}
+.mood-ok .rtp-mouth{width:5px;height:2px;border-bottom:1px solid #1a1a1a;border-radius:0 0 3px 3px;margin-top:1px}
+.mood-happy .rtp-mouth{width:7px;height:3px;border-bottom:1.5px solid #1a1a1a;border-radius:0 0 4px 4px;margin-top:1px}
+.mood-ecstatic .rtp-mouth{width:8px;height:3px;border-bottom:1.5px solid #1a1a1a;border-radius:0 0 4px 4px;background:rgba(255,255,255,.25);margin-top:1px}
 /* BODY SECTION */
 .rtp-body-section{display:flex;align-items:center;gap:1px;margin-top:1px}
-.rtp-torso{width:14px;height:12px;background:linear-gradient(160deg,#fce4f6 0%,#f472b6 45%,#ec4899 100%);border-radius:3px;box-shadow:0 2px 5px rgba(236,72,153,.2)}
-.rtp-arm{width:5px;height:11px;background:linear-gradient(180deg,#f9c8ee,#ec4899);border-radius:3px}
-.rtp-arm.left{transform:rotate(-10deg);transform-origin:top right;border-radius:2px 3px 3px 2px}
-.rtp-arm.right{transform:rotate(10deg);transform-origin:top left;border-radius:3px 2px 2px 3px}
-/* Dead: drooping arms */
-.mood-dead .rtp-arm.left{transform:rotate(-35deg) translateY(3px);transform-origin:top right}
-.mood-dead .rtp-arm.right{transform:rotate(35deg) translateY(3px);transform-origin:top left}
-/* Ecstatic: arms raised */
+.rtp-torso{width:10px;height:9px;background:linear-gradient(160deg,#fce4f6 0%,#f472b6 45%,#ec4899 100%);border-radius:2px;box-shadow:0 1px 3px rgba(236,72,153,.2)}
+.rtp-arm{width:3.5px;height:8px;background:linear-gradient(180deg,#f9c8ee,#ec4899);border-radius:2px}
+.rtp-arm.left{transform:rotate(-10deg);transform-origin:top right}
+.rtp-arm.right{transform:rotate(10deg);transform-origin:top left}
+.mood-dead .rtp-arm.left{transform:rotate(-35deg) translateY(2px);transform-origin:top right}
+.mood-dead .rtp-arm.right{transform:rotate(35deg) translateY(2px);transform-origin:top left}
 .mood-ecstatic .rtp-arm.left{transform:rotate(-50deg) translateY(-2px);transform-origin:top right}
 .mood-ecstatic .rtp-arm.right{transform:rotate(50deg) translateY(-2px);transform-origin:top left}
 /* LEGS */
-.rtp-legs{display:flex;gap:3px;margin-top:1px}
-.rtp-leg{width:5px;height:9px;background:linear-gradient(180deg,#f472b6,#ec4899);border-radius:0 0 3px 3px}
-/* Dead: slightly splayed */
-.mood-dead .rtp-legs{gap:4px}
+.rtp-legs{display:flex;gap:2px;margin-top:1px}
+.rtp-leg{width:3.5px;height:7px;background:linear-gradient(180deg,#f472b6,#ec4899);border-radius:0 0 2px 2px}
 .mood-dead .rtp-leg:first-child{transform:rotate(-12deg);transform-origin:top center}
 .mood-dead .rtp-leg:last-child{transform:rotate(12deg);transform-origin:top center}
 /* ITEM SVG */
 .rtp-item-svg{display:block;flex-shrink:0}
 /* LABEL */
-.rtp-label{font-family:'Inter',sans-serif;font-size:.57rem;font-weight:700;text-align:center;white-space:nowrap;letter-spacing:.01em}
+.rtp-label{font-family:'Inter',sans-serif;font-size:.52rem;font-weight:700;text-align:center;white-space:nowrap;letter-spacing:.01em}
 
 /* IDEAS */
 .ideas-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1rem;margin-top:1rem}
@@ -861,7 +854,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--body);min-h
                 <div class="rtp-body-section"><div class="rtp-arm left"></div><div class="rtp-torso"></div><div class="rtp-arm right"></div></div>
                 <div class="rtp-legs"><div class="rtp-leg"></div><div class="rtp-leg"></div></div>
               </div>
-              <svg class="rtp-item-svg" width="11" height="17" viewBox="0 0 11 17"><path d="M5.5 16 C5.5 12 7.5 9 5.5 5.5" stroke="#7aaa5a" stroke-width="1.5" fill="none" stroke-linecap="round"/><ellipse cx="5.5" cy="4.5" rx="3.5" ry="3" fill="#c97aa0" opacity=".8"/><circle cx="5.5" cy="4.5" r="1.8" fill="#a05070"/><path d="M2 6.5 C.5 8.5 1.5 9.5 3.5 8" fill="#c97aa0" opacity=".55"/><path d="M9 6.5 C10.5 8.5 9.5 9.5 7.5 8" fill="#c97aa0" opacity=".55"/></svg>
+              <svg class="rtp-item-svg" width="8" height="12" viewBox="0 0 11 17"><path d="M5.5 16 C5.5 12 7.5 9 5.5 5.5" stroke="#7aaa5a" stroke-width="1.5" fill="none" stroke-linecap="round"/><ellipse cx="5.5" cy="4.5" rx="3.5" ry="3" fill="#c97aa0" opacity=".8"/><circle cx="5.5" cy="4.5" r="1.8" fill="#a05070"/><path d="M2 6.5 C.5 8.5 1.5 9.5 3.5 8" fill="#c97aa0" opacity=".55"/><path d="M9 6.5 C10.5 8.5 9.5 9.5 7.5 8" fill="#c97aa0" opacity=".55"/></svg>
             </div>
             <div class="rtp-label" style="color:#c97aa0">Dead Rose</div>
           </div>
@@ -872,7 +865,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--body);min-h
                 <div class="rtp-body-section"><div class="rtp-arm left"></div><div class="rtp-torso"></div><div class="rtp-arm right"></div></div>
                 <div class="rtp-legs"><div class="rtp-leg"></div><div class="rtp-leg"></div></div>
               </div>
-              <svg class="rtp-item-svg" width="10" height="16" viewBox="0 0 10 16"><path d="M5 1 C2 1 1 5 1 9 C1 13 2.5 15 5 15 C7.5 15 9 13 9 9 C9 5 8 1 5 1Z" fill="#3d7a28"/><path d="M5 4.5 C3.5 4.5 2.5 7 2.5 10 C2.5 13 3.5 14 5 14 C6.5 14 7.5 13 7.5 10 C7.5 7 6.5 4.5 5 4.5Z" fill="#b8d460"/><circle cx="5" cy="10.5" r="2" fill="#7a4a28"/></svg>
+              <svg class="rtp-item-svg" width="7" height="12" viewBox="0 0 10 16"><path d="M5 1 C2 1 1 5 1 9 C1 13 2.5 15 5 15 C7.5 15 9 13 9 9 C9 5 8 1 5 1Z" fill="#3d7a28"/><path d="M5 4.5 C3.5 4.5 2.5 7 2.5 10 C2.5 13 3.5 14 5 14 C6.5 14 7.5 13 7.5 10 C7.5 7 6.5 4.5 5 4.5Z" fill="#b8d460"/><circle cx="5" cy="10.5" r="2" fill="#7a4a28"/></svg>
             </div>
             <div class="rtp-label" style="color:#79b854">Guacamole</div>
           </div>
@@ -883,7 +876,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--body);min-h
                 <div class="rtp-body-section"><div class="rtp-arm left"></div><div class="rtp-torso"></div><div class="rtp-arm right"></div></div>
                 <div class="rtp-legs"><div class="rtp-leg"></div><div class="rtp-leg"></div></div>
               </div>
-              <svg class="rtp-item-svg" width="13" height="13" viewBox="0 0 13 13"><circle cx="4" cy="8.5" r="3.5" fill="#5b2480"/><circle cx="9" cy="8.5" r="3.5" fill="#6d2a90"/><circle cx="6.5" cy="4.5" r="3.5" fill="#7b30a0"/><circle cx="3.2" cy="7" r=".9" fill="rgba(255,255,255,.28)"/><circle cx="8.2" cy="7" r=".9" fill="rgba(255,255,255,.28)"/><circle cx="5.8" cy="3.2" r=".9" fill="rgba(255,255,255,.28)"/><line x1="4" y1="5" x2="3.5" y2="2.5" stroke="#5a8040" stroke-width="1" stroke-linecap="round"/><line x1="9" y1="5" x2="9.5" y2="2.5" stroke="#5a8040" stroke-width="1" stroke-linecap="round"/><line x1="6.5" y1="1" x2="6.5" y2="0" stroke="#5a8040" stroke-width="1" stroke-linecap="round"/></svg>
+              <svg class="rtp-item-svg" width="10" height="10" viewBox="0 0 13 13"><circle cx="4" cy="8.5" r="3.5" fill="#5b2480"/><circle cx="9" cy="8.5" r="3.5" fill="#6d2a90"/><circle cx="6.5" cy="4.5" r="3.5" fill="#7b30a0"/><circle cx="3.2" cy="7" r=".9" fill="rgba(255,255,255,.28)"/><circle cx="8.2" cy="7" r=".9" fill="rgba(255,255,255,.28)"/><circle cx="5.8" cy="3.2" r=".9" fill="rgba(255,255,255,.28)"/><line x1="4" y1="5" x2="3.5" y2="2.5" stroke="#5a8040" stroke-width="1" stroke-linecap="round"/><line x1="9" y1="5" x2="9.5" y2="2.5" stroke="#5a8040" stroke-width="1" stroke-linecap="round"/></svg>
             </div>
             <div class="rtp-label" style="color:#e05470">BeRRilicious</div>
           </div>
@@ -894,7 +887,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--body);min-h
                 <div class="rtp-body-section"><div class="rtp-arm left"></div><div class="rtp-torso"></div><div class="rtp-arm right"></div></div>
                 <div class="rtp-legs"><div class="rtp-leg"></div><div class="rtp-leg"></div></div>
               </div>
-              <svg class="rtp-item-svg" width="12" height="17" viewBox="0 0 12 17"><path d="M2.5 5.5 L3.5 15.5 L8.5 15.5 L9.5 5.5Z" fill="rgba(247,226,107,.8)"/><path d="M2.5 5.5 L3.5 15.5 L8.5 15.5 L9.5 5.5Z" stroke="#c8a820" stroke-width=".9" fill="none" stroke-linejoin="round"/><line x1="2" y1="5.5" x2="10" y2="5.5" stroke="#c8a820" stroke-width="1.5" stroke-linecap="round"/><line x1="8" y1="2" x2="7" y2="15" stroke="#f472b6" stroke-width="1.5" stroke-linecap="round"/><path d="M1.5 4.5 C1.5 1.5 4.5 1.5 4.5 4.5" fill="#f7e26b" stroke="#c8a820" stroke-width=".8"/><line x1="1.5" y1="4.5" x2="4.5" y2="4.5" stroke="#c8a820" stroke-width=".8"/><line x1="3" y1="1.8" x2="3" y2="4.5" stroke="#c8a820" stroke-width=".6"/></svg>
+              <svg class="rtp-item-svg" width="8" height="12" viewBox="0 0 12 17"><path d="M2.5 5.5 L3.5 15.5 L8.5 15.5 L9.5 5.5Z" fill="rgba(247,226,107,.8)"/><path d="M2.5 5.5 L3.5 15.5 L8.5 15.5 L9.5 5.5Z" stroke="#c8a820" stroke-width=".9" fill="none" stroke-linejoin="round"/><line x1="2" y1="5.5" x2="10" y2="5.5" stroke="#c8a820" stroke-width="1.5" stroke-linecap="round"/><line x1="8" y1="2" x2="7" y2="15" stroke="#f472b6" stroke-width="1.5" stroke-linecap="round"/><path d="M1.5 4.5 C1.5 1.5 4.5 1.5 4.5 4.5" fill="#f7e26b" stroke="#c8a820" stroke-width=".8"/><line x1="1.5" y1="4.5" x2="4.5" y2="4.5" stroke="#c8a820" stroke-width=".8"/></svg>
             </div>
             <div class="rtp-label" style="color:#d4a820">Lemonade</div>
           </div>
@@ -2317,10 +2310,10 @@ function calcWeeklyPct() {
 // ─── ITEM SVGs ───
 function getItemSVG(name) {
   const items = {
-    'Dead Rose': '<svg class="rtp-item-svg" width="11" height="17" viewBox="0 0 11 17"><path d="M5.5 16 C5.5 12 7.5 9 5.5 5.5" stroke="#7aaa5a" stroke-width="1.5" fill="none" stroke-linecap="round"/><ellipse cx="5.5" cy="4.5" rx="3.5" ry="3" fill="#c97aa0" opacity=".8"/><circle cx="5.5" cy="4.5" r="1.8" fill="#a05070"/><path d="M2 6.5 C.5 8.5 1.5 9.5 3.5 8" fill="#c97aa0" opacity=".55"/><path d="M9 6.5 C10.5 8.5 9.5 9.5 7.5 8" fill="#c97aa0" opacity=".55"/></svg>',
-    'Guacamole': '<svg class="rtp-item-svg" width="10" height="16" viewBox="0 0 10 16"><path d="M5 1 C2 1 1 5 1 9 C1 13 2.5 15 5 15 C7.5 15 9 13 9 9 C9 5 8 1 5 1Z" fill="#3d7a28"/><path d="M5 4.5 C3.5 4.5 2.5 7 2.5 10 C2.5 13 3.5 14 5 14 C6.5 14 7.5 13 7.5 10 C7.5 7 6.5 4.5 5 4.5Z" fill="#b8d460"/><circle cx="5" cy="10.5" r="2" fill="#7a4a28"/></svg>',
-    'BeRRilicious': '<svg class="rtp-item-svg" width="13" height="13" viewBox="0 0 13 13"><circle cx="4" cy="8.5" r="3.5" fill="#5b2480"/><circle cx="9" cy="8.5" r="3.5" fill="#6d2a90"/><circle cx="6.5" cy="4.5" r="3.5" fill="#7b30a0"/><circle cx="3.2" cy="7" r=".9" fill="rgba(255,255,255,.28)"/><circle cx="8.2" cy="7" r=".9" fill="rgba(255,255,255,.28)"/><circle cx="5.8" cy="3.2" r=".9" fill="rgba(255,255,255,.28)"/><line x1="4" y1="5" x2="3.5" y2="2.5" stroke="#5a8040" stroke-width="1" stroke-linecap="round"/><line x1="9" y1="5" x2="9.5" y2="2.5" stroke="#5a8040" stroke-width="1" stroke-linecap="round"/></svg>',
-    'Lemonade': '<svg class="rtp-item-svg" width="12" height="17" viewBox="0 0 12 17"><path d="M2.5 5.5 L3.5 15.5 L8.5 15.5 L9.5 5.5Z" fill="rgba(247,226,107,.8)"/><path d="M2.5 5.5 L3.5 15.5 L8.5 15.5 L9.5 5.5Z" stroke="#c8a820" stroke-width=".9" fill="none" stroke-linejoin="round"/><line x1="2" y1="5.5" x2="10" y2="5.5" stroke="#c8a820" stroke-width="1.5" stroke-linecap="round"/><line x1="8" y1="2" x2="7" y2="15" stroke="#f472b6" stroke-width="1.5" stroke-linecap="round"/><path d="M1.5 4.5 C1.5 1.5 4.5 1.5 4.5 4.5" fill="#f7e26b" stroke="#c8a820" stroke-width=".8"/><line x1="1.5" y1="4.5" x2="4.5" y2="4.5" stroke="#c8a820" stroke-width=".8"/></svg>'
+    'Dead Rose': '<svg class="rtp-item-svg" width="8" height="12" viewBox="0 0 11 17"><path d="M5.5 16 C5.5 12 7.5 9 5.5 5.5" stroke="#7aaa5a" stroke-width="1.5" fill="none" stroke-linecap="round"/><ellipse cx="5.5" cy="4.5" rx="3.5" ry="3" fill="#c97aa0" opacity=".8"/><circle cx="5.5" cy="4.5" r="1.8" fill="#a05070"/><path d="M2 6.5 C.5 8.5 1.5 9.5 3.5 8" fill="#c97aa0" opacity=".55"/><path d="M9 6.5 C10.5 8.5 9.5 9.5 7.5 8" fill="#c97aa0" opacity=".55"/></svg>',
+    'Guacamole': '<svg class="rtp-item-svg" width="7" height="12" viewBox="0 0 10 16"><path d="M5 1 C2 1 1 5 1 9 C1 13 2.5 15 5 15 C7.5 15 9 13 9 9 C9 5 8 1 5 1Z" fill="#3d7a28"/><path d="M5 4.5 C3.5 4.5 2.5 7 2.5 10 C2.5 13 3.5 14 5 14 C6.5 14 7.5 13 7.5 10 C7.5 7 6.5 4.5 5 4.5Z" fill="#b8d460"/><circle cx="5" cy="10.5" r="2" fill="#7a4a28"/></svg>',
+    'BeRRilicious': '<svg class="rtp-item-svg" width="10" height="10" viewBox="0 0 13 13"><circle cx="4" cy="8.5" r="3.5" fill="#5b2480"/><circle cx="9" cy="8.5" r="3.5" fill="#6d2a90"/><circle cx="6.5" cy="4.5" r="3.5" fill="#7b30a0"/><circle cx="3.2" cy="7" r=".9" fill="rgba(255,255,255,.28)"/><circle cx="8.2" cy="7" r=".9" fill="rgba(255,255,255,.28)"/><circle cx="5.8" cy="3.2" r=".9" fill="rgba(255,255,255,.28)"/><line x1="4" y1="5" x2="3.5" y2="2.5" stroke="#5a8040" stroke-width="1" stroke-linecap="round"/><line x1="9" y1="5" x2="9.5" y2="2.5" stroke="#5a8040" stroke-width="1" stroke-linecap="round"/></svg>',
+    'Lemonade': '<svg class="rtp-item-svg" width="8" height="12" viewBox="0 0 12 17"><path d="M2.5 5.5 L3.5 15.5 L8.5 15.5 L9.5 5.5Z" fill="rgba(247,226,107,.8)"/><path d="M2.5 5.5 L3.5 15.5 L8.5 15.5 L9.5 5.5Z" stroke="#c8a820" stroke-width=".9" fill="none" stroke-linejoin="round"/><line x1="2" y1="5.5" x2="10" y2="5.5" stroke="#c8a820" stroke-width="1.5" stroke-linecap="round"/><line x1="8" y1="2" x2="7" y2="15" stroke="#f472b6" stroke-width="1.5" stroke-linecap="round"/><path d="M1.5 4.5 C1.5 1.5 4.5 1.5 4.5 4.5" fill="#f7e26b" stroke="#c8a820" stroke-width=".8"/><line x1="1.5" y1="4.5" x2="4.5" y2="4.5" stroke="#c8a820" stroke-width=".8"/></svg>'
   };
   return items[name] || '';
 }
@@ -3599,6 +3592,7 @@ function goAdmin() {
 boot();
 initMobileNav();
 </script>
+<script src="shared/hub.js"></script>
 <script src="shared/chat.js?v=9"></script>
 </body>
 </html>
