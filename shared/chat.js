@@ -497,8 +497,18 @@ async function ncSend() {
   if (!text || nc.typing) return;
 
   var key = (typeof GROQ_API_KEY !== 'undefined') ? GROQ_API_KEY : '';
+  // If key not loaded yet (boot() still running), try fetching it now
+  if (!key && typeof db !== 'undefined') {
+    try {
+      var gkr = await db.from('settings').select('value').eq('key', 'groq_api_key').single();
+      if (gkr.data && gkr.data.value) {
+        GROQ_API_KEY = gkr.data.value;
+        key = gkr.data.value;
+      }
+    } catch(e) {}
+  }
   if (!key) {
-    ncAppendMsg('assistant', 'The Groq API key isn\'t set yet. Ask your admin to add it in the Admin panel under Settings.');
+    ncAppendMsg('assistant', 'Hey! The Groq API key hasn\'t been added yet. Go to **Admin → Settings** and paste your Groq API key there — then I\'ll be ready to help! 🔑');
     return;
   }
 
