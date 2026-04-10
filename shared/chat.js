@@ -59,11 +59,11 @@ var NANCY_SYSTEM = 'You are Nancy, a sharp and friendly AI assistant inside the 
   + 'You are inside Nancy Hub, the internal marketing workspace for CareNBloom, based in Hong Kong.';
 
 var STARTERS = [
-  'Brainstorm content ideas for this week',
-  'Help me write an Instagram caption',
-  'What\'s the best way to use Claude?',
-  'Give me 5 scroll-stopping hook ideas',
-  'Draft a professional follow-up email'
+  'What are Dione\'s pending tasks?',
+  'Show me all top 3 priority tasks',
+  'Pull recent messages from #general',
+  'Who\'s on the team and what are their roles?',
+  'Brainstorm content ideas for this week'
 ];
 
 // ── STYLES ──────────────────────────────────────────
@@ -331,6 +331,153 @@ function ncAutoResize(el) {
   el.style.height = Math.min(el.scrollHeight, 120) + 'px';
 }
 
+// ── TOOL DEFINITIONS ────────────────────────────────
+var NC_TOOLS = [
+  {
+    type: 'function',
+    function: {
+      name: 'get_tasks',
+      description: 'Get tasks from the Nancy Hub task board. Can filter by person name, tier (priority), or completion status. Use this when asked about tasks, pending work, assignments, to-dos, or workload for any team member.',
+      parameters: {
+        type: 'object',
+        properties: {
+          assignee: { type: 'string', description: 'Name or partial name of the person to filter by (e.g. "Dione", "Nancy")' },
+          tier: { type: 'string', enum: ['top3', 'important', 'someday', 'all'], description: 'Task priority tier' },
+          completed: { type: 'boolean', description: 'true for done tasks, false for pending/active. Omit for all.' }
+        }
+      }
+    }
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'get_team_members',
+      description: 'Get a list of all team members in the hub — their names, roles, and emails.',
+      parameters: { type: 'object', properties: {} }
+    }
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'get_slack_messages',
+      description: 'Pull recent messages from a Slack channel. Use when asked about Slack activity, channel updates, conversations, or to find messages mentioning a person or topic.',
+      parameters: {
+        type: 'object',
+        properties: {
+          channel_name: { type: 'string', description: 'Slack channel name (e.g. "cs-logistics-mfg-nancy", "general")' },
+          search_term: { type: 'string', description: 'Optional keyword or name to filter messages by' },
+          limit: { type: 'number', description: 'How many recent messages to fetch (default 30, max 80)' }
+        },
+        required: ['channel_name']
+      }
+    }
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'get_slack_channels',
+      description: 'List all available Slack channels the bot can read from.',
+      parameters: { type: 'object', properties: {} }
+    }
+  }
+];
+
+// ── TOOL EXECUTORS ──────────────────────────────────
+async function ncRunTool(name, args) {
+  try {
+    if (name === 'get_tasks') {
+      if (typeof db === 'undefined') return { error: 'Database not available on this page.' };
+      // Get all members first to map names → ids
+      var members = [];
+      try {
+        var mRes = await db.from('boards').select('id,name,role');
+        members = mRes.data || [];
+      } catch(e) {}
+
+      var ownerId = null;
+      if (args.assignee) {
+        var match = members.find(function(m) {
+          return m.name && m.name.toLowerCase().includes(args.assignee.toLowerCase());
+        });
+        if (match) ownerId = match.id;
+      }
+
+      var q = db.from('tasks').select('title,description,tier,completed,due_date,owner_id,created_at');
+      if (ownerId) q = q.eq('owner_id', ownerId);
+      if (args.tier && args.tier !== 'all') q = q.eq('tier', args.tier);
+      if (typeof args.completed === 'boolean') q = q.eq('completed', args.completed);
+      q = q.order('task_order');
+
+      var tRes = await q;
+      var tasks = (tRes.data || []).map(function(t) {
+        var owner = members.find(function(m){ return m.id === t.owner_id; });
+        return {
+          title: t.title,
+          description: t.description || '',
+          tier: t.tier,
+          status: t.completed ? 'Done' : 'Pending',
+          due_date: t.due_date || null,
+          owner: owner ? owner.name : 'Unassigned'
+        };
+      });
+      return { tasks: tasks, total: tasks.length };
+    }
+
+    if (name === 'get_team_members') {
+      if (typeof db === 'undefined') return { error: 'Database not available.' };
+      var res = await db.from('boards').select('name,email,role');
+      return { members: res.data || [] };
+    }
+
+    if (name === 'get_slack_messages') {
+      if (typeof slackAPI === 'undefined' || typeof slackState === 'undefined') {
+        return { error: 'Slack is only available on the Task Hub page.' };
+      }
+      var token = slackState.ownToken;
+      if (!token) return { error: 'Slack not connected. Please add your Slack token in the Task Hub settings.' };
+
+      var channels = slackState.channels || [];
+      var ch = channels.find(function(c) {
+        return c.name && c.name.toLowerCase().includes((args.channel_name || '').toLowerCase());
+      });
+      if (!ch) return { error: 'Channel "' + args.channel_name + '" not found. Try get_slack_channels to see available ones.' };
+
+      var data = await slackAPI(token, 'conversations.history', { channel: ch.id, limit: Math.min(args.limit || 30, 80) });
+      if (!data.ok) return { error: 'Slack API error: ' + (data.error || 'unknown') };
+
+      var msgs = (data.messages || []).filter(function(m){ return m.type === 'message' && !m.subtype && (m.text||'').trim(); });
+      if (args.search_term) {
+        var term = args.search_term.toLowerCase();
+        msgs = msgs.filter(function(m){ return (m.text||'').toLowerCase().includes(term); });
+      }
+
+      // Resolve user names
+      var uids = msgs.map(function(m){ return m.user; }).filter(function(v,i,a){ return v && a.indexOf(v)===i && !slackState.userCache[v]; });
+      if (uids.length) { try { await resolveSlackUsers(token, uids); } catch(e){} }
+
+      var results = msgs.slice(0, 20).map(function(m) {
+        return {
+          user: slackState.userCache[m.user] || m.user || 'Unknown',
+          text: (m.text||'').replace(/<@([A-Z0-9]+)>/g, function(_,u){ return '@'+(slackState.userCache[u]||u); }).replace(/<[^>]+>/g,'').trim(),
+          time: m.ts ? new Date(parseFloat(m.ts)*1000).toLocaleString() : ''
+        };
+      });
+      return { channel: ch.name, messages: results, count: results.length };
+    }
+
+    if (name === 'get_slack_channels') {
+      if (typeof slackState === 'undefined') return { error: 'Slack only available on Task Hub page.' };
+      var chs = (slackState.channels || []).map(function(c){ return c.name; });
+      return { channels: chs };
+    }
+
+    return { error: 'Unknown tool: ' + name };
+  } catch(e) {
+    return { error: e.message || 'Tool execution failed' };
+  }
+}
+
+// ── SEND ─────────────────────────────────────────────
 async function ncSend() {
   var input = document.getElementById('nc-input');
   var text = (input.value || '').trim();
@@ -346,7 +493,6 @@ async function ncSend() {
   input.style.height = 'auto';
   nc.messages.push({ role: 'user', content: text });
 
-  // Clear starters once first message sent
   var startersEl = document.querySelector('#nc-msgs .nc-starters');
   if (startersEl) startersEl.remove();
 
@@ -356,29 +502,69 @@ async function ncSend() {
   document.getElementById('nc-send').disabled = true;
 
   var model = (typeof GROQ_MODEL !== 'undefined') ? GROQ_MODEL : 'llama-3.3-70b-versatile';
-  var payload = {
-    model: model,
-    max_tokens: 1024,
-    messages: [{ role: 'system', content: NANCY_SYSTEM }].concat(nc.messages)
-  };
 
   try {
-    var resp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
-      body: JSON.stringify(payload)
-    });
-    if (!resp.ok) throw new Error('API error ' + resp.status);
-    var data = await resp.json();
-    var reply = data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content
-      ? data.choices[0].message.content.trim()
-      : 'Sorry, I didn\'t get a response. Try again.';
+    var messages = [{ role: 'system', content: NANCY_SYSTEM }].concat(nc.messages);
+    var reply = null;
+    var maxLoops = 5; // prevent infinite tool loops
 
+    for (var loop = 0; loop < maxLoops; loop++) {
+      var payload = {
+        model: model,
+        max_tokens: 1024,
+        messages: messages,
+        tools: NC_TOOLS,
+        tool_choice: 'auto'
+      };
+
+      var resp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
+        body: JSON.stringify(payload)
+      });
+      if (!resp.ok) throw new Error('API error ' + resp.status);
+      var data = await resp.json();
+
+      var choice = data.choices && data.choices[0];
+      if (!choice) throw new Error('No response from AI');
+
+      var msg = choice.message;
+      var finishReason = choice.finish_reason;
+
+      // If the model wants to call tools
+      if (finishReason === 'tool_calls' && msg.tool_calls && msg.tool_calls.length) {
+        messages.push(msg); // add assistant message with tool_calls
+
+        // Execute each tool call
+        for (var t = 0; t < msg.tool_calls.length; t++) {
+          var tc = msg.tool_calls[t];
+          var toolName = tc.function.name;
+          var toolArgs = {};
+          try { toolArgs = JSON.parse(tc.function.arguments || '{}'); } catch(e) {}
+
+          ncUpdateTyping('Looking up ' + toolName.replace(/_/g,' ') + '…');
+          var result = await ncRunTool(toolName, toolArgs);
+
+          messages.push({
+            role: 'tool',
+            tool_call_id: tc.id,
+            content: JSON.stringify(result)
+          });
+        }
+        // Loop again with tool results
+        continue;
+      }
+
+      // Normal text response
+      reply = msg.content ? msg.content.trim() : 'Sorry, I didn\'t get a response. Try again.';
+      break;
+    }
+
+    if (!reply) reply = 'I ran into an issue processing that. Please try again.';
     nc.messages.push({ role: 'assistant', content: reply });
     ncHideTyping();
     ncAppendMsg('assistant', reply);
 
-    // Show unread dot if panel is closed
     if (!nc.open) {
       nc.unread = true;
       var dot = document.getElementById('nc-dot');
@@ -460,10 +646,17 @@ function ncShowTyping() {
   div.className = 'nc-msg ai';
   div.id = 'nc-typing-row';
   div.innerHTML = '<div class="nc-msg-av" style="font-size:.58rem">N</div>'
-    + '<div class="nc-bubble-txt nc-typing" style="padding:.55rem .85rem">'
-    + '<span></span><span></span><span></span>'
+    + '<div style="display:flex;flex-direction:column;gap:.3rem;min-width:0">'
+    + '<div class="nc-bubble-txt nc-typing" style="padding:.55rem .85rem"><span></span><span></span><span></span></div>'
+    + '<div id="nc-tool-status" style="font-family:Inter,sans-serif;font-size:.68rem;color:var(--muted,#888);padding:0 .85rem;display:none"></div>'
     + '</div>';
   msgsEl.appendChild(div);
+  ncScrollBottom();
+}
+
+function ncUpdateTyping(msg) {
+  var el = document.getElementById('nc-tool-status');
+  if (el) { el.textContent = msg; el.style.display = 'block'; }
   ncScrollBottom();
 }
 
@@ -506,6 +699,7 @@ window.ncAutoResize = ncAutoResize;
 window.ncUseStarter = ncUseStarter;
 window.ncClearChat = ncClearChat;
 window.ncCopy = ncCopy;
+window.ncRunTool = ncRunTool;
 window.initNancyChat = initNancyChat;
 
 })();
