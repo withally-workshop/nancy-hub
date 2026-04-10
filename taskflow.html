@@ -1502,7 +1502,7 @@ let state = {
   currentBoard: 'personal',
   pendingTierId: null,
   pendingCompleteId: null,
-  pendingAssignee: null,
+  pendingAssignees: [],
   editingTaskId: null,
   selectedAvatar: '#ff30cc',
   completeFiles: [],
@@ -1771,12 +1771,10 @@ function getVisibleTasks() {
   }
   // Personal board = tasks I own + tasks assigned to me
   const uid = state.currentUser?.id;
-  return state.tasks.filter(t =>
-    t.owner_id === uid ||
-    t.owner_id === null ||
-    t.owner_id === undefined ||
-    t.assigned_to === uid
-  );
+  return state.tasks.filter(t => {
+    if (t.owner_id === uid || t.owner_id === null || t.owner_id === undefined) return true;
+    return parseAssignees(t.assigned_to).includes(uid);
+  });
 }
 
 function renderBoard() {
@@ -1829,11 +1827,13 @@ function createTaskCard(task, tier) {
   if (task.shared_to_dashboard) metaHtml += `<span class="task-tag tag-shared">👥 Shared</span>`;
   // Assignment badges
   const uid = state.currentUser?.id;
-  if (task.assigned_to && task.assigned_to !== uid) {
-    const m = state.members.find(x => x.id === task.assigned_to);
-    if (m) metaHtml += `<span class="task-assigned-badge">→ ${esc(m.name)}</span>`;
+  const assignees = parseAssignees(task.assigned_to);
+  const otherAssignees = assignees.filter(id => id !== uid);
+  if (otherAssignees.length) {
+    const names = otherAssignees.map(id => state.members.find(x => x.id === id)?.name).filter(Boolean);
+    if (names.length) metaHtml += `<span class="task-assigned-badge">→ ${names.map(esc).join(', ')}</span>`;
   }
-  if (task.assigned_to === uid && task.assigned_by && task.assigned_by !== uid) {
+  if (assignees.includes(uid) && task.assigned_by && task.assigned_by !== uid) {
     const m = state.members.find(x => x.id === task.assigned_by);
     if (m) metaHtml += `<span class="task-from-badge">from ${esc(m.name)}</span>`;
   }
@@ -1882,24 +1882,31 @@ async function loadMembers() {
   } catch(e) { state.members = []; }
 }
 
+function parseAssignees(val) {
+  if (!val) return [];
+  if (Array.isArray(val)) return val;
+  try { const p = JSON.parse(val); return Array.isArray(p) ? p : [p]; } catch(e) { return [val]; }
+}
+
 function renderAssigneePicker() {
   const picker = document.getElementById('assign-picker');
   if (!picker) return;
   const me = state.currentUser;
-  const others = (state.members || []).filter(m => m.id !== me?.id);
-  const selectedId = state.pendingAssignee || me?.id;
-  const chips = [`<div class="assign-chip ${selectedId === me?.id ? 'selected' : ''}" onclick="selectAssignee('${me?.id}')">
-    <div class="assign-av" style="background:${me?.avatar || '#ff30cc'}">${(me?.name||'M')[0].toUpperCase()}</div>Mine
-  </div>`].concat(others.map(m =>
-    `<div class="assign-chip ${selectedId === m.id ? 'selected' : ''}" onclick="selectAssignee('${m.id}')">
-      <div class="assign-av" style="background:${m.avatar||'#888'}">${(m.name||'?')[0].toUpperCase()}</div>${esc(m.name)}
+  const sel = state.pendingAssignees || [];
+  const all = [{ id: me?.id, name: 'Mine', avatar: me?.avatar || '#ff30cc', isMe: true }]
+    .concat((state.members || []).filter(m => m.id !== me?.id).map(m => ({ ...m, isMe: false })));
+  picker.innerHTML = all.map(m =>
+    `<div class="assign-chip ${sel.includes(m.id) ? 'selected' : ''}" onclick="toggleAssignee('${m.id}')">
+      <div class="assign-av" style="background:${m.avatar||'#888'}">${(m.name||'?')[0].toUpperCase()}</div>
+      ${esc(m.name)}${sel.includes(m.id) ? ' <span style="font-size:.7rem;opacity:.7">✓</span>' : ''}
     </div>`
-  ));
-  picker.innerHTML = chips.join('');
+  ).join('');
 }
 
-function selectAssignee(id) {
-  state.pendingAssignee = id;
+function toggleAssignee(id) {
+  const idx = state.pendingAssignees.indexOf(id);
+  if (idx === -1) state.pendingAssignees.push(id);
+  else if (state.pendingAssignees.length > 1) state.pendingAssignees.splice(idx, 1); // keep at least 1
   renderAssigneePicker();
 }
 
@@ -2009,7 +2016,7 @@ function openEditTask(id) {
   const task = state.tasks.find(t => t.id === id);
   if (!task) return;
   state.editingTaskId = id;
-  state.pendingAssignee = task.assigned_to || state.currentUser?.id;
+  state.pendingAssignees = parseAssignees(task.assigned_to).length ? parseAssignees(task.assigned_to) : [state.currentUser?.id];
   document.querySelector('#modal-add-task .modal-title').textContent = 'Edit Task';
   document.getElementById('save-task-btn').textContent = 'Save Changes';
   document.getElementById('new-task-title').value = task.title || '';
@@ -2037,7 +2044,7 @@ function onPersonalChange() {
 
 function openAddTask(tier) {
   state.pendingTierId = tier || 'focus-today';
-  state.pendingAssignee = state.currentUser?.id;
+  state.pendingAssignees = [state.currentUser?.id].filter(Boolean);
   state.editingTaskId = null;
   document.querySelector('#modal-add-task .modal-title').textContent = 'Add Task';
   document.getElementById('save-task-btn').textContent = 'Add Task';
@@ -2062,8 +2069,10 @@ async function saveTask() {
   btn.disabled = true;
   btn.textContent = 'Saving...';
 
-  const assigneeId = state.pendingAssignee || state.currentUser?.id;
-  const isAssigningToOther = assigneeId && assigneeId !== state.currentUser?.id;
+  const assignees = state.pendingAssignees.length ? state.pendingAssignees : [state.currentUser?.id];
+  const uid = state.currentUser?.id;
+  const othersAssigned = assignees.filter(id => id !== uid);
+  const assignedToJSON = JSON.stringify(assignees);
   const description = document.getElementById('new-task-desc').value.trim();
   const due_date = document.getElementById('new-task-due').value || null;
   const recurring_freq = document.getElementById('new-task-freq').value;
@@ -2077,9 +2086,9 @@ async function saveTask() {
       due_date, recurring_freq,
       recurring: tier === 'recurring',
       is_personal, shared_to_dashboard,
-      assigned_to: assigneeId,
-      assigned_by: isAssigningToOther ? state.currentUser?.id : null,
-      owner_id: isAssigningToOther ? assigneeId : state.currentUser?.id
+      assigned_to: assignedToJSON,
+      assigned_by: othersAssigned.length ? uid : null,
+      owner_id: uid
     };
     await updateTaskInDB(state.editingTaskId, updates);
     const idx = state.tasks.findIndex(t => t.id === state.editingTaskId);
@@ -2113,17 +2122,18 @@ async function saveTask() {
     recurring: tier === 'recurring',
     freq: recurring_freq, recurring_freq,
     due_date, is_personal, shared_to_dashboard,
-    owner_id: isAssigningToOther ? assigneeId : state.currentUser?.id,
-    assigned_to: assigneeId,
-    assigned_by: isAssigningToOther ? state.currentUser?.id : null
+    owner_id: uid,
+    assigned_to: assignedToJSON,
+    assigned_by: othersAssigned.length ? uid : null
   };
 
   await saveTaskToDB(task);
 
-  if (isAssigningToOther) {
+  // Notify each non-self assignee
+  for (const aid of othersAssigned) {
     await createNotification({
-      to_user: assigneeId,
-      from_user: state.currentUser.id,
+      to_user: aid,
+      from_user: uid,
       from_name: state.currentUser.name,
       type: 'assigned',
       task_id: task.id,
@@ -2134,9 +2144,9 @@ async function saveTask() {
   state.tasks.push(task);
   closeModal('modal-add-task');
   renderBoard();
-  if (isAssigningToOther) {
-    const member = state.members.find(m => m.id === assigneeId);
-    showToast(`Task assigned to ${member?.name || 'teammate'} ✓`, 'success');
+  if (othersAssigned.length) {
+    const names = othersAssigned.map(id => state.members.find(m => m.id === id)?.name || 'teammate').join(', ');
+    showToast(`Task assigned to ${names} ✓`, 'success');
   } else {
     showToast(`"${title}" added! ✓`, 'success');
   }
