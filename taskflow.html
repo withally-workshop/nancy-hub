@@ -361,32 +361,22 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--body);min-h
 .rwd-stat-sub{font-family:'Inter',sans-serif;font-size:.72rem;color:var(--muted);font-weight:500}
 
 /* REWARD BOT — MINI (banner) */
-.reward-bot-mini{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:1px;animation:rbotFloat 2.8s ease-in-out infinite}
-.rbot-head{width:22px;height:20px;background:linear-gradient(160deg,#fce4f6 0%,#f472b6 45%,#ec4899 100%);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:2px;box-shadow:0 2px 5px rgba(0,0,0,.18)}
-.rbot-eyes{display:flex;gap:4px;align-items:center;margin-top:1px}
-.rbot-eye{width:4px;height:4px;background:#111;border-radius:50%;display:block}
-.rbot-mouth{width:8px;height:3px;border-radius:0 0 4px 4px;margin-top:1px}
-.rbot-mouth.mood-sad{border-bottom:none;border-top:2px solid #111;border-radius:4px 4px 0 0;margin-top:2px}
-.rbot-mouth.mood-ok{border-bottom:2px solid #111;width:6px}
-.rbot-mouth.mood-happy{border-bottom:2.5px solid #111;width:9px}
-.rbot-mouth.mood-ecstatic{border-bottom:2.5px solid #111;width:11px;height:4px}
-.rbot-body{width:16px;height:12px;background:linear-gradient(160deg,#fce4f6 0%,#f472b6 45%,#ec4899 100%);border-radius:4px;box-shadow:0 2px 5px rgba(0,0,0,.15)}
+/* REWARD BOT — MINI (banner) — matches chatbot exactly */
+.reward-bot-mini{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:0;animation:rbotFloat 2.8s ease-in-out infinite}
+.rbot-head{width:24px;height:22px;background:linear-gradient(160deg,#fce4f6 0%,#f472b6 45%,#ec4899 100%);border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,.2)}
+.rbot-eyes{display:flex;gap:4px;align-items:center}
+.rbot-eye{width:5px;height:5px;background:#111;border-radius:50%;display:block}
+.rbot-mouth{display:none}
+.rbot-body{width:18px;height:16px;background:linear-gradient(160deg,#fce4f6 0%,#f472b6 45%,#ec4899 100%);border-radius:50% 50% 48% 48%/44% 44% 56% 56%;box-shadow:0 2px 5px rgba(0,0,0,.18);margin-top:-2px}
 @keyframes rbotFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
 
-/* REWARD BOT — LARGE (modal) */
+/* REWARD BOT — LARGE (modal) — matches chatbot proportions */
 .reward-bot-large{display:flex;flex-direction:column;align-items:center;gap:2px;animation:rbotFloat 2.8s ease-in-out infinite;position:relative}
-.rbot-head-lg{width:54px;height:50px;background:linear-gradient(160deg,#fce4f6 0%,#f472b6 45%,#ec4899 100%);border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;box-shadow:0 4px 14px rgba(236,72,153,.35)}
+.rbot-head-lg{width:54px;height:50px;background:linear-gradient(160deg,#fce4f6 0%,#f472b6 45%,#ec4899 100%);border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(236,72,153,.35)}
 .rbot-eyes-lg{display:flex;gap:10px;align-items:center}
 .rbot-eye-lg{width:9px;height:9px;background:#111;border-radius:50%;display:block}
-.mood-ecstatic .rbot-eye-lg{height:5px;border-radius:50% 50% 0 0}
-.mood-sad .rbot-eye-lg{height:9px;border-radius:50%;position:relative;top:2px}
-.rbot-mouth-lg{width:0;height:0;border-radius:0}
-.rbot-mouth-lg.mood-sad{width:20px;height:8px;border-top:3px solid #111;border-radius:10px 10px 0 0;margin-top:2px}
-.rbot-mouth-lg.mood-ok{width:16px;height:0;border-bottom:3px solid #111;border-radius:0;margin-top:3px}
-.rbot-mouth-lg.mood-happy{width:24px;height:10px;border-bottom:3px solid #111;border-radius:0 0 12px 12px;margin-top:2px}
-.rbot-mouth-lg.mood-ecstatic{width:28px;height:12px;border-bottom:3px solid #111;border-radius:0 0 14px 14px;background:rgba(255,255,255,.3);margin-top:2px}
-.rbot-mouth-lg.mood-pending{width:14px;height:0;border-bottom:3px solid #888;margin-top:3px}
-.rbot-body-lg{width:44px;height:36px;background:linear-gradient(160deg,#fce4f6 0%,#f472b6 45%,#ec4899 100%);border-radius:8px;box-shadow:0 4px 12px rgba(236,72,153,.25)}
+.rbot-mouth-lg{display:none}
+.rbot-body-lg{width:44px;height:36px;background:linear-gradient(160deg,#fce4f6 0%,#f472b6 45%,#ec4899 100%);border-radius:50% 50% 48% 48%/44% 44% 56% 56%;box-shadow:0 4px 12px rgba(236,72,153,.25);margin-top:-4px}
 .rbot-arms-lg{display:flex;justify-content:space-between;width:62px;margin-top:-28px;position:relative;z-index:0}
 .rbot-arm-lg{width:14px;height:28px;background:linear-gradient(160deg,#f472b6,#ec4899);border-radius:50%;display:block}
 .rbot-arm-lg.left{transform:rotate(15deg);transform-origin:top center}
@@ -4449,7 +4439,7 @@ function checkRewards() {
     if (dailyOk) {
       banner.innerHTML = `
         <div class="reward-bot-mini mood-${dt.mood}">
-          <div class="rbot-head"><div class="rbot-eyes"><span class="rbot-eye"></span><span class="rbot-eye"></span></div><div class="rbot-mouth mood-${dt.mood}"></div></div>
+          <div class="rbot-head"><div class="rbot-eyes"><span class="rbot-eye"></span><span class="rbot-eye"></span></div></div>
           <div class="rbot-body"></div>
         </div>
         <div class="reward-info">
@@ -4541,7 +4531,6 @@ async function openRewards() {
         <div class="reward-bot-large mood-${dailyOk ? dt.mood : 'pending'}">
           <div class="rbot-head-lg">
             <div class="rbot-eyes-lg"><span class="rbot-eye-lg"></span><span class="rbot-eye-lg"></span></div>
-            <div class="rbot-mouth-lg mood-${dailyOk ? dt.mood : 'pending'}"></div>
           </div>
           <div class="rbot-body-lg"></div>
           <div class="rbot-arms-lg"><span class="rbot-arm-lg left"></span><span class="rbot-arm-lg right"></span></div>
