@@ -4338,17 +4338,17 @@ function getMonthStart() {
 }
 
 function calcDailyPct() {
-  // Daily = all Focus Today tasks (not filtered by date — tier itself implies today)
-  const focusToday = state.tasks.filter(t => t.tier === 'focus-today');
+  // Daily = my visible Focus Today tasks only (excludes tasks assigned out to others)
+  const focusToday = getVisibleTasks().filter(t => t.tier === 'focus-today');
   if (!focusToday.length) return 0;
   const done = focusToday.filter(t => t.completed);
   return Math.round((done.length / focusToday.length) * 100);
 }
 
 function calcWeeklyPct() {
-  // Weekly = Focus Today + Focus This Week (created this week)
+  // Weekly = my visible Focus Today + Focus This Week tasks created this week
   const start = getWeekStart();
-  const week = state.tasks.filter(t =>
+  const week = getVisibleTasks().filter(t =>
     (t.created_at || 0) >= start && ['focus-today','focus-week'].includes(t.tier)
   );
   if (!week.length) return 0;
@@ -4356,9 +4356,9 @@ function calcWeeklyPct() {
 }
 
 function calcMonthlyPct() {
-  // Monthly = Top 3 + Founder assignments + Focus Today + Focus This Week (created this month)
+  // Monthly = my visible Top 3 + Founder + Focus Today + Focus This Week created this month
   const start = getMonthStart();
-  const monthly = state.tasks.filter(t =>
+  const monthly = getVisibleTasks().filter(t =>
     (t.created_at || 0) >= start &&
     ['top3','founder','focus-today','focus-week'].includes(t.tier)
   );
