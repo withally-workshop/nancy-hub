@@ -399,7 +399,8 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--body);min-h
 .rtp-bot:hover{transform:translateY(-3px) scale(1.12);opacity:1}
 .rtp-bot.active{opacity:1;transform:translateY(-4px) scale(1.16)}
 /* ICON above head */
-.rtp-icon{display:block;flex-shrink:0;margin-bottom:1px}
+.rtp-icon{display:none;flex-shrink:0;margin-bottom:1px}
+body.reward-time .rtp-icon{display:block}
 /* HEAD — 16px round, eyes only */
 .rtp-head{width:16px;height:15px;background:linear-gradient(160deg,#fce4f6 0%,#f472b6 45%,#ec4899 100%);border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(236,72,153,.35)}
 /* EYES */
@@ -1743,6 +1744,8 @@ function startClock() {
     const h = String(pht.getUTCHours()).padStart(2,'0');
     const m = String(pht.getUTCMinutes()).padStart(2,'0');
     document.getElementById('pht-clock').textContent = `HKT ${h}:${m}`;
+    // Show tier clipart icons only at 6 PM HKT (18:00–18:59)
+    document.body.classList.toggle('reward-time', pht.getUTCHours() === 18);
   }
   tick();
   setInterval(tick, 30000);
