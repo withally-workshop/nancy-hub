@@ -4118,7 +4118,10 @@ function delivHasContent(d) {
 async function loadDeliverables() {
   try {
     let q = db.from('deliverables').select('*, deliverable_files(*)').order('completed_at', { ascending: false });
-    if (state.currentUser?.id) q = q.eq('owner_id', state.currentUser.id);
+    // Include rows owned by me OR rows where owner_id is null (legacy records)
+    if (state.currentUser?.id) {
+      q = q.or(`owner_id.eq.${state.currentUser.id},owner_id.is.null`);
+    }
     const { data, error } = await q;
     if (error) throw error;
     state.deliverables = (data || []).filter(delivHasContent);
@@ -4327,14 +4330,10 @@ function getMonthStart() {
 }
 
 function calcDailyPct() {
-  // Daily = Focus Today tier only (created or completed today since 7 AM HKT)
-  const windowStart = getDayStart7am();
-  const focusToday = state.tasks.filter(t =>
-    t.tier === 'focus-today' &&
-    ((t.created_at || 0) >= windowStart || (t.completed_at || 0) >= windowStart)
-  );
+  // Daily = all Focus Today tasks (not filtered by date — tier itself implies today)
+  const focusToday = state.tasks.filter(t => t.tier === 'focus-today');
   if (!focusToday.length) return 0;
-  const done = focusToday.filter(t => t.completed && (t.completed_at || 0) >= windowStart);
+  const done = focusToday.filter(t => t.completed);
   return Math.round((done.length / focusToday.length) * 100);
 }
 
@@ -4634,23 +4633,37 @@ async function refreshRecurring() {
   const phtHour = pht.getUTCHours();
   const phtDay = pht.getUTCDay();
 
+  // Before 7 AM HKT — nothing to reset yet
+  if (phtHour < 7) return;
+
+  // Use localStorage to track which tasks were already reset today
+  // Key format: "rec_reset_YYYY-MM-DD_taskId"
+  const todayKey = `${pht.getUTCFullYear()}-${String(pht.getUTCMonth()+1).padStart(2,'0')}-${String(pht.getUTCDate()).padStart(2,'0')}`;
+
+  function wasResetToday(taskId) {
+    return localStorage.getItem(`rec_reset_${todayKey}_${taskId}`) === '1';
+  }
+  function markResetToday(taskId) {
+    localStorage.setItem(`rec_reset_${todayKey}_${taskId}`, '1');
+    // Clean up old keys (keep only today's)
+    for (const k of Object.keys(localStorage)) {
+      if (k.startsWith('rec_reset_') && !k.includes(todayKey)) localStorage.removeItem(k);
+    }
+  }
+
   for (const task of state.tasks) {
     if (!task.recurring || !task.completed) continue;
-    const lastRefreshed = task.last_refreshed_at ? new Date(task.last_refreshed_at + 8*3600000) : null;
+    if (wasResetToday(task.id)) continue; // already reset this task today — skip
 
-    if ((task.recurring_freq === 'daily' || task.freq === 'daily') && phtHour >= 7) {
-      const lastDate = lastRefreshed ? lastRefreshed.toDateString() : null;
-      if (lastDate !== pht.toDateString()) {
-        task.completed = false; task.completed_at = null; task.last_refreshed_at = Date.now();
-        await updateTaskInDB(task.id, { completed: false, completed_at: null, last_refreshed_at: Date.now() });
-      }
-    }
-    if ((task.recurring_freq === 'weekly' || task.freq === 'weekly') && phtDay === 1 && phtHour >= 7) {
-      const lastDay = lastRefreshed ? lastRefreshed.getUTCDay() : -1;
-      if (lastDay !== 1) {
-        task.completed = false; task.completed_at = null; task.last_refreshed_at = Date.now();
-        await updateTaskInDB(task.id, { completed: false, completed_at: null, last_refreshed_at: Date.now() });
-      }
+    const isDaily = task.recurring_freq === 'daily' || task.freq === 'daily';
+    const isWeekly = (task.recurring_freq === 'weekly' || task.freq === 'weekly') && phtDay === 1;
+
+    if (isDaily || isWeekly) {
+      task.completed = false;
+      task.completed_at = null;
+      task.last_refreshed_at = Date.now();
+      markResetToday(task.id);
+      await updateTaskInDB(task.id, { completed: false, completed_at: null, last_refreshed_at: Date.now() });
     }
   }
 }
