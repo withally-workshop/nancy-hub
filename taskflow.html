@@ -217,6 +217,10 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--body);min-h
 .task-action-btn{background:none;border:none;width:24px;height:24px;border-radius:4px;cursor:pointer;font-size:.75rem;color:var(--muted);display:flex;align-items:center;justify-content:center;transition:background .15s,color .15s}
 .task-action-btn:hover{background:var(--bg2);color:var(--body)}
 .task-action-btn.del:hover{background:#fee2e2;color:#e53935}
+/* Deliverables toggle in complete modal */
+.deliv-toggle-btn{width:100%;padding:.6rem 1rem;background:var(--bg2);border:1.5px dashed var(--border2);border-radius:var(--radius-sm);font-family:'Inter',sans-serif;font-size:.82rem;font-weight:600;color:var(--muted);cursor:pointer;text-align:left;transition:all .15s;display:flex;align-items:center;gap:.4rem}
+.deliv-toggle-btn:hover{border-color:var(--primary);color:var(--primary)}
+.deliv-fields{border-top:1px solid var(--border);margin-top:.75rem;padding-top:.75rem}
 .task-desc{font-family:sans-serif;font-size:.78rem;color:var(--muted);margin-top:.4rem;line-height:1.5;padding-left:26px}
 .task-meta{display:flex;align-items:center;gap:6px;margin-top:.5rem;padding-left:26px;flex-wrap:wrap}
 .task-tag{font-family:sans-serif;font-size:.68rem;padding:2px 7px;border-radius:10px;font-weight:600}
@@ -1180,22 +1184,25 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--body);min-h
       <button class="modal-close" onclick="closeModal('modal-complete')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
     <div style="font-family:sans-serif;font-size:.88rem;color:var(--muted);margin-bottom:1rem" id="complete-task-name"></div>
-    <div class="form-field">
-      <label class="form-label">Deliverable Notes</label>
-      <textarea class="form-textarea" id="complete-notes" placeholder="What did you accomplish?"></textarea>
-    </div>
-    <div class="form-field">
-      <label class="form-label">Links</label>
-      <input class="form-input" id="complete-links" placeholder="Paste links separated by comma"/>
-    </div>
-    <div class="form-field">
-      <label class="form-label">Attach Files</label>
-      <div class="file-upload-area" onclick="document.getElementById('complete-file-input').click()" ondragover="onDragOver(event)" ondrop="onFileDrop(event,'complete')">
-        <div class="file-upload-label">📎 Click to upload or drag & drop<br><span>Any file type supported</span></div>
+    <button class="deliv-toggle-btn" id="deliv-toggle-btn" onclick="toggleDelivFields()">＋ Add notes &amp; files</button>
+    <div class="deliv-fields" id="deliv-fields" style="display:none">
+      <div class="form-field">
+        <label class="form-label">Deliverable Notes</label>
+        <textarea class="form-textarea" id="complete-notes" placeholder="What did you accomplish?"></textarea>
       </div>
-      <input type="file" id="complete-file-input" class="file-upload-input" multiple onchange="onFileSelect(event,'complete')"/>
-      <div class="upload-progress" id="complete-upload-progress">Uploading to Google Drive...</div>
-      <div class="file-preview-grid" id="complete-file-previews"></div>
+      <div class="form-field">
+        <label class="form-label">Links</label>
+        <input class="form-input" id="complete-links" placeholder="Paste links separated by comma"/>
+      </div>
+      <div class="form-field">
+        <label class="form-label">Attach Files</label>
+        <div class="file-upload-area" onclick="document.getElementById('complete-file-input').click()" ondragover="onDragOver(event)" ondrop="onFileDrop(event,'complete')">
+          <div class="file-upload-label">📎 Click to upload or drag & drop<br><span>Any file type supported</span></div>
+        </div>
+        <input type="file" id="complete-file-input" class="file-upload-input" multiple onchange="onFileSelect(event,'complete')"/>
+        <div class="upload-progress" id="complete-upload-progress">Uploading to Google Drive...</div>
+        <div class="file-preview-grid" id="complete-file-previews"></div>
+      </div>
     </div>
     <div class="modal-footer">
       <button class="btn-ghost" onclick="closeModal('modal-complete')">Cancel</button>
@@ -1496,6 +1503,7 @@ let state = {
   pendingTierId: null,
   pendingCompleteId: null,
   pendingAssignee: null,
+  editingTaskId: null,
   selectedAvatar: '#ff30cc',
   completeFiles: [],
   ideaFiles: []
@@ -1835,6 +1843,7 @@ function createTaskCard(task, tier) {
       <div class="task-check ${task.completed ? 'done' : ''}" onclick="toggleTask('${task.id}')"></div>
       <div class="task-title">${esc(task.title)}</div>
       <div class="task-actions">
+        <button class="task-action-btn" onclick="openEditTask('${task.id}')" title="Edit"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
         <button class="task-action-btn del" onclick="deleteTask('${task.id}')" title="Delete">✕</button>
       </div>
     </div>
@@ -1988,6 +1997,34 @@ function formatRelTime(ts) {
 // ═══════════════════════════════════════
 // TASK OPERATIONS
 // ═══════════════════════════════════════
+function toggleDelivFields() {
+  const fields = document.getElementById('deliv-fields');
+  const btn = document.getElementById('deliv-toggle-btn');
+  const open = fields.style.display !== 'none';
+  fields.style.display = open ? 'none' : 'block';
+  btn.textContent = open ? '＋ Add notes & files' : '− Hide notes & files';
+}
+
+function openEditTask(id) {
+  const task = state.tasks.find(t => t.id === id);
+  if (!task) return;
+  state.editingTaskId = id;
+  state.pendingAssignee = task.assigned_to || state.currentUser?.id;
+  document.querySelector('#modal-add-task .modal-title').textContent = 'Edit Task';
+  document.getElementById('save-task-btn').textContent = 'Save Changes';
+  document.getElementById('new-task-title').value = task.title || '';
+  document.getElementById('new-task-desc').value = task.description || '';
+  document.getElementById('new-task-tier').value = task.tier || 'focus-today';
+  document.getElementById('new-task-due').value = task.due_date || '';
+  document.getElementById('new-task-personal').checked = !!task.is_personal;
+  document.getElementById('new-task-shared').checked = !!task.shared_to_dashboard;
+  document.getElementById('share-toggle').style.display = task.is_personal ? 'block' : 'none';
+  document.getElementById('recurring-opts').style.display = task.tier === 'recurring' ? 'block' : 'none';
+  if (task.recurring_freq) document.getElementById('new-task-freq').value = task.recurring_freq;
+  renderAssigneePicker();
+  openModal('modal-add-task');
+}
+
 function onTierChange() {
   const tier = document.getElementById('new-task-tier').value;
   document.getElementById('recurring-opts').style.display = tier === 'recurring' ? 'block' : 'none';
@@ -2000,7 +2037,10 @@ function onPersonalChange() {
 
 function openAddTask(tier) {
   state.pendingTierId = tier || 'focus-today';
-  state.pendingAssignee = state.currentUser?.id; // default: mine
+  state.pendingAssignee = state.currentUser?.id;
+  state.editingTaskId = null;
+  document.querySelector('#modal-add-task .modal-title').textContent = 'Add Task';
+  document.getElementById('save-task-btn').textContent = 'Add Task';
   document.getElementById('new-task-tier').value = state.pendingTierId;
   document.getElementById('new-task-title').value = '';
   document.getElementById('new-task-desc').value = '';
@@ -2018,38 +2058,61 @@ async function saveTask() {
   if (!title) { showToast('Task title is required!', 'error'); return; }
 
   const tier = document.getElementById('new-task-tier').value;
-  const limit = TIER_LIMITS[tier];
-  const existing = state.tasks.filter(t => t.tier === tier && !t.completed).length;
-
-  if (limit && existing >= limit) {
-    closeModal('modal-add-task');
-    showLemonCop(tier, limit);
-    return;
-  }
-
   const btn = document.getElementById('save-task-btn');
   btn.disabled = true;
   btn.textContent = 'Saving...';
 
   const assigneeId = state.pendingAssignee || state.currentUser?.id;
   const isAssigningToOther = assigneeId && assigneeId !== state.currentUser?.id;
+  const description = document.getElementById('new-task-desc').value.trim();
+  const due_date = document.getElementById('new-task-due').value || null;
+  const recurring_freq = document.getElementById('new-task-freq').value;
+  const is_personal = document.getElementById('new-task-personal').checked;
+  const shared_to_dashboard = document.getElementById('new-task-shared').checked;
+
+  // ── EDIT MODE ──
+  if (state.editingTaskId) {
+    const updates = {
+      title, description, tier,
+      due_date, recurring_freq,
+      recurring: tier === 'recurring',
+      is_personal, shared_to_dashboard,
+      assigned_to: assigneeId,
+      assigned_by: isAssigningToOther ? state.currentUser?.id : null,
+      owner_id: isAssigningToOther ? assigneeId : state.currentUser?.id
+    };
+    await updateTaskInDB(state.editingTaskId, updates);
+    const idx = state.tasks.findIndex(t => t.id === state.editingTaskId);
+    if (idx !== -1) Object.assign(state.tasks[idx], updates);
+    state.editingTaskId = null;
+    closeModal('modal-add-task');
+    renderBoard();
+    showToast(`"${title}" updated ✓`, 'success');
+    btn.disabled = false;
+    btn.textContent = 'Save Changes';
+    return;
+  }
+
+  // ── CREATE MODE ──
+  const limit = TIER_LIMITS[tier];
+  const existing = state.tasks.filter(t => t.tier === tier && !t.completed).length;
+  if (limit && existing >= limit) {
+    btn.disabled = false;
+    btn.textContent = 'Add Task';
+    closeModal('modal-add-task');
+    showLemonCop(tier, limit);
+    return;
+  }
 
   const task = {
     id: crypto.randomUUID(),
-    title,
-    description: document.getElementById('new-task-desc').value.trim(),
-    tier,
-    completed: false,
-    completed_at: null,
-    createdAt: Date.now(),
-    created_at: Date.now(),
+    title, description, tier,
+    completed: false, completed_at: null,
+    createdAt: Date.now(), created_at: Date.now(),
     taskOrder: state.tasks.length,
     recurring: tier === 'recurring',
-    freq: document.getElementById('new-task-freq').value,
-    recurring_freq: document.getElementById('new-task-freq').value,
-    due_date: document.getElementById('new-task-due').value || null,
-    is_personal: document.getElementById('new-task-personal').checked,
-    shared_to_dashboard: document.getElementById('new-task-shared').checked,
+    freq: recurring_freq, recurring_freq,
+    due_date, is_personal, shared_to_dashboard,
     owner_id: isAssigningToOther ? assigneeId : state.currentUser?.id,
     assigned_to: assigneeId,
     assigned_by: isAssigningToOther ? state.currentUser?.id : null
@@ -2057,7 +2120,6 @@ async function saveTask() {
 
   await saveTaskToDB(task);
 
-  // Notify assignee if assigning to someone else
   if (isAssigningToOther) {
     await createNotification({
       to_user: assigneeId,
@@ -2093,6 +2155,9 @@ async function toggleTask(id) {
     document.getElementById('complete-links').value = '';
     state.completeFiles = [];
     document.getElementById('complete-file-previews').innerHTML = '';
+    // Reset deliverables toggle
+    document.getElementById('deliv-fields').style.display = 'none';
+    document.getElementById('deliv-toggle-btn').textContent = '＋ Add notes & files';
     openModal('modal-complete');
   } else {
     task.completed = false;
