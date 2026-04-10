@@ -980,12 +980,7 @@ body.reward-time .rtp-icon{display:block}
               </div>
             </div>
           </div>
-          <button class="hdr-btn" id="slack-open-btn" onclick="openSlackDrawer()" style="display:none">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-            Slack
-            <span id="slack-open-badge" style="display:none;background:#e53935;color:white;font-size:.55rem;font-weight:800;min-width:14px;height:14px;border-radius:7px;padding:0 3px;line-height:14px;text-align:center">!</span>
-          </button>
-          <button class="hdr-btn" onclick="openShareModal()">🔗 Share</button>
+<button class="hdr-btn" onclick="openShareModal()">🔗 Share</button>
           <button class="hdr-btn" onclick="openModal('modal-ideas')">💡 Ideas</button>
           <button class="hdr-btn" onclick="openDeliverables()">📦 Deliverables</button>
           <button class="hdr-btn" onclick="openRewards()">🏆 Rewards</button>
@@ -1818,10 +1813,8 @@ async function showTaskHub() {
   refreshRecurring();
   // Refresh notifications every 60s
   setInterval(loadNotifications, 60000);
-  // Show Slack button + float bubble for admins
+  // Show Slack float bubble for admins
   var isAdminUser = state.currentUser && state.currentUser.role === 'admin';
-  var slackBtn = document.getElementById('slack-open-btn');
-  if (slackBtn && isAdminUser) slackBtn.style.display = 'flex';
   var slackFloat = document.getElementById('slack-float');
   if (slackFloat && isAdminUser) slackFloat.style.display = 'flex';
 }
