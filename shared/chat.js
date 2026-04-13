@@ -531,17 +531,57 @@ async function ncSend() {
   document.getElementById('nc-send').disabled = true;
 
   try {
-    // Nancy chat uses the full smart model
     var model = (typeof GROQ_MODEL !== 'undefined') ? GROQ_MODEL : 'llama-3.3-70b-versatile';
     var msgs = [{ role: 'system', content: NANCY_SYSTEM }].concat(nc.messages.filter(function(m){ return m.role !== 'system'; }));
+
+    // First call — include tools so Nancy can look up real data
     var resp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: { 'Authorization': 'Bearer ' + key, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ model: model, messages: msgs, max_tokens: 1200, temperature: 0.7 })
+      body: JSON.stringify({ model: model, messages: msgs, tools: NC_TOOLS, tool_choice: 'auto', max_tokens: 1200, temperature: 0.7 })
     });
     var rdata = await resp.json();
     if (!resp.ok) throw new Error(rdata.error && rdata.error.message ? rdata.error.message : 'API error ' + resp.status);
-    var reply = rdata.choices && rdata.choices[0] && rdata.choices[0].message ? rdata.choices[0].message.content : '';
+
+    var choice = rdata.choices && rdata.choices[0];
+    var assistantMsg = choice && choice.message;
+    var reply = '';
+
+    if (assistantMsg && assistantMsg.tool_calls && assistantMsg.tool_calls.length) {
+      // Model wants to call tools — execute them all
+      msgs.push(assistantMsg); // assistant message with tool_calls must be in history
+
+      for (var i = 0; i < assistantMsg.tool_calls.length; i++) {
+        var tc = assistantMsg.tool_calls[i];
+        var toolName = tc.function.name;
+        var toolArgs = {};
+        try { toolArgs = JSON.parse(tc.function.arguments || '{}'); } catch(e) {}
+
+        ncUpdateTyping('Looking up ' + toolName.replace(/_/g,' ') + '…');
+        var toolResult = await ncRunTool(toolName, toolArgs);
+
+        msgs.push({
+          role: 'tool',
+          tool_call_id: tc.id,
+          content: JSON.stringify(toolResult)
+        });
+      }
+
+      // Second call — send tool results back, get final answer
+      ncUpdateTyping('Thinking…');
+      var resp2 = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: { 'Authorization': 'Bearer ' + key, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ model: model, messages: msgs, max_tokens: 1200, temperature: 0.7 })
+      });
+      var rdata2 = await resp2.json();
+      if (!resp2.ok) throw new Error(rdata2.error && rdata2.error.message ? rdata2.error.message : 'API error ' + resp2.status);
+      reply = rdata2.choices && rdata2.choices[0] && rdata2.choices[0].message ? rdata2.choices[0].message.content : '';
+    } else {
+      // No tool calls — plain response
+      reply = assistantMsg ? assistantMsg.content : '';
+    }
+
     if (!reply) reply = 'I ran into an issue processing that. Please try again.';
     nc.messages.push({ role: 'assistant', content: reply });
     ncHideTyping();
