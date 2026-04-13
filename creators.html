@@ -444,6 +444,10 @@ tr.perf-zero td{color:var(--muted)}
         <button class="p-add-btn" onclick="openPerfModal()">+ Add Row</button>
       </div>
 
+      <div style="font-family:'Inter',sans-serif;font-size:.78rem;color:var(--muted);background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.6rem 1rem;margin-bottom:.85rem">
+        Standalone creators (Luci, Annemarie) are tracked via affiliate codes — see <button onclick="switchTab('affiliates')" style="background:none;border:none;color:var(--primary);font-family:inherit;font-size:inherit;font-weight:600;cursor:pointer;padding:0">Affiliate Links</button> tab.
+      </div>
+
       <div class="p-period-bar">
         <span class="p-period-label">Period:</span>
         <select class="p-period-select" id="perf-period-select" onchange="onPeriodChange()">
@@ -666,7 +670,6 @@ tr.perf-zero td{color:var(--muted)}
             <option>Eyeball Factory</option>
             <option>Krave Media</option>
             <option>Little Leaf</option>
-            <option>Standalone</option>
           </select>
         </div>
         <div class="form-field">
@@ -837,7 +840,6 @@ tr.perf-zero td{color:var(--muted)}
           <option>Eyeball Factory</option>
           <option>Krave Media</option>
           <option>Little Leaf</option>
-          <option>Standalone</option>
         </select>
       </div>
       <div class="modal-footer">
