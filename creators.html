@@ -124,6 +124,15 @@ tr.perf-zero td{color:var(--muted)}
 .kit-link-sub{font-family:'Inter',sans-serif;font-size:.76rem;color:var(--muted);margin-top:.15rem}
 .kit-link-arrow{color:var(--primary);font-size:1.2rem;margin-left:.5rem}
 
+/* Pipeline tracker sub-tabs */
+.pipe-tracker-tabs{display:flex;gap:6px;margin-bottom:1rem}
+
+/* Assignee chips */
+.assignee-wrap{position:relative;display:inline-block}
+.assignee-chips{position:absolute;top:calc(100% + 3px);left:0;z-index:20;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:5px 7px;display:flex;gap:5px;flex-wrap:wrap;box-shadow:0 4px 14px rgba(0,0,0,.12);white-space:nowrap}
+.assignee-chip{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;font-family:'Inter',sans-serif;font-size:.62rem;font-weight:700;color:#fff;cursor:pointer;opacity:.85;transition:opacity .15s;flex-shrink:0}
+.assignee-chip:hover{opacity:1}
+
 /* Responsive */
 @media(max-width:768px){
   .p-tabs{gap:2px}
@@ -273,17 +282,25 @@ tr.perf-zero td{color:var(--muted)}
             <th class="sortable" data-sort="agency" onclick="sortDir('agency')">Agency<span class="sort-icon"></span></th>
             <th>Category</th>
             <th>Platform</th>
+            <th>TikTok</th>
+            <th>Instagram</th>
+            <th>YouTube</th>
             <th>Payment Route</th>
             <th class="sortable" data-sort="status" onclick="sortDir('status')">Status<span class="sort-icon"></span></th>
             <th class="del-cell"></th>
           </tr></thead>
-          <tbody id="dir-tbody"><tr><td colspan="8" class="p-loading">Loading…</td></tr></tbody>
+          <tbody id="dir-tbody"><tr><td colspan="11" class="p-loading">Loading…</td></tr></tbody>
         </table>
       </div>
     </div>
 
     <!-- ── TAB 2: PIPELINE ────────────────────────────────────── -->
     <div class="p-section" id="sec-pipeline">
+      <div class="pipe-tracker-tabs">
+        <button class="p-perf-tab active" id="pipe-tab-influencer" onclick="switchPipeTracker('Influencer')">Ongoing Influencer</button>
+        <button class="p-perf-tab" id="pipe-tab-gorgias" onclick="switchPipeTracker('Gorgias')">Gorgias Reachouts</button>
+        <button class="p-perf-tab" id="pipe-tab-product" onclick="switchPipeTracker('Product Dev')">Low Prio / Product Dev</button>
+      </div>
       <div class="p-toolbar">
         <input class="p-search" id="pipe-search" placeholder="Search…" oninput="renderPipeline()"/>
         <select class="p-filter-sel" id="pipe-stage-filter" onchange="renderPipeline()">
@@ -306,15 +323,22 @@ tr.perf-zero td{color:var(--muted)}
         <table class="p-table">
           <thead><tr>
             <th class="sortable" data-sort="company" onclick="sortPipe('company')">Company / Creator<span class="sort-icon"></span></th>
-            <th>Source / Agency</th>
+            <th>Source</th>
+            <th>Lead Contact</th>
             <th class="sortable" data-sort="stage" onclick="sortPipe('stage')">Stage<span class="sort-icon"></span></th>
             <th>Assignee</th>
             <th>Next Step</th>
-            <th>Last Update</th>
+            <th>Next Step Due</th>
+            <th>Contact Name</th>
+            <th>Contact Email</th>
+            <th>Touchpoint Date</th>
+            <th>Touchpoint Type</th>
+            <th>Notes</th>
+            <th>Link to Folder</th>
             <th class="sortable" data-sort="status" onclick="sortPipe('status')">Status<span class="sort-icon"></span></th>
             <th class="del-cell"></th>
           </tr></thead>
-          <tbody id="pipe-tbody"><tr><td colspan="8" class="p-loading">Loading…</td></tr></tbody>
+          <tbody id="pipe-tbody"><tr><td colspan="15" class="p-loading">Loading…</td></tr></tbody>
         </table>
       </div>
     </div>
@@ -463,7 +487,8 @@ var PS = {
   dirSort:  { col: 'name',       asc: true  },
   pipeSort: { col: 'company',    asc: true  },
   perfSort: { col: 'spend_hkd',  asc: false },
-  perfAgency: 'Eyeball Factory'
+  perfAgency: 'Eyeball Factory',
+  pipeTrackerType: 'Influencer'
 };
 
 var ASSIGNEE_COLORS = {
@@ -473,11 +498,12 @@ var ASSIGNEE_COLORS = {
   amy: '#795548', anna: '#607d8b'
 };
 
-var STAGE_OPTIONS   = ['1-Outreach','2-Discussion','3-Contract','4-Samples Sent','5-Content Live','6-Complete'];
-var STATUS_OPTIONS  = ['Active','On Hold'];
-var AGENCY_OPTIONS  = ['Eyeball Factory','Krave Media','Little Leaf','Standalone'];
-var CATEGORY_OPTIONS = ['Creator','Influencer'];
+var STAGE_OPTIONS        = ['1-Outreach','2-Discussion','3-Contract','4-Samples Sent','5-Content Live','6-Complete'];
+var STATUS_OPTIONS       = ['Active','On Hold'];
+var AGENCY_OPTIONS       = ['Eyeball Factory','Krave Media','Little Leaf','Standalone'];
+var CATEGORY_OPTIONS     = ['Creator','Influencer'];
 var CREATOR_STATUS_OPTIONS = ['Active','Inactive','On Hold'];
+var TOUCHPOINT_OPTIONS   = ['','Email','Call','Meeting','Other'];
 
 // Badge styles indexed by value
 var BADGE_STYLES = {
@@ -524,7 +550,7 @@ function es(table, id, field, val, options) {
 }
 
 function delBtn(fn, id) {
-  return '<td class="del-cell"><button class="del-btn" onclick="' + fn + '(' + id + ')" title="Delete">×</button></td>';
+  return '<td class="del-cell"><button class="del-btn" onclick="' + fn + '(\'' + id + '\')" title="Delete">×</button></td>';
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -533,18 +559,29 @@ function delBtn(fn, id) {
 async function saveCell(el) {
   var val   = el.innerText.trim();
   var table = el.getAttribute('data-table');
-  var id    = parseInt(el.getAttribute('data-id'));
+  var id    = el.getAttribute('data-id');
   var field = el.getAttribute('data-field');
   var cache = tableCache(table);
-  if (cache) { var row = cache.find(function(r){ return r.id===id; }); if (row) row[field]=val; }
+  var oldVal = null;
+  if (cache) {
+    var row = cache.find(function(r){ return r.id===id; });
+    if (row) { oldVal = row[field]; row[field]=val; }
+  }
   var { error } = await db.from(table).update({[field]: val}).eq('id', id);
-  if (error) showToast('Save failed: ' + error.message, 'error');
+  if (error) { showToast('Save failed: ' + error.message, 'error'); return; }
+  // Cascade: creator name/handle change → update matching performance rows
+  if (table === 'partnership_creators' && (field === 'name' || field === 'handle') && oldVal && oldVal !== val) {
+    var perfField = field === 'name' ? 'creator_name' : 'handle';
+    PS.performance.forEach(function(r) { if (r[perfField] === oldVal) r[perfField] = val; });
+    await db.from('partnership_performance').update({[perfField]: val}).eq(perfField, oldVal);
+    if (document.getElementById('sec-performance').classList.contains('active')) renderPerformance();
+  }
 }
 
 async function saveNumInput(el) {
   var val   = el.value === '' ? null : parseFloat(el.value);
   var table = el.getAttribute('data-table');
-  var id    = parseInt(el.getAttribute('data-id'));
+  var id    = el.getAttribute('data-id');
   var field = el.getAttribute('data-field');
   var cache = tableCache(table);
   if (cache) { var row = cache.find(function(r){ return r.id===id; }); if (row) row[field]=val; }
@@ -556,7 +593,7 @@ async function saveNumInput(el) {
 async function saveCellSelect(el) {
   var val   = el.value;
   var table = el.getAttribute('data-table');
-  var id    = parseInt(el.getAttribute('data-id'));
+  var id    = el.getAttribute('data-id');
   var field = el.getAttribute('data-field');
   el.style.cssText = BADGE_STYLES[val] || '';
   var cache = tableCache(table);
@@ -646,7 +683,7 @@ function renderDirectory() {
 
   var tbody = document.getElementById('dir-tbody');
   if (!rows.length) {
-    tbody.innerHTML = '<tr><td colspan="8" class="p-loading">No creators found.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="11" class="p-loading">No creators found.</td></tr>';
     return;
   }
   tbody.innerHTML = rows.map(function(c) {
@@ -657,6 +694,9 @@ function renderDirectory() {
       + '<td><span class="p-badge ' + agCls + '">' + esc(c.agency || '') + '</span></td>'
       + es('partnership_creators', c.id, 'category', c.category || 'Creator', CATEGORY_OPTIONS)
       + ec('partnership_creators', c.id, 'platform', c.platform)
+      + ec('partnership_creators', c.id, 'tiktok_link', c.tiktok_link)
+      + ec('partnership_creators', c.id, 'ig_link', c.ig_link)
+      + ec('partnership_creators', c.id, 'youtube_link', c.youtube_link)
       + ec('partnership_creators', c.id, 'payment_route', c.payment_route)
       + es('partnership_creators', c.id, 'status', c.status || 'Active', CREATOR_STATUS_OPTIONS)
       + delBtn('deleteCreator', c.id)
@@ -673,7 +713,8 @@ function sortDir(col) {
 async function addCreatorRow() {
   var { data, error } = await db.from('partnership_creators').insert({
     name: 'New Creator', handle: '@handle', agency: 'Eyeball Factory',
-    category: 'Creator', platform: 'TikTok', status: 'Active', payment_route: ''
+    category: 'Creator', platform: 'TikTok', status: 'Active', payment_route: '',
+    tiktok_link: '', ig_link: '', youtube_link: ''
   }).select().single();
   if (error) { showToast('Could not add row: ' + error.message, 'error'); return; }
   PS.creators.push(data);
@@ -698,6 +739,7 @@ function renderPipeline() {
   var stage  = document.getElementById('pipe-stage-filter').value;
   var status = document.getElementById('pipe-status-filter').value;
   var rows = PS.pipeline.filter(function(p) {
+    if ((p.tracker_type || 'Influencer') !== PS.pipeTrackerType) return false;
     if (stage  !== 'all' && p.stage  !== stage)  return false;
     if (status !== 'all' && p.status !== status) return false;
     if (search && !(p.company || '').toLowerCase().includes(search) && !(p.source || '').toLowerCase().includes(search)) return false;
@@ -708,17 +750,24 @@ function renderPipeline() {
 
   var tbody = document.getElementById('pipe-tbody');
   if (!rows.length) {
-    tbody.innerHTML = '<tr><td colspan="8" class="p-loading">No entries found.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="15" class="p-loading">No entries found.</td></tr>';
     return;
   }
   tbody.innerHTML = rows.map(function(p) {
     return '<tr>'
       + ec('partnership_pipeline', p.id, 'company', p.company)
       + ec('partnership_pipeline', p.id, 'source', p.source)
+      + ec('partnership_pipeline', p.id, 'lead_contact', p.lead_contact)
       + es('partnership_pipeline', p.id, 'stage', p.stage || '1-Outreach', STAGE_OPTIONS)
       + '<td>' + buildAssigneeCell(p.id, p.assignee) + '</td>'
       + ec('partnership_pipeline', p.id, 'next_step', p.next_step)
-      + ec('partnership_pipeline', p.id, 'last_update', p.last_update)
+      + ec('partnership_pipeline', p.id, 'next_step_due', p.next_step_due)
+      + ec('partnership_pipeline', p.id, 'contact_name', p.contact_name)
+      + ec('partnership_pipeline', p.id, 'contact_email', p.contact_email)
+      + ec('partnership_pipeline', p.id, 'touchpoint_date', p.touchpoint_date)
+      + es('partnership_pipeline', p.id, 'touchpoint_type', p.touchpoint_type || '', TOUCHPOINT_OPTIONS)
+      + ec('partnership_pipeline', p.id, 'notes', p.notes)
+      + ec('partnership_pipeline', p.id, 'link_to_folder', p.link_to_folder)
       + es('partnership_pipeline', p.id, 'status', p.status || 'Active', STATUS_OPTIONS)
       + delBtn('deletePipeline', p.id)
       + '</tr>';
@@ -740,18 +789,35 @@ function resolveAssigneeBubbles(text) {
 function buildAssigneeCell(id, val) {
   var text = val || '';
   var bubbles = resolveAssigneeBubbles(text);
-  return '<span style="display:inline-flex;align-items:center;gap:4px;flex-wrap:wrap">'
+  var CHIP_LIST = [
+    {key:'momo',label:'MO'},{key:'sam',label:'SA'},{key:'rahul',label:'RA'},
+    {key:'andrea',label:'AN'},{key:'daphnie',label:'DA'},{key:'ben',label:'BE'},{key:'arvin',label:'AR'}
+  ];
+  var chips = CHIP_LIST.map(function(c) {
+    return '<span class="assignee-chip" style="background:' + (ASSIGNEE_COLORS[c.key]||'#999') + '"'
+      + ' title="' + c.key.charAt(0).toUpperCase()+c.key.slice(1) + '"'
+      + ' onmousedown="event.preventDefault();addAssigneeChip(this,\'' + c.key + '\')">'
+      + c.label + '</span>';
+  }).join('');
+  return '<div class="assignee-wrap">'
+    + '<span style="display:inline-flex;align-items:center;gap:4px;flex-wrap:wrap">'
     + bubbles
     + '<span contenteditable="true" class="editable-cell" style="min-width:40px"'
     + ' data-table="partnership_pipeline" data-id="' + id + '" data-field="assignee"'
+    + ' onfocus="showAssigneeChips(this)"'
     + ' onblur="saveAssignee(this)"'
     + ' onkeydown="if(event.key===\'Enter\'){event.preventDefault();this.blur()}">'
-    + esc(text) + '</span></span>';
+    + esc(text) + '</span></span>'
+    + '<div class="assignee-chips" style="display:none">' + chips + '</div>'
+    + '</div>';
 }
 
 async function saveAssignee(el) {
   var val = el.innerText.trim();
-  var id  = parseInt(el.getAttribute('data-id'));
+  var id  = el.getAttribute('data-id');
+  // Hide chips panel
+  var wrap = el.closest('.assignee-wrap');
+  if (wrap) { var cp = wrap.querySelector('.assignee-chips'); if (cp) cp.style.display = 'none'; }
   var row = PS.pipeline.find(function(p) { return p.id === id; });
   if (row) row.assignee = val;
   var { error } = await db.from('partnership_pipeline').update({ assignee: val }).eq('id', id);
@@ -768,16 +834,49 @@ async function saveAssignee(el) {
   }
 }
 
+function showAssigneeChips(el) {
+  var wrap = el.closest('.assignee-wrap');
+  if (!wrap) return;
+  var chips = wrap.querySelector('.assignee-chips');
+  if (chips) chips.style.display = 'flex';
+}
+
+function addAssigneeChip(chipEl, key) {
+  var nameMap = {momo:'Momo',sam:'Sam',rahul:'Rahul',andrea:'Andrea',daphnie:'Daphnie',ben:'Ben',arvin:'Arvin'};
+  var name = nameMap[key] || (key.charAt(0).toUpperCase() + key.slice(1));
+  var wrap = chipEl.closest('.assignee-wrap');
+  if (!wrap) return;
+  var editEl = wrap.querySelector('[contenteditable]');
+  if (!editEl) return;
+  var cur = editEl.innerText.trim();
+  editEl.innerText = cur ? cur + ' / ' + name : name;
+  // Move cursor to end
+  var r = document.createRange(); r.selectNodeContents(editEl); r.collapse(false);
+  var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+  saveAssignee(editEl);
+}
+
 function sortPipe(col) {
   PS.pipeSort.asc = PS.pipeSort.col === col ? !PS.pipeSort.asc : true;
   PS.pipeSort.col = col;
   renderPipeline();
 }
 
+function switchPipeTracker(type) {
+  PS.pipeTrackerType = type;
+  document.getElementById('pipe-tab-influencer').classList.toggle('active', type === 'Influencer');
+  document.getElementById('pipe-tab-gorgias').classList.toggle('active', type === 'Gorgias');
+  document.getElementById('pipe-tab-product').classList.toggle('active', type === 'Product Dev');
+  renderPipeline();
+}
+
 async function addPipelineRow() {
   var { data, error } = await db.from('partnership_pipeline').insert({
-    company: 'New Entry', source: '', stage: '1-Outreach',
-    assignee: '', next_step: '', last_update: '', status: 'Active'
+    company: 'New Entry', source: '', stage: '1-Outreach', status: 'Active',
+    tracker_type: PS.pipeTrackerType,
+    assignee: '', next_step: '', next_step_due: null,
+    lead_contact: '', contact_name: '', contact_email: '',
+    touchpoint_date: null, touchpoint_type: '', notes: '', link_to_folder: ''
   }).select().single();
   if (error) { showToast('Could not add row: ' + error.message, 'error'); return; }
   PS.pipeline.push(data);

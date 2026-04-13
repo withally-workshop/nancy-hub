@@ -48,6 +48,17 @@
 .ok-content:focus{outline:none}
 .ok-content:empty::before{content:attr(data-placeholder);color:var(--muted);pointer-events:none}
 
+/* Agency tile selector */
+.ok-agency-tiles{display:flex;gap:.6rem;margin-bottom:1.5rem;flex-wrap:wrap}
+.ok-agency-tile{display:flex;align-items:center;gap:.55rem;padding:.55rem 1rem;background:var(--card);border:1.5px solid var(--border);border-radius:10px;font-family:'Inter',sans-serif;font-size:.8rem;font-weight:600;color:var(--muted);cursor:pointer;transition:all .2s}
+.ok-agency-tile:hover{border-color:var(--border2);color:var(--body)}
+.ok-agency-tile.active{border-color:var(--tile-color,var(--primary));color:var(--body);background:var(--bg2)}
+.ok-tile-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.ok-tile-name{white-space:nowrap}
+.ok-tile-count{background:var(--bg2);border-radius:10px;padding:1px 7px;font-size:.7rem;color:var(--muted);margin-left:.1rem}
+.ok-agency-tile.active .ok-tile-count{background:rgba(0,0,0,.06)}
+.ok-active-section{margin-top:.25rem}
+
 /* Empty state */
 .ok-empty{grid-column:1/-1;font-family:'Inter',sans-serif;font-size:.84rem;color:var(--muted);padding:1.5rem;text-align:center;border:1.5px dashed var(--border);border-radius:var(--radius)}
 
@@ -56,6 +67,7 @@
 
 @media(max-width:600px){
   .ok-card-grid{grid-template-columns:1fr}
+  .ok-agency-tile{padding:.45rem .7rem;font-size:.75rem}
 }
 </style>
 </head>
@@ -224,6 +236,7 @@ const CURRENT_PAGE = 'partnerships';
 
 var KIT = [];
 var saveTimers = {};
+var OK_ACTIVE_AGENCY = 'Eyeball Factory';
 
 var AGENCIES = [
   { name: 'Eyeball Factory', color: '#3bb273' },
@@ -237,30 +250,49 @@ var AGENCIES = [
 // ══════════════════════════════════════════════════════════════
 function renderKit() {
   var container = document.getElementById('kit-container');
-  container.innerHTML = AGENCIES.map(function(ag) {
-    var items = KIT.filter(function(k) { return k.agency === ag.name; });
-    items.sort(function(a, b) { return (a.sort_order || 0) - (b.sort_order || 0); });
-    return buildAgencyBlock(ag, items);
-  }).join('');
 
+  // Agency selector tiles
+  var tilesHtml = '<div class="ok-agency-tiles">'
+    + AGENCIES.map(function(ag) {
+        var count = KIT.filter(function(k) { return k.agency === ag.name; }).length;
+        var isActive = ag.name === OK_ACTIVE_AGENCY;
+        return '<button class="ok-agency-tile' + (isActive ? ' active' : '') + '"'
+          + ' onclick="switchKitAgency(\'' + ag.name.replace(/'/g, "\\'") + '\')"'
+          + ' style="--tile-color:' + ag.color + '">'
+          + '<span class="ok-tile-dot" style="background:' + ag.color + '"></span>'
+          + '<span class="ok-tile-name">' + esc(ag.name) + '</span>'
+          + '<span class="ok-tile-count">' + count + '</span>'
+          + '</button>';
+      }).join('')
+    + '</div>';
+
+  // Active agency card grid
+  var activeAg = AGENCIES.find(function(a) { return a.name === OK_ACTIVE_AGENCY; }) || AGENCIES[0];
+  var items = KIT.filter(function(k) { return k.agency === OK_ACTIVE_AGENCY; });
+  items.sort(function(a, b) { return (a.sort_order || 0) - (b.sort_order || 0); });
+  var cardsHtml = items.length
+    ? items.map(buildCard).join('')
+    : '<div class="ok-empty">No cards yet — click Add Card to start.</div>';
+
+  var gridHtml = '<div class="ok-active-section">'
+    + '<div class="ok-agency-row">'
+    + '<div class="ok-agency-pip" style="background:' + activeAg.color + '"></div>'
+    + '<div class="ok-agency-name">' + esc(OK_ACTIVE_AGENCY) + '</div>'
+    + '<button class="ok-add-btn" onclick="addCard(\'' + OK_ACTIVE_AGENCY.replace(/'/g, "\\'") + '\')">+ Add Card</button>'
+    + '</div>'
+    + '<div class="ok-card-grid" id="grid-' + agSlug(OK_ACTIVE_AGENCY) + '">'
+    + cardsHtml
+    + '</div>'
+    + '</div>';
+
+  container.innerHTML = tilesHtml + gridHtml;
   document.querySelectorAll('.ok-content').forEach(attachContentListener);
   document.querySelectorAll('.ok-card-label').forEach(attachLabelListener);
 }
 
-function buildAgencyBlock(ag, items) {
-  var cardsHtml = items.length
-    ? items.map(buildCard).join('')
-    : '<div class="ok-empty">No cards yet — click Add Card to start.</div>';
-  return '<div class="ok-agency-block">'
-    + '<div class="ok-agency-row">'
-    + '<div class="ok-agency-pip" style="background:' + ag.color + '"></div>'
-    + '<div class="ok-agency-name">' + esc(ag.name) + '</div>'
-    + '<button class="ok-add-btn" onclick="addCard(\'' + ag.name + '\')">+ Add Card</button>'
-    + '</div>'
-    + '<div class="ok-card-grid" id="grid-' + agSlug(ag.name) + '">'
-    + cardsHtml
-    + '</div>'
-    + '</div>';
+function switchKitAgency(name) {
+  OK_ACTIVE_AGENCY = name;
+  renderKit();
 }
 
 function buildCard(k) {
@@ -269,7 +301,7 @@ function buildCard(k) {
     + '<span contenteditable="true" class="ok-card-label" data-id="' + k.id + '"'
     + ' onkeydown="if(event.key===\'Enter\'){event.preventDefault();this.blur()}">'
     + esc(k.section || 'Untitled') + '</span>'
-    + '<button class="ok-card-del" onclick="deleteCard(' + k.id + ')" title="Delete">×</button>'
+    + '<button class="ok-card-del" onclick="deleteCard(\'' + k.id + '\')" title="Delete">×</button>'
     + '</div>'
     + '<div class="ok-card-body">'
     + '<div contenteditable="true" class="ok-content" data-id="' + k.id
@@ -287,7 +319,7 @@ function agSlug(name) {
 // ══════════════════════════════════════════════════════════════
 function attachContentListener(el) {
   el.addEventListener('input', function() {
-    var id = parseInt(el.getAttribute('data-id'));
+    var id = el.getAttribute('data-id');
     setSaving();
     clearTimeout(saveTimers['c' + id]);
     saveTimers['c' + id] = setTimeout(async function() {
@@ -303,7 +335,7 @@ function attachContentListener(el) {
 
 function attachLabelListener(el) {
   el.addEventListener('blur', async function() {
-    var id = parseInt(el.getAttribute('data-id'));
+    var id = el.getAttribute('data-id');
     var val = el.innerText.trim();
     var row = KIT.find(function(k) { return k.id === id; });
     if (row) row.section = val;
@@ -352,6 +384,15 @@ async function addCard(agency) {
     var r = document.createRange(); r.selectNodeContents(label);
     var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
   }
+  // Refresh tile counts
+  document.querySelectorAll('.ok-agency-tile').forEach(function(tile) {
+    var tileName = tile.querySelector('.ok-tile-name');
+    var tileCount = tile.querySelector('.ok-tile-count');
+    if (tileName && tileCount) {
+      var n = KIT.filter(function(k) { return k.agency === tileName.textContent; }).length;
+      tileCount.textContent = n;
+    }
+  });
   showToast('Card added');
 }
 
@@ -359,7 +400,7 @@ async function deleteCard(id) {
   if (!confirm('Delete this card?')) return;
   var { error } = await db.from('partnership_kit').delete().eq('id', id);
   if (error) { showToast('Delete failed: ' + error.message, 'error'); return; }
-  KIT = KIT.filter(function(k) { return k.id !== id; });
+  KIT = KIT.filter(function(k) { return String(k.id) !== String(id); });
   var card = document.getElementById('ok-card-' + id);
   if (card) {
     var grid = card.parentElement;
@@ -368,6 +409,15 @@ async function deleteCard(id) {
       grid.innerHTML = '<div class="ok-empty">No cards yet — click Add Card to start.</div>';
     }
   }
+  // Refresh tile counts
+  document.querySelectorAll('.ok-agency-tile').forEach(function(tile) {
+    var tileName = tile.querySelector('.ok-tile-name');
+    var tileCount = tile.querySelector('.ok-tile-count');
+    if (tileName && tileCount) {
+      var n = KIT.filter(function(k) { return k.agency === tileName.textContent; }).length;
+      tileCount.textContent = n;
+    }
+  });
   showToast('Card deleted');
 }
 
