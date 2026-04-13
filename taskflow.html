@@ -3856,7 +3856,6 @@ async function confirmComplete() {
     const { data: deliv, error } = await db.from('deliverables').insert({
       task_id: task.id.startsWith('task_') ? null : task.id,
       task_title: task.title,
-      owner_id: state.currentUser?.id || null,
       notes: notes || '',
       links: links ? links.split(',').map(l => l.trim()) : [],
       completed_at: Date.now()
@@ -4166,10 +4165,10 @@ async function loadDeliverables() {
         .order('completed_at', { ascending: false }));
     }
     if (error) throw error;
-    const remote = data || [];
+    const remote = (data || []).filter(delivHasContent);
     // Merge local fallbacks that aren't already in remote (by task_title + completed_at proximity)
     const remoteKeys = new Set(remote.map(d => d.task_title + '|' + d.completed_at));
-    const localOnly = localDelivs.filter(d => !remoteKeys.has(d.task_title + '|' + d.completed_at));
+    const localOnly = localDelivs.filter(d => !remoteKeys.has(d.task_title + '|' + d.completed_at) && delivHasContent(d));
     state.deliverables = [...remote, ...localOnly].sort((a,b) => (b.completed_at||0) - (a.completed_at||0));
   } catch(e) {
     state.deliverables = localDelivs.sort((a,b) => (b.completed_at||0) - (a.completed_at||0));
