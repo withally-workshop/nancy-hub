@@ -3862,7 +3862,9 @@ async function confirmComplete() {
       completed_at: Date.now()
     }).select().single();
 
-    if (!error && deliv && state.completeFiles.length > 0) {
+    if (error) throw error;
+
+    if (deliv && state.completeFiles.length > 0) {
       for (const file of state.completeFiles) {
         await db.from('deliverable_files').insert({
           deliverable_id: deliv.id,
@@ -3877,7 +3879,7 @@ async function confirmComplete() {
     }
   } catch(e) {
     const delivs = JSON.parse(localStorage.getItem('nancy_delivs') || '[]');
-    delivs.push({ id: 'deliv_'+Date.now(), taskTitle: task.title, notes, links, completedAt: Date.now(), files: state.completeFiles });
+    delivs.push({ id: 'deliv_'+Date.now(), task_title: task.title, notes, links: links ? links.split(',').map(l=>l.trim()) : [], completed_at: Date.now(), files: state.completeFiles, deliverable_files: state.completeFiles.map(f=>({file_name:f.fileName,embed_url:f.embedUrl,direct_url:f.directUrl,thumbnail_url:f.thumbnailUrl||'',mime_type:f.mimeType})) });
     localStorage.setItem('nancy_delivs', JSON.stringify(delivs));
   }
 
@@ -4145,6 +4147,9 @@ function delivHasContent(d) {
 }
 
 async function loadDeliverables() {
+  // Always load localStorage fallback deliverables
+  const localDelivs = JSON.parse(localStorage.getItem('nancy_delivs') || '[]');
+
   try {
     // Try filtered by owner_id first (works once column exists in Supabase)
     let data, error;
@@ -4161,9 +4166,13 @@ async function loadDeliverables() {
         .order('completed_at', { ascending: false }));
     }
     if (error) throw error;
-    state.deliverables = (data || []).filter(delivHasContent);
+    const remote = (data || []).filter(delivHasContent);
+    // Merge local fallbacks that aren't already in remote (by task_title + completed_at proximity)
+    const remoteKeys = new Set(remote.map(d => d.task_title + '|' + d.completed_at));
+    const localOnly = localDelivs.filter(d => !remoteKeys.has(d.task_title + '|' + d.completed_at));
+    state.deliverables = [...remote, ...localOnly].sort((a,b) => (b.completed_at||0) - (a.completed_at||0));
   } catch(e) {
-    state.deliverables = [];
+    state.deliverables = localDelivs.sort((a,b) => (b.completed_at||0) - (a.completed_at||0));
   }
 }
 
