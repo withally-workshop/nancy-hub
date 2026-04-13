@@ -23,3 +23,20 @@ ALTER TABLE partnership_creators
 -- ── onboarding kit: file/link field ──────────────────────────
 ALTER TABLE partnership_kit
   ADD COLUMN IF NOT EXISTS link_url text DEFAULT '';
+
+-- ── custom columns: meta table ───────────────────────────────
+CREATE TABLE IF NOT EXISTS partnership_custom_cols (
+  id         uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  table_name text NOT NULL,
+  field_key  text NOT NULL,
+  field_label text NOT NULL,
+  col_order  int DEFAULT 0,
+  created_at timestamptz DEFAULT now()
+);
+
+-- ── custom fields: jsonb blob on each table ───────────────────
+ALTER TABLE partnership_creators    ADD COLUMN IF NOT EXISTS custom_fields jsonb DEFAULT '{}';
+ALTER TABLE partnership_pipeline    ADD COLUMN IF NOT EXISTS custom_fields jsonb DEFAULT '{}';
+ALTER TABLE partnership_performance ADD COLUMN IF NOT EXISTS custom_fields jsonb DEFAULT '{}';
+ALTER TABLE partnership_payments    ADD COLUMN IF NOT EXISTS custom_fields jsonb DEFAULT '{}';
+ALTER TABLE partnership_affiliates  ADD COLUMN IF NOT EXISTS custom_fields jsonb DEFAULT '{}';

@@ -124,6 +124,42 @@ tr.perf-zero td{color:var(--muted)}
 .kit-link-sub{font-family:'Inter',sans-serif;font-size:.76rem;color:var(--muted);margin-top:.15rem}
 .kit-link-arrow{color:var(--primary);font-size:1.2rem;margin-left:.5rem}
 
+/* Landing cards */
+.p-landing{display:flex;gap:1.25rem;flex-wrap:wrap;margin-bottom:1rem}
+.p-landing-card{flex:1;min-width:260px;background:var(--card);border:1.5px solid var(--border);border-radius:var(--radius);padding:1.75rem;cursor:pointer;text-decoration:none;color:var(--body);transition:all .22s;display:flex;flex-direction:column;gap:.85rem}
+.p-landing-card:hover{border-color:var(--primary);box-shadow:var(--shadow);transform:translateY(-2px);text-decoration:none}
+.p-landing-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0}
+.p-landing-title{font-family:'Fraunces',serif;font-size:1.2rem;font-weight:600;color:var(--h2)}
+.p-landing-sub{font-family:'Inter',sans-serif;font-size:.81rem;color:var(--muted);line-height:1.55}
+.p-landing-meta{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.25rem}
+.p-landing-tag{background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:2px 8px;font-family:'Inter',sans-serif;font-size:.7rem;color:var(--muted)}
+
+/* Global edit mode toggle */
+.p-edit-btn{padding:6px 14px;border:1.5px solid var(--border2);border-radius:8px;font-family:'Inter',sans-serif;font-size:.8rem;font-weight:600;cursor:pointer;color:var(--muted);background:var(--card);transition:all .2s;white-space:nowrap}
+.p-edit-btn:hover{border-color:var(--primary);color:var(--primary)}
+.p-edit-btn.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+
+/* View-only cells */
+.view-cell{font-family:'Inter',sans-serif;font-size:.82rem;color:var(--body);display:inline-block}
+
+/* Edit-mode visibility rules */
+.p-section:not(.edit-on) .del-btn{display:none!important}
+.p-section:not(.edit-on) .p-add-btn{opacity:.3;pointer-events:none}
+.p-section:not(.edit-on) .add-row-trigger{display:none}
+.p-section:not(.edit-on) .add-col-th{display:none}
+
+/* Add row trigger */
+.add-row-trigger td{text-align:center;color:var(--muted);font-size:.78rem;cursor:pointer;letter-spacing:.04em;padding:.4rem!important;border-top:1px dashed var(--border)}
+.add-row-trigger:hover td{background:var(--bg2);color:var(--primary)}
+
+/* Add column header */
+.add-col-th{cursor:pointer;opacity:.5;transition:opacity .15s;font-size:.65rem!important;padding:0 .5rem!important}
+.add-col-th:hover{opacity:1;color:var(--primary)!important}
+
+/* Period date inputs */
+.p-date-input{padding:5px 10px;border:1.5px solid var(--border2);border-radius:8px;font-family:'Inter',sans-serif;font-size:.8rem;background:var(--bg);color:var(--body);outline:none;cursor:pointer;transition:border-color .2s}
+.p-date-input:focus{border-color:var(--primary)}
+
 /* Pipeline tracker sub-tabs */
 .pipe-tracker-tabs{display:flex;gap:6px;margin-bottom:1rem}
 
@@ -248,9 +284,44 @@ tr.perf-zero td{color:var(--muted)}
   <div class="p-wrap">
 
     <div class="p-header">
-      <div class="p-title">Partnerships</div>
-      <div class="p-sub">CareNBloom creator &amp; influencer partnerships</div>
+      <div>
+        <span id="p-back-crumb" style="display:none"><a href="#" onclick="showLanding();return false" style="font-family:'Inter',sans-serif;font-size:.8rem;color:var(--muted);text-decoration:none">← Overview</a>&ensp;</span>
+        <span class="p-title" id="p-page-title">Partnerships</span>
+      </div>
+      <div class="p-sub" style="width:100%">CareNBloom creator &amp; influencer partnerships</div>
+      <button class="p-edit-btn" id="global-edit-btn" onclick="toggleEditMode()" style="display:none;margin-left:auto">✏ Edit</button>
     </div>
+
+    <!-- ═══ LANDING SCREEN ══════════════════════════════════════ -->
+    <div id="p-landing-screen">
+      <div class="p-landing">
+        <div class="p-landing-card" onclick="enterPartnerships()">
+          <div class="p-landing-icon" style="background:rgba(59,178,115,.12)">👥</div>
+          <div class="p-landing-title">Partnerships</div>
+          <div class="p-landing-sub">Creator directory, pipeline tracking, performance analytics, payments &amp; affiliates</div>
+          <div class="p-landing-meta">
+            <span class="p-landing-tag">Directory</span>
+            <span class="p-landing-tag">Pipeline</span>
+            <span class="p-landing-tag">Performance</span>
+            <span class="p-landing-tag">Payments</span>
+          </div>
+        </div>
+        <a class="p-landing-card" href="onboarding.html">
+          <div class="p-landing-icon" style="background:rgba(255,48,204,.1)">📋</div>
+          <div class="p-landing-title">Onboarding Kit</div>
+          <div class="p-landing-sub">Brief templates, contracts &amp; posting guidelines — fully editable cards per agency</div>
+          <div class="p-landing-meta">
+            <span class="p-landing-tag">Eyeball Factory</span>
+            <span class="p-landing-tag">Krave Media</span>
+            <span class="p-landing-tag">Little Leaf</span>
+            <span class="p-landing-tag">+ New Type</span>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <!-- ═══ MAIN CONTENT (shown after clicking through) ═════════ -->
+    <div id="p-main-content" style="display:none">
 
     <!-- TAB NAV -->
     <div class="p-tabs">
@@ -361,7 +432,14 @@ tr.perf-zero td{color:var(--muted)}
         <select class="p-period-sel" id="perf-period-select" onchange="renderPerformance()">
           <option value="all">All Periods</option>
         </select>
-        <button class="p-period-add" onclick="addPerfPeriod()">+ New Period</button>
+        <button class="p-period-add" id="perf-new-period-btn" onclick="showNewPeriodForm()">+ New Period</button>
+        <div id="perf-period-form" style="display:none;align-items:center;gap:.5rem;flex-wrap:wrap">
+          <input type="date" id="perf-period-from" class="p-date-input">
+          <span style="font-family:'Inter',sans-serif;font-size:.78rem;color:var(--muted)">to</span>
+          <input type="date" id="perf-period-to" class="p-date-input">
+          <button class="p-period-add" onclick="confirmNewPeriod()">Add</button>
+          <button class="p-period-add" onclick="cancelNewPeriod()" style="color:var(--muted)">✕</button>
+        </div>
       </div>
       <div class="p-table-wrap">
         <table class="p-table">
@@ -422,17 +500,7 @@ tr.perf-zero td{color:var(--muted)}
       </div>
     </div>
 
-    <!-- ONBOARDING KIT CARD -->
-    <div class="kit-link-wrap">
-      <a class="kit-link-card" href="onboarding.html">
-        <div class="kit-link-icon">📋</div>
-        <div class="kit-link-text">
-          <div class="kit-link-label">Onboarding Kit</div>
-          <div class="kit-link-sub">Brief templates, contracts &amp; posting guidelines per agency</div>
-        </div>
-        <div class="kit-link-arrow">→</div>
-      </a>
-    </div>
+    </div><!-- /p-main-content -->
 
   </div><!-- /p-wrap -->
 
@@ -488,7 +556,9 @@ var PS = {
   pipeSort: { col: 'company',    asc: true  },
   perfSort: { col: 'spend_hkd',  asc: false },
   perfAgency: 'Eyeball Factory',
-  pipeTrackerType: 'Influencer'
+  pipeTrackerType: 'Influencer',
+  editMode: false,
+  customCols: {} // keyed by table name
 };
 
 var ASSIGNEE_COLORS = {
@@ -522,6 +592,9 @@ var BADGE_STYLES = {
 // INLINE EDIT CELL BUILDERS
 // ══════════════════════════════════════════════════════════════
 function ec(table, id, field, val) {
+  if (!PS.editMode) {
+    return '<td><span class="view-cell">' + esc(val || '') + '</span></td>';
+  }
   return '<td><span contenteditable="true" class="editable-cell"'
     + ' data-table="' + table + '" data-id="' + id + '" data-field="' + field + '"'
     + ' onblur="saveCell(this)"'
@@ -530,6 +603,10 @@ function ec(table, id, field, val) {
 }
 
 function ni(table, id, field, val) {
+  var display = (val === null || val === undefined || val === 0) ? (val === 0 ? '0' : '') : val;
+  if (!PS.editMode) {
+    return '<td><span class="view-cell" style="font-weight:600;font-variant-numeric:tabular-nums">' + esc(String(display)) + '</span></td>';
+  }
   return '<td><input type="number" step="any" class="num-input"'
     + ' data-table="' + table + '" data-id="' + id + '" data-field="' + field + '"'
     + ' value="' + (val === null || val === undefined ? '' : val) + '"'
@@ -539,6 +616,9 @@ function ni(table, id, field, val) {
 
 function es(table, id, field, val, options) {
   var style = BADGE_STYLES[val] || '';
+  if (!PS.editMode) {
+    return '<td><span class="view-cell p-badge" style="' + style + '">' + esc(val || '') + '</span></td>';
+  }
   var opts = options.map(function(o) {
     return '<option' + (o === val ? ' selected' : '') + '>' + esc(o) + '</option>';
   }).join('');
@@ -612,6 +692,45 @@ function tableCache(table) {
 }
 
 // ══════════════════════════════════════════════════════════════
+// LANDING + EDIT MODE
+// ══════════════════════════════════════════════════════════════
+function enterPartnerships() {
+  document.getElementById('p-landing-screen').style.display = 'none';
+  document.getElementById('p-main-content').style.display = 'block';
+  document.getElementById('p-back-crumb').style.display = 'inline';
+  document.getElementById('global-edit-btn').style.display = 'inline-flex';
+}
+
+function showLanding() {
+  document.getElementById('p-main-content').style.display = 'none';
+  document.getElementById('p-landing-screen').style.display = 'block';
+  document.getElementById('p-back-crumb').style.display = 'none';
+  document.getElementById('global-edit-btn').style.display = 'none';
+  // Exit edit mode when going back
+  if (PS.editMode) toggleEditMode();
+}
+
+function toggleEditMode() {
+  PS.editMode = !PS.editMode;
+  var btn = document.getElementById('global-edit-btn');
+  if (btn) { btn.textContent = PS.editMode ? 'Done ✓' : '✏ Edit'; btn.classList.toggle('active', PS.editMode); }
+  document.querySelectorAll('.p-section').forEach(function(s) {
+    s.classList.toggle('edit-on', PS.editMode);
+  });
+  // Re-render the currently visible tab
+  var active = document.querySelector('.p-tab.active');
+  if (active) renderSection(active.getAttribute('data-tab'));
+}
+
+function renderSection(tab) {
+  if (tab === 'directory')   renderDirectory();
+  if (tab === 'pipeline')    renderPipeline();
+  if (tab === 'performance') renderPerformance();
+  if (tab === 'payments')    renderPayments();
+  if (tab === 'affiliates')  renderAffiliates();
+}
+
+// ══════════════════════════════════════════════════════════════
 // TAB SWITCHING
 // ══════════════════════════════════════════════════════════════
 function switchTab(tab) {
@@ -668,6 +787,111 @@ function focusLastRow(tbodyId, cellIndex) {
 }
 
 // ══════════════════════════════════════════════════════════════
+// ADD ROW TRIGGER + CUSTOM COLS HELPERS
+// ══════════════════════════════════════════════════════════════
+function addRowTrigger(fn, colspan) {
+  return '<tr class="add-row-trigger" onclick="' + fn + '()">'
+    + '<td colspan="' + colspan + '">＋ Add Row</td></tr>';
+}
+
+function customColHeaders(table) {
+  var cols = PS.customCols[table] || [];
+  return cols.map(function(c) {
+    return '<th>' + esc(c.field_label) + '</th>';
+  }).join('') + '<th class="add-col-th" onclick="addCustomCol(\'' + table + '\')" title="Add column">＋ Col</th>';
+}
+
+function customColCells(table, row) {
+  var cols = PS.customCols[table] || [];
+  var extra = row.custom_fields || {};
+  return cols.map(function(c) {
+    return ecCustom(table, row.id, c.field_key, extra[c.field_key]);
+  }).join('') + '<td></td>'; // empty td under +Col header
+}
+
+function ecCustom(table, id, key, val) {
+  if (!PS.editMode) return '<td><span class="view-cell">' + esc(val || '') + '</span></td>';
+  return '<td><span contenteditable="true" class="editable-cell"'
+    + ' data-table="' + table + '" data-id="' + id + '" data-field="__custom__' + key + '"'
+    + ' onblur="saveCustomCell(this)"'
+    + ' onkeydown="if(event.key===\'Enter\'){event.preventDefault();this.blur()}">'
+    + esc(val || '') + '</span></td>';
+}
+
+async function saveCustomCell(el) {
+  var val   = el.innerText.trim();
+  var table = el.getAttribute('data-table');
+  var id    = el.getAttribute('data-id');
+  var key   = el.getAttribute('data-field').replace('__custom__', '');
+  var cache = tableCache(table);
+  if (cache) {
+    var row = cache.find(function(r) { return r.id === id; });
+    if (row) { row.custom_fields = Object.assign({}, row.custom_fields || {}); row.custom_fields[key] = val; }
+  }
+  var row2 = (tableCache(table) || []).find(function(r) { return r.id === id; });
+  var fields = Object.assign({}, (row2 && row2.custom_fields) || {});
+  fields[key] = val;
+  var { error } = await db.from(table).update({ custom_fields: fields }).eq('id', id);
+  if (error) showToast('Save failed: ' + error.message, 'error');
+}
+
+async function addCustomCol(table) {
+  var label = prompt('New column name:');
+  if (!label || !label.trim()) return;
+  label = label.trim();
+  var key = 'cf_' + label.toLowerCase().replace(/\s+/g,'_').replace(/[^a-z0-9_]/g,'');
+  var existing = PS.customCols[table] || [];
+  var { data, error } = await db.from('partnership_custom_cols').insert({
+    table_name: table, field_key: key, field_label: label,
+    col_order: existing.length
+  }).select().single();
+  if (error) { showToast('Could not add column — run SQL migration first', 'error'); return; }
+  if (!PS.customCols[table]) PS.customCols[table] = [];
+  PS.customCols[table].push(data);
+  renderSection(tableSectionMap(table));
+  showToast('Column "' + label + '" added');
+}
+
+function tableSectionMap(table) {
+  if (table === 'partnership_creators')    return 'directory';
+  if (table === 'partnership_pipeline')    return 'pipeline';
+  if (table === 'partnership_performance') return 'performance';
+  if (table === 'partnership_payments')    return 'payments';
+  if (table === 'partnership_affiliates')  return 'affiliates';
+  return 'directory';
+}
+
+async function loadCustomCols() {
+  var { data } = await db.from('partnership_custom_cols').select('*').order('col_order');
+  if (!data) return;
+  PS.customCols = {};
+  data.forEach(function(col) {
+    if (!PS.customCols[col.table_name]) PS.customCols[col.table_name] = [];
+    PS.customCols[col.table_name].push(col);
+  });
+}
+
+function refreshCustomColHeaders(sectionId, table) {
+  var thead = document.querySelector('#' + sectionId + ' .p-table thead tr');
+  if (!thead) return;
+  thead.querySelectorAll('.custom-col-th,.add-col-th').forEach(function(th) { th.remove(); });
+  var delTh = thead.querySelector('.del-cell');
+  if (!delTh) return;
+  (PS.customCols[table] || []).forEach(function(c) {
+    var th = document.createElement('th');
+    th.className = 'custom-col-th';
+    th.textContent = c.field_label;
+    thead.insertBefore(th, delTh);
+  });
+  var addTh = document.createElement('th');
+  addTh.className = 'add-col-th';
+  addTh.title = 'Add column';
+  addTh.innerHTML = '＋';
+  addTh.onclick = (function(t) { return function() { addCustomCol(t); }; })(table);
+  thead.insertBefore(addTh, delTh);
+}
+
+// ══════════════════════════════════════════════════════════════
 // TAB 1: CREATOR DIRECTORY
 // ══════════════════════════════════════════════════════════════
 function renderDirectory() {
@@ -680,10 +904,14 @@ function renderDirectory() {
   });
   rows = sortArr(rows, PS.dirSort.col, PS.dirSort.asc);
   applySortHeaders('#sec-directory', PS.dirSort);
+  refreshCustomColHeaders('sec-directory', 'partnership_creators');
+
+  var cc = PS.customCols['partnership_creators'] || [];
+  var totalCols = 12 + cc.length; // 10 data + del + add-col-th + custom
 
   var tbody = document.getElementById('dir-tbody');
   if (!rows.length) {
-    tbody.innerHTML = '<tr><td colspan="11" class="p-loading">No creators found.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="' + totalCols + '" class="p-loading">No creators found.</td></tr>';
     return;
   }
   tbody.innerHTML = rows.map(function(c) {
@@ -699,9 +927,10 @@ function renderDirectory() {
       + ec('partnership_creators', c.id, 'youtube_link', c.youtube_link)
       + ec('partnership_creators', c.id, 'payment_route', c.payment_route)
       + es('partnership_creators', c.id, 'status', c.status || 'Active', CREATOR_STATUS_OPTIONS)
+      + customColCells('partnership_creators', c)
       + delBtn('deleteCreator', c.id)
       + '</tr>';
-  }).join('');
+  }).join('') + addRowTrigger('addCreatorRow', totalCols);
 }
 
 function sortDir(col) {
@@ -748,9 +977,13 @@ function renderPipeline() {
   rows = sortArr(rows, PS.pipeSort.col, PS.pipeSort.asc);
   applySortHeaders('#sec-pipeline', PS.pipeSort);
 
+  refreshCustomColHeaders('sec-pipeline', 'partnership_pipeline');
+  var cc = PS.customCols['partnership_pipeline'] || [];
+  var totalCols = 16 + cc.length; // 14 data + del + add-col-th + custom
+
   var tbody = document.getElementById('pipe-tbody');
   if (!rows.length) {
-    tbody.innerHTML = '<tr><td colspan="15" class="p-loading">No entries found.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="' + totalCols + '" class="p-loading">No entries found.</td></tr>';
     return;
   }
   tbody.innerHTML = rows.map(function(p) {
@@ -769,9 +1002,10 @@ function renderPipeline() {
       + ec('partnership_pipeline', p.id, 'notes', p.notes)
       + ec('partnership_pipeline', p.id, 'link_to_folder', p.link_to_folder)
       + es('partnership_pipeline', p.id, 'status', p.status || 'Active', STATUS_OPTIONS)
+      + customColCells('partnership_pipeline', p)
       + delBtn('deletePipeline', p.id)
       + '</tr>';
-  }).join('');
+  }).join('') + addRowTrigger('addPipelineRow', totalCols);
 }
 
 function resolveAssigneeBubbles(text) {
@@ -789,6 +1023,12 @@ function resolveAssigneeBubbles(text) {
 function buildAssigneeCell(id, val) {
   var text = val || '';
   var bubbles = resolveAssigneeBubbles(text);
+  if (!PS.editMode) {
+    return '<span style="display:inline-flex;align-items:center;gap:4px;flex-wrap:wrap">'
+      + bubbles
+      + (text && text !== '—' ? '<span class="view-cell" style="font-size:.8rem;color:var(--muted)">' + esc(text) + '</span>' : '')
+      + '</span>';
+  }
   var CHIP_LIST = [
     {key:'momo',label:'MO'},{key:'sam',label:'SA'},{key:'rahul',label:'RA'},
     {key:'andrea',label:'AN'},{key:'daphnie',label:'DA'},{key:'ben',label:'BE'},{key:'arvin',label:'AR'},
@@ -949,9 +1189,13 @@ function renderPerformance() {
   rows = sortArr(rows, PS.perfSort.col, PS.perfSort.asc);
   applySortHeaders('#sec-performance', PS.perfSort);
 
+  refreshCustomColHeaders('sec-performance', 'partnership_performance');
+  var cc = PS.customCols['partnership_performance'] || [];
+  var totalCols = 12 + cc.length; // 10 data + del + add-col-th + custom
+
   var tbody = document.getElementById('perf-tbody');
   if (!rows.length) {
-    tbody.innerHTML = '<tr><td colspan="10" class="p-loading">No performance data for this selection.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="' + totalCols + '" class="p-loading">No performance data for this selection.</td></tr>';
     return;
   }
   tbody.innerHTML = rows.map(function(r) {
@@ -972,9 +1216,10 @@ function renderPerformance() {
       + ni('partnership_performance', r.id, 'revenue_hkd', r.revenue_hkd)
       + '<td>' + tierHtml + '</td>'
       + ec('partnership_performance', r.id, 'notes', r.notes)
+      + customColCells('partnership_performance', r)
       + delBtn('deletePerfRow', r.id)
       + '</tr>';
-  }).join('');
+  }).join('') + addRowTrigger('addPerfRow', totalCols);
 }
 
 function getTier(r) {
@@ -1006,20 +1251,37 @@ async function addPerfRow() {
   focusLastRow('perf-tbody', 1);
 }
 
-async function addPerfPeriod() {
-  var period = prompt('Enter period label (e.g. Apr 7–Apr 13):');
-  if (!period || !period.trim()) return;
-  period = period.trim();
+function showNewPeriodForm() {
+  var today = new Date();
+  var mon = new Date(today); mon.setDate(today.getDate() - ((today.getDay() + 6) % 7));
+  var sun = new Date(mon); sun.setDate(mon.getDate() + 6);
+  document.getElementById('perf-period-from').value = mon.toISOString().split('T')[0];
+  document.getElementById('perf-period-to').value   = sun.toISOString().split('T')[0];
+  document.getElementById('perf-period-form').style.display = 'flex';
+  document.getElementById('perf-new-period-btn').style.display = 'none';
+}
+function cancelNewPeriod() {
+  document.getElementById('perf-period-form').style.display = 'none';
+  document.getElementById('perf-new-period-btn').style.display = '';
+}
+async function confirmNewPeriod() {
+  var from = document.getElementById('perf-period-from').value;
+  var to   = document.getElementById('perf-period-to').value;
+  if (!from || !to) { showToast('Select both dates', 'error'); return; }
+  var M = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  var f = new Date(from + 'T00:00:00'), t = new Date(to + 'T00:00:00');
+  var label = M[f.getMonth()] + ' ' + f.getDate() + ' – ' + M[t.getMonth()] + ' ' + t.getDate();
+  cancelNewPeriod();
   var { data, error } = await db.from('partnership_performance').insert({
     creator_name: 'New Creator', handle: '', agency: PS.perfAgency,
-    period: period, spend_hkd: 0, roas: 0, purchases: 0, revenue_hkd: 0, notes: ''
+    period: label, spend_hkd: 0, roas: 0, purchases: 0, revenue_hkd: 0, notes: ''
   }).select().single();
   if (error) { showToast('Could not add period: ' + error.message, 'error'); return; }
   PS.performance.push(data);
   updatePeriodSelect();
-  document.getElementById('perf-period-select').value = period;
+  document.getElementById('perf-period-select').value = label;
   renderPerformance();
-  showToast('Period added: ' + period);
+  showToast('Period added: ' + label);
 }
 
 async function deletePerfRow(id) {
@@ -1036,22 +1298,25 @@ async function deletePerfRow(id) {
 // TAB 4: PAYMENTS
 // ══════════════════════════════════════════════════════════════
 function renderPayments() {
+  refreshCustomColHeaders('sec-payments', 'partnership_payments');
+  var cc = PS.customCols['partnership_payments'] || [];
+  var totalCols = 8 + cc.length; // 5 data + del + add-col-th + custom
   var tbody = document.getElementById('pay-tbody');
   if (!PS.payments.length) {
-    tbody.innerHTML = '<tr><td colspan="6" class="p-loading">No payment data.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="' + totalCols + '" class="p-loading">No payment data.</td></tr>';
     return;
   }
   tbody.innerHTML = PS.payments.map(function(p) {
-    var agCls = agencyBadgeClass(p.agency);
     return '<tr>'
       + es('partnership_payments', p.id, 'agency', p.agency || 'Eyeball Factory', AGENCY_OPTIONS)
       + ec('partnership_payments', p.id, 'payment_route', p.payment_route)
       + ec('partnership_payments', p.id, 'campaign', p.campaign)
       + ec('partnership_payments', p.id, 'rate_type', p.rate_type)
       + ec('partnership_payments', p.id, 'notes', p.notes)
+      + customColCells('partnership_payments', p)
       + delBtn('deletePayment', p.id)
       + '</tr>';
-  }).join('');
+  }).join('') + addRowTrigger('addPaymentRow', totalCols);
 }
 
 async function addPaymentRow() {
@@ -1083,9 +1348,12 @@ function renderAffiliates() {
                && !(a.code || '').toLowerCase().includes(search)) return false;
     return true;
   });
+  refreshCustomColHeaders('sec-affiliates', 'partnership_affiliates');
+  var cc = PS.customCols['partnership_affiliates'] || [];
+  var totalCols = 7 + cc.length; // 4 data + del + add-col-th + custom
   var tbody = document.getElementById('aff-tbody');
   if (!rows.length) {
-    tbody.innerHTML = '<tr><td colspan="5" class="p-loading">No affiliates found.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="' + totalCols + '" class="p-loading">No affiliates found.</td></tr>';
     return;
   }
   tbody.innerHTML = rows.map(function(a) {
@@ -1095,9 +1363,10 @@ function renderAffiliates() {
       + '<td><span class="p-badge ' + agCls + '">' + esc(a.agency || '') + '</span></td>'
       + ec('partnership_affiliates', a.id, 'code', a.code)
       + ec('partnership_affiliates', a.id, 'platform_notes', a.platform_notes)
+      + customColCells('partnership_affiliates', a)
       + delBtn('deleteAffiliate', a.id)
       + '</tr>';
-  }).join('');
+  }).join('') + addRowTrigger('addAffiliateRow', totalCols);
 }
 
 async function addAffiliateRow() {
@@ -1161,6 +1430,7 @@ async function loadAffiliates() {
 // ── INIT ─────────────────────────────────────────────────────
 async function onPageReady() {
   await Promise.all([
+    loadCustomCols(),
     loadCreators(),
     loadPipeline(),
     loadPerformance(),
