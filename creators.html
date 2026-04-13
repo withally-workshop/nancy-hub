@@ -11,40 +11,24 @@
 <style>
 /* ── PARTNERSHIPS PAGE ─────────────────────────────────────── */
 .p-wrap{max-width:1200px;margin:0 auto;padding:1.5rem 1.5rem 4rem}
-
-/* Overview bar */
-.p-overview{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.75rem}
-.p-ov-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1.1rem 1.25rem;display:flex;flex-direction:column;gap:.35rem;transition:border-color .2s}
-.p-ov-card:hover{border-color:var(--border2)}
-.p-ov-agency{font-family:'Inter',sans-serif;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.1rem}
-.p-ov-count{font-family:'Fraunces',serif;font-size:1.6rem;font-weight:600;color:var(--h2);line-height:1}
-.p-ov-meta{font-family:'Inter',sans-serif;font-size:.73rem;color:var(--muted);line-height:1.4}
-.p-ov-pay{font-family:'Inter',sans-serif;font-size:.71rem;color:var(--muted);margin-top:.25rem;padding:.2rem .55rem;border-radius:6px;background:var(--bg2);display:inline-block}
-
-/* Section header */
-.p-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:.75rem}
-.p-header-left{display:flex;align-items:baseline;gap:.75rem}
+.p-header{display:flex;align-items:baseline;gap:.75rem;margin-bottom:1.5rem;flex-wrap:wrap}
 .p-title{font-family:'Fraunces',serif;font-size:1.75rem;font-weight:600;color:var(--h2);letter-spacing:-.02em}
 .p-sub{font-family:'Inter',sans-serif;font-size:.83rem;color:var(--muted)}
 
 /* Tabs */
-.p-tabs{display:flex;gap:4px;margin-bottom:1.5rem;border-bottom:1px solid var(--border);padding-bottom:0;flex-wrap:wrap}
+.p-tabs{display:flex;gap:4px;margin-bottom:1.5rem;border-bottom:1px solid var(--border);flex-wrap:wrap}
 .p-tab{padding:.55rem 1rem;border-radius:8px 8px 0 0;border:1px solid transparent;border-bottom:none;font-family:'Inter',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;color:var(--muted);background:none;transition:all .2s;white-space:nowrap;margin-bottom:-1px}
 .p-tab:hover{color:var(--body);background:var(--bg2)}
 .p-tab.active{color:var(--h2);background:var(--card);border-color:var(--border);border-bottom-color:var(--card)}
 .p-section{display:none}
 .p-section.active{display:block}
 
-/* Toolbar (filters + toggle + add) */
+/* Toolbar */
 .p-toolbar{display:flex;align-items:center;gap:.75rem;margin-bottom:1rem;flex-wrap:wrap}
-.p-filter-pills{display:flex;gap:4px;flex-wrap:wrap}
-.p-pill{padding:4px 12px;border-radius:100px;border:1.5px solid var(--border2);font-family:'Inter',sans-serif;font-size:.76rem;font-weight:600;cursor:pointer;color:var(--muted);background:var(--card);transition:all .2s}
-.p-pill:hover{border-color:var(--primary);color:var(--primary)}
-.p-pill.active{background:var(--primary);color:#fff;border-color:var(--primary)}
-.p-view-toggle{display:flex;border:1.5px solid var(--border2);border-radius:8px;overflow:hidden}
-.p-vbtn{padding:5px 14px;font-family:'Inter',sans-serif;font-size:.76rem;font-weight:600;cursor:pointer;color:var(--muted);background:var(--card);border:none;transition:all .2s}
-.p-vbtn:hover{background:var(--bg2)}
-.p-vbtn.active{background:var(--primary);color:#fff}
+.p-search{padding:6px 12px;border:1.5px solid var(--border2);border-radius:8px;font-family:'Inter',sans-serif;font-size:.82rem;background:var(--bg);color:var(--body);outline:none;width:200px;transition:border-color .2s}
+.p-search:focus{border-color:var(--primary)}
+.p-filter-sel{padding:6px 10px;border:1.5px solid var(--border2);border-radius:8px;font-family:'Inter',sans-serif;font-size:.82rem;background:var(--bg);color:var(--body);outline:none;cursor:pointer;transition:border-color .2s}
+.p-filter-sel:focus{border-color:var(--primary)}
 .p-add-btn{margin-left:auto;padding:6px 14px;background:var(--primary);color:#fff;border:none;border-radius:8px;font-family:'Inter',sans-serif;font-size:.8rem;font-weight:600;cursor:pointer;transition:opacity .2s;white-space:nowrap}
 .p-add-btn:hover{opacity:.85}
 
@@ -52,19 +36,23 @@
 .p-table-wrap{overflow-x:auto;border-radius:var(--radius);border:1px solid var(--border)}
 .p-table{width:100%;border-collapse:collapse;font-family:'Inter',sans-serif;font-size:.82rem}
 .p-table th{padding:.65rem 1rem;text-align:left;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);background:var(--bg2);border-bottom:1px solid var(--border);white-space:nowrap}
-.p-table td{padding:.7rem 1rem;border-bottom:1px solid var(--border);color:var(--body);vertical-align:middle}
+.p-table td{padding:.6rem 1rem;border-bottom:1px solid var(--border);color:var(--body);vertical-align:middle}
 .p-table tr:last-child td{border-bottom:none}
 .p-table tbody tr:hover{background:var(--bg2)}
-.p-table .handle{font-size:.78rem;color:var(--muted)}
-.p-num{font-variant-numeric:tabular-nums;font-weight:600;color:var(--h2)}
-.p-dim{color:var(--muted);font-size:.78rem}
 
-/* Row action buttons */
-.row-actions{display:flex;gap:4px;opacity:0;transition:opacity .15s}
-tr:hover .row-actions{opacity:1}
-.row-btn{padding:3px 8px;border-radius:6px;border:1px solid var(--border2);font-family:'Inter',sans-serif;font-size:.72rem;font-weight:600;cursor:pointer;background:var(--card);color:var(--muted);transition:all .15s}
-.row-btn:hover{border-color:var(--primary);color:var(--primary)}
-.row-btn.del:hover{border-color:#e53e3e;color:#e53e3e}
+/* Inline editing */
+.editable-cell{cursor:text;border-bottom:1px dashed transparent;transition:border-color .15s;min-width:40px;display:inline-block}
+.editable-cell:hover{border-bottom-color:var(--border2)}
+.editable-cell:focus{outline:none;border-bottom:1px solid var(--primary)}
+.num-input{width:80px;border:none;border-bottom:1px dashed transparent;background:transparent;font-family:'Inter',sans-serif;font-size:.82rem;font-weight:600;color:var(--h2);font-variant-numeric:tabular-nums;padding:0;outline:none;transition:border-color .15s}
+.num-input:hover,.num-input:focus{border-bottom-color:var(--primary)}
+.inline-select{border:none;font-family:'Inter',sans-serif;font-size:.71rem;font-weight:700;cursor:pointer;border-radius:10px;padding:2px 7px;outline:none;appearance:none;-webkit-appearance:none;max-width:140px}
+
+/* Delete button */
+.del-cell{width:32px;padding:0 6px !important}
+.del-btn{opacity:0;width:20px;height:20px;border-radius:50%;border:none;background:rgba(229,58,58,.1);color:#e53e3e;font-size:13px;line-height:1;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;justify-content:center}
+tr:hover .del-btn{opacity:1}
+.del-btn:hover{background:rgba(229,58,58,.2)}
 
 /* Badges */
 .p-badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:.68rem;font-weight:700;white-space:nowrap}
@@ -76,81 +64,13 @@ tr:hover .row-actions{opacity:1}
 .badge-complete{background:rgba(59,178,115,.25);color:#1e7a45}
 .badge-hold{background:rgba(247,183,49,.12);color:#9a7000}
 .badge-active{background:rgba(59,178,115,.12);color:#2a9d5c}
-
-/* Agency badges */
+.badge-inactive{background:rgba(122,121,117,.12);color:var(--muted)}
 .ag-eyeball{background:rgba(59,178,115,.14);color:#2a9d5c}
 .ag-krave{background:rgba(136,84,208,.14);color:#6b3fa0}
 .ag-littleleaf{background:rgba(45,125,210,.14);color:#1a5fa0}
 .ag-standalone{background:rgba(122,121,117,.12);color:var(--muted)}
 
-/* Performance criteria badges */
-.crit-good{background:rgba(59,178,115,.15);color:#2a9d5c;font-size:.65rem;padding:1px 6px;border-radius:6px;font-weight:700;margin-left:3px}
-.crit-warn{background:rgba(247,183,49,.18);color:#c8930a;font-size:.65rem;padding:1px 6px;border-radius:6px;font-weight:700;margin-left:3px}
-.crit-none{background:rgba(122,121,117,.1);color:var(--muted);font-size:.65rem;padding:1px 6px;border-radius:6px;font-weight:700;margin-left:3px}
-tr.perf-top{background:rgba(59,178,115,.04)}
-tr.perf-zero td{color:var(--muted)}
-
-/* Creator card grid */
-.p-card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:.85rem}
-.p-creator-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.1rem;transition:border-color .2s,box-shadow .2s;cursor:pointer}
-.p-creator-card:hover{border-color:var(--border2);box-shadow:var(--shadow)}
-.p-cc-name{font-family:'Inter',sans-serif;font-size:.88rem;font-weight:700;color:var(--h2);margin-bottom:.15rem}
-.p-cc-handle{font-family:'Inter',sans-serif;font-size:.75rem;color:var(--muted);margin-bottom:.5rem}
-.p-cc-tags{display:flex;gap:4px;flex-wrap:wrap}
-
-/* Agency group header in card view */
-.p-agency-group{margin-bottom:1.5rem}
-.p-agency-group-hdr{display:flex;align-items:center;gap:.65rem;margin-bottom:.75rem}
-.p-agency-group-name{font-family:'Fraunces',serif;font-size:1rem;font-weight:600;color:var(--h2)}
-.p-agency-group-count{font-family:'Inter',sans-serif;font-size:.72rem;color:var(--muted);background:var(--bg2);padding:2px 8px;border-radius:100px}
-.p-agency-group-pay{font-family:'Inter',sans-serif;font-size:.71rem;color:var(--muted)}
-
-/* Performance sub-tabs */
-.p-perf-tabs{display:flex;gap:6px;margin-bottom:1rem}
-.p-perf-tab{padding:6px 16px;border-radius:100px;border:1.5px solid var(--border2);font-family:'Inter',sans-serif;font-size:.8rem;font-weight:600;cursor:pointer;color:var(--muted);background:var(--card);transition:all .2s}
-.p-perf-tab:hover{border-color:var(--primary);color:var(--primary)}
-.p-perf-tab.active{background:var(--primary);color:#fff;border-color:var(--primary)}
-.p-perf-section{display:none}
-.p-perf-section.active{display:block}
-
-/* Performance card grid */
-.p-perf-card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.85rem}
-.p-perf-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.1rem;transition:border-color .2s;cursor:pointer}
-.p-perf-card:hover{border-color:var(--border2)}
-.p-perf-card.top-performer{border-color:rgba(59,178,115,.4);background:rgba(59,178,115,.03)}
-.p-perf-card.zero-performer{opacity:.6}
-.p-pc-name{font-family:'Inter',sans-serif;font-size:.84rem;font-weight:700;color:var(--h2);margin-bottom:.1rem}
-.p-pc-handle{font-family:'Inter',sans-serif;font-size:.72rem;color:var(--muted);margin-bottom:.65rem}
-.p-pc-stats{display:grid;grid-template-columns:1fr 1fr;gap:.4rem}
-.p-pc-stat{background:var(--bg2);border-radius:8px;padding:.4rem .5rem}
-.p-pc-stat-val{font-family:'Fraunces',serif;font-size:.95rem;font-weight:600;color:var(--h2)}
-.p-pc-stat-lbl{font-family:'Inter',sans-serif;font-size:.63rem;color:var(--muted);margin-top:1px}
-.p-pc-stat.good .p-pc-stat-val{color:#2a9d5c}
-
-/* Payment info bar */
-.p-pay-info{display:flex;align-items:flex-start;gap:.75rem;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.85rem 1.1rem;margin-bottom:.5rem}
-.p-pay-agency-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:5px}
-.p-pay-label{font-family:'Inter',sans-serif;font-size:.75rem;font-weight:700;color:var(--h2)}
-.p-pay-detail{font-family:'Inter',sans-serif;font-size:.76rem;color:var(--muted);margin-top:.1rem}
-.p-pay-edit{margin-left:auto;flex-shrink:0}
-
-/* Onboarding kit */
-.p-kit-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem}
-.p-kit-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem 1.35rem}
-.p-kit-card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:.85rem}
-.p-kit-card-top-left{display:flex;align-items:center;gap:.65rem}
-.p-kit-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.p-kit-agency{font-family:'Fraunces',serif;font-size:.95rem;font-weight:600;color:var(--h2)}
-.p-kit-type{font-family:'Inter',sans-serif;font-size:.72rem;color:var(--muted)}
-.p-kit-content{font-family:'Inter',sans-serif;font-size:.8rem;color:var(--body);line-height:1.6;white-space:pre-wrap}
-.p-kit-section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.4rem;margin-top:.9rem}
-.p-kit-section-name{font-family:'Inter',sans-serif;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
-
-/* Search input */
-.p-search{padding:6px 12px;border:1.5px solid var(--border2);border-radius:8px;font-family:'Inter',sans-serif;font-size:.82rem;background:var(--bg);color:var(--body);outline:none;width:200px;transition:border-color .2s}
-.p-search:focus{border-color:var(--primary)}
-
-/* Sortable column headers */
+/* Sort headers */
 .p-table th.sortable{cursor:pointer;user-select:none}
 .p-table th.sortable:hover{color:var(--body)}
 .sort-icon{margin-left:4px;opacity:.4;font-size:.65rem}
@@ -158,47 +78,58 @@ tr.perf-zero td{color:var(--muted)}
 .p-table th.sort-desc .sort-icon::after{content:'▼';opacity:1}
 .p-table th.sort-asc,.p-table th.sort-desc{color:var(--h2)}
 
-/* Inline stage select on pipeline */
-.stage-select{border:none;background:transparent;font-family:'Inter',sans-serif;font-size:.68rem;font-weight:700;cursor:pointer;border-radius:10px;padding:2px 8px;outline:none;appearance:none;-webkit-appearance:none}
-
-/* Inline editable cell */
-.editable-cell{cursor:text;border-bottom:1px dashed transparent;transition:border-color .15s}
-.editable-cell:hover{border-bottom-color:var(--border2)}
-.editable-cell:focus{outline:none;border-bottom:1px solid var(--primary)}
-
-/* Period selector */
-.p-period-bar{display:flex;align-items:center;gap:.75rem;margin-bottom:1rem;flex-wrap:wrap}
-.p-period-select{padding:6px 12px;border:1.5px solid var(--border2);border-radius:8px;font-family:'Inter',sans-serif;font-size:.82rem;background:var(--bg);color:var(--body);outline:none;cursor:pointer;transition:border-color .2s}
-.p-period-select:focus{border-color:var(--primary)}
-.p-period-label{font-family:'Inter',sans-serif;font-size:.78rem;color:var(--muted)}
-
-/* Performance rank */
-.perf-rank{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;font-family:'Inter',sans-serif;font-size:.68rem;font-weight:700;flex-shrink:0}
+/* Performance */
+.perf-rank{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;font-family:'Inter',sans-serif;font-size:.68rem;font-weight:700}
 .rank-1{background:#ffd700;color:#7a5c00}
 .rank-2{background:#e8e8e8;color:#555}
 .rank-3{background:#cd7f32;color:#fff}
 .rank-other{background:var(--bg2);color:var(--muted)}
+.tier-s{background:rgba(59,178,115,.2);color:#1e7a45;padding:2px 7px;border-radius:8px;font-size:.65rem;font-weight:800}
+.tier-a{background:rgba(45,125,210,.15);color:#1a5fa0;padding:2px 7px;border-radius:8px;font-size:.65rem;font-weight:800}
+.tier-b{background:rgba(247,183,49,.15);color:#c8930a;padding:2px 7px;border-radius:8px;font-size:.65rem;font-weight:800}
+.tier-c{background:rgba(122,121,117,.12);color:var(--muted);padding:2px 7px;border-radius:8px;font-size:.65rem;font-weight:700}
+tr.perf-top{background:rgba(59,178,115,.04)}
+tr.perf-zero td{color:var(--muted)}
 
-/* Tier badges */
-.tier-s{background:rgba(59,178,115,.2);color:#1e7a45;padding:2px 7px;border-radius:8px;font-size:.65rem;font-weight:800;letter-spacing:.04em}
-.tier-a{background:rgba(45,125,210,.15);color:#1a5fa0;padding:2px 7px;border-radius:8px;font-size:.65rem;font-weight:800;letter-spacing:.04em}
-.tier-b{background:rgba(247,183,49,.15);color:#c8930a;padding:2px 7px;border-radius:8px;font-size:.65rem;font-weight:800;letter-spacing:.04em}
-.tier-c{background:rgba(122,121,117,.12);color:var(--muted);padding:2px 7px;border-radius:8px;font-size:.65rem;font-weight:700;letter-spacing:.04em}
+/* Performance agency tabs */
+.p-perf-tabs{display:flex;gap:6px}
+.p-perf-tab{padding:6px 16px;border-radius:100px;border:1.5px solid var(--border2);font-family:'Inter',sans-serif;font-size:.8rem;font-weight:600;cursor:pointer;color:var(--muted);background:var(--card);transition:all .2s}
+.p-perf-tab:hover{border-color:var(--primary);color:var(--primary)}
+.p-perf-tab.active{background:var(--primary);color:#fff;border-color:var(--primary)}
 
-/* Loading placeholder */
+/* Period bar */
+.p-period-bar{display:flex;align-items:center;gap:.75rem;margin-bottom:1rem;flex-wrap:wrap}
+.p-period-sel{padding:6px 12px;border:1.5px solid var(--border2);border-radius:8px;font-family:'Inter',sans-serif;font-size:.82rem;background:var(--bg);color:var(--body);outline:none;cursor:pointer;transition:border-color .2s}
+.p-period-sel:focus{border-color:var(--primary)}
+.p-period-add{padding:6px 14px;background:none;border:1.5px solid var(--border2);color:var(--body);border-radius:8px;font-family:'Inter',sans-serif;font-size:.8rem;font-weight:600;cursor:pointer;transition:all .2s}
+.p-period-add:hover{border-color:var(--primary);color:var(--primary)}
+
+/* Assignee bubbles */
+.av-bubble{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;font-family:'Inter',sans-serif;font-size:.62rem;font-weight:700;color:#fff;flex-shrink:0}
+
+/* Info bar */
+.p-info-bar{font-family:'Inter',sans-serif;font-size:.78rem;color:var(--muted);background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.6rem 1rem;margin-bottom:.85rem}
+.p-info-bar button{background:none;border:none;color:var(--primary);font-family:inherit;font-size:inherit;font-weight:600;cursor:pointer;padding:0}
+
+/* Loading */
 .p-loading{text-align:center;padding:3rem;color:var(--muted);font-family:'Inter',sans-serif;font-size:.9rem}
+
+/* Onboarding Kit card */
+.kit-link-wrap{margin-top:2.5rem;padding-top:2rem;border-top:1px solid var(--border)}
+.kit-link-card{display:inline-flex;align-items:center;gap:1rem;background:var(--card);border:1.5px solid var(--border);border-radius:var(--radius);padding:1.1rem 1.5rem;text-decoration:none;color:var(--body);transition:all .2s}
+.kit-link-card:hover{border-color:var(--primary);box-shadow:var(--shadow);text-decoration:none}
+.kit-link-icon{width:42px;height:42px;border-radius:12px;background:rgba(255,48,204,.1);display:flex;align-items:center;justify-content:center;font-size:1.35rem;flex-shrink:0}
+.kit-link-text{}
+.kit-link-label{font-family:'Fraunces',serif;font-size:1rem;font-weight:600;color:var(--h2)}
+.kit-link-sub{font-family:'Inter',sans-serif;font-size:.76rem;color:var(--muted);margin-top:.15rem}
+.kit-link-arrow{color:var(--primary);font-size:1.2rem;margin-left:.5rem}
 
 /* Responsive */
 @media(max-width:768px){
-  .p-overview{grid-template-columns:repeat(2,1fr)}
   .p-tabs{gap:2px}
   .p-tab{padding:.45rem .7rem;font-size:.76rem}
-  .p-table th,.p-table td{padding:.55rem .75rem}
-}
-@media(max-width:480px){
-  .p-overview{grid-template-columns:1fr 1fr}
-  .p-card-grid{grid-template-columns:1fr 1fr}
-  .p-perf-card-grid{grid-template-columns:1fr 1fr}
+  .p-table th,.p-table td{padding:.5rem .65rem}
+  .p-search{width:130px}
 }
 </style>
 </head>
@@ -308,123 +239,82 @@ tr.perf-zero td{color:var(--muted)}
   <div class="p-wrap">
 
     <div class="p-header">
-      <div class="p-header-left">
-        <div class="p-title">Partnerships</div>
-        <div class="p-sub">CareNBloom creator &amp; influencer partnerships</div>
-      </div>
-    </div>
-
-    <!-- OVERVIEW CARDS (dynamic counts) -->
-    <div class="p-overview" id="overview-cards">
-      <div class="p-ov-card">
-        <div class="p-ov-agency ag-eyeball p-badge" style="margin-bottom:.4rem">Eyeball Factory</div>
-        <div class="p-ov-count" id="ov-eyeball">—</div>
-        <div class="p-ov-meta">Creators · TikTok primary<br>Campaign: Hello-Momo-5</div>
-        <div class="p-ov-pay">CPM + fixed monthly · Direct</div>
-      </div>
-      <div class="p-ov-card">
-        <div class="p-ov-agency ag-krave p-badge" style="margin-bottom:.4rem">Krave Media</div>
-        <div class="p-ov-count" id="ov-krave">—</div>
-        <div class="p-ov-meta">Influencers · Instagram primary<br>Campaign: Lem-Regalio-1</div>
-        <div class="p-ov-pay">Via Krave Media agency</div>
-      </div>
-      <div class="p-ov-card">
-        <div class="p-ov-agency ag-littleleaf p-badge" style="margin-bottom:.4rem">Little Leaf</div>
-        <div class="p-ov-count" id="ov-littleleaf">—</div>
-        <div class="p-ov-meta">Influencers · Multi-platform<br>Meta Ads + Impact affiliate</div>
-        <div class="p-ov-pay">Via Little Leaf + Impact</div>
-      </div>
-      <div class="p-ov-card">
-        <div class="p-ov-agency ag-standalone p-badge" style="margin-bottom:.4rem">Standalone</div>
-        <div class="p-ov-count" id="ov-standalone">—</div>
-        <div class="p-ov-meta">Creators · Multi-platform<br>Direct relationship</div>
-        <div class="p-ov-pay">Direct · Social Snowball / Tremendos</div>
-      </div>
+      <div class="p-title">Partnerships</div>
+      <div class="p-sub">CareNBloom creator &amp; influencer partnerships</div>
     </div>
 
     <!-- TAB NAV -->
     <div class="p-tabs">
-      <button class="p-tab active" onclick="switchTab('directory')">Creator Directory</button>
-      <button class="p-tab" onclick="switchTab('pipeline')">Pipeline</button>
-      <button class="p-tab" onclick="switchTab('performance')">Performance</button>
-      <button class="p-tab" onclick="switchTab('payments')">Payments &amp; Deliverables</button>
-      <button class="p-tab" onclick="switchTab('affiliates')">Affiliate Links</button>
-      <button class="p-tab" onclick="switchTab('onboarding')">Onboarding Kit</button>
+      <button class="p-tab active" data-tab="directory" onclick="switchTab('directory')">Creator Directory</button>
+      <button class="p-tab" data-tab="pipeline" onclick="switchTab('pipeline')">Pipeline</button>
+      <button class="p-tab" data-tab="performance" onclick="switchTab('performance')">Performance</button>
+      <button class="p-tab" data-tab="payments" onclick="switchTab('payments')">Payments</button>
+      <button class="p-tab" data-tab="affiliates" onclick="switchTab('affiliates')">Affiliates</button>
     </div>
 
     <!-- ── TAB 1: CREATOR DIRECTORY ──────────────────────────── -->
     <div class="p-section active" id="sec-directory">
       <div class="p-toolbar">
-        <div class="p-filter-pills" id="dir-pills">
-          <button class="p-pill active" onclick="filterCreators('all')">All</button>
-          <button class="p-pill" onclick="filterCreators('Eyeball Factory')">Eyeball Factory</button>
-          <button class="p-pill" onclick="filterCreators('Krave Media')">Krave Media</button>
-          <button class="p-pill" onclick="filterCreators('Little Leaf')">Little Leaf</button>
-          <button class="p-pill" onclick="filterCreators('Standalone')">Standalone</button>
-        </div>
-        <input class="p-search" id="dir-search" placeholder="Search creators..." oninput="renderDirectory()"/>
-        <div class="p-view-toggle">
-          <button class="p-vbtn active" id="dir-vbtn-table" onclick="setDirView('table')">Table</button>
-          <button class="p-vbtn" id="dir-vbtn-cards" onclick="setDirView('cards')">Cards</button>
-        </div>
-        <button class="p-add-btn" onclick="openCreatorModal()">+ Add Creator</button>
+        <input class="p-search" id="dir-search" placeholder="Search name / handle…" oninput="renderDirectory()"/>
+        <select class="p-filter-sel" id="dir-agency-filter" onchange="renderDirectory()">
+          <option value="all">All Agencies</option>
+          <option>Eyeball Factory</option>
+          <option>Krave Media</option>
+          <option>Little Leaf</option>
+          <option>Standalone</option>
+        </select>
+        <button class="p-add-btn" onclick="addCreatorRow()">+ Add Creator</button>
       </div>
-
-      <div id="dir-table-view">
-        <div class="p-table-wrap">
-          <table class="p-table" id="dir-table">
-            <thead><tr>
-              <th class="sortable" onclick="sortDir('name')">Name<span class="sort-icon"></span></th>
-              <th>Handle</th>
-              <th class="sortable" onclick="sortDir('agency')">Agency<span class="sort-icon"></span></th>
-              <th>Category</th>
-              <th>Platform</th>
-              <th>Payment Route</th>
-              <th class="sortable" onclick="sortDir('status')">Status<span class="sort-icon"></span></th>
-              <th></th>
-            </tr></thead>
-            <tbody id="dir-tbody"><tr><td colspan="8" class="p-loading">Loading...</td></tr></tbody>
-          </table>
-        </div>
-      </div>
-
-      <div id="dir-cards-view" style="display:none">
-        <div id="dir-cards-container"></div>
+      <div class="p-table-wrap">
+        <table class="p-table">
+          <thead><tr>
+            <th class="sortable" data-sort="name" onclick="sortDir('name')">Name<span class="sort-icon"></span></th>
+            <th class="sortable" data-sort="handle" onclick="sortDir('handle')">Handle<span class="sort-icon"></span></th>
+            <th class="sortable" data-sort="agency" onclick="sortDir('agency')">Agency<span class="sort-icon"></span></th>
+            <th>Category</th>
+            <th>Platform</th>
+            <th>Payment Route</th>
+            <th class="sortable" data-sort="status" onclick="sortDir('status')">Status<span class="sort-icon"></span></th>
+            <th class="del-cell"></th>
+          </tr></thead>
+          <tbody id="dir-tbody"><tr><td colspan="8" class="p-loading">Loading…</td></tr></tbody>
+        </table>
       </div>
     </div>
 
     <!-- ── TAB 2: PIPELINE ────────────────────────────────────── -->
     <div class="p-section" id="sec-pipeline">
       <div class="p-toolbar">
-        <div class="p-filter-pills" id="pipe-stage-pills">
-          <button class="p-pill active" onclick="filterPipeline('stage','all')">All Stages</button>
-          <button class="p-pill" onclick="filterPipeline('stage','1-Outreach')">Outreach</button>
-          <button class="p-pill" onclick="filterPipeline('stage','2-Discussion')">Discussion</button>
-          <button class="p-pill" onclick="filterPipeline('stage','3-Contract')">Contract</button>
-          <button class="p-pill" onclick="filterPipeline('stage','4-Samples Sent')">Samples</button>
-          <button class="p-pill" onclick="filterPipeline('stage','5-Content Live')">Content Live</button>
-          <button class="p-pill" onclick="filterPipeline('stage','6-Complete')">Complete</button>
-        </div>
-        <div class="p-filter-pills" id="pipe-status-pills">
-          <button class="p-pill active" onclick="filterPipeline('status','all')">All Status</button>
-          <button class="p-pill" onclick="filterPipeline('status','Active')">Active</button>
-          <button class="p-pill" onclick="filterPipeline('status','On Hold')">On Hold</button>
-        </div>
-        <button class="p-add-btn" onclick="openPipelineModal()">+ Add Entry</button>
+        <input class="p-search" id="pipe-search" placeholder="Search…" oninput="renderPipeline()"/>
+        <select class="p-filter-sel" id="pipe-stage-filter" onchange="renderPipeline()">
+          <option value="all">All Stages</option>
+          <option>1-Outreach</option>
+          <option>2-Discussion</option>
+          <option>3-Contract</option>
+          <option>4-Samples Sent</option>
+          <option>5-Content Live</option>
+          <option>6-Complete</option>
+        </select>
+        <select class="p-filter-sel" id="pipe-status-filter" onchange="renderPipeline()">
+          <option value="all">All Status</option>
+          <option>Active</option>
+          <option>On Hold</option>
+        </select>
+        <button class="p-add-btn" onclick="addPipelineRow()">+ Add Entry</button>
       </div>
       <div class="p-table-wrap">
-        <table class="p-table" id="pipe-table">
+        <table class="p-table">
           <thead><tr>
-            <th class="sortable" onclick="sortPipe('company')">Company / Creator<span class="sort-icon"></span></th>
+            <th class="sortable" data-sort="company" onclick="sortPipe('company')">Company / Creator<span class="sort-icon"></span></th>
             <th>Source / Agency</th>
-            <th class="sortable" onclick="sortPipe('stage')">Stage<span class="sort-icon"></span></th>
+            <th class="sortable" data-sort="stage" onclick="sortPipe('stage')">Stage<span class="sort-icon"></span></th>
             <th>Assignee</th>
             <th>Next Step</th>
             <th>Last Update</th>
-            <th class="sortable" onclick="sortPipe('status')">Status<span class="sort-icon"></span></th>
-            <th></th>
+            <th class="sortable" data-sort="status" onclick="sortPipe('status')">Status<span class="sort-icon"></span></th>
+            <th class="del-cell"></th>
           </tr></thead>
-          <tbody id="pipe-tbody"><tr><td colspan="8" class="p-loading">Loading...</td></tr></tbody>
+          <tbody id="pipe-tbody"><tr><td colspan="8" class="p-loading">Loading…</td></tr></tbody>
         </table>
       </div>
     </div>
@@ -433,421 +323,94 @@ tr.perf-zero td{color:var(--muted)}
     <div class="p-section" id="sec-performance">
       <div class="p-toolbar">
         <div class="p-perf-tabs">
-          <button class="p-perf-tab active" id="perf-tab-eyeball" onclick="switchPerfAgency('eyeball')">Eyeball Factory</button>
-          <button class="p-perf-tab" id="perf-tab-krave" onclick="switchPerfAgency('krave')">Krave Media</button>
-          <button class="p-perf-tab" id="perf-tab-littleleaf" onclick="switchPerfAgency('littleleaf')">Little Leaf</button>
+          <button class="p-perf-tab active" id="perf-tab-eyeball" onclick="switchPerfAgency('Eyeball Factory')">Eyeball Factory</button>
+          <button class="p-perf-tab" id="perf-tab-krave" onclick="switchPerfAgency('Krave Media')">Krave Media</button>
+          <button class="p-perf-tab" id="perf-tab-littleleaf" onclick="switchPerfAgency('Little Leaf')">Little Leaf</button>
         </div>
-        <div class="p-view-toggle" style="margin-left:auto">
-          <button class="p-vbtn active" id="perf-vbtn-table" onclick="setPerfView('table')">Table</button>
-          <button class="p-vbtn" id="perf-vbtn-cards" onclick="setPerfView('cards')">Cards</button>
-        </div>
-        <button class="p-add-btn" onclick="openPerfModal()">+ Add Row</button>
+        <button class="p-add-btn" onclick="addPerfRow()">+ Add Row</button>
       </div>
-
-      <div style="font-family:'Inter',sans-serif;font-size:.78rem;color:var(--muted);background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.6rem 1rem;margin-bottom:.85rem">
-        Standalone creators (Luci, Annemarie) are tracked via affiliate codes — see <button onclick="switchTab('affiliates')" style="background:none;border:none;color:var(--primary);font-family:inherit;font-size:inherit;font-weight:600;cursor:pointer;padding:0">Affiliate Links</button> tab.
+      <div class="p-info-bar">
+        Standalone creators (Luci, Annemarie) are tracked via affiliate codes — see <button onclick="switchTab('affiliates')">Affiliate Links</button> tab.
       </div>
-
       <div class="p-period-bar">
-        <span class="p-period-label">Period:</span>
-        <select class="p-period-select" id="perf-period-select" onchange="onPeriodChange()">
+        <span style="font-family:'Inter',sans-serif;font-size:.78rem;color:var(--muted)">Period:</span>
+        <select class="p-period-sel" id="perf-period-select" onchange="renderPerformance()">
           <option value="all">All Periods</option>
         </select>
-        <button class="p-add-btn" style="margin-left:0" onclick="openAddPeriodModal()">+ New Period</button>
-      </div>
-
-      <div id="perf-table-view">
-        <div class="p-table-wrap">
-          <table class="p-table" id="perf-table">
-            <thead><tr>
-              <th style="width:36px">#</th>
-              <th class="sortable" onclick="sortPerf('creator_name')">Name<span class="sort-icon"></span></th>
-              <th>Handle</th>
-              <th class="sortable" onclick="sortPerf('spend_hkd')">Spend (HKD)<span class="sort-icon"></span></th>
-              <th class="sortable" onclick="sortPerf('roas')">ROAS<span class="sort-icon"></span></th>
-              <th class="sortable" onclick="sortPerf('purchases')">Purchases<span class="sort-icon"></span></th>
-              <th class="sortable" onclick="sortPerf('revenue_hkd')">Revenue (HKD)<span class="sort-icon"></span></th>
-              <th>Tier</th><th>Notes</th><th></th>
-            </tr></thead>
-            <tbody id="perf-tbody"><tr><td colspan="9" class="p-loading">Loading...</td></tr></tbody>
-          </table>
-        </div>
-      </div>
-
-      <div id="perf-cards-view" style="display:none">
-        <div class="p-perf-card-grid" id="perf-cards-container"></div>
-      </div>
-    </div>
-
-    <!-- ── TAB 4: PAYMENTS & DELIVERABLES ─────────────────────── -->
-    <div class="p-section" id="sec-payments">
-      <div class="p-toolbar">
-        <button class="p-add-btn" onclick="openPaymentModal()">+ Add Payment Route</button>
-      </div>
-      <div id="pay-info-bars"></div>
-      <div class="p-table-wrap" style="margin-top:1.25rem">
-        <table class="p-table">
-          <thead><tr>
-            <th>Agency</th><th>Payment Route</th><th>Campaign</th><th>Rate Type</th><th>Notes</th><th></th>
-          </tr></thead>
-          <tbody id="pay-tbody"><tr><td colspan="6" class="p-loading">Loading...</td></tr></tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- ── TAB 5: AFFILIATE LINKS ─────────────────────────────── -->
-    <div class="p-section" id="sec-affiliates">
-      <div class="p-toolbar">
-        <button class="p-add-btn" onclick="openAffiliateModal()">+ Add Affiliate</button>
+        <button class="p-period-add" onclick="addPerfPeriod()">+ New Period</button>
       </div>
       <div class="p-table-wrap">
         <table class="p-table">
           <thead><tr>
-            <th>Creator</th><th>Agency</th><th>Discount Code</th><th>Platform / Notes</th><th></th>
+            <th style="width:36px">#</th>
+            <th class="sortable" data-sort="creator_name" onclick="sortPerf('creator_name')">Name<span class="sort-icon"></span></th>
+            <th>Handle</th>
+            <th class="sortable" data-sort="spend_hkd" onclick="sortPerf('spend_hkd')">Spend (HKD)<span class="sort-icon"></span></th>
+            <th class="sortable" data-sort="roas" onclick="sortPerf('roas')">ROAS<span class="sort-icon"></span></th>
+            <th class="sortable" data-sort="purchases" onclick="sortPerf('purchases')">Purchases<span class="sort-icon"></span></th>
+            <th class="sortable" data-sort="revenue_hkd" onclick="sortPerf('revenue_hkd')">Revenue (HKD)<span class="sort-icon"></span></th>
+            <th>Tier</th>
+            <th>Notes</th>
+            <th class="del-cell"></th>
           </tr></thead>
-          <tbody id="aff-tbody"><tr><td colspan="5" class="p-loading">Loading...</td></tr></tbody>
+          <tbody id="perf-tbody"><tr><td colspan="10" class="p-loading">Loading…</td></tr></tbody>
         </table>
       </div>
     </div>
 
-    <!-- ── TAB 6: ONBOARDING KIT ──────────────────────────────── -->
-    <div class="p-section" id="sec-onboarding">
+    <!-- ── TAB 4: PAYMENTS ────────────────────────────────────── -->
+    <div class="p-section" id="sec-payments">
       <div class="p-toolbar">
-        <button class="p-add-btn" onclick="openKitModal()">+ Add Kit Item</button>
+        <button class="p-add-btn" onclick="addPaymentRow()">+ Add Row</button>
       </div>
-      <div class="p-kit-grid" id="kit-container">
-        <div class="p-loading">Loading...</div>
+      <div class="p-table-wrap">
+        <table class="p-table">
+          <thead><tr>
+            <th>Agency</th>
+            <th>Payment Route</th>
+            <th>Campaign</th>
+            <th>Rate Type</th>
+            <th>Notes</th>
+            <th class="del-cell"></th>
+          </tr></thead>
+          <tbody id="pay-tbody"><tr><td colspan="6" class="p-loading">Loading…</td></tr></tbody>
+        </table>
       </div>
+    </div>
+
+    <!-- ── TAB 5: AFFILIATES ──────────────────────────────────── -->
+    <div class="p-section" id="sec-affiliates">
+      <div class="p-toolbar">
+        <input class="p-search" id="aff-search" placeholder="Search creator / code…" oninput="renderAffiliates()"/>
+        <button class="p-add-btn" onclick="addAffiliateRow()">+ Add Affiliate</button>
+      </div>
+      <div class="p-table-wrap">
+        <table class="p-table">
+          <thead><tr>
+            <th>Creator</th>
+            <th>Agency</th>
+            <th>Discount Code</th>
+            <th>Platform / Notes</th>
+            <th class="del-cell"></th>
+          </tr></thead>
+          <tbody id="aff-tbody"><tr><td colspan="5" class="p-loading">Loading…</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ONBOARDING KIT CARD -->
+    <div class="kit-link-wrap">
+      <a class="kit-link-card" href="onboarding.html">
+        <div class="kit-link-icon">📋</div>
+        <div class="kit-link-text">
+          <div class="kit-link-label">Onboarding Kit</div>
+          <div class="kit-link-sub">Brief templates, contracts &amp; posting guidelines per agency</div>
+        </div>
+        <div class="kit-link-arrow">→</div>
+      </a>
     </div>
 
   </div><!-- /p-wrap -->
-
-  <!-- ═══════════════════════════════════════════════════════ -->
-  <!-- MODALS                                                  -->
-  <!-- ═══════════════════════════════════════════════════════ -->
-
-  <!-- CREATOR MODAL -->
-  <div class="modal-overlay" id="creator-modal" onclick="closeModalOutside(event,'creator-modal')">
-    <div class="modal">
-      <div class="modal-header">
-        <div class="modal-title" id="creator-modal-title">Add Creator</div>
-        <button class="modal-close" onclick="closeModal('creator-modal')">✕</button>
-      </div>
-      <div class="form-row">
-        <div class="form-field">
-          <label class="form-label">Name</label>
-          <input class="form-input" id="cm-name" placeholder="e.g. Kimberly Yue"/>
-        </div>
-        <div class="form-field">
-          <label class="form-label">Handle</label>
-          <input class="form-input" id="cm-handle" placeholder="@handle"/>
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-field">
-          <label class="form-label">Agency</label>
-          <select class="form-select" id="cm-agency">
-            <option>Eyeball Factory</option>
-            <option>Krave Media</option>
-            <option>Little Leaf</option>
-            <option>Standalone</option>
-          </select>
-        </div>
-        <div class="form-field">
-          <label class="form-label">Category</label>
-          <select class="form-select" id="cm-category">
-            <option>Creator</option>
-            <option>Influencer</option>
-          </select>
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-field">
-          <label class="form-label">Platform</label>
-          <input class="form-input" id="cm-platform" placeholder="e.g. TikTok, Instagram"/>
-        </div>
-        <div class="form-field">
-          <label class="form-label">Status</label>
-          <select class="form-select" id="cm-status">
-            <option>Active</option>
-            <option>Inactive</option>
-            <option>On Hold</option>
-          </select>
-        </div>
-      </div>
-      <div class="form-field">
-        <label class="form-label">Payment Route</label>
-        <input class="form-input" id="cm-payment" placeholder="e.g. Direct to Eyeball Factory"/>
-      </div>
-      <div class="modal-footer">
-        <button class="row-btn del" id="cm-delete-btn" onclick="deleteCreator()" style="display:none;margin-right:auto">Delete</button>
-        <button class="row-btn" onclick="closeModal('creator-modal')">Cancel</button>
-        <button class="p-add-btn" style="margin-left:0" onclick="saveCreator()">Save</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- PIPELINE MODAL -->
-  <div class="modal-overlay" id="pipeline-modal" onclick="closeModalOutside(event,'pipeline-modal')">
-    <div class="modal">
-      <div class="modal-header">
-        <div class="modal-title" id="pipeline-modal-title">Add Pipeline Entry</div>
-        <button class="modal-close" onclick="closeModal('pipeline-modal')">✕</button>
-      </div>
-      <div class="form-row">
-        <div class="form-field">
-          <label class="form-label">Company / Creator</label>
-          <input class="form-input" id="pm-company" placeholder="e.g. Ali Woods"/>
-        </div>
-        <div class="form-field">
-          <label class="form-label">Source / Agency</label>
-          <input class="form-input" id="pm-source" placeholder="e.g. Standalone"/>
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-field">
-          <label class="form-label">Stage</label>
-          <select class="form-select" id="pm-stage">
-            <option>1-Outreach</option>
-            <option>2-Discussion</option>
-            <option>3-Contract</option>
-            <option>4-Samples Sent</option>
-            <option>5-Content Live</option>
-            <option>6-Complete</option>
-          </select>
-        </div>
-        <div class="form-field">
-          <label class="form-label">Status</label>
-          <select class="form-select" id="pm-status">
-            <option>Active</option>
-            <option>On Hold</option>
-          </select>
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-field">
-          <label class="form-label">Assignee</label>
-          <input class="form-input" id="pm-assignee" placeholder="e.g. Momo/Rahul"/>
-        </div>
-        <div class="form-field">
-          <label class="form-label">Last Update</label>
-          <input class="form-input" id="pm-last-update" placeholder="e.g. Apr 10"/>
-        </div>
-      </div>
-      <div class="form-field">
-        <label class="form-label">Next Step</label>
-        <input class="form-input" id="pm-next-step" placeholder="e.g. Send samples"/>
-      </div>
-      <div class="modal-footer">
-        <button class="row-btn del" id="pm-delete-btn" onclick="deletePipeline()" style="display:none;margin-right:auto">Delete</button>
-        <button class="row-btn" onclick="closeModal('pipeline-modal')">Cancel</button>
-        <button class="p-add-btn" style="margin-left:0" onclick="savePipeline()">Save</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- PERFORMANCE MODAL -->
-  <div class="modal-overlay" id="perf-modal" onclick="closeModalOutside(event,'perf-modal')">
-    <div class="modal">
-      <div class="modal-header">
-        <div class="modal-title" id="perf-modal-title">Add Performance Row</div>
-        <button class="modal-close" onclick="closeModal('perf-modal')">✕</button>
-      </div>
-      <div class="form-row">
-        <div class="form-field">
-          <label class="form-label">Creator Name</label>
-          <input class="form-input" id="pfm-name" placeholder="e.g. Kimberly Yue"/>
-        </div>
-        <div class="form-field">
-          <label class="form-label">Handle</label>
-          <input class="form-input" id="pfm-handle" placeholder="@handle"/>
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-field">
-          <label class="form-label">Agency</label>
-          <select class="form-select" id="pfm-agency">
-            <option>Eyeball Factory</option>
-            <option>Krave Media</option>
-            <option>Little Leaf</option>
-          </select>
-        </div>
-        <div class="form-field">
-          <label class="form-label">Period</label>
-          <input class="form-input" id="pfm-period" placeholder="e.g. Mar 31–Apr 6"/>
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-field">
-          <label class="form-label">Spend (HKD)</label>
-          <input class="form-input" type="number" id="pfm-spend" placeholder="0"/>
-        </div>
-        <div class="form-field">
-          <label class="form-label">ROAS</label>
-          <input class="form-input" type="number" step="0.01" id="pfm-roas" placeholder="0.00"/>
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-field">
-          <label class="form-label">Purchases</label>
-          <input class="form-input" type="number" id="pfm-purchases" placeholder="0"/>
-        </div>
-        <div class="form-field">
-          <label class="form-label">Revenue (HKD)</label>
-          <input class="form-input" type="number" id="pfm-revenue" placeholder="0"/>
-        </div>
-      </div>
-      <div class="form-field">
-        <label class="form-label">Notes</label>
-        <input class="form-input" id="pfm-notes" placeholder="e.g. Meta, Impact only"/>
-      </div>
-      <div class="modal-footer">
-        <button class="row-btn del" id="pfm-delete-btn" onclick="deletePerf()" style="display:none;margin-right:auto">Delete</button>
-        <button class="row-btn" onclick="closeModal('perf-modal')">Cancel</button>
-        <button class="p-add-btn" style="margin-left:0" onclick="savePerf()">Save</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- PAYMENT MODAL -->
-  <div class="modal-overlay" id="payment-modal" onclick="closeModalOutside(event,'payment-modal')">
-    <div class="modal">
-      <div class="modal-header">
-        <div class="modal-title" id="payment-modal-title">Add Payment Route</div>
-        <button class="modal-close" onclick="closeModal('payment-modal')">✕</button>
-      </div>
-      <div class="form-row">
-        <div class="form-field">
-          <label class="form-label">Agency</label>
-          <input class="form-input" id="paym-agency" placeholder="e.g. Eyeball Factory"/>
-        </div>
-        <div class="form-field">
-          <label class="form-label">Campaign</label>
-          <input class="form-input" id="paym-campaign" placeholder="e.g. Hello-Momo-5"/>
-        </div>
-      </div>
-      <div class="form-field">
-        <label class="form-label">Payment Route</label>
-        <input class="form-input" id="paym-route" placeholder="e.g. Direct to Eyeball Factory"/>
-      </div>
-      <div class="form-field">
-        <label class="form-label">Rate Type</label>
-        <input class="form-input" id="paym-rate" placeholder="e.g. CPM + fixed monthly"/>
-      </div>
-      <div class="form-field">
-        <label class="form-label">Notes</label>
-        <textarea class="form-textarea" id="paym-notes" placeholder="Additional notes..."></textarea>
-      </div>
-      <div class="modal-footer">
-        <button class="row-btn del" id="paym-delete-btn" onclick="deletePayment()" style="display:none;margin-right:auto">Delete</button>
-        <button class="row-btn" onclick="closeModal('payment-modal')">Cancel</button>
-        <button class="p-add-btn" style="margin-left:0" onclick="savePayment()">Save</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- AFFILIATE MODAL -->
-  <div class="modal-overlay" id="affiliate-modal" onclick="closeModalOutside(event,'affiliate-modal')">
-    <div class="modal">
-      <div class="modal-header">
-        <div class="modal-title" id="affiliate-modal-title">Add Affiliate Link</div>
-        <button class="modal-close" onclick="closeModal('affiliate-modal')">✕</button>
-      </div>
-      <div class="form-row">
-        <div class="form-field">
-          <label class="form-label">Creator Name</label>
-          <input class="form-input" id="afm-name" placeholder="e.g. Karen Bigmann"/>
-        </div>
-        <div class="form-field">
-          <label class="form-label">Agency</label>
-          <select class="form-select" id="afm-agency">
-            <option>Eyeball Factory</option>
-            <option>Krave Media</option>
-            <option>Little Leaf</option>
-            <option>Standalone</option>
-          </select>
-        </div>
-      </div>
-      <div class="form-field">
-        <label class="form-label">Discount Code</label>
-        <input class="form-input" id="afm-code" placeholder="e.g. TABOO25" style="text-transform:uppercase"/>
-      </div>
-      <div class="form-field">
-        <label class="form-label">Platform / Notes</label>
-        <input class="form-input" id="afm-notes" placeholder="e.g. Impact platform"/>
-      </div>
-      <div class="modal-footer">
-        <button class="row-btn del" id="afm-delete-btn" onclick="deleteAffiliate()" style="display:none;margin-right:auto">Delete</button>
-        <button class="row-btn" onclick="closeModal('affiliate-modal')">Cancel</button>
-        <button class="p-add-btn" style="margin-left:0" onclick="saveAffiliate()">Save</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ONBOARDING KIT MODAL -->
-  <div class="modal-overlay" id="kit-modal" onclick="closeModalOutside(event,'kit-modal')">
-    <div class="modal" style="max-width:560px">
-      <div class="modal-header">
-        <div class="modal-title" id="kit-modal-title">Add Kit Item</div>
-        <button class="modal-close" onclick="closeModal('kit-modal')">✕</button>
-      </div>
-      <div class="form-row">
-        <div class="form-field">
-          <label class="form-label">Agency</label>
-          <select class="form-select" id="km-agency">
-            <option>Eyeball Factory</option>
-            <option>Krave Media</option>
-            <option>Little Leaf</option>
-            <option>Standalone</option>
-          </select>
-        </div>
-        <div class="form-field">
-          <label class="form-label">Section</label>
-          <input class="form-input" id="km-section" placeholder="e.g. Brief Template, Contract..."/>
-        </div>
-      </div>
-      <div class="form-field">
-        <label class="form-label">Content</label>
-        <textarea class="form-textarea" id="km-content" style="min-height:140px" placeholder="Enter the kit item content..."></textarea>
-      </div>
-      <div class="form-field">
-        <label class="form-label">Sort Order</label>
-        <input class="form-input" type="number" id="km-order" placeholder="1" value="1"/>
-      </div>
-      <div class="modal-footer">
-        <button class="row-btn del" id="km-delete-btn" onclick="deleteKit()" style="display:none;margin-right:auto">Delete</button>
-        <button class="row-btn" onclick="closeModal('kit-modal')">Cancel</button>
-        <button class="p-add-btn" style="margin-left:0" onclick="saveKit()">Save</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ADD PERIOD MODAL -->
-  <div class="modal-overlay" id="add-period-modal" onclick="closeModalOutside(event,'add-period-modal')">
-    <div class="modal" style="max-width:420px">
-      <div class="modal-header">
-        <div class="modal-title">Add New Period</div>
-        <button class="modal-close" onclick="closeModal('add-period-modal')">✕</button>
-      </div>
-      <p style="font-family:'Inter',sans-serif;font-size:.84rem;color:var(--muted);margin-bottom:1.25rem;line-height:1.5">This creates blank rows (0 values) for all current creators in the selected agency group for a new period. You can then update each row with actual numbers.</p>
-      <div class="form-field">
-        <label class="form-label">Period Label</label>
-        <input class="form-input" id="np-period" placeholder="e.g. Apr 7–Apr 13"/>
-      </div>
-      <div class="form-field">
-        <label class="form-label">Agency</label>
-        <select class="form-select" id="np-agency">
-          <option>Eyeball Factory</option>
-          <option>Krave Media</option>
-          <option>Little Leaf</option>
-        </select>
-      </div>
-      <div class="modal-footer">
-        <button class="row-btn" onclick="closeModal('add-period-modal')">Cancel</button>
-        <button class="p-add-btn" style="margin-left:0" onclick="createNewPeriod()">Create Period</button>
-      </div>
-    </div>
-  </div>
 
   <!-- USER MENU -->
   <div class="user-menu-overlay" id="user-menu-overlay" onclick="closeUserMenu()"></div>
@@ -892,823 +455,550 @@ tr.perf-zero td{color:var(--muted)}
 <script>
 const CURRENT_PAGE = 'partnerships';
 
-// ── STATE ────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════════════
 var PS = {
-  creators: [], pipeline: [], performance: [], affiliates: [], payments: [], kit: [],
-  dirFilter: 'all', dirView: 'table', dirSort: {col:'name', dir:'asc'},
-  pipeStageFilter: 'all', pipeStatusFilter: 'all', pipeSort: {col:'stage', dir:'asc'},
-  perfAgency: 'eyeball', perfView: 'table', perfSort: {col:'spend_hkd', dir:'desc'}, perfPeriod: 'all',
-  editingId: null
+  creators: [], pipeline: [], performance: [], payments: [], affiliates: [],
+  dirSort:  { col: 'name',       asc: true  },
+  pipeSort: { col: 'company',    asc: true  },
+  perfSort: { col: 'spend_hkd',  asc: false },
+  perfAgency: 'Eyeball Factory'
 };
 
-// ── HELPERS ──────────────────────────────────────────────────
-function agencyClass(ag) {
-  if (!ag) return 'ag-standalone';
-  var a = ag.toLowerCase();
+var ASSIGNEE_COLORS = {
+  momo: '#ff30cc', sam: '#3bb273', rahul: '#2d7dd2',
+  andrea: '#e55a20', daphnie: '#6b3fa0', ben: '#c8930a', arvin: '#1a5fa0'
+};
+
+var STAGE_OPTIONS   = ['1-Outreach','2-Discussion','3-Contract','4-Samples Sent','5-Content Live','6-Complete'];
+var STATUS_OPTIONS  = ['Active','On Hold'];
+var AGENCY_OPTIONS  = ['Eyeball Factory','Krave Media','Little Leaf','Standalone'];
+var CATEGORY_OPTIONS = ['Creator','Influencer'];
+var CREATOR_STATUS_OPTIONS = ['Active','Inactive','On Hold'];
+
+// Badge styles indexed by value
+var BADGE_STYLES = {
+  '1-Outreach':     'background:rgba(122,121,117,.15);color:#6b6b6b',
+  '2-Discussion':   'background:rgba(45,125,210,.15);color:#2d7dd2',
+  '3-Contract':     'background:rgba(247,183,49,.18);color:#c8930a',
+  '4-Samples Sent': 'background:rgba(255,107,53,.15);color:#e55a20',
+  '5-Content Live': 'background:rgba(59,178,115,.15);color:#2a9d5c',
+  '6-Complete':     'background:rgba(59,178,115,.25);color:#1e7a45',
+  'Active':         'background:rgba(59,178,115,.12);color:#2a9d5c',
+  'On Hold':        'background:rgba(247,183,49,.12);color:#9a7000',
+  'Inactive':       'background:rgba(122,121,117,.12);color:#6b6b6b'
+};
+
+// ══════════════════════════════════════════════════════════════
+// INLINE EDIT CELL BUILDERS
+// ══════════════════════════════════════════════════════════════
+function ec(table, id, field, val) {
+  return '<td><span contenteditable="true" class="editable-cell"'
+    + ' data-table="' + table + '" data-id="' + id + '" data-field="' + field + '"'
+    + ' onblur="saveCell(this)"'
+    + ' onkeydown="if(event.key===\'Enter\'){event.preventDefault();this.blur()}">'
+    + esc(val || '') + '</span></td>';
+}
+
+function ni(table, id, field, val) {
+  return '<td><input type="number" step="any" class="num-input"'
+    + ' data-table="' + table + '" data-id="' + id + '" data-field="' + field + '"'
+    + ' value="' + (val === null || val === undefined ? '' : val) + '"'
+    + ' onblur="saveNumInput(this)"'
+    + ' onkeydown="if(event.key===\'Enter\')this.blur()"/></td>';
+}
+
+function es(table, id, field, val, options) {
+  var style = BADGE_STYLES[val] || '';
+  var opts = options.map(function(o) {
+    return '<option' + (o === val ? ' selected' : '') + '>' + esc(o) + '</option>';
+  }).join('');
+  return '<td><select class="inline-select"'
+    + ' style="' + style + '"'
+    + ' data-table="' + table + '" data-id="' + id + '" data-field="' + field + '"'
+    + ' onchange="saveCellSelect(this)">'
+    + opts + '</select></td>';
+}
+
+function delBtn(fn, id) {
+  return '<td class="del-cell"><button class="del-btn" onclick="' + fn + '(' + id + ')" title="Delete">×</button></td>';
+}
+
+// ══════════════════════════════════════════════════════════════
+// SAVE HELPERS
+// ══════════════════════════════════════════════════════════════
+async function saveCell(el) {
+  var val   = el.innerText.trim();
+  var table = el.getAttribute('data-table');
+  var id    = parseInt(el.getAttribute('data-id'));
+  var field = el.getAttribute('data-field');
+  var cache = tableCache(table);
+  if (cache) { var row = cache.find(function(r){ return r.id===id; }); if (row) row[field]=val; }
+  var { error } = await db.from(table).update({[field]: val}).eq('id', id);
+  if (error) showToast('Save failed: ' + error.message, 'error');
+}
+
+async function saveNumInput(el) {
+  var val   = el.value === '' ? null : parseFloat(el.value);
+  var table = el.getAttribute('data-table');
+  var id    = parseInt(el.getAttribute('data-id'));
+  var field = el.getAttribute('data-field');
+  var cache = tableCache(table);
+  if (cache) { var row = cache.find(function(r){ return r.id===id; }); if (row) row[field]=val; }
+  var { error } = await db.from(table).update({[field]: val}).eq('id', id);
+  if (error) { showToast('Save failed: ' + error.message, 'error'); return; }
+  if (table === 'partnership_performance') renderPerformance();
+}
+
+async function saveCellSelect(el) {
+  var val   = el.value;
+  var table = el.getAttribute('data-table');
+  var id    = parseInt(el.getAttribute('data-id'));
+  var field = el.getAttribute('data-field');
+  el.style.cssText = BADGE_STYLES[val] || '';
+  var cache = tableCache(table);
+  if (cache) { var row = cache.find(function(r){ return r.id===id; }); if (row) row[field]=val; }
+  var { error } = await db.from(table).update({[field]: val}).eq('id', id);
+  if (error) showToast('Save failed: ' + error.message, 'error');
+}
+
+function tableCache(table) {
+  if (table === 'partnership_creators')   return PS.creators;
+  if (table === 'partnership_pipeline')   return PS.pipeline;
+  if (table === 'partnership_performance') return PS.performance;
+  if (table === 'partnership_payments')   return PS.payments;
+  if (table === 'partnership_affiliates') return PS.affiliates;
+  return null;
+}
+
+// ══════════════════════════════════════════════════════════════
+// TAB SWITCHING
+// ══════════════════════════════════════════════════════════════
+function switchTab(tab) {
+  document.querySelectorAll('.p-tab').forEach(function(b) {
+    b.classList.toggle('active', b.getAttribute('data-tab') === tab);
+  });
+  document.querySelectorAll('.p-section').forEach(function(s) {
+    s.classList.remove('active');
+  });
+  var sec = document.getElementById('sec-' + tab);
+  if (sec) sec.classList.add('active');
+}
+
+// ══════════════════════════════════════════════════════════════
+// UTILITIES
+// ══════════════════════════════════════════════════════════════
+function agencyBadgeClass(agency) {
+  var a = (agency || '').toLowerCase();
   if (a.includes('eyeball')) return 'ag-eyeball';
-  if (a.includes('krave')) return 'ag-krave';
-  if (a.includes('little leaf')) return 'ag-littleleaf';
+  if (a.includes('krave'))   return 'ag-krave';
+  if (a.includes('little'))  return 'ag-littleleaf';
   return 'ag-standalone';
 }
-function agencyBadge(ag) {
-  return '<span class="p-badge '+agencyClass(ag)+'">'+esc(ag)+'</span>';
-}
-function stageBadge(s) {
-  if (!s) return '—';
-  var cls = s.includes('1-')? 'badge-outreach': s.includes('2-')? 'badge-discussion': s.includes('3-')? 'badge-contract': s.includes('4-')? 'badge-samples': s.includes('5-')? 'badge-live': s.includes('6-')? 'badge-complete': 'badge-outreach';
-  return '<span class="p-badge '+cls+'">'+esc(s)+'</span>';
-}
-function statusBadge(s) {
-  return s==='On Hold'? '<span class="p-badge badge-hold">On Hold</span>': '<span class="p-badge badge-active">Active</span>';
-}
-function fmtNum(n) {
-  if (!n) return '<span class="p-dim">—</span>';
-  return '<span class="p-num">$'+Number(n).toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:0})+'</span>';
-}
-function fmtRoas(n) {
-  if (!n) return '<span class="p-dim">—</span>';
-  return '<span class="p-num">'+Number(n).toFixed(2)+'x</span>';
-}
-function fmtPurch(n) {
-  if (!n) return '<span class="p-dim">—</span>';
-  return '<span class="p-num">'+n+'</span>';
-}
-function eyeCriteria(r) {
-  var tags = [];
-  if (r.spend_hkd >= 1000) tags.push('<span class="crit-good">Spend✓</span>');
-  if (r.roas >= 1.7) tags.push('<span class="crit-good">ROAS✓</span>');
-  if (r.purchases >= 15) tags.push('<span class="crit-good">15+ Purch</span>');
-  else if (r.purchases >= 7) tags.push('<span class="crit-warn">7+ Purch</span>');
-  if (!tags.length) tags.push('<span class="crit-none">Below criteria</span>');
-  return tags.join('');
-}
-function agencyDotColor(ag) {
-  if (!ag) return 'var(--muted)';
-  var a = ag.toLowerCase();
-  if (a.includes('eyeball')) return '#2a9d5c';
-  if (a.includes('krave')) return '#6b3fa0';
-  if (a.includes('little leaf')) return '#1a5fa0';
-  return 'var(--muted)';
-}
-function tierBadge(r) {
-  // S: spend≥1k AND roas≥1.7 AND purchases≥7
-  // A: spend≥1k OR (roas≥1.7 AND purchases≥1)
-  // B: any spend with purchases
-  // C: spend but no purchases / no spend
-  if (r.spend_hkd>=1000 && r.roas>=1.7 && r.purchases>=7) return '<span class="tier-s">S</span>';
-  if (r.spend_hkd>=1000 || (r.roas>=1.7 && r.purchases>=1)) return '<span class="tier-a">A</span>';
-  if (r.spend_hkd>0 && r.purchases>0) return '<span class="tier-b">B</span>';
-  return '<span class="tier-c">C</span>';
-}
-function rankBadge(i) {
-  var cls = i===0?'rank-1':i===1?'rank-2':i===2?'rank-3':'rank-other';
-  return '<span class="perf-rank '+cls+'">'+(i+1)+'</span>';
-}
-function sortData(arr, col, dir) {
-  return arr.slice().sort(function(a,b){
-    var av = a[col]||0, bv = b[col]||0;
-    if (typeof av==='string') av=av.toLowerCase(), bv=(bv||'').toLowerCase();
-    return dir==='asc'?(av>bv?1:av<bv?-1:0):(av<bv?1:av>bv?-1:0);
-  });
-}
-function setSortHeader(tableId, col, dir) {
-  document.querySelectorAll('#'+tableId+' th.sortable').forEach(function(th){
-    th.classList.remove('sort-asc','sort-desc');
-    if (th.getAttribute('onclick') && th.getAttribute('onclick').includes("'"+col+"'")) {
-      th.classList.add(dir==='asc'?'sort-asc':'sort-desc');
-    }
-  });
-}
-function kitAgencyColor(ag) {
-  if (!ag) return 'var(--muted)';
-  var a = ag.toLowerCase();
-  if (a.includes('eyeball')) return '#2a9d5c';
-  if (a.includes('krave')) return '#6b3fa0';
-  if (a.includes('little leaf')) return '#1a5fa0';
-  return '#888';
-}
 
-// ── TAB SWITCHING ────────────────────────────────────────────
-function switchTab(name) {
-  document.querySelectorAll('.p-tab').forEach(function(b,i){
-    var tabs = ['directory','pipeline','performance','payments','affiliates','onboarding'];
-    b.classList.toggle('active', tabs[i] === name);
-  });
-  document.querySelectorAll('.p-section').forEach(function(s){
-    s.classList.toggle('active', s.id === 'sec-'+name);
+function sortArr(arr, col, asc) {
+  return arr.slice().sort(function(a, b) {
+    var av = a[col], bv = b[col];
+    if (av === null || av === undefined) av = '';
+    if (bv === null || bv === undefined) bv = '';
+    if (typeof av === 'number' && typeof bv === 'number') return asc ? av - bv : bv - av;
+    av = String(av).toLowerCase(); bv = String(bv).toLowerCase();
+    return asc ? av < bv ? -1 : av > bv ? 1 : 0
+               : bv < av ? -1 : bv > av ? 1 : 0;
   });
 }
 
-// ── OVERVIEW COUNTS ──────────────────────────────────────────
-function updateOverview() {
-  var counts = {eyeball:0,krave:0,littleleaf:0,standalone:0};
-  PS.creators.forEach(function(c){
-    var a = (c.agency||'').toLowerCase();
-    if (a.includes('eyeball')) counts.eyeball++;
-    else if (a.includes('krave')) counts.krave++;
-    else if (a.includes('little leaf')) counts.littleleaf++;
-    else counts.standalone++;
+function applySortHeaders(sectionSel, sortState) {
+  document.querySelectorAll(sectionSel + ' th[data-sort]').forEach(function(th) {
+    var col = th.getAttribute('data-sort');
+    th.classList.remove('sort-asc', 'sort-desc');
+    if (sortState.col === col) th.classList.add(sortState.asc ? 'sort-asc' : 'sort-desc');
   });
-  document.getElementById('ov-eyeball').textContent = counts.eyeball;
-  document.getElementById('ov-krave').textContent = counts.krave;
-  document.getElementById('ov-littleleaf').textContent = counts.littleleaf;
-  document.getElementById('ov-standalone').textContent = counts.standalone;
+}
+
+function focusLastRow(tbodyId, cellIndex) {
+  setTimeout(function() {
+    var rows = document.querySelectorAll('#' + tbodyId + ' tr');
+    var last = rows[rows.length - 1];
+    if (!last) return;
+    var cells = last.querySelectorAll('[contenteditable],[type="number"]');
+    var target = cells[cellIndex || 0];
+    if (target) { target.focus(); if (target.contentEditable) { var r=document.createRange(); r.selectNodeContents(target); r.collapse(false); var sel=window.getSelection(); sel.removeAllRanges(); sel.addRange(r); } }
+  }, 60);
 }
 
 // ══════════════════════════════════════════════════════════════
 // TAB 1: CREATOR DIRECTORY
 // ══════════════════════════════════════════════════════════════
-function filterCreators(agency) {
-  PS.dirFilter = agency;
-  document.querySelectorAll('#dir-pills .p-pill').forEach(function(b){
-    b.classList.toggle('active', b.textContent.trim() === (agency==='all'?'All':agency));
-  });
-  renderDirectory();
-}
-function setDirView(v) {
-  PS.dirView = v;
-  document.getElementById('dir-vbtn-table').classList.toggle('active', v==='table');
-  document.getElementById('dir-vbtn-cards').classList.toggle('active', v==='cards');
-  document.getElementById('dir-table-view').style.display = v==='table'?'':'none';
-  document.getElementById('dir-cards-view').style.display = v==='cards'?'':'none';
-}
-function sortDir(col) {
-  var s = PS.dirSort;
-  s.dir = (s.col===col && s.dir==='asc') ? 'desc' : 'asc';
-  s.col = col;
-  renderDirectory();
-}
 function renderDirectory() {
-  var q = (document.getElementById('dir-search')||{}).value || '';
-  var data = PS.creators.filter(function(c){
-    var agOk = PS.dirFilter==='all' || c.agency === PS.dirFilter;
-    var qOk = !q || (c.name+' '+c.handle+' '+c.agency).toLowerCase().includes(q.toLowerCase());
-    return agOk && qOk;
+  var search = (document.getElementById('dir-search').value || '').toLowerCase();
+  var agency = document.getElementById('dir-agency-filter').value;
+  var rows = PS.creators.filter(function(c) {
+    if (agency !== 'all' && c.agency !== agency) return false;
+    if (search && !(c.name || '').toLowerCase().includes(search) && !(c.handle || '').toLowerCase().includes(search)) return false;
+    return true;
   });
-  data = sortData(data, PS.dirSort.col, PS.dirSort.dir);
-  setSortHeader('dir-table', PS.dirSort.col, PS.dirSort.dir);
-  // Table
+  rows = sortArr(rows, PS.dirSort.col, PS.dirSort.asc);
+  applySortHeaders('#sec-directory', PS.dirSort);
+
   var tbody = document.getElementById('dir-tbody');
-  if (!data.length) { tbody.innerHTML='<tr><td colspan="8" class="p-loading">No creators found.</td></tr>'; }
-  else {
-    tbody.innerHTML = data.map(function(c){
-      return '<tr>'
-        +'<td><strong style="color:var(--h2)">'+esc(c.name)+'</strong></td>'
-        +'<td class="handle">'+esc(c.handle||'—')+'</td>'
-        +'<td>'+agencyBadge(c.agency)+'</td>'
-        +'<td class="p-dim">'+esc(c.category||'—')+'</td>'
-        +'<td class="p-dim">'+esc(c.platform||'—')+'</td>'
-        +'<td class="p-dim" style="max-width:180px">'+esc(c.payment_route||'—')+'</td>'
-        +'<td>'+statusBadge(c.status)+'</td>'
-        +'<td><div class="row-actions">'
-        +'<button class="row-btn" onclick="openCreatorModal(\''+c.id+'\')">Edit</button>'
-        +'</div></td>'
-        +'</tr>';
-    }).join('');
+  if (!rows.length) {
+    tbody.innerHTML = '<tr><td colspan="8" class="p-loading">No creators found.</td></tr>';
+    return;
   }
-  // Cards grouped by agency
-  var agencies = ['Eyeball Factory','Krave Media','Little Leaf','Standalone'];
-  var container = document.getElementById('dir-cards-container');
-  container.innerHTML = agencies.map(function(ag){
-    var group = data.filter(function(c){ return c.agency===ag; });
-    if (!group.length) return '';
-    return '<div class="p-agency-group">'
-      +'<div class="p-agency-group-hdr">'
-      +'<div class="p-agency-group-name">'+esc(ag)+'</div>'
-      +'<div class="p-agency-group-count">'+group.length+' creators</div>'
-      +'</div>'
-      +'<div class="p-card-grid">'
-      +group.map(function(c){
-        return '<div class="p-creator-card" onclick="openCreatorModal(\''+c.id+'\')">'
-          +'<div class="p-cc-name">'+esc(c.name)+'</div>'
-          +'<div class="p-cc-handle">'+esc(c.handle||'')+'</div>'
-          +'<div class="p-cc-tags">'
-          +'<span class="p-badge '+agencyClass(c.agency)+'">'+esc(c.agency)+'</span>'
-          +(c.platform?'<span class="p-badge" style="background:var(--bg2);color:var(--muted)">'+esc(c.platform)+'</span>':'')
-          +(c.category?'<span class="p-badge" style="background:var(--bg2);color:var(--muted)">'+esc(c.category)+'</span>':'')
-          +'</div></div>';
-      }).join('')
-      +'</div></div>';
+  tbody.innerHTML = rows.map(function(c) {
+    var agCls = agencyBadgeClass(c.agency);
+    return '<tr>'
+      + ec('partnership_creators', c.id, 'name', c.name)
+      + ec('partnership_creators', c.id, 'handle', c.handle)
+      + '<td><span class="p-badge ' + agCls + '">' + esc(c.agency || '') + '</span></td>'
+      + es('partnership_creators', c.id, 'category', c.category || 'Creator', CATEGORY_OPTIONS)
+      + ec('partnership_creators', c.id, 'platform', c.platform)
+      + ec('partnership_creators', c.id, 'payment_route', c.payment_route)
+      + es('partnership_creators', c.id, 'status', c.status || 'Active', CREATOR_STATUS_OPTIONS)
+      + delBtn('deleteCreator', c.id)
+      + '</tr>';
   }).join('');
 }
 
-// ── Creator CRUD ─────────────────────────────────────────────
-function openCreatorModal(id) {
-  PS.editingId = id || null;
-  var isEdit = !!id;
-  document.getElementById('creator-modal-title').textContent = isEdit ? 'Edit Creator' : 'Add Creator';
-  document.getElementById('cm-delete-btn').style.display = isEdit ? '' : 'none';
-  if (isEdit) {
-    var r = PS.creators.find(function(c){ return c.id===id; });
-    if (!r) return;
-    document.getElementById('cm-name').value = r.name||'';
-    document.getElementById('cm-handle').value = r.handle||'';
-    document.getElementById('cm-agency').value = r.agency||'Eyeball Factory';
-    document.getElementById('cm-category').value = r.category||'Creator';
-    document.getElementById('cm-platform').value = r.platform||'';
-    document.getElementById('cm-status').value = r.status||'Active';
-    document.getElementById('cm-payment').value = r.payment_route||'';
-  } else {
-    ['cm-name','cm-handle','cm-platform','cm-payment'].forEach(function(id){ document.getElementById(id).value=''; });
-    document.getElementById('cm-agency').value = 'Eyeball Factory';
-    document.getElementById('cm-category').value = 'Creator';
-    document.getElementById('cm-status').value = 'Active';
-  }
-  openModal('creator-modal');
+function sortDir(col) {
+  PS.dirSort.asc = PS.dirSort.col === col ? !PS.dirSort.asc : true;
+  PS.dirSort.col = col;
+  renderDirectory();
 }
-async function saveCreator() {
-  var payload = {
-    name: document.getElementById('cm-name').value.trim(),
-    handle: document.getElementById('cm-handle').value.trim(),
-    agency: document.getElementById('cm-agency').value,
-    category: document.getElementById('cm-category').value,
-    platform: document.getElementById('cm-platform').value.trim(),
-    status: document.getElementById('cm-status').value,
-    payment_route: document.getElementById('cm-payment').value.trim()
-  };
-  if (!payload.name) { showToast('Name is required','error'); return; }
-  var err;
-  if (PS.editingId) {
-    var res = await db.from('partnership_creators').update(payload).eq('id', PS.editingId);
-    err = res.error;
-  } else {
-    var res = await db.from('partnership_creators').insert(payload);
-    err = res.error;
-  }
-  if (err) { showToast('Save failed: '+err.message,'error'); return; }
-  showToast(PS.editingId ? 'Creator updated' : 'Creator added');
-  closeModal('creator-modal');
-  await loadCreators();
+
+async function addCreatorRow() {
+  var { data, error } = await db.from('partnership_creators').insert({
+    name: 'New Creator', handle: '@handle', agency: 'Eyeball Factory',
+    category: 'Creator', platform: 'TikTok', status: 'Active', payment_route: ''
+  }).select().single();
+  if (error) { showToast('Could not add row: ' + error.message, 'error'); return; }
+  PS.creators.push(data);
+  renderDirectory();
+  focusLastRow('dir-tbody', 0);
 }
-async function deleteCreator() {
-  if (!PS.editingId) return;
+
+async function deleteCreator(id) {
   if (!confirm('Delete this creator?')) return;
-  var { error } = await db.from('partnership_creators').delete().eq('id', PS.editingId);
-  if (error) { showToast('Delete failed','error'); return; }
+  var { error } = await db.from('partnership_creators').delete().eq('id', id);
+  if (error) { showToast('Delete failed: ' + error.message, 'error'); return; }
+  PS.creators = PS.creators.filter(function(c) { return c.id !== id; });
+  renderDirectory();
   showToast('Creator deleted');
-  closeModal('creator-modal');
-  await loadCreators();
 }
 
 // ══════════════════════════════════════════════════════════════
 // TAB 2: PIPELINE
 // ══════════════════════════════════════════════════════════════
-function filterPipeline(type, val) {
-  if (type==='stage') {
-    PS.pipeStageFilter = val;
-    document.querySelectorAll('#pipe-stage-pills .p-pill').forEach(function(b){
-      var map = {'all':'All Stages','1-Outreach':'Outreach','2-Discussion':'Discussion','3-Contract':'Contract','4-Samples Sent':'Samples','5-Content Live':'Content Live','6-Complete':'Complete'};
-      b.classList.toggle('active', b.textContent.trim() === (map[val]||val));
-    });
-  } else {
-    PS.pipeStatusFilter = val;
-    document.querySelectorAll('#pipe-status-pills .p-pill').forEach(function(b){
-      var map = {'all':'All Status','Active':'Active','On Hold':'On Hold'};
-      b.classList.toggle('active', b.textContent.trim() === (map[val]||val));
-    });
-  }
-  renderPipeline();
-}
-function sortPipe(col) {
-  var s = PS.pipeSort;
-  s.dir = (s.col===col && s.dir==='asc') ? 'desc' : 'asc';
-  s.col = col;
-  renderPipeline();
-}
-function inlineStageSelect(id, current) {
-  var stages = ['1-Outreach','2-Discussion','3-Contract','4-Samples Sent','5-Content Live','6-Complete'];
-  var cls = current?current.includes('1-')?'badge-outreach':current.includes('2-')?'badge-discussion':current.includes('3-')?'badge-contract':current.includes('4-')?'badge-samples':current.includes('5-')?'badge-live':'badge-complete':'badge-outreach';
-  return '<select class="stage-select '+cls+'" onchange="updatePipeField(\''+id+'\',\'stage\',this.value)">'
-    +stages.map(function(s){ return '<option value="'+s+'"'+(s===current?' selected':'')+'>'+s+'</option>'; }).join('')
-    +'</select>';
-}
-async function updatePipeField(id, field, value) {
-  var upd = {}; upd[field] = value;
-  var { error } = await db.from('partnership_pipeline').update(upd).eq('id', id);
-  if (error) { showToast('Update failed','error'); return; }
-  var r = PS.pipeline.find(function(p){ return p.id===id; });
-  if (r) r[field] = value;
-  // re-style stage select if needed
-  if (field==='stage') {
-    var sel = document.querySelector('select[onchange*="\''+id+'\'"][onchange*="\'stage\'"]');
-    if (sel) {
-      sel.className = 'stage-select '+(value.includes('1-')?'badge-outreach':value.includes('2-')?'badge-discussion':value.includes('3-')?'badge-contract':value.includes('4-')?'badge-samples':value.includes('5-')?'badge-live':'badge-complete');
-    }
-  }
-}
 function renderPipeline() {
-  var data = PS.pipeline.filter(function(r){
-    var stageOk = PS.pipeStageFilter==='all' || r.stage===PS.pipeStageFilter;
-    var statusOk = PS.pipeStatusFilter==='all' || r.status===PS.pipeStatusFilter;
-    return stageOk && statusOk;
+  var search = (document.getElementById('pipe-search').value || '').toLowerCase();
+  var stage  = document.getElementById('pipe-stage-filter').value;
+  var status = document.getElementById('pipe-status-filter').value;
+  var rows = PS.pipeline.filter(function(p) {
+    if (stage  !== 'all' && p.stage  !== stage)  return false;
+    if (status !== 'all' && p.status !== status) return false;
+    if (search && !(p.company || '').toLowerCase().includes(search) && !(p.source || '').toLowerCase().includes(search)) return false;
+    return true;
   });
-  data = sortData(data, PS.pipeSort.col, PS.pipeSort.dir);
-  setSortHeader('pipe-table', PS.pipeSort.col, PS.pipeSort.dir);
+  rows = sortArr(rows, PS.pipeSort.col, PS.pipeSort.asc);
+  applySortHeaders('#sec-pipeline', PS.pipeSort);
+
   var tbody = document.getElementById('pipe-tbody');
-  if (!data.length) { tbody.innerHTML='<tr><td colspan="8" class="p-loading">No entries found.</td></tr>'; return; }
-  tbody.innerHTML = data.map(function(r){
+  if (!rows.length) {
+    tbody.innerHTML = '<tr><td colspan="8" class="p-loading">No entries found.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = rows.map(function(p) {
     return '<tr>'
-      +'<td><strong style="color:var(--h2)">'+esc(r.company||'—')+'</strong></td>'
-      +'<td class="p-dim">'+esc(r.source_agency||'—')+'</td>'
-      +'<td>'+inlineStageSelect(r.id, r.stage)+'</td>'
-      +'<td class="p-dim editable-cell" contenteditable="true" onblur="updatePipeField(\''+r.id+'\',\'assignee\',this.textContent.trim())" onkeydown="if(event.key===\'Enter\'){event.preventDefault();this.blur()}">'+esc(r.assignee||'')+'</td>'
-      +'<td class="p-dim editable-cell" contenteditable="true" onblur="updatePipeField(\''+r.id+'\',\'next_step\',this.textContent.trim())" onkeydown="if(event.key===\'Enter\'){event.preventDefault();this.blur()}" style="max-width:160px">'+esc(r.next_step||'')+'</td>'
-      +'<td class="p-dim editable-cell" contenteditable="true" onblur="updatePipeField(\''+r.id+'\',\'last_update\',this.textContent.trim())" onkeydown="if(event.key===\'Enter\'){event.preventDefault();this.blur()}">'+esc(r.last_update||'')+'</td>'
-      +'<td>'+statusBadge(r.status)+'</td>'
-      +'<td><div class="row-actions">'
-      +'<button class="row-btn" onclick="openPipelineModal(\''+r.id+'\')">Edit</button>'
-      +'</div></td>'
-      +'</tr>';
+      + ec('partnership_pipeline', p.id, 'company', p.company)
+      + ec('partnership_pipeline', p.id, 'source', p.source)
+      + es('partnership_pipeline', p.id, 'stage', p.stage || '1-Outreach', STAGE_OPTIONS)
+      + '<td>' + buildAssigneeCell(p.id, p.assignee) + '</td>'
+      + ec('partnership_pipeline', p.id, 'next_step', p.next_step)
+      + ec('partnership_pipeline', p.id, 'last_update', p.last_update)
+      + es('partnership_pipeline', p.id, 'status', p.status || 'Active', STATUS_OPTIONS)
+      + delBtn('deletePipeline', p.id)
+      + '</tr>';
   }).join('');
 }
 
-// ── Pipeline CRUD ────────────────────────────────────────────
-function openPipelineModal(id) {
-  PS.editingId = id || null;
-  var isEdit = !!id;
-  document.getElementById('pipeline-modal-title').textContent = isEdit ? 'Edit Pipeline Entry' : 'Add Pipeline Entry';
-  document.getElementById('pm-delete-btn').style.display = isEdit ? '' : 'none';
-  if (isEdit) {
-    var r = PS.pipeline.find(function(p){ return p.id===id; });
-    if (!r) return;
-    document.getElementById('pm-company').value = r.company||'';
-    document.getElementById('pm-source').value = r.source_agency||'';
-    document.getElementById('pm-stage').value = r.stage||'1-Outreach';
-    document.getElementById('pm-status').value = r.status||'Active';
-    document.getElementById('pm-assignee').value = r.assignee||'';
-    document.getElementById('pm-last-update').value = r.last_update||'';
-    document.getElementById('pm-next-step').value = r.next_step||'';
-  } else {
-    ['pm-company','pm-source','pm-assignee','pm-last-update','pm-next-step'].forEach(function(i){ document.getElementById(i).value=''; });
-    document.getElementById('pm-stage').value = '1-Outreach';
-    document.getElementById('pm-status').value = 'Active';
-  }
-  openModal('pipeline-modal');
+function buildAssigneeCell(id, val) {
+  var text = val || '';
+  var bubbles = text.split(/[\/,]/).map(function(part) {
+    var name = part.trim().toLowerCase();
+    var color = ASSIGNEE_COLORS[name];
+    if (!color) return '';
+    return '<span class="av-bubble" style="background:' + color + '" title="' + esc(part.trim()) + '">'
+      + name.substring(0, 2).toUpperCase() + '</span>';
+  }).join('');
+  return '<span style="display:inline-flex;align-items:center;gap:4px;flex-wrap:wrap">'
+    + bubbles
+    + '<span contenteditable="true" class="editable-cell" style="min-width:40px"'
+    + ' data-table="partnership_pipeline" data-id="' + id + '" data-field="assignee"'
+    + ' onblur="saveAssignee(this)"'
+    + ' onkeydown="if(event.key===\'Enter\'){event.preventDefault();this.blur()}">'
+    + esc(text) + '</span></span>';
 }
-async function savePipeline() {
-  var payload = {
-    company: document.getElementById('pm-company').value.trim(),
-    source_agency: document.getElementById('pm-source').value.trim(),
-    stage: document.getElementById('pm-stage').value,
-    status: document.getElementById('pm-status').value,
-    assignee: document.getElementById('pm-assignee').value.trim(),
-    last_update: document.getElementById('pm-last-update').value.trim(),
-    next_step: document.getElementById('pm-next-step').value.trim()
-  };
-  if (!payload.company) { showToast('Company name is required','error'); return; }
-  var err;
-  if (PS.editingId) {
-    var res = await db.from('partnership_pipeline').update(payload).eq('id', PS.editingId);
-    err = res.error;
-  } else {
-    var res = await db.from('partnership_pipeline').insert(payload);
-    err = res.error;
+
+async function saveAssignee(el) {
+  var val = el.innerText.trim();
+  var id  = parseInt(el.getAttribute('data-id'));
+  var row = PS.pipeline.find(function(p) { return p.id === id; });
+  if (row) row.assignee = val;
+  var { error } = await db.from('partnership_pipeline').update({ assignee: val }).eq('id', id);
+  if (error) { showToast('Save failed', 'error'); return; }
+  // Rebuild bubbles without full re-render
+  var wrapper = el.closest('span');
+  if (wrapper) {
+    wrapper.querySelectorAll('.av-bubble').forEach(function(b) { b.remove(); });
+    val.split(/[\/,]/).forEach(function(part) {
+      var name = part.trim().toLowerCase();
+      var color = ASSIGNEE_COLORS[name];
+      if (!color) return;
+      var span = document.createElement('span');
+      span.className = 'av-bubble';
+      span.style.background = color;
+      span.title = part.trim();
+      span.textContent = name.substring(0, 2).toUpperCase();
+      wrapper.insertBefore(span, el);
+    });
   }
-  if (err) { showToast('Save failed: '+err.message,'error'); return; }
-  showToast(PS.editingId ? 'Entry updated' : 'Entry added');
-  closeModal('pipeline-modal');
-  await loadPipeline();
 }
-async function deletePipeline() {
-  if (!PS.editingId) return;
-  if (!confirm('Delete this pipeline entry?')) return;
-  var { error } = await db.from('partnership_pipeline').delete().eq('id', PS.editingId);
-  if (error) { showToast('Delete failed','error'); return; }
+
+function sortPipe(col) {
+  PS.pipeSort.asc = PS.pipeSort.col === col ? !PS.pipeSort.asc : true;
+  PS.pipeSort.col = col;
+  renderPipeline();
+}
+
+async function addPipelineRow() {
+  var { data, error } = await db.from('partnership_pipeline').insert({
+    company: 'New Entry', source: '', stage: '1-Outreach',
+    assignee: '', next_step: '', last_update: '', status: 'Active'
+  }).select().single();
+  if (error) { showToast('Could not add row: ' + error.message, 'error'); return; }
+  PS.pipeline.push(data);
+  renderPipeline();
+  focusLastRow('pipe-tbody', 0);
+}
+
+async function deletePipeline(id) {
+  if (!confirm('Delete this entry?')) return;
+  var { error } = await db.from('partnership_pipeline').delete().eq('id', id);
+  if (error) { showToast('Delete failed: ' + error.message, 'error'); return; }
+  PS.pipeline = PS.pipeline.filter(function(p) { return p.id !== id; });
+  renderPipeline();
   showToast('Entry deleted');
-  closeModal('pipeline-modal');
-  await loadPipeline();
 }
 
 // ══════════════════════════════════════════════════════════════
 // TAB 3: PERFORMANCE
 // ══════════════════════════════════════════════════════════════
-var PERF_AGENCY_MAP = {eyeball:'Eyeball Factory',krave:'Krave Media',littleleaf:'Little Leaf'};
-function switchPerfAgency(ag) {
-  PS.perfAgency = ag;
-  ['eyeball','krave','littleleaf'].forEach(function(a){
-    document.getElementById('perf-tab-'+a).classList.toggle('active', a===ag);
-  });
+function switchPerfAgency(agency) {
+  PS.perfAgency = agency;
+  document.getElementById('perf-tab-eyeball').classList.toggle('active', agency === 'Eyeball Factory');
+  document.getElementById('perf-tab-krave').classList.toggle('active', agency === 'Krave Media');
+  document.getElementById('perf-tab-littleleaf').classList.toggle('active', agency === 'Little Leaf');
   renderPerformance();
 }
-function setPerfView(v) {
-  PS.perfView = v;
-  document.getElementById('perf-vbtn-table').classList.toggle('active', v==='table');
-  document.getElementById('perf-vbtn-cards').classList.toggle('active', v==='cards');
-  document.getElementById('perf-table-view').style.display = v==='table'?'':'none';
-  document.getElementById('perf-cards-view').style.display = v==='cards'?'':'none';
-}
-function sortPerf(col) {
-  var s = PS.perfSort;
-  s.dir = (s.col===col && s.dir==='asc') ? 'desc' : 'asc';
-  s.col = col;
-  renderPerformance();
-}
-function onPeriodChange() {
-  PS.perfPeriod = document.getElementById('perf-period-select').value;
-  renderPerformance();
-}
+
 function updatePeriodSelect() {
   var periods = [];
-  PS.performance.forEach(function(r){ if (r.period && !periods.includes(r.period)) periods.push(r.period); });
-  periods.sort();
-  var sel = document.getElementById('perf-period-select');
-  var current = sel.value;
-  sel.innerHTML = '<option value="all">All Periods</option>'
-    +periods.map(function(p){ return '<option value="'+esc(p)+'"'+(p===current?' selected':'')+'>'+esc(p)+'</option>'; }).join('');
-}
-function renderPerformance() {
-  var agencyName = PERF_AGENCY_MAP[PS.perfAgency];
-  var data = PS.performance.filter(function(r){
-    var agOk = r.agency === agencyName;
-    var pOk = PS.perfPeriod==='all' || r.period===PS.perfPeriod;
-    return agOk && pOk;
+  PS.performance.forEach(function(r) {
+    if (r.period && !periods.includes(r.period)) periods.push(r.period);
   });
-  data = sortData(data, PS.perfSort.col, PS.perfSort.dir);
-  setSortHeader('perf-table', PS.perfSort.col, PS.perfSort.dir);
+  periods.sort().reverse();
+  var sel = document.getElementById('perf-period-select');
+  var cur = sel.value;
+  sel.innerHTML = '<option value="all">All Periods</option>'
+    + periods.map(function(p) { return '<option>' + esc(p) + '</option>'; }).join('');
+  if (cur && periods.includes(cur)) sel.value = cur;
+}
+
+function renderPerformance() {
+  var period = document.getElementById('perf-period-select').value;
+  var rows = PS.performance.filter(function(r) {
+    if (r.agency !== PS.perfAgency) return false;
+    if (period !== 'all' && r.period !== period) return false;
+    return true;
+  });
+
+  // Rank order by spend for badge (always descending)
+  var bySpend = rows.slice().sort(function(a, b) { return (b.spend_hkd || 0) - (a.spend_hkd || 0); });
+
+  // Then apply requested sort
+  rows = sortArr(rows, PS.perfSort.col, PS.perfSort.asc);
+  applySortHeaders('#sec-performance', PS.perfSort);
 
   var tbody = document.getElementById('perf-tbody');
-  if (!data.length) { tbody.innerHTML='<tr><td colspan="10" class="p-loading">No performance data.</td></tr>'; }
-  else {
-    tbody.innerHTML = data.map(function(r, i){
-      var isTop = r.spend_hkd>=1000 && r.roas>=1.7 && r.purchases>=7;
-      var isZero = !r.spend_hkd;
-      return '<tr class="'+(isTop?'perf-top':isZero?'perf-zero':'')+'"><td>'+rankBadge(i)+'</td>'
-        +'<td><strong style="color:var(--h2)">'+esc(r.creator_name||'—')+'</strong></td>'
-        +'<td class="handle">'+esc(r.handle||'—')+'</td>'
-        +'<td>'+fmtNum(r.spend_hkd)+'</td>'
-        +'<td>'+fmtRoas(r.roas)+'</td>'
-        +'<td>'+fmtPurch(r.purchases)+'</td>'
-        +'<td>'+fmtNum(r.revenue_hkd)+'</td>'
-        +'<td>'+tierBadge(r)+'</td>'
-        +'<td class="p-dim">'+esc(r.notes||'')+'</td>'
-        +'<td><div class="row-actions">'
-        +'<button class="row-btn" onclick="openPerfModal(\''+r.id+'\')">Edit</button>'
-        +'</div></td>'
-        +'</tr>';
-    }).join('');
-    var tot = data.reduce(function(a,r){ return {s:a.s+(r.spend_hkd||0),p:a.p+(r.purchases||0),rev:a.rev+(r.revenue_hkd||0)}; },{s:0,p:0,rev:0});
-    var avgRoas = tot.s>0?(tot.rev/tot.s):0;
-    tbody.innerHTML += '<tr style="border-top:2px solid var(--border2)">'
-      +'<td></td><td colspan="2" style="font-weight:700;color:var(--h2)">Total ('+esc(agencyName)+')</td>'
-      +'<td>'+fmtNum(tot.s)+'</td>'
-      +'<td><span class="p-num">'+avgRoas.toFixed(2)+'x</span></td>'
-      +'<td>'+fmtPurch(tot.p)+'</td>'
-      +'<td>'+fmtNum(tot.rev)+'</td>'
-      +'<td colspan="3"></td></tr>';
+  if (!rows.length) {
+    tbody.innerHTML = '<tr><td colspan="10" class="p-loading">No performance data for this selection.</td></tr>';
+    return;
   }
-
-  // Cards with rank
-  var container = document.getElementById('perf-cards-container');
-  container.innerHTML = data.map(function(r, i){
-    var isTop = r.spend_hkd>=1000 && r.roas>=1.7 && r.purchases>=7;
-    var isZero = !r.spend_hkd;
-    return '<div class="p-perf-card'+(isTop?' top-performer':isZero?' zero-performer':'')+'" onclick="openPerfModal(\''+r.id+'\')">'
-      +'<div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.1rem">'
-      +rankBadge(i)
-      +'<div class="p-pc-name">'+esc(r.creator_name||'—')+'</div>'
-      +tierBadge(r)
-      +'</div>'
-      +'<div class="p-pc-handle">'+esc(r.handle||'')+'</div>'
-      +'<div class="p-pc-stats">'
-      +'<div class="p-pc-stat'+(r.spend_hkd>=1000?' good':'')+'"><div class="p-pc-stat-val">'+(r.spend_hkd?'$'+Math.round(r.spend_hkd).toLocaleString():'—')+'</div><div class="p-pc-stat-lbl">Spend</div></div>'
-      +'<div class="p-pc-stat'+(r.roas>=1.7?' good':'')+'"><div class="p-pc-stat-val">'+(r.roas?r.roas.toFixed(2)+'x':'—')+'</div><div class="p-pc-stat-lbl">ROAS</div></div>'
-      +'<div class="p-pc-stat'+(r.purchases>=7?' good':'')+'"><div class="p-pc-stat-val">'+(r.purchases||'—')+'</div><div class="p-pc-stat-lbl">Purchases</div></div>'
-      +'<div class="p-pc-stat"><div class="p-pc-stat-val">'+(r.revenue_hkd?'$'+Math.round(r.revenue_hkd).toLocaleString():'—')+'</div><div class="p-pc-stat-lbl">Revenue</div></div>'
-      +'</div></div>';
-  }).join('') || '<div class="p-loading">No data yet.</div>';
+  tbody.innerHTML = rows.map(function(r) {
+    var rank = bySpend.indexOf(r) + 1;
+    var rankHtml = rank <= 3
+      ? '<span class="perf-rank rank-' + rank + '">' + rank + '</span>'
+      : '<span class="perf-rank rank-other">' + rank + '</span>';
+    var tier = getTier(r);
+    var tierHtml = '<span class="tier-' + tier.toLowerCase() + '">' + tier + '</span>';
+    var trCls = (r.spend_hkd || 0) === 0 ? 'perf-zero' : rank <= 3 ? 'perf-top' : '';
+    return '<tr class="' + trCls + '">'
+      + '<td>' + rankHtml + '</td>'
+      + ec('partnership_performance', r.id, 'creator_name', r.creator_name)
+      + ec('partnership_performance', r.id, 'handle', r.handle)
+      + ni('partnership_performance', r.id, 'spend_hkd', r.spend_hkd)
+      + ni('partnership_performance', r.id, 'roas', r.roas)
+      + ni('partnership_performance', r.id, 'purchases', r.purchases)
+      + ni('partnership_performance', r.id, 'revenue_hkd', r.revenue_hkd)
+      + '<td>' + tierHtml + '</td>'
+      + ec('partnership_performance', r.id, 'notes', r.notes)
+      + delBtn('deletePerfRow', r.id)
+      + '</tr>';
+  }).join('');
 }
 
-// ── Add New Period ────────────────────────────────────────────
-function openAddPeriodModal() {
-  document.getElementById('np-period').value = '';
-  document.getElementById('np-agency').value = PERF_AGENCY_MAP[PS.perfAgency]||'Eyeball Factory';
-  openModal('add-period-modal');
+function getTier(r) {
+  var s = r.spend_hkd || 0, roas = r.roas || 0, p = r.purchases || 0;
+  if (s >= 1000 && roas >= 1.7 && p >= 7) return 'S';
+  if (s >= 500  || roas >= 1.0 || p >= 3) return 'A';
+  if (s > 0) return 'B';
+  return 'C';
 }
-async function createNewPeriod() {
-  var period = document.getElementById('np-period').value.trim();
-  var agency = document.getElementById('np-agency').value;
-  if (!period) { showToast('Period label is required','error'); return; }
-  // Get unique creator names for this agency from existing performance data
-  var existing = PS.performance.filter(function(r){ return r.agency===agency; });
-  var names = [];
-  existing.forEach(function(r){ if (!names.find(function(n){ return n.name===r.creator_name; })) names.push({name:r.creator_name,handle:r.handle||''}); });
-  if (!names.length) {
-    // Fall back to creator directory
-    PS.creators.filter(function(c){ return c.agency===agency; }).forEach(function(c){ names.push({name:c.name,handle:c.handle||''}); });
-  }
-  if (!names.length) { showToast('No creators found for this agency','error'); return; }
-  var rows = names.map(function(n){ return {creator_name:n.name,handle:n.handle,agency:agency,spend_hkd:0,roas:0,purchases:0,revenue_hkd:0,period:period}; });
-  var { error } = await db.from('partnership_performance').insert(rows);
-  if (error) { showToast('Failed to create period: '+error.message,'error'); return; }
-  showToast('Period "'+period+'" created with '+rows.length+' rows');
-  closeModal('add-period-modal');
-  await loadPerformance();
-  document.getElementById('perf-period-select').value = period;
-  PS.perfPeriod = period;
+
+function sortPerf(col) {
+  PS.perfSort.asc = PS.perfSort.col === col ? !PS.perfSort.asc : false;
+  PS.perfSort.col = col;
   renderPerformance();
 }
 
-// ── Performance CRUD ─────────────────────────────────────────
-function openPerfModal(id) {
-  PS.editingId = id || null;
-  var isEdit = !!id;
-  document.getElementById('perf-modal-title').textContent = isEdit ? 'Edit Performance Row' : 'Add Performance Row';
-  document.getElementById('pfm-delete-btn').style.display = isEdit ? '' : 'none';
-  if (isEdit) {
-    var r = PS.performance.find(function(p){ return p.id===id; });
-    if (!r) return;
-    document.getElementById('pfm-name').value = r.creator_name||'';
-    document.getElementById('pfm-handle').value = r.handle||'';
-    document.getElementById('pfm-agency').value = r.agency||'Eyeball Factory';
-    document.getElementById('pfm-period').value = r.period||'';
-    document.getElementById('pfm-spend').value = r.spend_hkd||0;
-    document.getElementById('pfm-roas').value = r.roas||0;
-    document.getElementById('pfm-purchases').value = r.purchases||0;
-    document.getElementById('pfm-revenue').value = r.revenue_hkd||0;
-    document.getElementById('pfm-notes').value = r.notes||'';
-  } else {
-    ['pfm-name','pfm-handle','pfm-notes'].forEach(function(i){ document.getElementById(i).value=''; });
-    document.getElementById('pfm-agency').value = PERF_AGENCY_MAP[PS.perfAgency]||'Eyeball Factory';
-    document.getElementById('pfm-period').value = 'Mar 31–Apr 6';
-    ['pfm-spend','pfm-roas','pfm-purchases','pfm-revenue'].forEach(function(i){ document.getElementById(i).value=0; });
-  }
-  openModal('perf-modal');
+async function addPerfRow() {
+  var periods = [];
+  PS.performance.forEach(function(r) { if (r.period && !periods.includes(r.period)) periods.push(r.period); });
+  var latestPeriod = periods.sort().reverse()[0] || '';
+  var { data, error } = await db.from('partnership_performance').insert({
+    creator_name: 'New Creator', handle: '', agency: PS.perfAgency,
+    period: latestPeriod, spend_hkd: 0, roas: 0, purchases: 0, revenue_hkd: 0, notes: ''
+  }).select().single();
+  if (error) { showToast('Could not add row: ' + error.message, 'error'); return; }
+  PS.performance.push(data);
+  updatePeriodSelect();
+  renderPerformance();
+  focusLastRow('perf-tbody', 1);
 }
-async function savePerf() {
-  var payload = {
-    creator_name: document.getElementById('pfm-name').value.trim(),
-    handle: document.getElementById('pfm-handle').value.trim(),
-    agency: document.getElementById('pfm-agency').value,
-    period: document.getElementById('pfm-period').value.trim(),
-    spend_hkd: parseFloat(document.getElementById('pfm-spend').value)||0,
-    roas: parseFloat(document.getElementById('pfm-roas').value)||0,
-    purchases: parseInt(document.getElementById('pfm-purchases').value)||0,
-    revenue_hkd: parseFloat(document.getElementById('pfm-revenue').value)||0,
-    notes: document.getElementById('pfm-notes').value.trim()
-  };
-  if (!payload.creator_name) { showToast('Name is required','error'); return; }
-  var err;
-  if (PS.editingId) {
-    var res = await db.from('partnership_performance').update(payload).eq('id', PS.editingId);
-    err = res.error;
-  } else {
-    var res = await db.from('partnership_performance').insert(payload);
-    err = res.error;
-  }
-  if (err) { showToast('Save failed: '+err.message,'error'); return; }
-  showToast(PS.editingId ? 'Row updated' : 'Row added');
-  closeModal('perf-modal');
-  await loadPerformance();
+
+async function addPerfPeriod() {
+  var period = prompt('Enter period label (e.g. Apr 7–Apr 13):');
+  if (!period || !period.trim()) return;
+  period = period.trim();
+  var { data, error } = await db.from('partnership_performance').insert({
+    creator_name: 'New Creator', handle: '', agency: PS.perfAgency,
+    period: period, spend_hkd: 0, roas: 0, purchases: 0, revenue_hkd: 0, notes: ''
+  }).select().single();
+  if (error) { showToast('Could not add period: ' + error.message, 'error'); return; }
+  PS.performance.push(data);
+  updatePeriodSelect();
+  document.getElementById('perf-period-select').value = period;
+  renderPerformance();
+  showToast('Period added: ' + period);
 }
-async function deletePerf() {
-  if (!PS.editingId) return;
+
+async function deletePerfRow(id) {
   if (!confirm('Delete this performance row?')) return;
-  var { error } = await db.from('partnership_performance').delete().eq('id', PS.editingId);
-  if (error) { showToast('Delete failed','error'); return; }
+  var { error } = await db.from('partnership_performance').delete().eq('id', id);
+  if (error) { showToast('Delete failed: ' + error.message, 'error'); return; }
+  PS.performance = PS.performance.filter(function(r) { return r.id !== id; });
+  updatePeriodSelect();
+  renderPerformance();
   showToast('Row deleted');
-  closeModal('perf-modal');
-  await loadPerformance();
 }
 
 // ══════════════════════════════════════════════════════════════
 // TAB 4: PAYMENTS
 // ══════════════════════════════════════════════════════════════
 function renderPayments() {
-  // Info bars
-  var bars = document.getElementById('pay-info-bars');
-  bars.innerHTML = PS.payments.map(function(r){
-    return '<div class="p-pay-info">'
-      +'<div class="p-pay-agency-dot" style="background:'+agencyDotColor(r.agency)+'"></div>'
-      +'<div style="flex:1">'
-      +'<div class="p-pay-label">'+esc(r.agency)+'</div>'
-      +'<div class="p-pay-detail">'+(r.payment_route||'—')+(r.campaign?' · Campaign: '+esc(r.campaign):'')+(r.rate_type?' · '+esc(r.rate_type):'')+'</div>'
-      +'</div>'
-      +'<div class="p-pay-edit">'
-      +'<button class="row-btn" onclick="openPaymentModal(\''+r.id+'\')">Edit</button>'
-      +'</div>'
-      +'</div>';
-  }).join('');
-
-  // Table
   var tbody = document.getElementById('pay-tbody');
-  if (!PS.payments.length) { tbody.innerHTML='<tr><td colspan="6" class="p-loading">No payment routes yet.</td></tr>'; return; }
-  tbody.innerHTML = PS.payments.map(function(r){
+  if (!PS.payments.length) {
+    tbody.innerHTML = '<tr><td colspan="6" class="p-loading">No payment data.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = PS.payments.map(function(p) {
+    var agCls = agencyBadgeClass(p.agency);
     return '<tr>'
-      +'<td>'+agencyBadge(r.agency)+'</td>'
-      +'<td class="p-dim">'+esc(r.payment_route||'—')+'</td>'
-      +'<td class="p-dim">'+esc(r.campaign||'—')+'</td>'
-      +'<td class="p-dim">'+esc(r.rate_type||'—')+'</td>'
-      +'<td class="p-dim" style="max-width:200px">'+esc(r.notes||'—')+'</td>'
-      +'<td><div class="row-actions">'
-      +'<button class="row-btn" onclick="openPaymentModal(\''+r.id+'\')">Edit</button>'
-      +'</div></td>'
-      +'</tr>';
+      + es('partnership_payments', p.id, 'agency', p.agency || 'Eyeball Factory', AGENCY_OPTIONS)
+      + ec('partnership_payments', p.id, 'payment_route', p.payment_route)
+      + ec('partnership_payments', p.id, 'campaign', p.campaign)
+      + ec('partnership_payments', p.id, 'rate_type', p.rate_type)
+      + ec('partnership_payments', p.id, 'notes', p.notes)
+      + delBtn('deletePayment', p.id)
+      + '</tr>';
   }).join('');
 }
 
-// ── Payment CRUD ─────────────────────────────────────────────
-function openPaymentModal(id) {
-  PS.editingId = id || null;
-  var isEdit = !!id;
-  document.getElementById('payment-modal-title').textContent = isEdit ? 'Edit Payment Route' : 'Add Payment Route';
-  document.getElementById('paym-delete-btn').style.display = isEdit ? '' : 'none';
-  if (isEdit) {
-    var r = PS.payments.find(function(p){ return p.id===id; });
-    if (!r) return;
-    document.getElementById('paym-agency').value = r.agency||'';
-    document.getElementById('paym-campaign').value = r.campaign||'';
-    document.getElementById('paym-route').value = r.payment_route||'';
-    document.getElementById('paym-rate').value = r.rate_type||'';
-    document.getElementById('paym-notes').value = r.notes||'';
-  } else {
-    ['paym-agency','paym-campaign','paym-route','paym-rate','paym-notes'].forEach(function(i){ document.getElementById(i).value=''; });
-  }
-  openModal('payment-modal');
+async function addPaymentRow() {
+  var { data, error } = await db.from('partnership_payments').insert({
+    agency: 'Eyeball Factory', payment_route: '', campaign: '', rate_type: '', notes: ''
+  }).select().single();
+  if (error) { showToast('Could not add row: ' + error.message, 'error'); return; }
+  PS.payments.push(data);
+  renderPayments();
+  focusLastRow('pay-tbody', 0);
 }
-async function savePayment() {
-  var payload = {
-    agency: document.getElementById('paym-agency').value.trim(),
-    campaign: document.getElementById('paym-campaign').value.trim(),
-    payment_route: document.getElementById('paym-route').value.trim(),
-    rate_type: document.getElementById('paym-rate').value.trim(),
-    notes: document.getElementById('paym-notes').value.trim()
-  };
-  if (!payload.agency) { showToast('Agency name is required','error'); return; }
-  var err;
-  if (PS.editingId) {
-    var res = await db.from('partnership_payments').update(payload).eq('id', PS.editingId);
-    err = res.error;
-  } else {
-    var res = await db.from('partnership_payments').insert(payload);
-    err = res.error;
-  }
-  if (err) { showToast('Save failed: '+err.message,'error'); return; }
-  showToast(PS.editingId ? 'Payment route updated' : 'Payment route added');
-  closeModal('payment-modal');
-  await loadPayments();
-}
-async function deletePayment() {
-  if (!PS.editingId) return;
-  if (!confirm('Delete this payment route?')) return;
-  var { error } = await db.from('partnership_payments').delete().eq('id', PS.editingId);
-  if (error) { showToast('Delete failed','error'); return; }
-  showToast('Payment route deleted');
-  closeModal('payment-modal');
-  await loadPayments();
+
+async function deletePayment(id) {
+  if (!confirm('Delete this payment row?')) return;
+  var { error } = await db.from('partnership_payments').delete().eq('id', id);
+  if (error) { showToast('Delete failed: ' + error.message, 'error'); return; }
+  PS.payments = PS.payments.filter(function(p) { return p.id !== id; });
+  renderPayments();
+  showToast('Row deleted');
 }
 
 // ══════════════════════════════════════════════════════════════
 // TAB 5: AFFILIATES
 // ══════════════════════════════════════════════════════════════
 function renderAffiliates() {
+  var search = (document.getElementById('aff-search').value || '').toLowerCase();
+  var rows = PS.affiliates.filter(function(a) {
+    if (search && !(a.creator_name || '').toLowerCase().includes(search)
+               && !(a.code || '').toLowerCase().includes(search)) return false;
+    return true;
+  });
   var tbody = document.getElementById('aff-tbody');
-  if (!PS.affiliates.length) { tbody.innerHTML='<tr><td colspan="5" class="p-loading">No affiliate links yet.</td></tr>'; return; }
-  tbody.innerHTML = PS.affiliates.map(function(r){
+  if (!rows.length) {
+    tbody.innerHTML = '<tr><td colspan="5" class="p-loading">No affiliates found.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = rows.map(function(a) {
+    var agCls = agencyBadgeClass(a.agency);
     return '<tr>'
-      +'<td><strong style="color:var(--h2)">'+esc(r.creator_name||'—')+'</strong></td>'
-      +'<td>'+agencyBadge(r.agency||'Standalone')+'</td>'
-      +'<td><code style="font-family:monospace;font-size:.85rem;color:var(--primary);background:var(--primary-light);padding:2px 8px;border-radius:6px">'+esc(r.code||'—')+'</code></td>'
-      +'<td class="p-dim">'+esc(r.platform_notes||'—')+'</td>'
-      +'<td><div class="row-actions">'
-      +'<button class="row-btn" onclick="openAffiliateModal(\''+r.id+'\')">Edit</button>'
-      +'</div></td>'
-      +'</tr>';
+      + ec('partnership_affiliates', a.id, 'creator_name', a.creator_name)
+      + '<td><span class="p-badge ' + agCls + '">' + esc(a.agency || '') + '</span></td>'
+      + ec('partnership_affiliates', a.id, 'code', a.code)
+      + ec('partnership_affiliates', a.id, 'platform_notes', a.platform_notes)
+      + delBtn('deleteAffiliate', a.id)
+      + '</tr>';
   }).join('');
 }
 
-// ── Affiliate CRUD ───────────────────────────────────────────
-function openAffiliateModal(id) {
-  PS.editingId = id || null;
-  var isEdit = !!id;
-  document.getElementById('affiliate-modal-title').textContent = isEdit ? 'Edit Affiliate Link' : 'Add Affiliate Link';
-  document.getElementById('afm-delete-btn').style.display = isEdit ? '' : 'none';
-  if (isEdit) {
-    var r = PS.affiliates.find(function(a){ return a.id===id; });
-    if (!r) return;
-    document.getElementById('afm-name').value = r.creator_name||'';
-    document.getElementById('afm-agency').value = r.agency||'Little Leaf';
-    document.getElementById('afm-code').value = r.code||'';
-    document.getElementById('afm-notes').value = r.platform_notes||'';
-  } else {
-    ['afm-name','afm-code','afm-notes'].forEach(function(i){ document.getElementById(i).value=''; });
-    document.getElementById('afm-agency').value = 'Standalone';
-  }
-  openModal('affiliate-modal');
+async function addAffiliateRow() {
+  var { data, error } = await db.from('partnership_affiliates').insert({
+    creator_name: 'New Creator', agency: 'Standalone', code: 'CODE25', platform_notes: ''
+  }).select().single();
+  if (error) { showToast('Could not add row: ' + error.message, 'error'); return; }
+  PS.affiliates.push(data);
+  renderAffiliates();
+  focusLastRow('aff-tbody', 0);
 }
-async function saveAffiliate() {
-  var payload = {
-    creator_name: document.getElementById('afm-name').value.trim(),
-    agency: document.getElementById('afm-agency').value,
-    code: document.getElementById('afm-code').value.trim().toUpperCase(),
-    platform_notes: document.getElementById('afm-notes').value.trim()
-  };
-  if (!payload.creator_name) { showToast('Creator name is required','error'); return; }
-  var err;
-  if (PS.editingId) {
-    var res = await db.from('partnership_affiliates').update(payload).eq('id', PS.editingId);
-    err = res.error;
-  } else {
-    var res = await db.from('partnership_affiliates').insert(payload);
-    err = res.error;
-  }
-  if (err) { showToast('Save failed: '+err.message,'error'); return; }
-  showToast(PS.editingId ? 'Affiliate updated' : 'Affiliate added');
-  closeModal('affiliate-modal');
-  await loadAffiliates();
-}
-async function deleteAffiliate() {
-  if (!PS.editingId) return;
-  if (!confirm('Delete this affiliate link?')) return;
-  var { error } = await db.from('partnership_affiliates').delete().eq('id', PS.editingId);
-  if (error) { showToast('Delete failed','error'); return; }
+
+async function deleteAffiliate(id) {
+  if (!confirm('Delete this affiliate?')) return;
+  var { error } = await db.from('partnership_affiliates').delete().eq('id', id);
+  if (error) { showToast('Delete failed: ' + error.message, 'error'); return; }
+  PS.affiliates = PS.affiliates.filter(function(a) { return a.id !== id; });
+  renderAffiliates();
   showToast('Affiliate deleted');
-  closeModal('affiliate-modal');
-  await loadAffiliates();
-}
-
-// ══════════════════════════════════════════════════════════════
-// TAB 6: ONBOARDING KIT
-// ══════════════════════════════════════════════════════════════
-function renderKit() {
-  var container = document.getElementById('kit-container');
-  if (!PS.kit.length) { container.innerHTML='<div class="p-loading">No kit items yet.</div>'; return; }
-
-  // Group by agency
-  var agencies = [];
-  PS.kit.forEach(function(k){ if (!agencies.includes(k.agency)) agencies.push(k.agency); });
-  agencies.sort();
-
-  container.innerHTML = agencies.map(function(ag){
-    var items = PS.kit.filter(function(k){ return k.agency===ag; });
-    items.sort(function(a,b){ return (a.sort_order||0)-(b.sort_order||0); });
-    var color = kitAgencyColor(ag);
-    return '<div class="p-kit-card">'
-      +'<div class="p-kit-card-top">'
-      +'<div class="p-kit-card-top-left">'
-      +'<div class="p-kit-icon" style="background:'+color+'22"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="'+color+'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div>'
-      +'<div><div class="p-kit-agency" style="color:'+color+'">'+esc(ag)+'</div></div>'
-      +'</div>'
-      +'</div>'
-      +items.map(function(k){
-        return '<div class="p-kit-section-header">'
-          +'<div class="p-kit-section-name">'+esc(k.section)+'</div>'
-          +'<button class="row-btn" onclick="openKitModal(\''+k.id+'\')">Edit</button>'
-          +'</div>'
-          +'<div class="p-kit-content">'+esc(k.content||'')+'</div>';
-      }).join('')
-      +'</div>';
-  }).join('');
-}
-
-// ── Kit CRUD ─────────────────────────────────────────────────
-function openKitModal(id) {
-  PS.editingId = id || null;
-  var isEdit = !!id;
-  document.getElementById('kit-modal-title').textContent = isEdit ? 'Edit Kit Item' : 'Add Kit Item';
-  document.getElementById('km-delete-btn').style.display = isEdit ? '' : 'none';
-  if (isEdit) {
-    var r = PS.kit.find(function(k){ return k.id===id; });
-    if (!r) return;
-    document.getElementById('km-agency').value = r.agency||'Eyeball Factory';
-    document.getElementById('km-section').value = r.section||'';
-    document.getElementById('km-content').value = r.content||'';
-    document.getElementById('km-order').value = r.sort_order||1;
-  } else {
-    ['km-section','km-content'].forEach(function(i){ document.getElementById(i).value=''; });
-    document.getElementById('km-agency').value = 'Eyeball Factory';
-    document.getElementById('km-order').value = 1;
-  }
-  openModal('kit-modal');
-}
-async function saveKit() {
-  var payload = {
-    agency: document.getElementById('km-agency').value,
-    section: document.getElementById('km-section').value.trim(),
-    content: document.getElementById('km-content').value.trim(),
-    sort_order: parseInt(document.getElementById('km-order').value)||1
-  };
-  if (!payload.section) { showToast('Section name is required','error'); return; }
-  var err;
-  if (PS.editingId) {
-    var res = await db.from('partnership_kit').update(payload).eq('id', PS.editingId);
-    err = res.error;
-  } else {
-    var res = await db.from('partnership_kit').insert(payload);
-    err = res.error;
-  }
-  if (err) { showToast('Save failed: '+err.message,'error'); return; }
-  showToast(PS.editingId ? 'Kit item updated' : 'Kit item added');
-  closeModal('kit-modal');
-  await loadKit();
-}
-async function deleteKit() {
-  if (!PS.editingId) return;
-  if (!confirm('Delete this kit item?')) return;
-  var { error } = await db.from('partnership_kit').delete().eq('id', PS.editingId);
-  if (error) { showToast('Delete failed','error'); return; }
-  showToast('Kit item deleted');
-  closeModal('kit-modal');
-  await loadKit();
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -1716,41 +1006,38 @@ async function deleteKit() {
 // ══════════════════════════════════════════════════════════════
 async function loadCreators() {
   var { data, error } = await db.from('partnership_creators').select('*').order('agency').order('name');
-  if (error) { showToast('Could not load creators: '+error.message,'error'); return; }
+  if (error) { showToast('Could not load creators: ' + error.message, 'error'); return; }
   PS.creators = data || [];
-  updateOverview();
   renderDirectory();
 }
+
 async function loadPipeline() {
   var { data, error } = await db.from('partnership_pipeline').select('*').order('created_at');
-  if (error) { showToast('Could not load pipeline','error'); return; }
+  if (error) { showToast('Could not load pipeline', 'error'); return; }
   PS.pipeline = data || [];
   renderPipeline();
 }
+
 async function loadPerformance() {
-  var { data, error } = await db.from('partnership_performance').select('*').order('agency').order('spend_hkd', {ascending:false});
-  if (error) { showToast('Could not load performance','error'); return; }
+  var { data, error } = await db.from('partnership_performance').select('*').order('agency').order('spend_hkd', { ascending: false });
+  if (error) { showToast('Could not load performance', 'error'); return; }
   PS.performance = data || [];
   updatePeriodSelect();
   renderPerformance();
 }
+
 async function loadPayments() {
   var { data, error } = await db.from('partnership_payments').select('*').order('agency');
-  if (error) { showToast('Could not load payments','error'); return; }
+  if (error) { showToast('Could not load payments', 'error'); return; }
   PS.payments = data || [];
   renderPayments();
 }
+
 async function loadAffiliates() {
   var { data, error } = await db.from('partnership_affiliates').select('*').order('agency').order('creator_name');
-  if (error) { showToast('Could not load affiliates','error'); return; }
+  if (error) { showToast('Could not load affiliates', 'error'); return; }
   PS.affiliates = data || [];
   renderAffiliates();
-}
-async function loadKit() {
-  var { data, error } = await db.from('partnership_kit').select('*').order('agency').order('sort_order');
-  if (error) { showToast('Could not load onboarding kit','error'); return; }
-  PS.kit = data || [];
-  renderKit();
 }
 
 // ── INIT ─────────────────────────────────────────────────────
@@ -1760,8 +1047,7 @@ async function onPageReady() {
     loadPipeline(),
     loadPerformance(),
     loadPayments(),
-    loadAffiliates(),
-    loadKit()
+    loadAffiliates()
   ]);
 }
 

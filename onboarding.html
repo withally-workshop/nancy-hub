@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>(function(){var t=localStorage.getItem('nancy_theme');if(t==='light')document.documentElement.setAttribute('data-theme','light');})()</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nancy — Onboarding Kit</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared/styles.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+/* ── ONBOARDING KIT PAGE ───────────────────────────────────── */
+.ok-wrap{max-width:900px;margin:0 auto;padding:1.5rem 1.5rem 4rem}
+.ok-back{display:inline-flex;align-items:center;gap:.4rem;font-family:'Inter',sans-serif;font-size:.82rem;color:var(--muted);text-decoration:none;margin-bottom:1.5rem;transition:color .15s}
+.ok-back:hover{color:var(--primary)}
+.ok-header{margin-bottom:2rem}
+.ok-title{font-family:'Fraunces',serif;font-size:1.75rem;font-weight:600;color:var(--h2);letter-spacing:-.02em}
+.ok-sub{font-family:'Inter',sans-serif;font-size:.83rem;color:var(--muted);margin-top:.25rem}
+
+/* Agency section */
+.ok-agency-block{margin-bottom:2.5rem}
+.ok-agency-header{display:flex;align-items:center;gap:.75rem;margin-bottom:1.25rem;padding-bottom:.75rem;border-bottom:2px solid var(--border)}
+.ok-agency-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.ok-agency-name{font-family:'Fraunces',serif;font-size:1.15rem;font-weight:600;color:var(--h2)}
+.ok-agency-add{margin-left:auto;padding:5px 12px;background:none;border:1.5px solid var(--border2);border-radius:8px;font-family:'Inter',sans-serif;font-size:.76rem;font-weight:600;color:var(--muted);cursor:pointer;transition:all .2s}
+.ok-agency-add:hover{border-color:var(--primary);color:var(--primary)}
+
+/* Section card */
+.ok-section{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:1rem;overflow:hidden;transition:border-color .2s}
+.ok-section:hover{border-color:var(--border2)}
+.ok-section-head{display:flex;align-items:center;padding:.75rem 1.1rem;border-bottom:1px solid var(--border);gap:.75rem}
+.ok-section-label-wrap{flex:1}
+.ok-section-label{font-family:'Inter',sans-serif;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
+.ok-section-label-edit{display:inline-block;min-width:80px;font-family:'Inter',sans-serif;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);border-bottom:1px dashed transparent;outline:none;cursor:text;transition:border-color .15s}
+.ok-section-label-edit:hover{border-bottom-color:var(--border2)}
+.ok-section-label-edit:focus{border-bottom-color:var(--primary)}
+.ok-section-del{padding:3px 8px;border-radius:6px;border:1px solid transparent;font-family:'Inter',sans-serif;font-size:.72rem;color:var(--muted);background:none;cursor:pointer;transition:all .15s;opacity:0}
+.ok-section:hover .ok-section-del{opacity:1}
+.ok-section-del:hover{border-color:#e53e3e;color:#e53e3e}
+.ok-section-save-indicator{font-family:'Inter',sans-serif;font-size:.7rem;color:var(--primary);opacity:0;transition:opacity .3s}
+.ok-section-save-indicator.saving{opacity:1}
+
+/* Content editable area */
+.ok-content{padding:1rem 1.1rem;font-family:'Inter',sans-serif;font-size:.84rem;color:var(--body);line-height:1.7;min-height:80px;outline:none;white-space:pre-wrap;cursor:text}
+.ok-content:focus{background:var(--bg2)}
+.ok-content:empty::before{content:attr(data-placeholder);color:var(--muted);pointer-events:none}
+
+/* Saving status */
+.ok-status-bar{display:flex;align-items:center;gap:.5rem;font-family:'Inter',sans-serif;font-size:.75rem;color:var(--muted);height:1.5rem;margin-top:.25rem}
+.ok-dot{width:6px;height:6px;border-radius:50%;background:var(--muted)}
+.ok-dot.saved{background:#3bb273}
+.ok-dot.saving{background:#f7b731;animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* Loading */
+.ok-loading{text-align:center;padding:3rem;color:var(--muted);font-family:'Inter',sans-serif;font-size:.9rem}
+
+/* Empty state */
+.ok-empty{text-align:center;padding:2rem;color:var(--muted);font-family:'Inter',sans-serif;font-size:.84rem;border:1.5px dashed var(--border);border-radius:var(--radius)}
+
+/* Responsive */
+@media(max-width:768px){
+  .ok-content{font-size:.82rem}
+}
+</style>
+</head>
+<body>
+<div id="loading"><div class="loading-logo">Nancy</div><div class="loading-spinner"></div></div>
+
+<div id="gate">
+  <div class="gate-card">
+    <div class="gate-logo">Nancy</div>
+    <div class="gate-sub">CareNBloom Marketing Hub</div>
+    <div class="gate-label">Enter hub password</div>
+    <input class="gate-input" type="password" id="gate-pw" placeholder="••••••••" onkeydown="if(event.key==='Enter')checkPassword()"/>
+    <div class="gate-error" id="gate-error"></div>
+    <button class="gate-btn" onclick="checkPassword()">Enter Hub</button>
+  </div>
+</div>
+
+<div id="auth-screen">
+  <div class="auth-card">
+    <div class="auth-logo">Nancy</div>
+    <div class="auth-sub">CareNBloom Marketing Hub</div>
+    <div class="auth-tabs">
+      <div class="auth-tab active" id="signin-tab" onclick="switchAuthTab('signin')">Sign In</div>
+      <div class="auth-tab" id="signup-tab" onclick="switchAuthTab('signup')">Join Team</div>
+    </div>
+    <div id="signin-form">
+      <div class="auth-field">
+        <label class="auth-label">Email</label>
+        <input class="auth-input" type="email" id="signin-email" placeholder="you@carenbloom.com" onkeydown="if(event.key==='Enter')signIn()"/>
+      </div>
+      <div class="auth-field">
+        <label class="auth-label">Password</label>
+        <input class="auth-input" type="password" id="signin-password" placeholder="Your password" onkeydown="if(event.key==='Enter')signIn()"/>
+        <span class="auth-forgot" onclick="showForgotPassword()">Forgot password?</span>
+      </div>
+      <div class="auth-error" id="signin-error"></div>
+      <button class="auth-btn" id="signin-btn" onclick="signIn()">Sign In</button>
+    </div>
+    <div id="signup-form" style="display:none">
+      <div class="auth-field">
+        <label class="auth-label">Your Name</label>
+        <input class="auth-input" type="text" id="signup-name" placeholder="e.g. Crystal"/>
+      </div>
+      <div class="auth-field">
+        <label class="auth-label">Work Email</label>
+        <input class="auth-input" type="email" id="signup-email" placeholder="you@carenbloom.com"/>
+        <div class="auth-domain-hint">Only @carenbloom.com emails allowed</div>
+      </div>
+      <div class="auth-field">
+        <label class="auth-label">Password</label>
+        <input class="auth-input" type="password" id="signup-password" placeholder="Min 6 characters"/>
+      </div>
+      <div class="auth-error" id="signup-error"></div>
+      <div class="auth-success" id="signup-success"></div>
+      <button class="auth-btn" id="signup-btn" onclick="signUp()">Join Team</button>
+    </div>
+    <div id="forgot-form" style="display:none">
+      <div class="auth-field">
+        <label class="auth-label">Work Email</label>
+        <input class="auth-input" type="email" id="forgot-email" placeholder="you@carenbloom.com"/>
+      </div>
+      <div class="auth-error" id="forgot-error"></div>
+      <div class="auth-success" id="forgot-success"></div>
+      <button class="auth-btn" id="forgot-btn" onclick="sendResetEmail()">Send Reset Link</button>
+      <div style="text-align:center;margin-top:1rem"><span class="auth-forgot" onclick="switchAuthTab('signin')">← Back to Sign In</span></div>
+    </div>
+  </div>
+</div>
+
+<div id="app" style="display:none">
+
+  <nav class="topnav">
+    <a class="nav-brand" href="index.html">Nancy</a>
+    <div class="nav-links">
+      <a class="nav-link" href="index.html">Home</a>
+      <a class="nav-link" href="taskflow.html">Task Hub</a>
+      <a class="nav-link" href="social.html">Content &amp; Socials</a>
+      <a class="nav-link" href="learning.html">Learning</a>
+      <a class="nav-link active" href="creators.html">Partnerships</a>
+    </div>
+    <div class="nav-right">
+      <div class="nav-time" id="pht-clock">HKT --:--</div>
+      <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme"></button>
+      <div id="admin-nav-link" style="display:none">
+        <a class="nav-link" href="admin.html" style="color:var(--primary);font-weight:600">Admin</a>
+      </div>
+      <div class="user-nav-btn" onclick="openUserMenu()">
+        <div class="user-avatar-small" id="user-avatar-nav">?</div>
+        <span id="user-name-nav">Me</span>
+        <span style="font-size:.7rem;color:var(--muted)">▾</span>
+      </div>
+    </div>
+  </nav>
+
+  <div id="storage-alert-banner" style="max-width:900px;margin:0 auto">
+    <span id="storage-alert-icon">⚠️</span>
+    <span style="flex:1;font-family:'Inter',sans-serif">
+      <span id="storage-alert-pct" style="font-weight:700"></span>
+      <span id="storage-alert-msg"></span>
+    </span>
+    <button class="storage-alert-close" onclick="dismissStorageAlert()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- ONBOARDING KIT PAGE                                     -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <div class="ok-wrap">
+
+    <a class="ok-back" href="creators.html">← Partnerships</a>
+
+    <div class="ok-header">
+      <div class="ok-title">Onboarding Kit</div>
+      <div class="ok-sub">Per-agency brief templates, contracts &amp; posting guidelines. All edits auto-save.</div>
+    </div>
+
+    <div id="ok-status-bar" class="ok-status-bar">
+      <div class="ok-dot" id="ok-dot"></div>
+      <span id="ok-status-text">All changes saved</span>
+    </div>
+
+    <div id="kit-container" style="margin-top:1.5rem">
+      <div class="ok-loading">Loading…</div>
+    </div>
+
+  </div><!-- /ok-wrap -->
+
+  <!-- USER MENU -->
+  <div class="user-menu-overlay" id="user-menu-overlay" onclick="closeUserMenu()"></div>
+  <div class="user-menu" id="user-menu">
+    <div class="user-menu-header">
+      <div class="user-avatar" id="user-avatar-menu">?</div>
+      <div>
+        <div class="user-menu-name" id="user-name-menu">Loading...</div>
+        <div class="user-menu-email" id="user-email-menu"></div>
+      </div>
+    </div>
+    <div class="user-menu-divider"></div>
+    <button class="user-menu-item" onclick="toggleTheme()">Toggle Theme</button>
+    <button class="user-menu-item danger" onclick="signOut()">Sign Out</button>
+  </div>
+
+  <!-- MOBILE NAV -->
+  <nav class="mobile-nav">
+    <a class="mobile-nav-item" href="index.html">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <span>Home</span>
+    </a>
+    <a class="mobile-nav-item" href="taskflow.html">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      <span>Tasks</span>
+    </a>
+    <a class="mobile-nav-item" href="social.html">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <span>Content</span>
+    </a>
+    <a class="mobile-nav-item active" href="creators.html">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      <span>Partners</span>
+    </a>
+  </nav>
+
+</div><!-- /app -->
+
+<div class="toast" id="toast"></div>
+
+<script src="shared/hub.js"></script>
+<script>
+const CURRENT_PAGE = 'partnerships';
+
+// ══════════════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════════════
+var KIT = [];
+var saveTimers = {};
+var saveStatus = 'saved'; // 'saved' | 'saving'
+
+var AGENCIES = [
+  { name: 'Eyeball Factory', color: '#3bb273' },
+  { name: 'Krave Media',     color: '#8854d0' },
+  { name: 'Little Leaf',     color: '#2d7dd2' },
+  { name: 'Standalone',      color: '#7a7975' }
+];
+
+// ══════════════════════════════════════════════════════════════
+// RENDER
+// ══════════════════════════════════════════════════════════════
+function renderKit() {
+  var container = document.getElementById('kit-container');
+  if (!KIT.length) {
+    container.innerHTML = AGENCIES.map(function(ag) {
+      return buildAgencyBlock(ag, []);
+    }).join('');
+    return;
+  }
+
+  container.innerHTML = AGENCIES.map(function(ag) {
+    var items = KIT.filter(function(k) { return k.agency === ag.name; });
+    items.sort(function(a, b) { return (a.sort_order || 0) - (b.sort_order || 0); });
+    return buildAgencyBlock(ag, items);
+  }).join('');
+
+  // Attach input listeners to all content areas
+  document.querySelectorAll('.ok-content').forEach(attachContentListener);
+  document.querySelectorAll('.ok-section-label-edit').forEach(attachLabelListener);
+}
+
+function buildAgencyBlock(ag, items) {
+  var sectionsHtml = items.length
+    ? items.map(function(k) { return buildSectionCard(k); }).join('')
+    : '<div class="ok-empty">No sections yet. Add one below.</div>';
+  return '<div class="ok-agency-block" id="agency-block-' + agSlug(ag.name) + '">'
+    + '<div class="ok-agency-header">'
+    + '<div class="ok-agency-dot" style="background:' + ag.color + '"></div>'
+    + '<div class="ok-agency-name">' + esc(ag.name) + '</div>'
+    + '<button class="ok-agency-add" onclick="addSection(\'' + ag.name + '\')">+ Add Section</button>'
+    + '</div>'
+    + '<div id="sections-' + agSlug(ag.name) + '">' + sectionsHtml + '</div>'
+    + '</div>';
+}
+
+function buildSectionCard(k) {
+  return '<div class="ok-section" id="section-' + k.id + '">'
+    + '<div class="ok-section-head">'
+    + '<div class="ok-section-label-wrap">'
+    + '<span contenteditable="true" class="ok-section-label-edit" data-id="' + k.id + '">'
+    + esc(k.section || 'Untitled') + '</span>'
+    + '</div>'
+    + '<button class="ok-section-del" onclick="deleteSection(' + k.id + ')">Delete</button>'
+    + '</div>'
+    + '<div contenteditable="true" class="ok-content" data-id="' + k.id
+    + '" data-placeholder="Start typing…">'
+    + esc(k.content || '') + '</div>'
+    + '</div>';
+}
+
+function agSlug(name) {
+  return name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+}
+
+// ══════════════════════════════════════════════════════════════
+// LISTENERS
+// ══════════════════════════════════════════════════════════════
+function attachContentListener(el) {
+  el.addEventListener('input', function() {
+    var id = parseInt(el.getAttribute('data-id'));
+    scheduleContentSave(id, el);
+  });
+}
+
+function attachLabelListener(el) {
+  el.addEventListener('blur', function() {
+    var id = parseInt(el.getAttribute('data-id'));
+    var val = el.innerText.trim();
+    var row = KIT.find(function(k) { return k.id === id; });
+    if (row) row.section = val;
+    setSaving();
+    db.from('partnership_kit').update({ section: val }).eq('id', id).then(function(res) {
+      if (res.error) showToast('Save failed: ' + res.error.message, 'error');
+      else setSaved();
+    });
+  });
+  el.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') { e.preventDefault(); el.blur(); }
+  });
+}
+
+function scheduleContentSave(id, el) {
+  setSaving();
+  clearTimeout(saveTimers[id]);
+  saveTimers[id] = setTimeout(async function() {
+    var val = el.innerText;
+    var row = KIT.find(function(k) { return k.id === id; });
+    if (row) row.content = val;
+    var { error } = await db.from('partnership_kit').update({ content: val }).eq('id', id);
+    if (error) showToast('Auto-save failed', 'error');
+    else setSaved();
+  }, 800);
+}
+
+function setSaving() {
+  document.getElementById('ok-dot').className = 'ok-dot saving';
+  document.getElementById('ok-status-text').textContent = 'Saving…';
+}
+function setSaved() {
+  document.getElementById('ok-dot').className = 'ok-dot saved';
+  document.getElementById('ok-status-text').textContent = 'All changes saved';
+}
+
+// ══════════════════════════════════════════════════════════════
+// CRUD
+// ══════════════════════════════════════════════════════════════
+async function addSection(agency) {
+  var existing = KIT.filter(function(k) { return k.agency === agency; });
+  var nextOrder = existing.length + 1;
+  var { data, error } = await db.from('partnership_kit').insert({
+    agency: agency,
+    section: 'New Section',
+    content: '',
+    sort_order: nextOrder
+  }).select().single();
+  if (error) { showToast('Could not add section: ' + error.message, 'error'); return; }
+  KIT.push(data);
+
+  var sectionsDiv = document.getElementById('sections-' + agSlug(agency));
+  if (sectionsDiv) {
+    // Remove empty state if present
+    var empty = sectionsDiv.querySelector('.ok-empty');
+    if (empty) empty.remove();
+    // Append new card
+    var tmp = document.createElement('div');
+    tmp.innerHTML = buildSectionCard(data);
+    var card = tmp.firstChild;
+    sectionsDiv.appendChild(card);
+    attachContentListener(card.querySelector('.ok-content'));
+    attachLabelListener(card.querySelector('.ok-section-label-edit'));
+    // Focus the label
+    var label = card.querySelector('.ok-section-label-edit');
+    if (label) { label.focus(); var r=document.createRange(); r.selectNodeContents(label); var sel=window.getSelection(); sel.removeAllRanges(); sel.addRange(r); }
+  }
+  showToast('Section added');
+}
+
+async function deleteSection(id) {
+  if (!confirm('Delete this section?')) return;
+  var { error } = await db.from('partnership_kit').delete().eq('id', id);
+  if (error) { showToast('Delete failed: ' + error.message, 'error'); return; }
+  KIT = KIT.filter(function(k) { return k.id !== id; });
+  var card = document.getElementById('section-' + id);
+  if (card) {
+    var sectionsDiv = card.parentElement;
+    card.remove();
+    // Re-show empty state if no sections remain
+    if (sectionsDiv && !sectionsDiv.querySelector('.ok-section')) {
+      sectionsDiv.innerHTML = '<div class="ok-empty">No sections yet. Add one below.</div>';
+    }
+  }
+  showToast('Section deleted');
+}
+
+// ══════════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════════
+async function onPageReady() {
+  var { data, error } = await db.from('partnership_kit').select('*').order('agency').order('sort_order');
+  if (error) { showToast('Could not load onboarding kit: ' + error.message, 'error'); return; }
+  KIT = data || [];
+  renderKit();
+}
+
+bootHub();
+</script>
+</body>
+</html>
