@@ -468,7 +468,9 @@ var PS = {
 
 var ASSIGNEE_COLORS = {
   momo: '#ff30cc', sam: '#3bb273', rahul: '#2d7dd2',
-  andrea: '#e55a20', daphnie: '#6b3fa0', ben: '#c8930a', arvin: '#1a5fa0'
+  andrea: '#e55a20', daphnie: '#6b3fa0', ben: '#c8930a', arvin: '#1a5fa0',
+  crystal: '#e91e8c', lucy: '#9c27b0', grace: '#009688', kim: '#ff5722',
+  amy: '#795548', anna: '#607d8b'
 };
 
 var STAGE_OPTIONS   = ['1-Outreach','2-Discussion','3-Contract','4-Samples Sent','5-Content Live','6-Complete'];
@@ -723,15 +725,21 @@ function renderPipeline() {
   }).join('');
 }
 
+function resolveAssigneeBubbles(text) {
+  return (text || '').split(/[\/,&]/).map(function(part) {
+    var trimmed = part.trim();
+    if (!trimmed || trimmed === '—') return '';
+    var firstName = trimmed.toLowerCase().split(/\s+/)[0];
+    var color = ASSIGNEE_COLORS[firstName];
+    if (!color) return '';
+    return '<span class="av-bubble" style="background:' + color + '" title="' + esc(trimmed) + '">'
+      + firstName.substring(0, 2).toUpperCase() + '</span>';
+  }).join('');
+}
+
 function buildAssigneeCell(id, val) {
   var text = val || '';
-  var bubbles = text.split(/[\/,]/).map(function(part) {
-    var name = part.trim().toLowerCase();
-    var color = ASSIGNEE_COLORS[name];
-    if (!color) return '';
-    return '<span class="av-bubble" style="background:' + color + '" title="' + esc(part.trim()) + '">'
-      + name.substring(0, 2).toUpperCase() + '</span>';
-  }).join('');
+  var bubbles = resolveAssigneeBubbles(text);
   return '<span style="display:inline-flex;align-items:center;gap:4px;flex-wrap:wrap">'
     + bubbles
     + '<span contenteditable="true" class="editable-cell" style="min-width:40px"'
@@ -752,16 +760,10 @@ async function saveAssignee(el) {
   var wrapper = el.closest('span');
   if (wrapper) {
     wrapper.querySelectorAll('.av-bubble').forEach(function(b) { b.remove(); });
-    val.split(/[\/,]/).forEach(function(part) {
-      var name = part.trim().toLowerCase();
-      var color = ASSIGNEE_COLORS[name];
-      if (!color) return;
-      var span = document.createElement('span');
-      span.className = 'av-bubble';
-      span.style.background = color;
-      span.title = part.trim();
-      span.textContent = name.substring(0, 2).toUpperCase();
-      wrapper.insertBefore(span, el);
+    var tmp = document.createElement('div');
+    tmp.innerHTML = resolveAssigneeBubbles(val);
+    Array.from(tmp.children).forEach(function(child) {
+      wrapper.insertBefore(child, el);
     });
   }
 }

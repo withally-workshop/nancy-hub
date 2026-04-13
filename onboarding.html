@@ -9,58 +9,53 @@
 <link rel="stylesheet" href="shared/styles.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-/* ── ONBOARDING KIT PAGE ───────────────────────────────────── */
-.ok-wrap{max-width:900px;margin:0 auto;padding:1.5rem 1.5rem 4rem}
+/* ── ONBOARDING KIT ────────────────────────────────────────── */
+.ok-wrap{max-width:1200px;margin:0 auto;padding:1.5rem 1.5rem 4rem}
 .ok-back{display:inline-flex;align-items:center;gap:.4rem;font-family:'Inter',sans-serif;font-size:.82rem;color:var(--muted);text-decoration:none;margin-bottom:1.5rem;transition:color .15s}
 .ok-back:hover{color:var(--primary)}
-.ok-header{margin-bottom:2rem}
+.ok-header{display:flex;align-items:baseline;gap:.75rem;margin-bottom:.4rem}
 .ok-title{font-family:'Fraunces',serif;font-size:1.75rem;font-weight:600;color:var(--h2);letter-spacing:-.02em}
-.ok-sub{font-family:'Inter',sans-serif;font-size:.83rem;color:var(--muted);margin-top:.25rem}
+.ok-sub{font-family:'Inter',sans-serif;font-size:.83rem;color:var(--muted);margin-bottom:1.5rem}
 
-/* Agency section */
+/* Status bar */
+.ok-status{display:flex;align-items:center;gap:.5rem;font-family:'Inter',sans-serif;font-size:.74rem;color:var(--muted);margin-bottom:1.75rem}
+.ok-dot{width:7px;height:7px;border-radius:50%;background:var(--muted);flex-shrink:0;transition:background .3s}
+.ok-dot.saved{background:#3bb273}
+.ok-dot.saving{background:#f7b731;animation:blink 1s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* Agency group */
 .ok-agency-block{margin-bottom:2.5rem}
-.ok-agency-header{display:flex;align-items:center;gap:.75rem;margin-bottom:1.25rem;padding-bottom:.75rem;border-bottom:2px solid var(--border)}
-.ok-agency-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
-.ok-agency-name{font-family:'Fraunces',serif;font-size:1.15rem;font-weight:600;color:var(--h2)}
-.ok-agency-add{margin-left:auto;padding:5px 12px;background:none;border:1.5px solid var(--border2);border-radius:8px;font-family:'Inter',sans-serif;font-size:.76rem;font-weight:600;color:var(--muted);cursor:pointer;transition:all .2s}
-.ok-agency-add:hover{border-color:var(--primary);color:var(--primary)}
+.ok-agency-row{display:flex;align-items:center;gap:.7rem;margin-bottom:1rem}
+.ok-agency-pip{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.ok-agency-name{font-family:'Fraunces',serif;font-size:1.05rem;font-weight:600;color:var(--h2)}
+.ok-add-btn{margin-left:auto;padding:5px 13px;background:none;border:1.5px solid var(--border2);border-radius:8px;font-family:'Inter',sans-serif;font-size:.76rem;font-weight:600;color:var(--muted);cursor:pointer;transition:all .2s;white-space:nowrap}
+.ok-add-btn:hover{border-color:var(--primary);color:var(--primary)}
 
-/* Section card */
-.ok-section{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:1rem;overflow:hidden;transition:border-color .2s}
-.ok-section:hover{border-color:var(--border2)}
-.ok-section-head{display:flex;align-items:center;padding:.75rem 1.1rem;border-bottom:1px solid var(--border);gap:.75rem}
-.ok-section-label-wrap{flex:1}
-.ok-section-label{font-family:'Inter',sans-serif;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
-.ok-section-label-edit{display:inline-block;min-width:80px;font-family:'Inter',sans-serif;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);border-bottom:1px dashed transparent;outline:none;cursor:text;transition:border-color .15s}
-.ok-section-label-edit:hover{border-bottom-color:var(--border2)}
-.ok-section-label-edit:focus{border-bottom-color:var(--primary)}
-.ok-section-del{padding:3px 8px;border-radius:6px;border:1px solid transparent;font-family:'Inter',sans-serif;font-size:.72rem;color:var(--muted);background:none;cursor:pointer;transition:all .15s;opacity:0}
-.ok-section:hover .ok-section-del{opacity:1}
-.ok-section-del:hover{border-color:#e53e3e;color:#e53e3e}
-.ok-section-save-indicator{font-family:'Inter',sans-serif;font-size:.7rem;color:var(--primary);opacity:0;transition:opacity .3s}
-.ok-section-save-indicator.saving{opacity:1}
-
-/* Content editable area */
-.ok-content{padding:1rem 1.1rem;font-family:'Inter',sans-serif;font-size:.84rem;color:var(--body);line-height:1.7;min-height:80px;outline:none;white-space:pre-wrap;cursor:text}
-.ok-content:focus{background:var(--bg2)}
+/* Card grid */
+.ok-card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem}
+.ok-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);display:flex;flex-direction:column;transition:border-color .2s}
+.ok-card:hover{border-color:var(--border2)}
+.ok-card-head{display:flex;align-items:center;padding:.75rem 1rem;border-bottom:1px solid var(--border);gap:.5rem}
+.ok-card-label{flex:1;font-family:'Inter',sans-serif;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);border-bottom:1px dashed transparent;outline:none;cursor:text;min-width:40px;transition:border-color .15s}
+.ok-card-label:hover{border-bottom-color:var(--border2)}
+.ok-card-label:focus{border-bottom-color:var(--primary)}
+.ok-card-del{width:20px;height:20px;border-radius:50%;border:none;background:rgba(229,58,58,.08);color:#e53e3e;font-size:13px;cursor:pointer;opacity:0;transition:all .15s;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ok-card:hover .ok-card-del{opacity:1}
+.ok-card-del:hover{background:rgba(229,58,58,.2)}
+.ok-card-body{padding:.85rem 1rem;flex:1}
+.ok-content{font-family:'Inter',sans-serif;font-size:.82rem;color:var(--body);line-height:1.7;min-height:80px;outline:none;white-space:pre-wrap;cursor:text;display:block}
+.ok-content:focus{outline:none}
 .ok-content:empty::before{content:attr(data-placeholder);color:var(--muted);pointer-events:none}
 
-/* Saving status */
-.ok-status-bar{display:flex;align-items:center;gap:.5rem;font-family:'Inter',sans-serif;font-size:.75rem;color:var(--muted);height:1.5rem;margin-top:.25rem}
-.ok-dot{width:6px;height:6px;border-radius:50%;background:var(--muted)}
-.ok-dot.saved{background:#3bb273}
-.ok-dot.saving{background:#f7b731;animation:pulse 1s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+/* Empty state */
+.ok-empty{grid-column:1/-1;font-family:'Inter',sans-serif;font-size:.84rem;color:var(--muted);padding:1.5rem;text-align:center;border:1.5px dashed var(--border);border-radius:var(--radius)}
 
 /* Loading */
 .ok-loading{text-align:center;padding:3rem;color:var(--muted);font-family:'Inter',sans-serif;font-size:.9rem}
 
-/* Empty state */
-.ok-empty{text-align:center;padding:2rem;color:var(--muted);font-family:'Inter',sans-serif;font-size:.84rem;border:1.5px dashed var(--border);border-radius:var(--radius)}
-
-/* Responsive */
-@media(max-width:768px){
-  .ok-content{font-size:.82rem}
+@media(max-width:600px){
+  .ok-card-grid{grid-template-columns:1fr}
 }
 </style>
 </head>
@@ -155,7 +150,7 @@
     </div>
   </nav>
 
-  <div id="storage-alert-banner" style="max-width:900px;margin:0 auto">
+  <div id="storage-alert-banner" style="max-width:1200px;margin:0 auto">
     <span id="storage-alert-icon">⚠️</span>
     <span style="flex:1;font-family:'Inter',sans-serif">
       <span id="storage-alert-pct" style="font-weight:700"></span>
@@ -164,28 +159,25 @@
     <button class="storage-alert-close" onclick="dismissStorageAlert()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
   </div>
 
-  <!-- ═══════════════════════════════════════════════════════ -->
-  <!-- ONBOARDING KIT PAGE                                     -->
-  <!-- ═══════════════════════════════════════════════════════ -->
   <div class="ok-wrap">
 
     <a class="ok-back" href="creators.html">← Partnerships</a>
 
     <div class="ok-header">
       <div class="ok-title">Onboarding Kit</div>
-      <div class="ok-sub">Per-agency brief templates, contracts &amp; posting guidelines. All edits auto-save.</div>
     </div>
+    <div class="ok-sub">Brief templates, contracts &amp; posting guidelines per agency. Click any card to edit — saves automatically.</div>
 
-    <div id="ok-status-bar" class="ok-status-bar">
-      <div class="ok-dot" id="ok-dot"></div>
+    <div class="ok-status">
+      <div class="ok-dot saved" id="ok-dot"></div>
       <span id="ok-status-text">All changes saved</span>
     </div>
 
-    <div id="kit-container" style="margin-top:1.5rem">
+    <div id="kit-container">
       <div class="ok-loading">Loading…</div>
     </div>
 
-  </div><!-- /ok-wrap -->
+  </div>
 
   <!-- USER MENU -->
   <div class="user-menu-overlay" id="user-menu-overlay" onclick="closeUserMenu()"></div>
@@ -230,12 +222,8 @@
 <script>
 const CURRENT_PAGE = 'partnerships';
 
-// ══════════════════════════════════════════════════════════════
-// STATE
-// ══════════════════════════════════════════════════════════════
 var KIT = [];
 var saveTimers = {};
-var saveStatus = 'saved'; // 'saved' | 'saving'
 
 var AGENCIES = [
   { name: 'Eyeball Factory', color: '#3bb273' },
@@ -249,50 +237,44 @@ var AGENCIES = [
 // ══════════════════════════════════════════════════════════════
 function renderKit() {
   var container = document.getElementById('kit-container');
-  if (!KIT.length) {
-    container.innerHTML = AGENCIES.map(function(ag) {
-      return buildAgencyBlock(ag, []);
-    }).join('');
-    return;
-  }
-
   container.innerHTML = AGENCIES.map(function(ag) {
     var items = KIT.filter(function(k) { return k.agency === ag.name; });
     items.sort(function(a, b) { return (a.sort_order || 0) - (b.sort_order || 0); });
     return buildAgencyBlock(ag, items);
   }).join('');
 
-  // Attach input listeners to all content areas
   document.querySelectorAll('.ok-content').forEach(attachContentListener);
-  document.querySelectorAll('.ok-section-label-edit').forEach(attachLabelListener);
+  document.querySelectorAll('.ok-card-label').forEach(attachLabelListener);
 }
 
 function buildAgencyBlock(ag, items) {
-  var sectionsHtml = items.length
-    ? items.map(function(k) { return buildSectionCard(k); }).join('')
-    : '<div class="ok-empty">No sections yet. Add one below.</div>';
-  return '<div class="ok-agency-block" id="agency-block-' + agSlug(ag.name) + '">'
-    + '<div class="ok-agency-header">'
-    + '<div class="ok-agency-dot" style="background:' + ag.color + '"></div>'
+  var cardsHtml = items.length
+    ? items.map(buildCard).join('')
+    : '<div class="ok-empty">No cards yet — click Add Card to start.</div>';
+  return '<div class="ok-agency-block">'
+    + '<div class="ok-agency-row">'
+    + '<div class="ok-agency-pip" style="background:' + ag.color + '"></div>'
     + '<div class="ok-agency-name">' + esc(ag.name) + '</div>'
-    + '<button class="ok-agency-add" onclick="addSection(\'' + ag.name + '\')">+ Add Section</button>'
+    + '<button class="ok-add-btn" onclick="addCard(\'' + ag.name + '\')">+ Add Card</button>'
     + '</div>'
-    + '<div id="sections-' + agSlug(ag.name) + '">' + sectionsHtml + '</div>'
+    + '<div class="ok-card-grid" id="grid-' + agSlug(ag.name) + '">'
+    + cardsHtml
+    + '</div>'
     + '</div>';
 }
 
-function buildSectionCard(k) {
-  return '<div class="ok-section" id="section-' + k.id + '">'
-    + '<div class="ok-section-head">'
-    + '<div class="ok-section-label-wrap">'
-    + '<span contenteditable="true" class="ok-section-label-edit" data-id="' + k.id + '">'
+function buildCard(k) {
+  return '<div class="ok-card" id="ok-card-' + k.id + '">'
+    + '<div class="ok-card-head">'
+    + '<span contenteditable="true" class="ok-card-label" data-id="' + k.id + '"'
+    + ' onkeydown="if(event.key===\'Enter\'){event.preventDefault();this.blur()}">'
     + esc(k.section || 'Untitled') + '</span>'
+    + '<button class="ok-card-del" onclick="deleteCard(' + k.id + ')" title="Delete">×</button>'
     + '</div>'
-    + '<button class="ok-section-del" onclick="deleteSection(' + k.id + ')">Delete</button>'
-    + '</div>'
+    + '<div class="ok-card-body">'
     + '<div contenteditable="true" class="ok-content" data-id="' + k.id
-    + '" data-placeholder="Start typing…">'
-    + esc(k.content || '') + '</div>'
+    + '" data-placeholder="Start typing…">' + esc(k.content || '') + '</div>'
+    + '</div>'
     + '</div>';
 }
 
@@ -306,38 +288,30 @@ function agSlug(name) {
 function attachContentListener(el) {
   el.addEventListener('input', function() {
     var id = parseInt(el.getAttribute('data-id'));
-    scheduleContentSave(id, el);
+    setSaving();
+    clearTimeout(saveTimers['c' + id]);
+    saveTimers['c' + id] = setTimeout(async function() {
+      var val = el.innerText;
+      var row = KIT.find(function(k) { return k.id === id; });
+      if (row) row.content = val;
+      var { error } = await db.from('partnership_kit').update({ content: val }).eq('id', id);
+      if (error) showToast('Auto-save failed', 'error');
+      else setSaved();
+    }, 800);
   });
 }
 
 function attachLabelListener(el) {
-  el.addEventListener('blur', function() {
+  el.addEventListener('blur', async function() {
     var id = parseInt(el.getAttribute('data-id'));
     var val = el.innerText.trim();
     var row = KIT.find(function(k) { return k.id === id; });
     if (row) row.section = val;
     setSaving();
-    db.from('partnership_kit').update({ section: val }).eq('id', id).then(function(res) {
-      if (res.error) showToast('Save failed: ' + res.error.message, 'error');
-      else setSaved();
-    });
-  });
-  el.addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') { e.preventDefault(); el.blur(); }
-  });
-}
-
-function scheduleContentSave(id, el) {
-  setSaving();
-  clearTimeout(saveTimers[id]);
-  saveTimers[id] = setTimeout(async function() {
-    var val = el.innerText;
-    var row = KIT.find(function(k) { return k.id === id; });
-    if (row) row.content = val;
-    var { error } = await db.from('partnership_kit').update({ content: val }).eq('id', id);
-    if (error) showToast('Auto-save failed', 'error');
+    var { error } = await db.from('partnership_kit').update({ section: val }).eq('id', id);
+    if (error) showToast('Save failed: ' + error.message, 'error');
     else setSaved();
-  }, 800);
+  });
 }
 
 function setSaving() {
@@ -352,52 +326,49 @@ function setSaved() {
 // ══════════════════════════════════════════════════════════════
 // CRUD
 // ══════════════════════════════════════════════════════════════
-async function addSection(agency) {
+async function addCard(agency) {
   var existing = KIT.filter(function(k) { return k.agency === agency; });
-  var nextOrder = existing.length + 1;
   var { data, error } = await db.from('partnership_kit').insert({
     agency: agency,
-    section: 'New Section',
+    section: 'New Card',
     content: '',
-    sort_order: nextOrder
+    sort_order: existing.length + 1
   }).select().single();
-  if (error) { showToast('Could not add section: ' + error.message, 'error'); return; }
+  if (error) { showToast('Could not add card: ' + error.message, 'error'); return; }
   KIT.push(data);
 
-  var sectionsDiv = document.getElementById('sections-' + agSlug(agency));
-  if (sectionsDiv) {
-    // Remove empty state if present
-    var empty = sectionsDiv.querySelector('.ok-empty');
+  var grid = document.getElementById('grid-' + agSlug(agency));
+  if (grid) {
+    var empty = grid.querySelector('.ok-empty');
     if (empty) empty.remove();
-    // Append new card
     var tmp = document.createElement('div');
-    tmp.innerHTML = buildSectionCard(data);
+    tmp.innerHTML = buildCard(data);
     var card = tmp.firstChild;
-    sectionsDiv.appendChild(card);
+    grid.appendChild(card);
     attachContentListener(card.querySelector('.ok-content'));
-    attachLabelListener(card.querySelector('.ok-section-label-edit'));
-    // Focus the label
-    var label = card.querySelector('.ok-section-label-edit');
-    if (label) { label.focus(); var r=document.createRange(); r.selectNodeContents(label); var sel=window.getSelection(); sel.removeAllRanges(); sel.addRange(r); }
+    var label = card.querySelector('.ok-card-label');
+    attachLabelListener(label);
+    label.focus();
+    var r = document.createRange(); r.selectNodeContents(label);
+    var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
   }
-  showToast('Section added');
+  showToast('Card added');
 }
 
-async function deleteSection(id) {
-  if (!confirm('Delete this section?')) return;
+async function deleteCard(id) {
+  if (!confirm('Delete this card?')) return;
   var { error } = await db.from('partnership_kit').delete().eq('id', id);
   if (error) { showToast('Delete failed: ' + error.message, 'error'); return; }
   KIT = KIT.filter(function(k) { return k.id !== id; });
-  var card = document.getElementById('section-' + id);
+  var card = document.getElementById('ok-card-' + id);
   if (card) {
-    var sectionsDiv = card.parentElement;
+    var grid = card.parentElement;
     card.remove();
-    // Re-show empty state if no sections remain
-    if (sectionsDiv && !sectionsDiv.querySelector('.ok-section')) {
-      sectionsDiv.innerHTML = '<div class="ok-empty">No sections yet. Add one below.</div>';
+    if (grid && !grid.querySelector('.ok-card')) {
+      grid.innerHTML = '<div class="ok-empty">No cards yet — click Add Card to start.</div>';
     }
   }
-  showToast('Section deleted');
+  showToast('Card deleted');
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -405,7 +376,7 @@ async function deleteSection(id) {
 // ══════════════════════════════════════════════════════════════
 async function onPageReady() {
   var { data, error } = await db.from('partnership_kit').select('*').order('agency').order('sort_order');
-  if (error) { showToast('Could not load onboarding kit: ' + error.message, 'error'); return; }
+  if (error) { showToast('Could not load kit: ' + error.message, 'error'); return; }
   KIT = data || [];
   renderKit();
 }
