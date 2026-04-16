@@ -1821,7 +1821,7 @@ async function callGroqVision(base64, prompt) {
   var resp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
     method: 'POST',
     headers: { 'Authorization': 'Bearer ' + key, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ model: 'llama-3.2-11b-vision-preview', messages: [{ role: 'user', content: [{ type: 'image_url', image_url: { url: 'data:image/jpeg;base64,' + base64 } }, { type: 'text', text: prompt }] }], max_tokens: 700, temperature: 0.85 })
+    body: JSON.stringify({ model: 'meta-llama/llama-4-scout-17b-16e-instruct', messages: [{ role: 'user', content: [{ type: 'image_url', image_url: { url: 'data:image/jpeg;base64,' + base64 } }, { type: 'text', text: prompt }] }], max_tokens: 700, temperature: 0.85 })
   });
   var data = await resp.json();
   if (!resp.ok) throw new Error(data.error && data.error.message ? data.error.message : 'Vision API error ' + resp.status);
