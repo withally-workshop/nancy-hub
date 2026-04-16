@@ -399,6 +399,50 @@
 .tool-btn-nancy{color:var(--primary)!important}
 .tool-btn-generic{color:var(--muted)!important}
 .tool-btn-generic:hover{color:var(--body)!important}
+
+/* ─── ASSET THUMBNAILS ──────────────────────── */
+.asset-thumb-img{width:100%;height:100%;object-fit:cover;transition:opacity .3s}
+.asset-thumb-loading{opacity:0}
+.asset-thumb-video{width:100%;height:100%;object-fit:cover;pointer-events:none}
+.asset-thumb-doc{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.35rem;height:100%}
+.asset-thumb-doc-ext{font-family:'Inter',sans-serif;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;padding:2px 7px;border-radius:4px;background:var(--bg2);color:var(--muted);border:1px solid var(--border)}
+
+/* ─── BULK SELECT ──────────────────────── */
+.asset-bulk-bar{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;padding:.65rem 1rem;background:var(--bg2);border:1px solid var(--border2);border-radius:10px;margin-bottom:.875rem}
+.asset-bulk-count{font-family:'Inter',sans-serif;font-size:.82rem;font-weight:600;color:var(--h2);flex:1}
+.asset-card-sel{position:absolute;top:.45rem;left:.45rem;z-index:2;width:17px;height:17px;accent-color:var(--primary);cursor:pointer;border-radius:3px}
+.asset-card.selected{outline:2px solid var(--primary);outline-offset:-2px}
+
+/* ─── POST SETS ──────────────────────── */
+.postset-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:.875rem}
+.postset-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:box-shadow .2s,transform .2s}
+.postset-card:hover{box-shadow:var(--shadow);transform:translateY(-2px)}
+.postset-card-body{padding:.75rem .875rem}
+.postset-card-top{display:flex;align-items:center;gap:.5rem;margin-bottom:.4rem}
+.postset-name{font-family:'Inter',sans-serif;font-size:.88rem;font-weight:700;color:var(--h2);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.postset-plat-badge{font-family:'Inter',sans-serif;font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:2px 8px;border-radius:4px;background:rgba(255,48,204,.1);color:var(--primary)}
+.postset-caption{font-family:'Inter',sans-serif;font-size:.75rem;color:var(--muted);line-height:1.4;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;margin-bottom:.6rem}
+.postset-asset-strip{display:flex;gap:.25rem;padding:.4rem .875rem .6rem;overflow-x:auto}
+.postset-asset-thumb{width:44px;height:44px;border-radius:6px;object-fit:cover;background:var(--bg2);flex-shrink:0;border:1px solid var(--border)}
+.postset-actions{display:flex;gap:.3rem;padding:0 .875rem .75rem}
+.postset-asset-checklist{display:flex;flex-direction:column;gap:.35rem;max-height:180px;overflow-y:auto;padding:.5rem;border:1px solid var(--border);border-radius:8px}
+.postset-asset-check-item{display:flex;align-items:center;gap:.5rem;font-family:'Inter',sans-serif;font-size:.8rem;color:var(--body);cursor:pointer;padding:.2rem .25rem;border-radius:4px}
+.postset-asset-check-item:hover{background:var(--bg2)}
+.postset-asset-check-item input{accent-color:var(--primary);flex-shrink:0}
+.postset-asset-check-thumb{width:28px;height:28px;border-radius:4px;object-fit:cover;background:var(--bg2);flex-shrink:0;border:1px solid var(--border)}
+
+/* ─── PHONE MOCKUP ──────────────────────── */
+.mockup-phone{width:300px;border-radius:36px;background:#0a0a0a;border:8px solid #0a0a0a;box-shadow:0 0 0 2px #2a2a2a,0 24px 60px rgba(0,0,0,.55);overflow:hidden;display:flex;flex-direction:column}
+.mockup-status-bar{height:22px;background:#0a0a0a;flex-shrink:0}
+.mockup-plat-hdr{padding:.45rem .75rem;background:#fff;display:flex;align-items:center;gap:.5rem;border-bottom:1px solid #eee;flex-shrink:0}
+.mockup-plat-avatar{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#d946ab,#ff30cc);flex-shrink:0}
+.mockup-plat-name{font-family:'Inter',sans-serif;font-size:.73rem;font-weight:700;color:#111}
+.mockup-media{height:336px;background:#000;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;flex-shrink:0}
+.mockup-media img,.mockup-media video{width:100%;height:100%;object-fit:cover}
+.mockup-carousel{display:flex;align-items:center;justify-content:space-between;padding:.2rem .75rem;background:#fff;font-family:'Inter',sans-serif;font-size:.8rem;color:#111;flex-shrink:0}
+.mockup-carousel button{background:none;border:none;font-size:1.2rem;cursor:pointer;color:#111;padding:0 .25rem}
+.mockup-caption{padding:.5rem .75rem;background:#fff;font-family:'Inter',sans-serif;font-size:.72rem;color:#111;line-height:1.45;max-height:72px;overflow-y:auto;flex-shrink:0}
+.mockup-actions{display:flex;gap:.85rem;align-items:center;padding:.45rem .75rem .65rem;background:#fff;font-size:1.1rem;flex-shrink:0}
 </style>
 </head>
 <body>
@@ -672,6 +716,7 @@
         <div class="av-tab" data-tab="memory" onclick="showTab('memory')">Performance</div>
         <div class="av-tab" data-tab="instruct" onclick="showTab('instruct')">Instructions</div>
         <div class="av-tab" data-tab="assets" onclick="showTab('assets')">Assets</div>
+        <div class="av-tab" data-tab="postsets" onclick="showTab('postsets')">Post Sets</div>
         <div class="av-tab" data-tab="tools" onclick="showTab('tools')">Tools</div>
       </div>
     </div>
@@ -986,7 +1031,26 @@
         <div class="folder-bar" id="folder-bar">
           <button class="folder-tab act" data-folder="all" onclick="filterAssets('all',this)">All</button>
         </div>
+        <div id="asset-bulk-bar" class="asset-bulk-bar" style="display:none">
+          <span id="asset-bulk-count" class="asset-bulk-count"></span>
+          <button class="btn-ghost" onclick="bulkCopyRefs()">Copy Refs</button>
+          <button class="btn-ghost" onclick="bulkMoveFolder()">Move to Folder</button>
+          <button class="btn-danger" onclick="bulkDelete()">Delete</button>
+          <button class="btn-ghost" onclick="clearBulkSelection()">Cancel</button>
+        </div>
         <div id="asset-grid" class="asset-grid"></div>
+      </div>
+
+      <!-- POST SETS TAB -->
+      <div class="av-panel" data-panel="postsets">
+        <div class="asset-top">
+          <div class="asset-title-row">
+            <div class="asset-title">Post Sets</div>
+            <div id="postset-count" style="font-family:'Inter',sans-serif;font-size:.8rem;color:var(--muted)"></div>
+          </div>
+          <button class="btn-primary" onclick="openPostSetModal()">+ New Post Set</button>
+        </div>
+        <div id="postset-grid" class="postset-grid"></div>
       </div>
 
       <!-- TOOLS TAB -->
@@ -1184,6 +1248,68 @@
       <button class="btn-ghost" onclick="closeModal('modal-asset-form')">Cancel</button>
       <button class="btn-primary" onclick="saveAsset()">Save Asset</button>
     </div>
+  </div>
+</div>
+
+<!-- POST SET MODAL -->
+<div class="modal-overlay" id="modal-postset-form" onclick="closeModalOutside(event,'modal-postset-form')">
+  <div class="modal" style="max-width:500px">
+    <div class="modal-header">
+      <div class="modal-title" id="postset-modal-title">New Post Set</div>
+      <button class="modal-close" onclick="closeModal('modal-postset-form')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <input type="hidden" id="postset-edit-id">
+    <div class="form-field"><label class="form-label">Set Name</label><input class="form-input" id="postset-form-name" type="text" placeholder="e.g. Summer Campaign Week 1"/></div>
+    <div class="form-row">
+      <div class="form-field">
+        <label class="form-label">Platform</label>
+        <select class="form-select" id="postset-form-platform">
+          <option value="Instagram">Instagram</option>
+          <option value="TikTok">TikTok</option>
+          <option value="Facebook">Facebook</option>
+          <option value="Pinterest">Pinterest</option>
+          <option value="LinkedIn">LinkedIn</option>
+          <option value="Twitter/X">Twitter/X</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-field">
+      <label class="form-label">Caption</label>
+      <textarea class="form-textarea" id="postset-form-caption" rows="3" placeholder="Write the caption for this post set..."></textarea>
+    </div>
+    <div class="form-field">
+      <label class="form-label">Assets <span style="font-weight:400;color:var(--muted)">(select which assets to include)</span></label>
+      <div id="postset-asset-checklist" class="postset-asset-checklist">
+        <div style="font-family:'Inter',sans-serif;font-size:.78rem;color:var(--muted);padding:.5rem">Loading assets...</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-danger" id="btn-delete-postset" style="display:none;margin-right:auto" onclick="deletePostSet(document.getElementById('postset-edit-id').value)">Delete</button>
+      <button class="btn-ghost" onclick="closeModal('modal-postset-form')">Cancel</button>
+      <button class="btn-primary" onclick="savePostSet()">Save Post Set</button>
+    </div>
+  </div>
+</div>
+
+<!-- MOCKUP MODAL -->
+<div class="modal-overlay" id="modal-mockup" onclick="closeModalOutside(event,'modal-mockup')">
+  <div class="modal" style="max-width:340px;background:transparent;box-shadow:none;padding:0;align-items:center">
+    <div class="mockup-phone">
+      <div class="mockup-status-bar"></div>
+      <div id="mockup-plat-hdr" class="mockup-plat-hdr"></div>
+      <div id="mockup-media" class="mockup-media"></div>
+      <div id="mockup-carousel" class="mockup-carousel" style="display:none">
+        <button onclick="mockupNav(-1)">&#8249;</button>
+        <span id="mockup-pos"></span>
+        <button onclick="mockupNav(1)">&#8250;</button>
+      </div>
+      <div id="mockup-caption" class="mockup-caption"></div>
+      <div class="mockup-actions">
+        <span>&#9825;</span><span>&#128172;</span><span>&#8599;</span>
+        <span style="margin-left:auto">&#128278;</span>
+      </div>
+    </div>
+    <button class="btn-ghost" style="margin-top:.75rem;width:300px" onclick="closeModal('modal-mockup')">Close</button>
   </div>
 </div>
 
@@ -1657,10 +1783,14 @@ function showTab(tab) {
   if (tab === 'memory' && socialState.currentAvatar) loadPatterns(socialState.currentAvatar.id);
   if (tab === 'assets' && socialState.currentAvatar) {
     assetState.currentFolder = 'all';
+    clearBulkSelection();
     loadAssets(socialState.currentAvatar.id);
     // Set week plan date default to current week monday
     var wpDate = document.getElementById('wkplan-date');
     if (wpDate && !wpDate.value) wpDate.value = getWeekMonday(new Date()).toISOString().slice(0,10);
+  }
+  if (tab === 'postsets' && socialState.currentAvatar) {
+    loadPostSets(socialState.currentAvatar.id);
   }
   if (tab === 'studio' && socialState.currentAvatar) {
     // Set week plan date default
@@ -2699,7 +2829,9 @@ async function approveAllWeekPosts() {
 // ══════════════════════════════════════
 // ASSET LIBRARY
 // ══════════════════════════════════════
-var assetState = { assets: [], currentFolder: 'all' };
+var assetState = { assets: [], currentFolder: 'all', selectedIds: new Set() };
+var postSetState = { sets: [] };
+var mockupState = { assets: [], idx: 0 };
 
 async function loadAssets(avatarId) {
   var grid = document.getElementById('asset-grid');
@@ -2740,6 +2872,27 @@ function filterAssets(folder, btn) {
   renderAssets(filtered);
 }
 
+function renderThumbHTML(a) {
+  var IMAGE_EXTS = /\.(jpe?g|png|gif|webp|avif|svg)(\?|$)/i;
+  var VIDEO_EXTS = /\.(mp4|webm|mov|m4v)(\?|$)/i;
+  var isImg = a.url && (a.asset_type === 'image' || IMAGE_EXTS.test(a.url));
+  var isVid = a.url && (a.asset_type === 'video' || VIDEO_EXTS.test(a.url));
+  if (isImg) {
+    return '<img src="' + esc(a.url) + '" crossorigin="anonymous" class="asset-thumb-img asset-thumb-loading"'
+      + ' onload="this.classList.remove(\'asset-thumb-loading\')"'
+      + ' onerror="console.warn(\'[Asset thumb] failed:\',this.src);this.parentNode.innerHTML=\'<span class=asset-thumb-icon>&#128444;</span>\'">';
+  }
+  if (isVid) {
+    return '<video src="' + esc(a.url) + '" class="asset-thumb-video" muted autoplay loop playsinline'
+      + ' onerror="this.parentNode.innerHTML=\'<span class=asset-thumb-icon>&#9654;</span>\'"></video>';
+  }
+  // Document/other — show ext badge
+  var ext = (a.url || '').split('.').pop().split('?')[0].slice(0,5).toUpperCase() || (a.asset_type || 'FILE').toUpperCase();
+  var icons = { video:'&#9654;', reference:'&#9733;', style:'&#9672;', audio:'&#9834;', document:'&#128196;', image:'&#128444;' };
+  return '<div class="asset-thumb-doc"><span style="font-size:1.6rem">' + (icons[a.asset_type] || '&#128206;') + '</span>'
+    + '<span class="asset-thumb-doc-ext">' + esc(ext) + '</span></div>';
+}
+
 function renderAssets(assets) {
   var grid = document.getElementById('asset-grid');
   if (!grid) return;
@@ -2748,13 +2901,10 @@ function renderAssets(assets) {
     return;
   }
   grid.innerHTML = assets.map(function(a) {
-    var isImage = a.asset_type === 'image' && a.url;
-    var typeIcons = { video:'▶', reference:'★', style:'◈', audio:'♪', document:'📄', image:'🖼' };
-    var icon = typeIcons[a.asset_type] || '📎';
-    return '<div class="asset-card" id="asset-' + a.id + '">' +
-      '<div class="asset-thumb">' +
-        (isImage ? '<img src="' + esc(a.url) + '" alt="' + esc(a.name) + '" onerror="this.parentNode.innerHTML=\'<span class=asset-thumb-icon>🖼</span>\'">' : '<span class="asset-thumb-icon">' + icon + '</span>') +
-      '</div>' +
+    var isSel = assetState.selectedIds.has(a.id);
+    return '<div class="asset-card' + (isSel ? ' selected' : '') + '" id="asset-' + a.id + '">' +
+      '<input type="checkbox" class="asset-card-sel" ' + (isSel ? 'checked' : '') + ' onchange="toggleAssetSelect(\'' + a.id + '\',this)" onclick="event.stopPropagation()" title="Select">' +
+      '<div class="asset-thumb">' + renderThumbHTML(a) + '</div>' +
       '<div class="asset-info">' +
         '<div class="asset-name" title="' + esc(a.name) + '">' + esc(a.name) + '</div>' +
         '<div class="asset-meta">' +
@@ -2770,6 +2920,285 @@ function renderAssets(assets) {
       '</div>' +
     '</div>';
   }).join('');
+}
+
+// ── BULK SELECT ─────────────────────────────────────────────────
+function toggleAssetSelect(id, cb) {
+  if (cb.checked) {
+    assetState.selectedIds.add(id);
+  } else {
+    assetState.selectedIds.delete(id);
+  }
+  var card = document.getElementById('asset-' + id);
+  if (card) card.classList.toggle('selected', cb.checked);
+  var bar = document.getElementById('asset-bulk-bar');
+  var cnt = document.getElementById('asset-bulk-count');
+  var n = assetState.selectedIds.size;
+  if (bar) bar.style.display = n > 0 ? 'flex' : 'none';
+  if (cnt) cnt.textContent = n + ' asset' + (n !== 1 ? 's' : '') + ' selected';
+}
+
+function clearBulkSelection() {
+  assetState.selectedIds.clear();
+  document.querySelectorAll('.asset-card.selected').forEach(function(c){ c.classList.remove('selected'); });
+  document.querySelectorAll('.asset-card-sel').forEach(function(c){ c.checked = false; });
+  var bar = document.getElementById('asset-bulk-bar');
+  if (bar) bar.style.display = 'none';
+}
+
+async function bulkDelete() {
+  var n = assetState.selectedIds.size;
+  if (!n) return;
+  if (!confirm('Delete ' + n + ' selected asset' + (n !== 1 ? 's' : '') + '? This cannot be undone.')) return;
+  var ids = Array.from(assetState.selectedIds);
+  for (var i = 0; i < ids.length; i++) {
+    await db.from('social_assets').delete().eq('id', ids[i]);
+  }
+  clearBulkSelection();
+  if (socialState.currentAvatar) loadAssets(socialState.currentAvatar.id);
+  showToast('Deleted ' + n + ' asset' + (n !== 1 ? 's' : ''), 'success');
+}
+
+async function bulkMoveFolder() {
+  var n = assetState.selectedIds.size;
+  if (!n) return;
+  var folder = prompt('Move ' + n + ' asset' + (n !== 1 ? 's' : '') + ' to folder:');
+  if (folder === null) return;
+  folder = folder.trim() || 'General';
+  var ids = Array.from(assetState.selectedIds);
+  for (var i = 0; i < ids.length; i++) {
+    await db.from('social_assets').update({ folder: folder }).eq('id', ids[i]);
+  }
+  clearBulkSelection();
+  if (socialState.currentAvatar) loadAssets(socialState.currentAvatar.id);
+  showToast('Moved ' + n + ' asset' + (n !== 1 ? 's' : '') + ' to "' + folder + '"', 'success');
+}
+
+function bulkCopyRefs() {
+  var n = assetState.selectedIds.size;
+  if (!n) return;
+  var ids = Array.from(assetState.selectedIds);
+  var lines = ids.map(function(id) {
+    var a = assetState.assets.find(function(x){ return x.id === id; });
+    if (!a) return '';
+    return (a.url || '') + (a.notes ? '\n[Context: ' + a.notes + ']' : '');
+  }).filter(Boolean).join('\n\n');
+  navigator.clipboard.writeText(lines).then(function(){
+    showToast('Copied ' + n + ' asset ref' + (n !== 1 ? 's' : '') + ' to clipboard', 'success');
+  }).catch(function(){ showToast('Copy failed — try manually.', 'error'); });
+}
+
+// ══════════════════════════════════════
+// POST SETS
+// ══════════════════════════════════════
+
+async function loadPostSets(avatarId) {
+  var grid = document.getElementById('postset-grid');
+  if (!grid) return;
+  grid.innerHTML = '<div class="empty-st" style="padding:1.5rem">Loading...</div>';
+  try {
+    var r = await db.from('social_post_sets').select('*').eq('avatar_id', avatarId).order('created_at', { ascending: false });
+    if (r.error) throw r.error;
+    postSetState.sets = r.data || [];
+    renderPostSets(postSetState.sets);
+    var cnt = document.getElementById('postset-count');
+    if (cnt) cnt.textContent = postSetState.sets.length + ' set' + (postSetState.sets.length !== 1 ? 's' : '');
+  } catch(e) {
+    grid.innerHTML = '<div class="empty-st"><div class="empty-st-h">Could not load post sets</div><div>' + (e.message || '') + '</div></div>';
+  }
+}
+
+function renderPostSets(sets) {
+  var grid = document.getElementById('postset-grid');
+  if (!grid) return;
+  if (!sets.length) {
+    grid.innerHTML = '<div class="empty-st" style="grid-column:1/-1"><div class="empty-st-h">No post sets yet</div><div>Group assets together with a caption to build a complete post.</div></div>';
+    return;
+  }
+  grid.innerHTML = sets.map(function(s) {
+    var assetIds = s.asset_ids || [];
+    var thumbs = assetIds.slice(0,6).map(function(id) {
+      var a = assetState.assets.find(function(x){ return x.id === id; });
+      if (!a || !a.url) return '<div class="postset-asset-thumb" style="background:var(--bg2)"></div>';
+      var IMAGE_EXTS = /\.(jpe?g|png|gif|webp|avif|svg)(\?|$)/i;
+      if (a.asset_type === 'image' || IMAGE_EXTS.test(a.url)) {
+        return '<img class="postset-asset-thumb" src="' + esc(a.url) + '" crossorigin="anonymous" onerror="this.style.background=\'var(--bg2)\'">';
+      }
+      return '<div class="postset-asset-thumb" style="background:var(--bg2);display:flex;align-items:center;justify-content:center;font-size:.9rem">&#9654;</div>';
+    }).join('');
+    return '<div class="postset-card">' +
+      '<div class="postset-card-body">' +
+        '<div class="postset-card-top">' +
+          '<div class="postset-name">' + esc(s.name) + '</div>' +
+          '<span class="postset-plat-badge">' + esc(s.platform || 'Instagram') + '</span>' +
+        '</div>' +
+        (s.caption ? '<div class="postset-caption">' + esc(s.caption) + '</div>' : '') +
+      '</div>' +
+      (thumbs ? '<div class="postset-asset-strip">' + thumbs + '</div>' : '') +
+      '<div class="postset-actions">' +
+        '<button class="asset-act-btn" onclick="openMockup(\'' + s.id + '\')">&#9654; Preview</button>' +
+        '<button class="asset-act-btn" onclick="openPostSetModal(\'' + s.id + '\')">Edit</button>' +
+        '<button class="asset-act-btn del" onclick="deletePostSet(\'' + s.id + '\')">Del</button>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+async function openPostSetModal(setId) {
+  var isEdit = !!setId;
+  document.getElementById('postset-modal-title').textContent = isEdit ? 'Edit Post Set' : 'New Post Set';
+  document.getElementById('postset-edit-id').value = setId || '';
+  document.getElementById('btn-delete-postset').style.display = isEdit ? '' : 'none';
+
+  // Pre-fill if editing
+  var s = isEdit ? postSetState.sets.find(function(x){ return x.id === setId; }) : null;
+  document.getElementById('postset-form-name').value = s ? s.name : '';
+  document.getElementById('postset-form-platform').value = s ? (s.platform || 'Instagram') : 'Instagram';
+  document.getElementById('postset-form-caption').value = s ? (s.caption || '') : '';
+
+  // Ensure assets are loaded
+  if (!assetState.assets.length && socialState.currentAvatar) {
+    await loadAssets(socialState.currentAvatar.id);
+  }
+
+  // Build checklist
+  var checklist = document.getElementById('postset-asset-checklist');
+  var selectedAssetIds = s ? (s.asset_ids || []) : [];
+  if (!assetState.assets.length) {
+    checklist.innerHTML = '<div style="font-family:\'Inter\',sans-serif;font-size:.78rem;color:var(--muted);padding:.5rem">No assets yet — add some in the Assets tab first.</div>';
+  } else {
+    checklist.innerHTML = assetState.assets.map(function(a) {
+      var checked = selectedAssetIds.indexOf(a.id) !== -1 ? 'checked' : '';
+      var IMAGE_EXTS = /\.(jpe?g|png|gif|webp|avif|svg)(\?|$)/i;
+      var isImg = a.url && (a.asset_type === 'image' || IMAGE_EXTS.test(a.url));
+      var thumb = isImg ? '<img class="postset-asset-check-thumb" src="' + esc(a.url) + '" crossorigin="anonymous">' : '<div class="postset-asset-check-thumb" style="display:flex;align-items:center;justify-content:center;font-size:.85rem">&#128206;</div>';
+      return '<label class="postset-asset-check-item">' +
+        '<input type="checkbox" value="' + a.id + '" ' + checked + '>' +
+        thumb +
+        '<span>' + esc(a.name) + '</span>' +
+      '</label>';
+    }).join('');
+  }
+
+  openModal('modal-postset-form');
+}
+
+async function savePostSet() {
+  var name = (document.getElementById('postset-form-name').value || '').trim();
+  if (!name) { showToast('Please enter a set name', 'error'); return; }
+  var platform = document.getElementById('postset-form-platform').value;
+  var caption = (document.getElementById('postset-form-caption').value || '').trim();
+  var editId = document.getElementById('postset-edit-id').value;
+
+  // Gather checked asset IDs (preserve order)
+  var assetIds = [];
+  document.querySelectorAll('#postset-asset-checklist input[type=checkbox]:checked').forEach(function(cb) {
+    assetIds.push(cb.value);
+  });
+
+  var avatarId = socialState.currentAvatar ? socialState.currentAvatar.id : null;
+  if (!avatarId) return;
+
+  try {
+    var payload = { name: name, platform: platform, caption: caption, asset_ids: assetIds, avatar_id: avatarId };
+    var r;
+    if (editId) {
+      r = await db.from('social_post_sets').update(payload).eq('id', editId);
+    } else {
+      r = await db.from('social_post_sets').insert(payload);
+    }
+    if (r.error) throw r.error;
+    closeModal('modal-postset-form');
+    loadPostSets(avatarId);
+    showToast(editId ? 'Post set updated!' : 'Post set created!', 'success');
+  } catch(e) {
+    showToast('Save failed: ' + (e.message || 'unknown error'), 'error');
+  }
+}
+
+async function deletePostSet(id) {
+  if (!id || !confirm('Delete this post set? This cannot be undone.')) return;
+  try {
+    var r = await db.from('social_post_sets').delete().eq('id', id);
+    if (r.error) throw r.error;
+    closeModal('modal-postset-form');
+    if (socialState.currentAvatar) loadPostSets(socialState.currentAvatar.id);
+    showToast('Post set deleted', 'success');
+  } catch(e) {
+    showToast('Delete failed: ' + (e.message || ''), 'error');
+  }
+}
+
+// ══════════════════════════════════════
+// PLATFORM MOCKUP PREVIEW
+// ══════════════════════════════════════
+
+function openMockup(setId) {
+  var s = postSetState.sets.find(function(x){ return x.id === setId; });
+  if (!s) return;
+
+  // Resolve full asset objects
+  var assetIds = s.asset_ids || [];
+  mockupState.assets = assetIds.map(function(id) {
+    return assetState.assets.find(function(a){ return a.id === id; });
+  }).filter(Boolean);
+  mockupState.idx = 0;
+
+  // Build platform header
+  var avatar = socialState.currentAvatar;
+  var hdr = document.getElementById('mockup-plat-hdr');
+  hdr.innerHTML = '<div class="mockup-plat-avatar"></div>'
+    + '<div><div class="mockup-plat-name">' + esc(avatar ? avatar.name : 'Account') + '</div>'
+    + '<div style="font-family:\'Inter\',sans-serif;font-size:.62rem;color:#555">' + esc(s.platform || 'Instagram') + '</div></div>';
+
+  // Set caption
+  var capEl = document.getElementById('mockup-caption');
+  capEl.textContent = s.caption || '';
+
+  renderMockupSlide(0);
+  openModal('modal-mockup');
+}
+
+function renderMockupSlide(i) {
+  mockupState.idx = i;
+  var media = document.getElementById('mockup-media');
+  var carousel = document.getElementById('mockup-carousel');
+  var pos = document.getElementById('mockup-pos');
+  var assets = mockupState.assets;
+
+  if (!assets.length) {
+    media.innerHTML = '<span style="color:#555;font-family:\'Inter\',sans-serif;font-size:.8rem">No media</span>';
+    if (carousel) carousel.style.display = 'none';
+    return;
+  }
+
+  var a = assets[i];
+  var IMAGE_EXTS = /\.(jpe?g|png|gif|webp|avif|svg)(\?|$)/i;
+  var VIDEO_EXTS = /\.(mp4|webm|mov|m4v)(\?|$)/i;
+  var isImg = a.url && (a.asset_type === 'image' || IMAGE_EXTS.test(a.url));
+  var isVid = a.url && (a.asset_type === 'video' || VIDEO_EXTS.test(a.url));
+
+  if (isImg) {
+    media.innerHTML = '<img src="' + esc(a.url) + '" crossorigin="anonymous" style="width:100%;height:100%;object-fit:cover">';
+  } else if (isVid) {
+    media.innerHTML = '<video src="' + esc(a.url) + '" muted autoplay loop playsinline style="width:100%;height:100%;object-fit:cover"></video>';
+  } else {
+    media.innerHTML = '<span style="color:#555;font-family:\'Inter\',sans-serif;font-size:.8rem">' + esc(a.name) + '</span>';
+  }
+
+  if (assets.length > 1) {
+    if (carousel) carousel.style.display = 'flex';
+    if (pos) pos.textContent = (i + 1) + ' / ' + assets.length;
+  } else {
+    if (carousel) carousel.style.display = 'none';
+  }
+}
+
+function mockupNav(dir) {
+  var n = mockupState.assets.length;
+  if (!n) return;
+  var next = (mockupState.idx + dir + n) % n;
+  renderMockupSlide(next);
 }
 
 function copyAssetRef(btn) {
