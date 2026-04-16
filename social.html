@@ -2872,6 +2872,27 @@ function filterAssets(folder, btn) {
   renderAssets(filtered);
 }
 
+// If the public URL fails (private bucket), try a 1-hour signed URL
+async function assetThumbFallback(img) {
+  var publicUrl = img.src || '';
+  // Extract storage path from Supabase public URL format
+  // e.g. https://xxx.supabase.co/storage/v1/object/public/social-assets/avatar-id/file.jpg
+  var marker = '/object/public/social-assets/';
+  var idx = publicUrl.indexOf(marker);
+  if (idx !== -1) {
+    var filePath = publicUrl.slice(idx + marker.length);
+    try {
+      var r = await db.storage.from('social-assets').createSignedUrl(filePath, 3600);
+      if (r.data && r.data.signedUrl) {
+        img.onerror = function() { img.parentNode.innerHTML = '<span class="asset-thumb-icon">&#128444;</span>'; };
+        img.src = r.data.signedUrl;
+        return;
+      }
+    } catch(e) { /* fall through */ }
+  }
+  img.parentNode.innerHTML = '<span class="asset-thumb-icon">&#128444;</span>';
+}
+
 function renderThumbHTML(a) {
   var IMAGE_EXTS = /\.(jpe?g|png|gif|webp|avif|svg)(\?|$)/i;
   var VIDEO_EXTS = /\.(mp4|webm|mov|m4v)(\?|$)/i;
@@ -2879,7 +2900,7 @@ function renderThumbHTML(a) {
   var isVid = a.url && (a.asset_type === 'video' || VIDEO_EXTS.test(a.url));
   if (isImg) {
     return '<img src="' + esc(a.url) + '" class="asset-thumb-img"'
-      + ' onerror="console.warn(\'[Asset thumb] failed:\',this.src);this.parentNode.innerHTML=\'<span class=asset-thumb-icon>&#128444;</span>\'">';
+      + ' onerror="assetThumbFallback(this)">';
   }
   if (isVid) {
     return '<video src="' + esc(a.url) + '" class="asset-thumb-video" muted autoplay loop playsinline'
