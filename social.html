@@ -2878,8 +2878,7 @@ function renderThumbHTML(a) {
   var isImg = a.url && (a.asset_type === 'image' || IMAGE_EXTS.test(a.url));
   var isVid = a.url && (a.asset_type === 'video' || VIDEO_EXTS.test(a.url));
   if (isImg) {
-    return '<img src="' + esc(a.url) + '" crossorigin="anonymous" class="asset-thumb-img asset-thumb-loading"'
-      + ' onload="this.classList.remove(\'asset-thumb-loading\')"'
+    return '<img src="' + esc(a.url) + '" class="asset-thumb-img"'
       + ' onerror="console.warn(\'[Asset thumb] failed:\',this.src);this.parentNode.innerHTML=\'<span class=asset-thumb-icon>&#128444;</span>\'">';
   }
   if (isVid) {
@@ -2903,7 +2902,7 @@ function renderAssets(assets) {
   grid.innerHTML = assets.map(function(a) {
     var isSel = assetState.selectedIds.has(a.id);
     return '<div class="asset-card' + (isSel ? ' selected' : '') + '" id="asset-' + a.id + '">' +
-      '<input type="checkbox" class="asset-card-sel" ' + (isSel ? 'checked' : '') + ' onchange="toggleAssetSelect(\'' + a.id + '\',this)" onclick="event.stopPropagation()" title="Select">' +
+      '<input type="checkbox" class="asset-card-sel" ' + (isSel ? 'checked' : '') + ' onclick="event.stopPropagation();toggleAssetSelect(\'' + a.id + '\',this)" title="Select">' +
       '<div class="asset-thumb">' + renderThumbHTML(a) + '</div>' +
       '<div class="asset-info">' +
         '<div class="asset-name" title="' + esc(a.name) + '">' + esc(a.name) + '</div>' +
@@ -2924,13 +2923,15 @@ function renderAssets(assets) {
 
 // ── BULK SELECT ─────────────────────────────────────────────────
 function toggleAssetSelect(id, cb) {
-  if (cb.checked) {
+  // cb.checked reflects the NEW state after click
+  var nowChecked = cb.checked;
+  if (nowChecked) {
     assetState.selectedIds.add(id);
   } else {
     assetState.selectedIds.delete(id);
   }
   var card = document.getElementById('asset-' + id);
-  if (card) card.classList.toggle('selected', cb.checked);
+  if (card) card.classList.toggle('selected', nowChecked);
   var bar = document.getElementById('asset-bulk-bar');
   var cnt = document.getElementById('asset-bulk-count');
   var n = assetState.selectedIds.size;
