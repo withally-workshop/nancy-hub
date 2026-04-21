@@ -1323,6 +1323,9 @@ function fmtDateRange(s, e) {
   if (!e || s === e) return fmtDate(s);
   return fmtDate(s) + ' – ' + fmtDate(e);
 }
+
+// ── BOOT ──
+document.addEventListener('DOMContentLoaded', function() { bootHub(); });
 </script>
 </body>
 </html>
