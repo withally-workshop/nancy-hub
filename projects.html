@@ -66,9 +66,11 @@
 .f-list-del{background:none;border:none;color:var(--muted);cursor:pointer;font-size:.9rem;opacity:.4;padding:0 .2rem;flex-shrink:0;line-height:1}
 .f-list-del:hover{opacity:1;color:#e53935}
 /* ── GALLERY VIEW ────────────────────────────────────── */
-.ev-gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:.7rem}
-.gallery-section-hdr{font-family:'Inter',sans-serif;font-size:.7rem;font-weight:700;color:var(--muted);letter-spacing:.07em;text-transform:uppercase;margin:1.2rem 0 .55rem;padding-bottom:.3rem;border-bottom:1px solid var(--border)}
-.gallery-section-hdr:first-child{margin-top:0}
+.ev-gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:.7rem}
+.proj-sections{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem;align-items:start}
+@media(max-width:680px){.proj-sections{grid-template-columns:1fr}}
+.gallery-section-col{display:flex;flex-direction:column;gap:.6rem}
+.gallery-section-hdr{font-family:'Inter',sans-serif;font-size:.7rem;font-weight:700;color:var(--muted);letter-spacing:.07em;text-transform:uppercase;margin:0 0 .3rem;padding-bottom:.3rem;border-bottom:1px solid var(--border)}
 .gc{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;cursor:pointer;transition:box-shadow .22s,transform .18s;display:flex;flex-direction:column}
 .gc:hover{box-shadow:0 8px 26px rgba(0,0,0,.22);transform:translateY(-2px)}
 .gc-stripe{height:3px;flex-shrink:0}
@@ -1090,10 +1092,15 @@ function renderGallery(items) {
   if (PS.tab === 'projects') {
     var trends = items.filter(function(p){return p.type==='universal_trend';}).slice().sort(function(a,b){return (a.deadline||'').localeCompare(b.deadline||'');});
     var campaigns = items.filter(function(p){return p.type!=='universal_trend';}).slice().sort(function(a,b){return (a.deadline||'').localeCompare(b.deadline||'');});
-    var html = '';
-    if (trends.length) html += '<div class="gallery-section-hdr">🌐 Universal Trends</div><div class="ev-gallery">'+trends.map(makeGalleryCard).join('')+'</div>';
-    if (campaigns.length) html += '<div class="gallery-section-hdr">🎯 Campaigns</div><div class="ev-gallery">'+campaigns.map(makeGalleryCard).join('')+'</div>';
-    el.innerHTML = html || '<div class="ev-empty"><div class="ev-empty-title">No projects yet</div></div>';
+    var trendCol = trends.length
+      ? '<div class="gallery-section-col"><div class="gallery-section-hdr">🌐 Universal Trends</div>'+trends.map(makeGalleryCard).join('')+'</div>'
+      : '';
+    var campCol = campaigns.length
+      ? '<div class="gallery-section-col"><div class="gallery-section-hdr">🎯 Campaigns</div>'+campaigns.map(makeGalleryCard).join('')+'</div>'
+      : '';
+    el.innerHTML = (trendCol || campCol)
+      ? '<div class="proj-sections">'+trendCol+campCol+'</div>'
+      : '<div class="ev-empty"><div class="ev-empty-title">No projects yet</div></div>';
   } else {
     el.innerHTML = '<div class="ev-gallery">'+items.map(makeGalleryCard).join('')+'</div>';
   }
