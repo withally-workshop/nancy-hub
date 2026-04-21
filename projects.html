@@ -28,41 +28,51 @@
 .vtab.active{background:var(--card);color:var(--body);box-shadow:0 1px 4px rgba(0,0,0,.14)}
 
 /* ── EVENT CARD LIST ─────────────────────────────────── */
-.ev-list{display:flex;flex-direction:column;gap:.75rem}
-.ev-card{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;display:flex;cursor:pointer;transition:box-shadow .25s,transform .25s,opacity .2s;position:relative}
-.ev-card:hover{box-shadow:0 8px 28px rgba(0,0,0,.22);transform:translateY(-2px)}
+.ev-list{display:flex;flex-direction:column;gap:.6rem}
+.ev-card{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;display:flex;cursor:pointer;transition:box-shadow .22s,transform .22s,opacity .2s;position:relative}
+.ev-card:hover{box-shadow:0 6px 22px rgba(0,0,0,.2);transform:translateY(-1px)}
 .ev-card.drag-over{border-color:#f7b731;box-shadow:0 0 0 2px rgba(247,183,49,.3);transform:none}
 .ev-card.dragging{opacity:.4;transform:none}
-.drag-handle{width:28px;flex-shrink:0;display:flex;align-items:center;justify-content:center;cursor:grab;color:var(--muted);opacity:.3;transition:opacity .15s;font-size:14px;letter-spacing:-1px;user-select:none}
-.drag-handle:hover{opacity:.7}
+.drag-handle{width:26px;flex-shrink:0;display:flex;align-items:center;justify-content:center;cursor:grab;color:var(--muted);opacity:.25;transition:opacity .15s;font-size:13px;user-select:none}
+.drag-handle:hover{opacity:.65}
 .drag-handle:active{cursor:grabbing}
-.ev-card-stripe{width:5px;flex-shrink:0}
-.ev-card-body{flex:1;padding:1rem 1.1rem;min-width:0}
-.ev-card-top{display:flex;align-items:flex-start;gap:.6rem;flex-wrap:wrap;margin-bottom:.5rem}
-.ev-card-name{font-family:'Fraunces',serif;font-size:1.1rem;font-weight:600;color:var(--h2);line-height:1.2;flex:1;min-width:0}
-.ev-card-right{display:flex;flex-direction:column;align-items:flex-end;gap:.4rem;padding:.9rem 1rem;flex-shrink:0}
+.ev-card-stripe{width:4px;flex-shrink:0}
+.ev-card-body{flex:1;padding:.8rem 1rem;min-width:0}
+.ev-card-top{display:flex;align-items:center;gap:.5rem;margin-bottom:.3rem}
+.ev-card-name{font-family:'Fraunces',serif;font-size:1.05rem;font-weight:600;color:var(--h2);line-height:1.2;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ev-card-right{display:flex;flex-direction:column;align-items:flex-end;justify-content:center;gap:.2rem;padding:.8rem .9rem;flex-shrink:0;min-width:64px}
 .countdown-badge{font-family:'Fraunces',serif;font-size:1.5rem;font-weight:600;color:#f7b731;line-height:1;text-align:center}
-.countdown-badge-lbl{font-family:'Inter',sans-serif;font-size:.63rem;font-weight:600;color:#f7b731;text-align:center;letter-spacing:.04em;text-transform:uppercase;margin-top:1px}
-.ev-meta{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin-bottom:.6rem}
-.ev-meta-item{font-family:'Inter',sans-serif;font-size:.78rem;color:var(--muted);display:flex;align-items:center;gap:.25rem}
-.status-bdg{font-family:'Inter',sans-serif;font-size:.62rem;font-weight:700;padding:2px 8px;border-radius:20px;letter-spacing:.05em;text-transform:uppercase;flex-shrink:0}
-.ms-preview{display:flex;flex-direction:column;gap:.3rem;margin-top:.5rem}
-.ms-prev-row{display:flex;align-items:center;gap:.5rem}
-.ms-prev-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.ms-prev-name{font-family:'Inter',sans-serif;font-size:.75rem;color:var(--body);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ms-prev-date{font-family:'Inter',sans-serif;font-size:.72rem;color:var(--muted);flex-shrink:0}
-.ms-prev-tag{font-family:'Inter',sans-serif;font-size:.66rem;font-weight:600;padding:1px 6px;border-radius:5px;flex-shrink:0}
-.ev-card-actions{display:flex;gap:.35rem;margin-top:.75rem}
-.ev-act-btn{font-family:'Inter',sans-serif;font-size:.73rem;font-weight:600;padding:.28rem .7rem;border-radius:7px;border:1px solid var(--border);background:var(--bg2);color:var(--muted);cursor:pointer;transition:all .15s}
+.countdown-badge-lbl{font-family:'Inter',sans-serif;font-size:.6rem;font-weight:600;color:#f7b731;text-align:center;letter-spacing:.04em;text-transform:uppercase}
+.ev-meta{display:flex;gap:.4rem;flex-wrap:wrap;align-items:center;margin-bottom:.4rem}
+.ev-meta-item{font-family:'Inter',sans-serif;font-size:.75rem;color:var(--muted);display:flex;align-items:center;gap:.2rem}
+.status-bdg{font-family:'Inter',sans-serif;font-size:.6rem;font-weight:700;padding:2px 7px;border-radius:20px;letter-spacing:.05em;text-transform:uppercase;flex-shrink:0}
+.ev-next-ms{display:flex;align-items:center;gap:.4rem;margin-bottom:.35rem}
+.ms-prev-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.ms-prev-name{font-family:'Inter',sans-serif;font-size:.74rem;color:var(--body);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ms-prev-tag{font-family:'Inter',sans-serif;font-size:.65rem;font-weight:600;padding:1px 6px;border-radius:5px;flex-shrink:0}
+.ev-card-footer{display:flex;align-items:center;justify-content:space-between;gap:.5rem;margin-top:.3rem;flex-wrap:wrap}
+.ev-card-meta-line{font-family:'Inter',sans-serif;font-size:.72rem;color:var(--muted);display:flex;gap:.55rem;align-items:center;flex-wrap:wrap}
+.ev-card-actions{display:flex;gap:.3rem}
+.ev-act-btn{font-family:'Inter',sans-serif;font-size:.7rem;font-weight:600;padding:.24rem .6rem;border-radius:6px;border:1px solid var(--border);background:var(--bg2);color:var(--muted);cursor:pointer;transition:all .15s}
 .ev-act-btn:hover{border-color:var(--border2);color:var(--body)}
-.ev-act-btn.amber{border-color:rgba(247,183,49,.35);color:#f7b731;background:rgba(247,183,49,.08)}
-.ev-act-btn.amber:hover{background:rgba(247,183,49,.16)}
-.team-chips{display:flex;gap:.25rem;flex-wrap:wrap;margin-top:.4rem}
-.team-chip-sm{width:24px;height:24px;border-radius:50%;background:var(--border2);display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;font-size:.62rem;font-weight:700;color:var(--body);overflow:hidden;border:2px solid var(--card)}
-.team-chip-sm img{width:100%;height:100%;object-fit:cover}
-.ev-empty{text-align:center;padding:4rem 2rem;background:var(--card);border:1px solid var(--border);border-radius:16px}
+.ev-empty{text-align:center;padding:4rem 2rem;background:var(--card);border:1px solid var(--border);border-radius:14px}
 .ev-empty-title{font-family:'Fraunces',serif;font-size:1.2rem;color:var(--h2);margin-bottom:.5rem}
 .ev-empty-sub{font-family:'Inter',sans-serif;font-size:.85rem;color:var(--muted)}
+/* ── FORM LIST (content / checklist rows) ────────────── */
+.f-list-wrap{display:flex;flex-direction:column;gap:.3rem;margin-bottom:.4rem}
+.f-list-row{display:flex;align-items:center;gap:.4rem}
+.f-list-input{flex:1;padding:.36rem .55rem;border-radius:7px;border:1px solid var(--border);background:var(--bg2);color:var(--body);font-family:'Inter',sans-serif;font-size:.8rem}
+.f-list-input:focus{outline:none;border-color:#f7b731}
+.f-list-del{background:none;border:none;color:var(--muted);cursor:pointer;font-size:.9rem;opacity:.4;padding:0 .2rem;flex-shrink:0;line-height:1}
+.f-list-del:hover{opacity:1;color:#e53935}
+/* ── INFO MODAL ──────────────────────────────────────── */
+.info-section{margin-bottom:1.2rem}
+.info-sec-title{font-family:'Inter',sans-serif;font-size:.72rem;font-weight:700;color:var(--muted);letter-spacing:.07em;text-transform:uppercase;margin-bottom:.5rem}
+.info-rule-row{display:flex;align-items:baseline;gap:.5rem;padding:.22rem 0;border-bottom:1px solid rgba(255,255,255,.04);font-family:'Inter',sans-serif;font-size:.78rem}
+.info-rule-days{font-weight:700;color:#f7b731;width:48px;flex-shrink:0;text-align:right}
+.info-rule-name{color:var(--body)}
+.info-status-row{display:flex;align-items:center;gap:.5rem;padding:.22rem 0;font-family:'Inter',sans-serif;font-size:.78rem;color:var(--body)}
+.info-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
 
 /* ── CALENDAR ─────────────────────────────────────────── */
 .cal-nav{display:flex;align-items:center;gap:.75rem;margin-bottom:1rem}
@@ -337,10 +347,15 @@
         <div class="proj-title">Projects &amp; Events</div>
         <div class="proj-sub">Pop-ups, activations, and campaigns — with auto back-scheduling.</div>
       </div>
-      <button id="proj-add-btn" class="proj-add-btn" style="display:none" onclick="openCreateModal(null)">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        <span id="add-btn-lbl">New Event</span>
-      </button>
+      <div style="display:flex;gap:.5rem;align-items:center">
+        <button class="proj-add-btn" style="background:var(--card);color:var(--muted);border:1px solid var(--border);font-weight:600;padding:.44rem .8rem" onclick="openModal('modal-info')" title="How it works">
+          ℹ︎ How it works
+        </button>
+        <button id="proj-add-btn" class="proj-add-btn" style="display:none" onclick="openCreateModal(null)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          <span id="add-btn-lbl">New Event</span>
+        </button>
+      </div>
     </div>
 
     <div class="proj-bar">
@@ -431,6 +446,75 @@
     <div class="modal-footer">
       <button class="modal-btn-secondary" onclick="closePushModal()">Cancel</button>
       <button class="modal-btn-primary" onclick="confirmPush()">Push Task</button>
+    </div>
+  </div>
+</div>
+
+<!-- INFO / HOW IT WORKS MODAL -->
+<div class="modal-overlay" id="modal-info" onclick="closeModalOutside(event,'modal-info')">
+  <div class="modal" style="max-width:520px">
+    <div class="modal-header">
+      <div class="modal-title">How It Works — Timelines & Rules</div>
+      <button class="modal-close" onclick="closeModal('modal-info')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="modal-body" style="max-height:72vh;overflow-y:auto">
+      <p style="font-family:'Inter',sans-serif;font-size:.8rem;color:var(--muted);margin:0 0 1.1rem;line-height:1.6">Milestones are automatically calculated backwards from your event start date based on scale and shipping method.</p>
+
+      <div class="info-section">
+        <div class="info-sec-title">Full Scale — Sea · APAC (Japan/Asia)</div>
+        <div class="info-rule-row"><span class="info-rule-days">−60d</span><span class="info-rule-name">Lock everything down</span></div>
+        <div class="info-rule-row"><span class="info-rule-days">−55d</span><span class="info-rule-name">Content Brief Due</span></div>
+        <div class="info-rule-row"><span class="info-rule-days">−50d</span><span class="info-rule-name">Design Finalized</span></div>
+        <div class="info-rule-row"><span class="info-rule-days">−45d</span><span class="info-rule-name">Place Production Order</span></div>
+        <div class="info-rule-row"><span class="info-rule-days">−30d</span><span class="info-rule-name">Ship by Sea (APAC)</span></div>
+        <div class="info-rule-row"><span class="info-rule-days">−14d</span><span class="info-rule-name">Ship by Air (backup)</span></div>
+        <div class="info-rule-row"><span class="info-rule-days">−10d</span><span class="info-rule-name">Customs Clearance Window</span></div>
+        <div class="info-rule-row"><span class="info-rule-days">−2d</span><span class="info-rule-name">On-Ground Setup</span></div>
+      </div>
+
+      <div class="info-section">
+        <div class="info-sec-title">Full Scale — Sea · US / UK</div>
+        <div class="info-rule-row"><span class="info-rule-days">−60d</span><span class="info-rule-name">Lock everything down + Ship by Sea</span></div>
+        <div class="info-rule-row"><span class="info-rule-days">−55d</span><span class="info-rule-name">Content Brief Due</span></div>
+        <div class="info-rule-row"><span class="info-rule-days">−50d</span><span class="info-rule-name">Design Finalized</span></div>
+        <div class="info-rule-row"><span class="info-rule-days">−45d</span><span class="info-rule-name">Place Production Order</span></div>
+        <div class="info-rule-row"><span class="info-rule-days">−14d</span><span class="info-rule-name">Ship by Air (backup)</span></div>
+        <div class="info-rule-row"><span class="info-rule-days">−7d</span><span class="info-rule-name">Customs Clearance Window</span></div>
+        <div class="info-rule-row"><span class="info-rule-days">−2d</span><span class="info-rule-name">On-Ground Setup</span></div>
+      </div>
+
+      <div class="info-section">
+        <div class="info-sec-title">Full Scale — Air Freight</div>
+        <div class="info-rule-row"><span class="info-rule-days">−30d</span><span class="info-rule-name">Lock everything down</span></div>
+        <div class="info-rule-row"><span class="info-rule-days">−28d</span><span class="info-rule-name">Content Brief Due</span></div>
+        <div class="info-rule-row"><span class="info-rule-days">−25d</span><span class="info-rule-name">Design Finalized</span></div>
+        <div class="info-rule-row"><span class="info-rule-days">−21d</span><span class="info-rule-name">Place Production Order</span></div>
+        <div class="info-rule-row"><span class="info-rule-days">−14d</span><span class="info-rule-name">Ship by Air</span></div>
+        <div class="info-rule-row"><span class="info-rule-days">−7d</span><span class="info-rule-name">Customs Clearance Window</span></div>
+        <div class="info-rule-row"><span class="info-rule-days">−2d</span><span class="info-rule-name">On-Ground Setup</span></div>
+      </div>
+
+      <div class="info-section">
+        <div class="info-sec-title">Mini / Rush (any region)</div>
+        <div class="info-rule-row"><span class="info-rule-days">−21d</span><span class="info-rule-name">Lock everything down</span></div>
+        <div class="info-rule-row"><span class="info-rule-days">−18d</span><span class="info-rule-name">Content Brief Due</span></div>
+        <div class="info-rule-row"><span class="info-rule-days">−14d</span><span class="info-rule-name">Design Finalized + Place Production Order</span></div>
+        <div class="info-rule-row"><span class="info-rule-days">−7d</span><span class="info-rule-name">Ship by Air / Hand-carry</span></div>
+        <div class="info-rule-row"><span class="info-rule-days">−1d</span><span class="info-rule-name">On-Ground Setup</span></div>
+      </div>
+
+      <div class="info-section">
+        <div class="info-sec-title">Event Status</div>
+        <div class="info-status-row"><div class="info-dot" style="background:#8854d0"></div> <strong>Planning</strong> — concept stage, nothing locked</div>
+        <div class="info-status-row"><div class="info-dot" style="background:#2d7dd2"></div> <strong>Locked</strong> — dates, venue, key decisions confirmed</div>
+        <div class="info-status-row"><div class="info-dot" style="background:#f7b731"></div> <strong>In Production</strong> — merch/materials being made</div>
+        <div class="info-status-row"><div class="info-dot" style="background:#ff6b35"></div> <strong>In Transit</strong> — goods shipped, en route</div>
+        <div class="info-status-row"><div class="info-dot" style="background:#3bb273"></div> <strong>Live</strong> — event is happening now</div>
+        <div class="info-status-row"><div class="info-dot" style="background:#7a7975"></div> <strong>Wrapped</strong> — event complete</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="modal-btn-primary" onclick="closeModal('modal-info')">Got it</button>
     </div>
   </div>
 </div>
@@ -706,81 +790,68 @@ function renderList(items) {
   }
   var today = new Date(); today.setHours(0,0,0,0);
   var todayStr = today.toISOString().slice(0,10);
-  // Use stored order (drag-defined); no auto-sort
   var html = '<div class="ev-list" id="ev-drag-list">';
   items.forEach(function(item, idx) {
     var statusCol = colorForStatus(item.status);
-    var startD = item.start_date ? new Date(item.start_date + 'T00:00:00') : null;
     var endDate = item.end_date || item.deadline;
+    var startD = item.start_date ? new Date(item.start_date + 'T00:00:00') : null;
     var dLeft = startD ? Math.ceil((startD - today) / 86400000) : null;
     var dTxt = dLeft === null ? '' : (dLeft > 0 ? dLeft : dLeft === 0 ? 'Today' : 'Past');
-    var dLbl = dLeft === null ? '' : (dLeft > 0 ? 'days away' : dLeft === 0 ? '!' : '');
+    var dLbl = dLeft === null ? '' : (dLeft > 0 ? 'days away' : dLeft === 0 ? '' : '');
     var dColor = dLeft === null ? '#f7b731' : (dLeft < 0 ? '#7a7975' : dLeft <= 7 ? '#ff6b35' : '#f7b731');
 
-    // Upcoming milestones (next 3 not yet pushed OR next overdue)
-    var allMs = (item.milestones || []).slice().sort(function(a,b){ return (a.due_date||'').localeCompare(b.due_date||''); });
-    var upcomingMs = allMs.filter(function(m){ return m.due_date >= todayStr; }).slice(0,3);
-    if (!upcomingMs.length) upcomingMs = allMs.filter(function(m){ return m.due_date < todayStr; }).slice(-2);
-
-    var msHtml = '';
-    upcomingMs.forEach(function(ms) {
-      var msDays = ms.due_date ? Math.ceil((new Date(ms.due_date+'T00:00:00') - today) / 86400000) : null;
-      var msCls = msDays === null ? 'ok' : (msDays < 0 ? 'overdue' : msDays <= 7 ? 'soon' : 'ok');
-      var msTxt = msDays === null ? '' : (msDays < 0 ? Math.abs(msDays)+'d overdue' : msDays === 0 ? 'Today' : msDays+'d left');
-      var dc = msColor(ms, todayStr);
-      msHtml += '<div class="ms-prev-row">'
-        + '<div class="ms-prev-dot" style="background:'+dc+'"></div>'
-        + '<div class="ms-prev-name">'+esc(ms.name)+'</div>'
-        + '<div class="ms-prev-date">'+ms.due_date+'</div>'
-        + (msTxt ? '<span class="ms-prev-tag ms-days-tag '+msCls+'">'+msTxt+'</span>' : '')
-        + '</div>';
-    });
-
-    // Team avatars
-    var teamHtml = '';
-    if ((item.assigned_to||[]).length) {
-      teamHtml = '<div class="team-chips">';
-      item.assigned_to.slice(0,5).forEach(function(uid) {
-        var m = PS.members.find(function(x){return x.id===uid;});
-        if (!m) return;
-        var av = m.avatar ? '<img src="'+escA(m.avatar)+'" alt="">' : (m.name||'?').charAt(0).toUpperCase();
-        teamHtml += '<div class="team-chip-sm" title="'+escA(m.name||'')+'">'+av+'</div>';
-      });
-      teamHtml += '</div>';
+    // Single most urgent milestone
+    var allMs = (item.milestones||[]).slice().sort(function(a,b){return (a.due_date||'').localeCompare(b.due_date||'');});
+    var nextMs = allMs.find(function(m){return m.due_date >= todayStr;}) || allMs[allMs.length-1] || null;
+    var nextMsHtml = '';
+    if (nextMs) {
+      var nd = Math.ceil((new Date(nextMs.due_date+'T00:00:00')-today)/86400000);
+      var nc = nd<0?'overdue':nd<=7?'soon':'ok';
+      var nt = nd<0?Math.abs(nd)+'d overdue':nd===0?'Today':nd+'d left';
+      nextMsHtml = '<div class="ev-next-ms">'
+        +'<div class="ms-prev-dot" style="background:'+msColor(nextMs,todayStr)+'"></div>'
+        +'<span class="ms-prev-name">'+esc(nextMs.name)+'</span>'
+        +'<span class="ms-prev-tag ms-days-tag '+nc+'">'+nt+'</span>'
+        +'</div>';
     }
 
-    // Admin action buttons
-    var actHtml = '';
-    if (isSuperAdmin()) {
-      actHtml = '<div class="ev-card-actions">'
-        + '<button class="ev-act-btn" onclick="event.stopPropagation();openCreateModal(\''+escA(item.id)+'\')">Edit</button>'
-        + '<button class="ev-act-btn" onclick="event.stopPropagation();deleteItem(\''+escA(item.id)+'\')">Delete</button>'
-        + '</div>';
-    }
+    // Footer: checklist + merch count
+    var cl = item.checklist||[];
+    var clDone = cl.filter(function(c){return c.done;}).length;
+    var clCls = cl.length && clDone===cl.length ? 'complete' : cl.length && clDone>0 ? 'partial' : '';
+    var clTxt = cl.length ? '<span class="check-progress'+(clCls?' '+clCls:'')+'" style="margin:0">✓ '+clDone+'/'+cl.length+'</span>' : '';
+    var mo = item.merch_order||[];
+    var moTxt = mo.length ? '<span style="color:var(--muted)">📦 '+mo.length+' merch item'+(mo.length>1?'s':'')+'</span>' : '';
 
-    html += '<div class="ev-card" draggable="true" data-idx="'+idx+'" '
-      + 'ondragstart="evDragStart(event,'+idx+')" ondragover="evDragOver(event,'+idx+')" '
-      + 'ondragleave="evDragLeave(event)" ondrop="evDrop(event,'+idx+')" ondragend="evDragEnd(event)" '
-      + 'onclick="openDrawer(\''+escA(item.id)+'\')">'
-      + '<div class="drag-handle" onclick="event.stopPropagation()" title="Drag to reorder">⠿</div>'
-      + '<div class="ev-card-stripe" style="background:'+statusCol+'"></div>'
-      + '<div class="ev-card-body">'
-      + '<div class="ev-card-top">'
-      + '<div class="ev-card-name">'+esc(item.name)+'</div>'
-      + '<span class="status-bdg" style="background:'+statusCol+'22;color:'+statusCol+'">'+esc((item.status||'planning').replace(/_/g,' '))+'</span>'
-      + '</div>'
-      + '<div class="ev-meta">'
-      + (item.location ? '<span class="ev-meta-item">📍 '+esc(item.location)+'</span>' : '')
-      + (item.start_date ? '<span class="ev-meta-item">📅 '+fmtRange(item.start_date, endDate)+'</span>' : '')
-      + (item.partners ? '<span class="ev-meta-item">🤝 '+esc(item.partners)+'</span>' : '')
-      + '</div>'
-      + (upcomingMs.length ? '<div class="ms-preview">'+msHtml+'</div>' : '')
-      + buildCheckProgress(item)
-      + teamHtml
-      + actHtml
-      + '</div>'
-      + (dTxt ? '<div class="ev-card-right"><div class="countdown-badge" style="color:'+dColor+'">'+dTxt+'</div><div class="countdown-badge-lbl" style="color:'+dColor+'">'+dLbl+'</div></div>' : '')
-      + '</div>';
+    var actHtml = isSuperAdmin() ? '<div class="ev-card-actions">'
+      +'<button class="ev-act-btn" onclick="event.stopPropagation();openCreateModal(\''+escA(item.id)+'\')">Edit</button>'
+      +'<button class="ev-act-btn" onclick="event.stopPropagation();deleteItem(\''+escA(item.id)+'\')">Delete</button>'
+      +'</div>' : '';
+
+    html += '<div class="ev-card" draggable="true" data-idx="'+idx+'"'
+      +' ondragstart="evDragStart(event,'+idx+')" ondragover="evDragOver(event,'+idx+')"'
+      +' ondragleave="evDragLeave(event)" ondrop="evDrop(event,'+idx+')" ondragend="evDragEnd(event)"'
+      +' onclick="openDrawer(\''+escA(item.id)+'\')">'
+      +'<div class="drag-handle" onclick="event.stopPropagation()" title="Drag to reorder">⠿</div>'
+      +'<div class="ev-card-stripe" style="background:'+statusCol+'"></div>'
+      +'<div class="ev-card-body">'
+      +'<div class="ev-card-top">'
+      +'<div class="ev-card-name">'+esc(item.name)+'</div>'
+      +'<span class="status-bdg" style="background:'+statusCol+'22;color:'+statusCol+'">'+esc((item.status||'planning').replace(/_/g,' '))+'</span>'
+      +'</div>'
+      +'<div class="ev-meta">'
+      +(item.location?'<span class="ev-meta-item">📍 '+esc(item.location)+'</span>':'')
+      +(item.start_date?'<span class="ev-meta-item">'+fmtRange(item.start_date,endDate)+'</span>':'')
+      +(item.partners?'<span class="ev-meta-item">🤝 '+esc(item.partners)+'</span>':'')
+      +'</div>'
+      +nextMsHtml
+      +'<div class="ev-card-footer">'
+      +'<div class="ev-card-meta-line">'+clTxt+moTxt+'</div>'
+      +actHtml
+      +'</div>'
+      +'</div>'
+      +(dTxt?'<div class="ev-card-right"><div class="countdown-badge" style="color:'+dColor+'">'+dTxt+'</div><div class="countdown-badge-lbl" style="color:'+dColor+'">'+dLbl+'</div></div>':'')
+      +'</div>';
   });
   html += '</div>';
   el.innerHTML = html;
@@ -958,18 +1029,17 @@ function buildDrawer(item) {
     });
   }
 
-  // Content plan
-  var cp = item.content_plan||{};
-  var cpHtml = '';
-  if (cp.shoot_needed || (cp.platforms&&cp.platforms.length) || cp.posts_count) {
-    var plats = (cp.platforms||[]).map(function(p){return '<span class="plat-tag">'+esc(p)+'</span>';}).join('');
-    cpHtml = '<div class="cp-grid">'
-      +'<div class="cp-cell"><div class="cp-lbl">Shoot</div><div class="cp-val">'+esc(cp.shoot_needed||'none')+'</div></div>'
-      +'<div class="cp-cell"><div class="cp-lbl">Posts</div><div class="cp-val">'+(cp.posts_count||0)+'</div></div>'
-      +(plats?'<div class="cp-cell" style="grid-column:1/-1"><div class="cp-lbl">Platforms</div><div class="cp-val">'+plats+'</div></div>':'')
-      +'<div class="cp-cell"><div class="cp-lbl">Caption</div><div class="cp-val">'+esc((cp.caption_status||'not started').replace(/_/g,' '))+'</div></div>'
-      +(cp.shoot_date?'<div class="cp-cell"><div class="cp-lbl">Shoot Date</div><div class="cp-val">'+cp.shoot_date+'</div></div>':'')
-      +'</div>';
+  // Content items checklist
+  var ciHtml = '';
+  var contentItems = item.content_items || [];
+  if (contentItems.length) {
+    var ciRows = contentItems.map(function(ci){
+      return '<div class="check-row">'
+        +'<div class="check-box'+(ci.done?' done':'')+'" onclick="toggleContentItem(\''+escA(item.id)+'\',\''+escA(ci.id)+'\')">'+(ci.done?'✓':'')+'</div>'
+        +'<div class="check-label'+(ci.done?' done':'')+'">'+esc(ci.text)+'</div>'
+        +'</div>';
+    }).join('');
+    ciHtml = ciRows;
   }
 
   // Team
@@ -979,7 +1049,7 @@ function buildDrawer(item) {
     item.assigned_to.forEach(function(uid){
       var m=PS.members.find(function(x){return x.id===uid;});
       if(!m) return;
-      var av=m.avatar?'<img src="'+escA(m.avatar)+'" alt="">':( m.name||'?').charAt(0).toUpperCase();
+      var _ini=(m.name||'?').charAt(0).toUpperCase();var av=m.avatar?'<img src="'+escA(m.avatar)+'" alt="" onerror="this.style.display=\'none\'" style="width:100%;height:100%;object-fit:cover">'+_ini:_ini;
       teamHtml+='<div class="dr-team-chip"><div class="dr-av">'+av+'</div>'+esc(m.name||'Unknown')+'</div>';
     });
     teamHtml+='</div>';
@@ -1034,7 +1104,7 @@ function buildDrawer(item) {
     html += '<div class="dr-sec"><div class="dr-sec-lbl">Merch Order</div>'+moTable+moAddBtn+'</div>';
   }
 
-  if (cpHtml) html += '<div class="dr-sec"><div class="dr-sec-lbl">Content Plan</div>'+cpHtml+'</div>';
+  if (ciHtml) html += '<div class="dr-sec"><div class="dr-sec-lbl">Content Plan</div>'+ciHtml+'</div>';
 
   if (item.partners||item.open_questions||item.notes||item.budget) {
     html += '<div class="dr-sec"><div class="dr-sec-lbl">Details</div>';
@@ -1089,7 +1159,7 @@ function openCreateModal(editId) {
   openModal('modal-create');
 }
 function buildEvForm(v) {
-  v=v||{}; var cp=v.content_plan||{}; var sc=v.scale||'full_scale'; var plats=cp.platforms||[];
+  v=v||{}; var sc=v.scale||'full_scale';
   return '<div class="form-sec"><div class="form-sec-lbl">Basics</div>'
     +'<div class="f-row full"><div class="f-fld"><label>Event Name *</label><input id="f-name" value="'+escA(v.name||'')+'" placeholder="e.g. Japan Pop-Up #1"/></div></div>'
     +'<div class="f-row"><div class="f-fld"><label>Type</label><select id="f-type">'+opts({pop_up:'Pop-Up',activation:'Activation',launch_event:'Launch Event',press_event:'Press Event',other:'Other'},v.type)+'</select></div>'
@@ -1117,13 +1187,33 @@ function buildEvForm(v) {
     +'<div class="f-fld"><label>Caption Status</label><select id="f-cp-caption">'+opts({not_started:'Not Started',in_progress:'In Progress',ready:'Ready',approved:'Approved'},cp.caption_status||'not_started')+'</select></div></div>'
     +'<div class="f-row"><div class="f-fld"><label>Planned Posts</label><input type="number" id="f-cp-posts" value="'+(cp.posts_count||0)+'" min="0"/></div>'
     +'<div class="f-fld"><label>Shoot Date</label><input type="date" id="f-cp-shoot-date" value="'+(cp.shoot_date||'')+'"/></div></div>'
-    +'<div class="f-row full"><div class="f-fld"><label>Platforms</label><div class="plat-btns">'
-    +['Instagram','TikTok','YouTube','Pinterest','WeChat','RED (Xiaohongshu)','X/Twitter'].map(function(p){return '<button type="button" class="plat-btn'+(plats.indexOf(p)>=0?' on':'')+'" onclick="this.classList.toggle(\'on\')">'+esc(p)+'</button>';}).join('')
-    +'</div></div></div></div>'
+    + buildContentItemsSection(v)
     + buildMerchFormSection(v);
 }
+function buildContentItemsSection(v) {
+  var items = (v && v.content_items) ? v.content_items : [];
+  var rows = items.map(function(ci){
+    return '<div class="f-list-row">'
+      +'<input class="f-list-input" data-id="'+escA(ci.id)+'" value="'+escA(ci.text)+'" placeholder="e.g. 3 Instagram Reels"/>'
+      +'<button type="button" class="f-list-del" onclick="this.parentElement.remove()">×</button>'
+      +'</div>';
+  }).join('');
+  return '<div class="form-sec"><div class="form-sec-lbl">Content Plan</div>'
+    +'<div style="font-family:Inter,sans-serif;font-size:.74rem;color:var(--muted);margin-bottom:.5rem">List what you\'re creating for this event (e.g. "3 Instagram Reels", "10 product photos").</div>'
+    +'<div class="f-list-wrap" id="f-content-wrap">'+rows+'</div>'
+    +'<button type="button" class="check-add-btn" onclick="addFormListItem(\'f-content-wrap\',\'e.g. 3 Instagram Reels\')">+ Add item</button>'
+    +'</div>';
+}
+function addFormListItem(wrapperId, placeholder) {
+  var w = document.getElementById(wrapperId); if (!w) return;
+  var div = document.createElement('div'); div.className = 'f-list-row';
+  div.innerHTML = '<input class="f-list-input" placeholder="'+(placeholder||'Add item...')+'"/>'
+    +'<button type="button" class="f-list-del" onclick="this.parentElement.remove()">×</button>';
+  w.appendChild(div);
+  div.querySelector('input').focus();
+}
 function buildMerchFormSection(v) {
-  if (!PS.merch.length) return '';
+  if (!PS.merch.length) return '<div class="form-sec"><div class="form-sec-lbl">Merch Order</div><div style="font-family:Inter,sans-serif;font-size:.78rem;color:var(--muted);padding:.5rem 0">No items in catalog yet. <a onclick="closeCreateModal();switchTab(\'merch\')" style="color:#f7b731;cursor:pointer;text-decoration:underline">Go to Merch tab</a> to add products first.</div></div>';
   var existingOrder = (v && v.merch_order) ? v.merch_order : [];
   var sorted = PS.merch.slice().sort(function(a,b){return (a.category||'').localeCompare(b.category||'')||(a.name||'').localeCompare(b.name||'');});
   var rows = sorted.map(function(m){
@@ -1176,7 +1266,7 @@ function buildPicker(sel, ctx) {
   if (!PS.members.length) return '<span style="font-size:.78rem;color:var(--muted)">No team members.</span>';
   return PS.members.map(function(m){
     var s=sel.indexOf(m.id)>=0;
-    var av=m.avatar?'<img src="'+escA(m.avatar)+'" alt="">': (m.name||'?').charAt(0).toUpperCase();
+    var _ini2=(m.name||'?').charAt(0).toUpperCase();var av=m.avatar?'<img src="'+escA(m.avatar)+'" alt="" onerror="this.style.display=\'none\'" style="width:100%;height:100%;object-fit:cover">'+_ini2:_ini2;
     return '<div class="cpick'+(s?' sel':'')+'" data-id="'+escA(m.id)+'" onclick="togglePick(this,\''+escA(m.id)+'\',\''+ctx+'\')">'
       +'<div class="cpick-av">'+av+'</div>'+esc(m.name||'Unknown')+'</div>';
   }).join('');
@@ -1205,11 +1295,12 @@ async function saveItem() {
     var ship=gv('f-shipping');
     var regen=false;
     if(existing){regen=(existing.start_date!==sd||existing.scale!==scale||existing.shipping!==ship);if(regen&&!confirm('Changing dates, scale, or shipping will regenerate milestones. Continue?'))return;}
-    var plats=[];document.querySelectorAll('.plat-btn.on').forEach(function(b){plats.push(b.textContent.trim());});
-    var ev={id:existing?existing.id:crypto.randomUUID(),name:nameEl.value.trim(),type:gv('f-type'),status:gv('f-status'),scale:scale,region:gv('f-region'),shipping:ship,start_date:sd,end_date:ed,location:gv('f-location'),partners:gv('f-partners'),open_questions:gv('f-questions'),budget:gv('f-budget'),notes:gv('f-notes'),assigned_to:PS.formAssignees.slice(),content_plan:{shoot_needed:gv('f-cp-shoot'),platforms:plats,posts_count:parseInt(gv('f-cp-posts'))||0,caption_status:gv('f-cp-caption'),shoot_date:gv('f-cp-shoot-date')},milestones:(existing&&!regen)?existing.milestones:[],checklist:existing?existing.checklist:makeDefaultChecklist(),merch_order:[]};
+    var ev={id:existing?existing.id:crypto.randomUUID(),name:nameEl.value.trim(),type:gv('f-type'),status:gv('f-status'),scale:scale,region:gv('f-region'),shipping:ship,start_date:sd,end_date:ed,location:gv('f-location'),partners:gv('f-partners'),open_questions:gv('f-questions'),budget:gv('f-budget'),notes:gv('f-notes'),assigned_to:PS.formAssignees.slice(),milestones:(existing&&!regen)?existing.milestones:[],checklist:existing?existing.checklist:makeDefaultChecklist(),content_items:[],merch_order:[]};
     if(!existing||regen) ev.milestones=genMilestones(ev);
+    // Read content items from form
+    document.querySelectorAll('#f-content-wrap .f-list-input').forEach(function(inp){var t=inp.value.trim();if(!t)return;var id=inp.getAttribute('data-id')||crypto.randomUUID();var ex2=existing&&existing.content_items?existing.content_items.find(function(c){return c.id===id;}):null;ev.content_items.push({id:id,text:t,done:ex2?ex2.done:false});});
     // Read merch order from form
-    ev.merch_order=[];document.querySelectorAll('.mf-merch-qty').forEach(function(inp){var qty=parseInt(inp.value)||0;if(qty<=0)return;var mid=inp.getAttribute('data-merch-id');var m=PS.merch.find(function(x){return x.id===mid;});if(!m)return;ev.merch_order.push({merch_id:mid,name:m.name,qty:qty,price_per_unit:m.price_per_unit,currency:m.currency||'USD'});});
+    document.querySelectorAll('.mf-merch-qty').forEach(function(inp){var qty=parseInt(inp.value)||0;if(qty<=0)return;var mid=inp.getAttribute('data-merch-id');var m=PS.merch.find(function(x){return x.id===mid;});if(!m)return;ev.merch_order.push({merch_id:mid,name:m.name,qty:qty,price_per_unit:m.price_per_unit,currency:m.currency||'USD'});});
     if(existing){var ei=PS.events.findIndex(function(e){return e.id===existing.id;});if(ei>=0)PS.events[ei]=ev;}else PS.events.push(ev);
     await saveEvents();
   }
@@ -1290,6 +1381,13 @@ async function addCheckItem(evId) {
   ev.checklist.push({id:crypto.randomUUID(), text:text, done:false});
   await saveEvents();
   render();
+  if (PS.drawerItemId === evId) buildDrawer(ev);
+}
+async function toggleContentItem(evId, itemId) {
+  var ev = PS.events.find(function(e){return e.id===evId;}); if (!ev) return;
+  var ci = (ev.content_items||[]).find(function(c){return c.id===itemId;}); if (!ci) return;
+  ci.done = !ci.done;
+  await saveEvents();
   if (PS.drawerItemId === evId) buildDrawer(ev);
 }
 async function deleteCheckItem(evId, checkId) {
