@@ -73,6 +73,8 @@
 .gallery-section-hdr{font-family:'Inter',sans-serif;font-size:.7rem;font-weight:700;color:var(--muted);letter-spacing:.07em;text-transform:uppercase;margin:0 0 .3rem;padding-bottom:.3rem;border-bottom:1px solid var(--border)}
 .gc{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;cursor:pointer;transition:box-shadow .22s,transform .18s;display:flex;flex-direction:column}
 .gc:hover{box-shadow:0 8px 26px rgba(0,0,0,.22);transform:translateY(-2px)}
+.gc.drag-over{border-color:#f7b731;box-shadow:0 0 0 2px rgba(247,183,49,.3);transform:none}
+.gc.dragging{opacity:.35;transform:none}
 .gc-stripe{height:3px;flex-shrink:0}
 .gc-body{padding:.85rem 1rem;flex:1;display:flex;flex-direction:column;gap:.15rem}
 .gc-hdr{display:flex;align-items:flex-start;justify-content:space-between;gap:.4rem;margin-bottom:.15rem}
@@ -803,16 +805,29 @@ async function loadMembers() {
   var r = await db.from('boards').select('id,name,avatar,email,role').order('created_at');
   PS.members = r.data || [];
 }
+function sortByUrgency(arr, dateField) {
+  // Upcoming/ongoing first (closest date first), past items at end
+  var today = new Date().toISOString().slice(0,10);
+  return arr.sort(function(a, b) {
+    var da = a[dateField] || '9999';
+    var db = b[dateField] || '9999';
+    var aPast = da < today, bPast = db < today;
+    if (aPast !== bPast) return aPast ? 1 : -1;
+    return da.localeCompare(db);
+  });
+}
 async function loadAllData() {
   var er = await db.from('settings').select('value').eq('key','hub_events').maybeSingle();
   if (!er.error && er.data && er.data.value) {
     try { PS.events = JSON.parse(er.data.value); } catch(e) { PS.events = []; }
+    sortByUrgency(PS.events, 'start_date');
   } else if (!er.error && !er.data && isSuperAdmin()) {
     await seedEvents();
   }
   var pr = await db.from('settings').select('value').eq('key','hub_projects').maybeSingle();
   if (!pr.error && pr.data && pr.data.value) {
     try { PS.projects = JSON.parse(pr.data.value); } catch(e) { PS.projects = []; }
+    sortByUrgency(PS.projects, 'deadline');
   } else if (!pr.error && !pr.data && isSuperAdmin()) {
     await seedProjects();
   }
@@ -971,30 +986,33 @@ function render() {
 
 /* ════════════ DRAG & DROP ════════════ */
 var _dragIdx = null;
+function _allDragCards() {
+  if (PS.view === 'gallery') return document.querySelectorAll('.gc[data-idx]');
+  return document.querySelectorAll('#ev-drag-list .ev-card');
+}
 function evDragStart(e, idx) {
   _dragIdx = idx;
   e.dataTransfer.effectAllowed = 'move';
   setTimeout(function(){
-    var cards = document.querySelectorAll('#ev-drag-list .ev-card');
-    if (cards[idx]) cards[idx].classList.add('dragging');
+    _allDragCards().forEach(function(c){
+      if (parseInt(c.getAttribute('data-idx')) === idx) c.classList.add('dragging');
+    });
   }, 0);
 }
 function evDragOver(e, idx) {
   e.preventDefault();
   e.dataTransfer.dropEffect = 'move';
-  document.querySelectorAll('#ev-drag-list .ev-card').forEach(function(c, i){
-    c.classList.toggle('drag-over', i === idx && i !== _dragIdx);
+  _allDragCards().forEach(function(c){
+    var ci = parseInt(c.getAttribute('data-idx'));
+    c.classList.toggle('drag-over', ci === idx && ci !== _dragIdx);
   });
 }
 function evDragLeave(e) {
-  if (e.target.closest && e.target.closest('.ev-card')) {
-    e.target.closest('.ev-card').classList.remove('drag-over');
-  }
+  var card = e.target.closest && (e.target.closest('.ev-card') || e.target.closest('.gc'));
+  if (card) card.classList.remove('drag-over');
 }
 function evDragEnd(e) {
-  document.querySelectorAll('#ev-drag-list .ev-card').forEach(function(c){
-    c.classList.remove('dragging','drag-over');
-  });
+  _allDragCards().forEach(function(c){ c.classList.remove('dragging','drag-over'); });
   _dragIdx = null;
 }
 async function evDrop(e, toIdx) {
@@ -1027,7 +1045,7 @@ function renderGallery(items) {
   var el = document.getElementById('view-list');
   var today = new Date(); today.setHours(0,0,0,0);
   var todayStr = today.toISOString().slice(0,10);
-  function makeGalleryCard(item) {
+  function makeGalleryCard(item, psIdx) {
     var statusCol = colorForStatus(item.status);
     var endDate = item.end_date || item.deadline;
     var startD = item.start_date ? new Date(item.start_date + 'T00:00:00') : null;
@@ -1066,7 +1084,11 @@ function renderGallery(items) {
     } else if (cd.txt) {
       cdownHtml = '<div class="gc-cdown" style="color:'+cd.color+'"><div class="gc-cdown-n">'+cd.txt+'</div>'+(cd.lbl?'<div class="gc-cdown-lbl">'+cd.lbl+'</div>':'')+'</div>';
     }
-    return '<div class="gc" onclick="openDrawer(\''+escA(item.id)+'\')">'
+    var di = psIdx !== undefined ? psIdx : 0;
+    return '<div class="gc" data-idx="'+di+'" draggable="true"'
+      +' ondragstart="evDragStart(event,'+di+')" ondragover="evDragOver(event,'+di+')"'
+      +' ondragleave="evDragLeave(event)" ondrop="evDrop(event,'+di+')" ondragend="evDragEnd(event)"'
+      +' onclick="openDrawer(\''+escA(item.id)+'\')">'
       +'<div class="gc-stripe" style="background:'+statusCol+'"></div>'
       +'<div class="gc-body">'
       +'<div class="gc-hdr">'
@@ -1090,19 +1112,20 @@ function renderGallery(items) {
     return;
   }
   if (PS.tab === 'projects') {
-    var trends = items.filter(function(p){return p.type==='universal_trend';}).slice().sort(function(a,b){return (a.deadline||'').localeCompare(b.deadline||'');});
-    var campaigns = items.filter(function(p){return p.type!=='universal_trend';}).slice().sort(function(a,b){return (a.deadline||'').localeCompare(b.deadline||'');});
+    // Items are pre-sorted by urgency; pass PS.projects index for drag-and-drop
+    var trends = [], campaigns = [];
+    items.forEach(function(p){ var i = PS.projects.indexOf(p); (p.type==='universal_trend' ? trends : campaigns).push({item:p, idx:i}); });
     var trendCol = trends.length
-      ? '<div class="gallery-section-col"><div class="gallery-section-hdr">🌐 Universal Trends</div>'+trends.map(makeGalleryCard).join('')+'</div>'
+      ? '<div class="gallery-section-col"><div class="gallery-section-hdr">🌐 Universal Trends</div>'+trends.map(function(r){return makeGalleryCard(r.item,r.idx);}).join('')+'</div>'
       : '';
     var campCol = campaigns.length
-      ? '<div class="gallery-section-col"><div class="gallery-section-hdr">🎯 Campaigns</div>'+campaigns.map(makeGalleryCard).join('')+'</div>'
+      ? '<div class="gallery-section-col"><div class="gallery-section-hdr">🎯 Campaigns</div>'+campaigns.map(function(r){return makeGalleryCard(r.item,r.idx);}).join('')+'</div>'
       : '';
     el.innerHTML = (trendCol || campCol)
       ? '<div class="proj-sections">'+trendCol+campCol+'</div>'
       : '<div class="ev-empty"><div class="ev-empty-title">No projects yet</div></div>';
   } else {
-    el.innerHTML = '<div class="ev-gallery">'+items.map(makeGalleryCard).join('')+'</div>';
+    el.innerHTML = '<div class="ev-gallery">'+items.map(function(item, i){return makeGalleryCard(item, i);}).join('')+'</div>';
   }
 }
 
