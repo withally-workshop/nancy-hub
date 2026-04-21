@@ -180,6 +180,59 @@
   .f-row{grid-template-columns:1fr}
   .cp-grid{grid-template-columns:1fr}
 }
+
+/* ── CHECKLIST ─────────────────────────────────────── */
+.check-row{display:flex;align-items:center;gap:.5rem;padding:.32rem 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.check-box{width:16px;height:16px;border-radius:4px;border:1.5px solid var(--muted);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s;font-size:10px;color:transparent;user-select:none}
+.check-box.done{background:#3bb273;border-color:#3bb273;color:#fff}
+.check-label{flex:1;font-family:'Inter',sans-serif;font-size:.8rem;color:var(--body);line-height:1.3}
+.check-label.done{text-decoration:line-through;color:var(--muted)}
+.check-del{color:var(--muted);cursor:pointer;font-size:.8rem;opacity:.35;padding:0 .15rem;background:none;border:none;flex-shrink:0;line-height:1}
+.check-del:hover{opacity:1;color:#e53935}
+.check-add-row{display:flex;gap:.4rem;margin-top:.5rem}
+.check-add-input{flex:1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:.3rem .55rem;font-family:'Inter',sans-serif;font-size:.78rem;color:var(--body);outline:none}
+.check-add-input:focus{border-color:#f7b731}
+.check-add-btn{font-family:'Inter',sans-serif;font-size:.73rem;font-weight:600;padding:.28rem .65rem;border-radius:6px;border:1px solid rgba(247,183,49,.35);background:rgba(247,183,49,.08);color:#f7b731;cursor:pointer}
+.check-add-btn:hover{background:rgba(247,183,49,.18)}
+.check-progress{font-family:'Inter',sans-serif;font-size:.72rem;color:var(--muted);margin-top:.35rem}
+.check-progress.partial{color:#f7b731}
+.check-progress.complete{color:#3bb273}
+
+/* ── MERCH TAB ─────────────────────────────────────── */
+.merch-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.1rem;flex-wrap:wrap;gap:.5rem}
+.merch-wrap-lbl{font-family:'Fraunces',serif;font-size:1rem;font-weight:600;color:var(--h2)}
+.merch-table{width:100%;border-collapse:collapse;font-family:'Inter',sans-serif;font-size:.8rem}
+.merch-table th{color:var(--muted);font-weight:600;padding:.5rem .6rem;text-align:left;border-bottom:1px solid var(--border);font-size:.68rem;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap}
+.merch-table td{padding:.5rem .6rem;border-bottom:1px solid rgba(255,255,255,.04);color:var(--body);vertical-align:middle}
+.merch-table tr:hover td{background:rgba(255,255,255,.02)}
+.merch-cat-bdg{font-family:'Inter',sans-serif;font-size:.6rem;font-weight:700;padding:2px 7px;border-radius:10px;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}
+.merch-row-actions{display:flex;gap:.3rem}
+.merch-empty{text-align:center;padding:3.5rem 2rem;background:var(--card);border:1px solid var(--border);border-radius:14px}
+.merch-empty-title{font-family:'Fraunces',serif;font-size:1.1rem;color:var(--h2);margin-bottom:.4rem}
+.merch-empty-sub{font-family:'Inter',sans-serif;font-size:.83rem;color:var(--muted)}
+.merch-tbl-wrap{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden}
+
+/* ── MERCH ORDER (in drawer) ───────────────────────── */
+.mo-table{width:100%;font-family:'Inter',sans-serif;font-size:.78rem;border-collapse:collapse}
+.mo-table td{padding:.28rem .15rem;vertical-align:middle}
+.mo-table .mo-name{color:var(--body);padding-right:.4rem}
+.mo-table .mo-qty{text-align:center;width:42px;color:var(--muted)}
+.mo-table .mo-unit{text-align:right;color:var(--muted);width:62px}
+.mo-table .mo-total{text-align:right;font-weight:600;width:62px}
+.mo-del{background:none;border:none;color:var(--muted);cursor:pointer;font-size:.85rem;opacity:.35;padding:0 .15rem;line-height:1}
+.mo-del:hover{opacity:1;color:#e53935}
+.mo-total-row{font-family:'Inter',sans-serif;font-size:.82rem;font-weight:700;color:#f7b731;text-align:right;margin-top:.5rem;padding-top:.45rem;border-top:1px solid var(--border)}
+.mo-add-btn{font-family:'Inter',sans-serif;font-size:.73rem;font-weight:600;padding:.3rem .65rem;border-radius:7px;border:1px dashed rgba(247,183,49,.4);background:rgba(247,183,49,.05);color:#f7b731;cursor:pointer;margin-top:.5rem;transition:all .15s;width:100%;display:block;text-align:center}
+.mo-add-btn:hover{background:rgba(247,183,49,.12)}
+
+/* ── MERCH PICKER MODAL ───────────────────────────── */
+.mp-row{display:flex;align-items:center;gap:.6rem;padding:.42rem .55rem;border-radius:9px;border:1px solid var(--border);margin-bottom:.32rem;background:var(--bg2);transition:border-color .12s}
+.mp-row:last-child{margin-bottom:0}
+.mp-name{font-family:'Inter',sans-serif;font-size:.8rem;font-weight:600;color:var(--body);flex:1}
+.mp-meta{font-family:'Inter',sans-serif;font-size:.72rem;color:var(--muted);white-space:nowrap}
+.mp-qty-lbl{font-family:'Inter',sans-serif;font-size:.7rem;color:var(--muted)}
+.mp-qty{width:56px;padding:.24rem .4rem;border-radius:6px;border:1px solid var(--border);background:var(--card);color:var(--body);font-family:'Inter',sans-serif;font-size:.78rem;text-align:center}
+.mp-qty:focus{outline:none;border-color:#f7b731}
 </style>
 </head>
 <body>
@@ -279,6 +332,7 @@
       <div class="proj-tabs">
         <button class="ptab active" id="tab-events" onclick="switchTab('events')">Events</button>
         <button class="ptab" id="tab-projects" onclick="switchTab('projects')">Projects</button>
+        <button class="ptab" id="tab-merch" onclick="switchTab('merch')">Merch</button>
       </div>
       <div class="view-tabs">
         <button class="vtab active" id="vtab-list" onclick="switchView('list')">
@@ -308,6 +362,7 @@
     <div id="view-gantt" style="display:none">
       <div id="gantt-wrap"></div>
     </div>
+    <div id="view-merch" style="display:none"></div>
 
   </div>
 
@@ -365,6 +420,36 @@
   </div>
 </div>
 
+<!-- MERCH ITEM ADD/EDIT MODAL -->
+<div class="modal-overlay" id="modal-merch" onclick="closeModalOutside(event,'modal-merch')">
+  <div class="modal" style="max-width:500px">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-merch-title">Add Merch Item</div>
+      <button class="modal-close" onclick="closeMerchModal()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="modal-body" id="modal-merch-body" style="max-height:70vh;overflow-y:auto;padding-bottom:.5rem"></div>
+    <div class="modal-footer">
+      <button class="modal-btn-secondary" onclick="closeMerchModal()">Cancel</button>
+      <button class="modal-btn-primary" onclick="saveMerchItem()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- MERCH PICKER MODAL (add item to event order) -->
+<div class="modal-overlay" id="modal-merch-pick" onclick="closeModalOutside(event,'modal-merch-pick')">
+  <div class="modal" style="max-width:420px">
+    <div class="modal-header">
+      <div class="modal-title">Add to Merch Order</div>
+      <button class="modal-close" onclick="closeMerchPicker()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="modal-body" id="modal-merch-pick-body" style="max-height:65vh;overflow-y:auto"></div>
+    <div class="modal-footer">
+      <button class="modal-btn-secondary" onclick="closeMerchPicker()">Cancel</button>
+      <button class="modal-btn-primary" onclick="confirmMerchPicker()">Add to Order</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -374,6 +459,17 @@
 
 var PROJ_ACCENT = '#f7b731';
 var MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+var DEFAULT_CHECKLIST = [
+  'Lock in flights',
+  'Book accommodation',
+  'Confirm venue / location',
+  'Visa & travel docs check',
+  'Team travel briefing'
+];
+
+var MERCH_CATS = {apparel:'Apparel',packaging:'Packaging',print:'Print',gift:'Gift',other:'Other'};
+var MERCH_CAT_COLORS = {apparel:'#8854d0',packaging:'#2d7dd2',print:'#f7b731',gift:'#3bb273',other:'#7a7975'};
 
 /* ── BACK-SCHEDULE RULES ── */
 var MILESTONE_RULES = {
@@ -400,15 +496,18 @@ var PS = {
   view: 'list',
   events: [],
   projects: [],
+  merch: [],
   members: [],
   calYear: null,
   calMonth: null,
   editingId: null,
+  editingMerchId: null,
   pendingPush: null,
   pushAssignees: [],
   formAssignees: [],
   shipManual: false,
-  drawerItemId: null
+  drawerItemId: null,
+  pendingMerchEvId: null
 };
 
 /* ════════════ INIT ════════════ */
@@ -441,22 +540,34 @@ async function loadAllData() {
   if (!pr.error && pr.data && pr.data.value) {
     try { PS.projects = JSON.parse(pr.data.value); } catch(e) { PS.projects = []; }
   }
+  var mr = await db.from('settings').select('value').eq('key','hub_merch').maybeSingle();
+  if (!mr.error && mr.data && mr.data.value) {
+    try { PS.merch = JSON.parse(mr.data.value); } catch(e) { PS.merch = []; }
+  }
 }
 async function seedEvents() {
   PS.events = SEED_EVENTS.map(function(e) {
     var ev = JSON.parse(JSON.stringify(e));
     ev.id = crypto.randomUUID();
     ev.milestones = genMilestones(ev);
+    ev.checklist = makeDefaultChecklist();
+    ev.merch_order = [];
     return ev;
   });
   await saveEvents();
   showToast('4 events loaded from your planning list ✓', 'success');
+}
+function makeDefaultChecklist() {
+  return DEFAULT_CHECKLIST.map(function(t){return {id:crypto.randomUUID(),text:t,done:false};});
 }
 async function saveEvents() {
   await db.from('settings').upsert({key:'hub_events',value:JSON.stringify(PS.events)},{onConflict:'key'});
 }
 async function saveProjects() {
   await db.from('settings').upsert({key:'hub_projects',value:JSON.stringify(PS.projects)},{onConflict:'key'});
+}
+async function saveMerch() {
+  await db.from('settings').upsert({key:'hub_merch',value:JSON.stringify(PS.merch)},{onConflict:'key'});
 }
 
 /* ════════════ MILESTONES ════════════ */
@@ -491,21 +602,40 @@ function switchTab(t) {
   PS.tab = t;
   document.getElementById('tab-events').classList.toggle('active', t==='events');
   document.getElementById('tab-projects').classList.toggle('active', t==='projects');
+  document.getElementById('tab-merch').classList.toggle('active', t==='merch');
   var lbl = document.getElementById('add-btn-lbl');
-  if (lbl) lbl.textContent = t === 'events' ? 'New Event' : 'New Project';
+  if (lbl) lbl.textContent = t === 'events' ? 'New Event' : t === 'projects' ? 'New Project' : 'Add Merch Item';
+  // Show/hide view switcher (merch doesn't use it)
+  var vtabs = document.querySelector('.view-tabs');
+  if (vtabs) vtabs.style.visibility = t==='merch' ? 'hidden' : '';
   render();
 }
 function switchView(v) {
   PS.view = v;
-  ['list','calendar','gantt'].forEach(function(x) {
-    var btn = document.getElementById('vtab-'+x);
-    var panel = document.getElementById('view-'+x);
-    if (btn) btn.classList.toggle('active', x===v);
-    if (panel) panel.style.display = x===v ? '' : 'none';
-  });
   render();
 }
 function render() {
+  if (PS.tab === 'merch') {
+    // Show merch panel, hide all others
+    ['list','calendar','gantt'].forEach(function(x){
+      var p=document.getElementById('view-'+x);
+      if(p) p.style.display='none';
+    });
+    var mp=document.getElementById('view-merch');
+    if(mp) mp.style.display='';
+    renderMerch();
+    return;
+  }
+  // Hide merch panel
+  var mp=document.getElementById('view-merch');
+  if(mp) mp.style.display='none';
+  // Switch view
+  ['list','calendar','gantt'].forEach(function(x){
+    var btn=document.getElementById('vtab-'+x);
+    var panel=document.getElementById('view-'+x);
+    if(btn) btn.classList.toggle('active',x===PS.view);
+    if(panel) panel.style.display=x===PS.view?'':'none';
+  });
   var items = PS.tab === 'events' ? PS.events : PS.projects;
   if (PS.view === 'list') renderList(items);
   else if (PS.view === 'calendar') renderCalendar(items);
@@ -587,6 +717,7 @@ function renderList(items) {
       + (item.partners ? '<span class="ev-meta-item">🤝 '+esc(item.partners)+'</span>' : '')
       + '</div>'
       + (upcomingMs.length ? '<div class="ms-preview">'+msHtml+'</div>' : '')
+      + buildCheckProgress(item)
       + teamHtml
       + actHtml
       + '</div>'
@@ -807,6 +938,44 @@ function buildDrawer(item) {
     +cboxHtml;
 
   if (msHtml) html += '<div class="dr-sec"><div class="dr-sec-lbl">Milestones</div>'+msHtml+'</div>';
+
+  // Checklist (events only)
+  if (isEv) {
+    var cl = item.checklist || [];
+    var clRows = cl.map(function(ci){
+      return '<div class="check-row">'
+        +'<div class="check-box'+(ci.done?' done':'')+'" onclick="toggleCheck(\''+escA(item.id)+'\',\''+escA(ci.id)+'\')">'+(ci.done?'✓':'')+'</div>'
+        +'<div class="check-label'+(ci.done?' done':'')+'">'+esc(ci.text)+'</div>'
+        +'<button class="check-del" onclick="deleteCheckItem(\''+escA(item.id)+'\',\''+escA(ci.id)+'\')" title="Remove">✕</button>'
+        +'</div>';
+    }).join('');
+    var clAddRow = '<div class="check-add-row">'
+      +'<input class="check-add-input" id="check-add-input" placeholder="Add item…" onkeydown="if(event.key===\'Enter\')addCheckItem(\''+escA(item.id)+'\')">'
+      +'<button class="check-add-btn" onclick="addCheckItem(\''+escA(item.id)+'\')">+ Add</button>'
+      +'</div>';
+    html += '<div class="dr-sec"><div class="dr-sec-lbl">Checklist</div>'+clRows+clAddRow+'</div>';
+  }
+
+  // Merch Order (events only)
+  if (isEv) {
+    var mo = item.merch_order || [];
+    var moRows = mo.map(function(oi, idx){
+      var lineTotal = (oi.qty * oi.price_per_unit).toFixed(2);
+      return '<tr>'
+        +'<td class="mo-name">'+esc(oi.name)+'</td>'
+        +'<td class="mo-qty">'+oi.qty+'</td>'
+        +'<td class="mo-unit">'+esc(oi.currency||'USD')+' '+parseFloat(oi.price_per_unit).toFixed(2)+'</td>'
+        +'<td class="mo-total">'+parseFloat(lineTotal).toLocaleString('en-US',{minimumFractionDigits:2})+'</td>'
+        +'<td><button class="mo-del" onclick="removeMerchOrderItem(\''+escA(item.id)+'\','+idx+')" title="Remove">✕</button></td>'
+        +'</tr>';
+    }).join('');
+    var moTotal = mo.reduce(function(s,oi){return s+(oi.qty*oi.price_per_unit);},0);
+    var moTotalHtml = mo.length ? '<div class="mo-total-row">Total: '+(mo[0]?mo[0].currency||'USD':'USD')+' '+moTotal.toLocaleString('en-US',{minimumFractionDigits:2})+'</div>' : '';
+    var moAddBtn = '<button class="mo-add-btn" onclick="openMerchPicker(\''+escA(item.id)+'\')">+ Add from Catalog</button>';
+    var moTable = mo.length ? '<table class="mo-table"><tbody>'+moRows+'</tbody></table>'+moTotalHtml : '<div style="font-family:\'Inter\',sans-serif;font-size:.78rem;color:var(--muted);margin-bottom:.35rem">No items yet.</div>';
+    html += '<div class="dr-sec"><div class="dr-sec-lbl">Merch Order</div>'+moTable+moAddBtn+'</div>';
+  }
+
   if (cpHtml) html += '<div class="dr-sec"><div class="dr-sec-lbl">Content Plan</div>'+cpHtml+'</div>';
 
   if (item.partners||item.open_questions||item.notes||item.budget) {
@@ -838,6 +1007,7 @@ function buildDrawer(item) {
 
 /* ════════════ CREATE/EDIT MODAL ════════════ */
 function openCreateModal(editId) {
+  if (PS.tab === 'merch' && !editId) { openMerchModal(null); return; }
   PS.editingId = editId || null;
   PS.shipManual = false;
   var isEdit = !!editId;
@@ -953,7 +1123,7 @@ async function saveItem() {
     var regen=false;
     if(existing){regen=(existing.start_date!==sd||existing.scale!==scale||existing.shipping!==ship);if(regen&&!confirm('Changing dates, scale, or shipping will regenerate milestones. Continue?'))return;}
     var plats=[];document.querySelectorAll('.plat-btn.on').forEach(function(b){plats.push(b.textContent.trim());});
-    var ev={id:existing?existing.id:crypto.randomUUID(),name:nameEl.value.trim(),type:gv('f-type'),status:gv('f-status'),scale:scale,region:gv('f-region'),shipping:ship,start_date:sd,end_date:ed,location:gv('f-location'),partners:gv('f-partners'),open_questions:gv('f-questions'),budget:gv('f-budget'),notes:gv('f-notes'),assigned_to:PS.formAssignees.slice(),content_plan:{shoot_needed:gv('f-cp-shoot'),platforms:plats,posts_count:parseInt(gv('f-cp-posts'))||0,caption_status:gv('f-cp-caption'),shoot_date:gv('f-cp-shoot-date')},milestones:(existing&&!regen)?existing.milestones:[]};
+    var ev={id:existing?existing.id:crypto.randomUUID(),name:nameEl.value.trim(),type:gv('f-type'),status:gv('f-status'),scale:scale,region:gv('f-region'),shipping:ship,start_date:sd,end_date:ed,location:gv('f-location'),partners:gv('f-partners'),open_questions:gv('f-questions'),budget:gv('f-budget'),notes:gv('f-notes'),assigned_to:PS.formAssignees.slice(),content_plan:{shoot_needed:gv('f-cp-shoot'),platforms:plats,posts_count:parseInt(gv('f-cp-posts'))||0,caption_status:gv('f-cp-caption'),shoot_date:gv('f-cp-shoot-date')},milestones:(existing&&!regen)?existing.milestones:[],checklist:existing?existing.checklist:makeDefaultChecklist(),merch_order:existing?existing.merch_order:[]};
     if(!existing||regen) ev.milestones=genMilestones(ev);
     if(existing){var ei=PS.events.findIndex(function(e){return e.id===existing.id;});if(ei>=0)PS.events[ei]=ev;}else PS.events.push(ev);
     await saveEvents();
@@ -1008,6 +1178,184 @@ async function deleteItem(id) {
   closeDrawer();
   render();
   showToast('Deleted.','success');
+}
+
+/* ════════════ CHECKLIST ════════════ */
+function buildCheckProgress(item) {
+  var cl = item.checklist;
+  if (!cl || !cl.length) return '';
+  var done = cl.filter(function(c){return c.done;}).length;
+  var total = cl.length;
+  var cls = done === total ? 'complete' : done > 0 ? 'partial' : '';
+  return '<div class="check-progress'+( cls?' '+cls:'')+'">✓ '+done+'/'+total+' checked</div>';
+}
+async function toggleCheck(evId, checkId) {
+  var ev = PS.events.find(function(e){return e.id===evId;}); if (!ev) return;
+  var ci = (ev.checklist||[]).find(function(c){return c.id===checkId;}); if (!ci) return;
+  ci.done = !ci.done;
+  await saveEvents();
+  render();
+  if (PS.drawerItemId === evId) buildDrawer(ev);
+}
+async function addCheckItem(evId) {
+  var ev = PS.events.find(function(e){return e.id===evId;}); if (!ev) return;
+  var inp = document.getElementById('check-add-input'); if (!inp) return;
+  var text = inp.value.trim(); if (!text) return;
+  if (!ev.checklist) ev.checklist = [];
+  ev.checklist.push({id:crypto.randomUUID(), text:text, done:false});
+  await saveEvents();
+  render();
+  if (PS.drawerItemId === evId) buildDrawer(ev);
+}
+async function deleteCheckItem(evId, checkId) {
+  var ev = PS.events.find(function(e){return e.id===evId;}); if (!ev) return;
+  ev.checklist = (ev.checklist||[]).filter(function(c){return c.id!==checkId;});
+  await saveEvents();
+  render();
+  if (PS.drawerItemId === evId) buildDrawer(ev);
+}
+
+/* ════════════ MERCH CATALOG ════════════ */
+function renderMerch() {
+  var el = document.getElementById('view-merch'); if (!el) return;
+  var addBtn = isSuperAdmin() ? '<button class="proj-add-btn" onclick="openMerchModal(null)" style="font-size:.8rem;padding:.42rem .9rem">+ Add Item</button>' : '';
+  if (!PS.merch.length) {
+    el.innerHTML = '<div class="merch-top"><span class="merch-wrap-lbl">Merch Catalog</span>'+addBtn+'</div>'
+      +'<div class="merch-empty"><div class="merch-empty-title">No merch items yet</div><div class="merch-empty-sub">'+(isSuperAdmin()?'Click <strong>+ Add Item</strong> to build your catalog.':'Check back soon.')+'</div></div>';
+    return;
+  }
+  var sorted = PS.merch.slice().sort(function(a,b){return (a.category||'').localeCompare(b.category||'') || (a.name||'').localeCompare(b.name||'');});
+  var rows = sorted.map(function(m){
+    var cc = MERCH_CAT_COLORS[m.category]||'#7a7975';
+    var catLbl = MERCH_CATS[m.category]||m.category||'Other';
+    var actHtml = isSuperAdmin() ? '<div class="merch-row-actions">'
+      +'<button class="ev-act-btn" onclick="openMerchModal(\''+escA(m.id)+'\')">Edit</button>'
+      +'<button class="ev-act-btn" onclick="deleteMerchItem(\''+escA(m.id)+'\')">Delete</button>'
+      +'</div>' : '';
+    return '<tr>'
+      +'<td><span class="merch-cat-bdg" style="background:'+cc+'22;color:'+cc+'">'+esc(catLbl)+'</span></td>'
+      +'<td style="font-weight:600">'+esc(m.name)+'</td>'
+      +'<td>'+esc(m.currency||'USD')+' '+parseFloat(m.price_per_unit||0).toFixed(2)+'</td>'
+      +'<td>'+esc(m.production_days?m.production_days+' days':'—')+'</td>'
+      +'<td>'+esc(m.min_moq?m.min_moq+' units':'—')+'</td>'
+      +'<td>'+esc(m.supplier||'—')+'</td>'
+      +(m.notes_link?'<td><a href="'+escA(m.notes_link)+'" target="_blank" style="color:#f7b731;font-size:.75rem">Link ↗</a></td>':'<td style="color:var(--muted);font-size:.75rem">—</td>')
+      +'<td>'+actHtml+'</td>'
+      +'</tr>';
+  }).join('');
+  el.innerHTML = '<div class="merch-top"><span class="merch-wrap-lbl">Merch Catalog <span style="font-family:Inter,sans-serif;font-size:.78rem;font-weight:400;color:var(--muted)">('+PS.merch.length+' items)</span></span>'+addBtn+'</div>'
+    +'<div class="merch-tbl-wrap"><table class="merch-table">'
+    +'<thead><tr><th>Category</th><th>Product</th><th>Price/Unit</th><th>Prod. Time</th><th>Min MOQ</th><th>Supplier</th><th>Notes</th><th></th></tr></thead>'
+    +'<tbody>'+rows+'</tbody>'
+    +'</table></div>';
+}
+function openMerchModal(editId) {
+  PS.editingMerchId = editId || null;
+  var m = editId ? PS.merch.find(function(x){return x.id===editId;}) : null;
+  document.getElementById('modal-merch-title').textContent = editId ? 'Edit Merch Item' : 'Add Merch Item';
+  document.getElementById('modal-merch-body').innerHTML = buildMerchForm(m);
+  openModal('modal-merch');
+}
+function buildMerchForm(m) {
+  m = m || {};
+  return '<div class="form-sec"><div class="form-sec-lbl">Product Details</div>'
+    +'<div class="f-row full"><div class="f-fld"><label>Product Name *</label><input id="mf-name" value="'+escA(m.name||'')+'" placeholder="e.g. Canvas Tote Bag"/></div></div>'
+    +'<div class="f-row"><div class="f-fld"><label>Category</label><select id="mf-cat">'+opts(MERCH_CATS, m.category||'other')+'</select></div>'
+    +'<div class="f-fld"><label>Supplier / Vendor</label><input id="mf-supplier" value="'+escA(m.supplier||'')+'" placeholder="Supplier name"/></div></div></div>'
+    +'<div class="form-sec"><div class="form-sec-lbl">Pricing & Production</div>'
+    +'<div class="f-row"><div class="f-fld"><label>Price per Unit *</label><input type="number" id="mf-price" value="'+(m.price_per_unit||'')+'" placeholder="0.00" min="0" step="0.01"/></div>'
+    +'<div class="f-fld"><label>Currency</label><select id="mf-currency"><option value="USD"'+((!m.currency||m.currency==='USD')?' selected':'')+'>USD</option><option value="GBP"'+(m.currency==='GBP'?' selected':'')+'>GBP</option><option value="JPY"'+(m.currency==='JPY'?' selected':'')+'>JPY</option><option value="EUR"'+(m.currency==='EUR'?' selected':'')+'>EUR</option><option value="HKD"'+(m.currency==='HKD'?' selected':'')+'>HKD</option></select></div></div>'
+    +'<div class="f-row"><div class="f-fld"><label>Production Time (days) *</label><input type="number" id="mf-proddays" value="'+(m.production_days||'')+'" placeholder="e.g. 21" min="1"/></div>'
+    +'<div class="f-fld"><label>Min MOQ (units) *</label><input type="number" id="mf-moq" value="'+(m.min_moq||'')+'" placeholder="e.g. 50" min="1"/></div></div></div>'
+    +'<div class="form-sec"><div class="form-sec-lbl">Additional Info</div>'
+    +'<div class="f-row full"><div class="f-fld"><label>Notes / Link (URL or notes)</label><input id="mf-notes" value="'+escA(m.notes_link||'')+'" placeholder="https://supplier.com/product or notes"/></div></div></div>';
+}
+function closeMerchModal(){closeModal('modal-merch');}
+async function saveMerchItem() {
+  var nameEl = document.getElementById('mf-name');
+  if (!nameEl||!nameEl.value.trim()) {showToast('Product name is required.','error');return;}
+  var price = parseFloat(document.getElementById('mf-price').value);
+  if (isNaN(price)||price<0) {showToast('Valid price is required.','error');return;}
+  var prodDays = parseInt(document.getElementById('mf-proddays').value)||0;
+  var moq = parseInt(document.getElementById('mf-moq').value)||0;
+  var item = {
+    id: PS.editingMerchId || crypto.randomUUID(),
+    name: nameEl.value.trim(),
+    category: gv('mf-cat'),
+    price_per_unit: price,
+    currency: gv('mf-currency'),
+    production_days: prodDays,
+    min_moq: moq,
+    supplier: gv('mf-supplier'),
+    notes_link: gv('mf-notes')
+  };
+  if (PS.editingMerchId) {
+    var idx = PS.merch.findIndex(function(x){return x.id===PS.editingMerchId;});
+    if (idx>=0) PS.merch[idx]=item; else PS.merch.push(item);
+  } else {
+    PS.merch.push(item);
+  }
+  await saveMerch();
+  closeMerchModal();
+  renderMerch();
+  showToast((PS.editingMerchId?'Updated':'Added')+' ✓','success');
+}
+async function deleteMerchItem(id) {
+  if (!confirm('Remove this item from the catalog?')) return;
+  PS.merch = PS.merch.filter(function(x){return x.id!==id;});
+  await saveMerch();
+  renderMerch();
+  showToast('Removed.','success');
+}
+
+/* ════════════ MERCH ORDER (per event) ════════════ */
+function openMerchPicker(evId) {
+  PS.pendingMerchEvId = evId;
+  var body = document.getElementById('modal-merch-pick-body');
+  if (!PS.merch.length) {
+    body.innerHTML = '<div style="text-align:center;padding:2rem;font-family:Inter,sans-serif;font-size:.83rem;color:var(--muted)">No merch items in catalog yet.<br>Add items from the Merch tab first.</div>';
+    openModal('modal-merch-pick');
+    return;
+  }
+  var sorted = PS.merch.slice().sort(function(a,b){return (a.category||'').localeCompare(b.category||'')||(a.name||'').localeCompare(b.name||'');});
+  body.innerHTML = '<div style="font-family:Inter,sans-serif;font-size:.75rem;color:var(--muted);margin-bottom:.7rem">Set quantities for the items you want to add:</div>'
+    +sorted.map(function(m){
+      var cc=MERCH_CAT_COLORS[m.category]||'#7a7975';
+      var catLbl=MERCH_CATS[m.category]||m.category||'';
+      return '<div class="mp-row">'
+        +'<div><div class="mp-name">'+esc(m.name)+'</div><div class="mp-meta"><span class="merch-cat-bdg" style="background:'+cc+'22;color:'+cc+'">'+esc(catLbl)+'</span> '+esc(m.currency||'USD')+' '+parseFloat(m.price_per_unit||0).toFixed(2)+'/unit · MOQ '+esc(m.min_moq||0)+'</div></div>'
+        +'<div class="mp-qty-wrap"><span class="mp-qty-lbl">Qty</span><input type="number" class="mp-qty" id="mp-qty-'+escA(m.id)+'" value="0" min="0" step="1"/></div>'
+        +'</div>';
+    }).join('');
+  openModal('modal-merch-pick');
+}
+function closeMerchPicker(){closeModal('modal-merch-pick');}
+async function confirmMerchPicker() {
+  var evId = PS.pendingMerchEvId;
+  var ev = PS.events.find(function(e){return e.id===evId;}); if (!ev) return;
+  if (!ev.merch_order) ev.merch_order = [];
+  var added = 0;
+  PS.merch.forEach(function(m){
+    var inp = document.getElementById('mp-qty-'+m.id);
+    if (!inp) return;
+    var qty = parseInt(inp.value)||0;
+    if (qty <= 0) return;
+    ev.merch_order.push({merch_id:m.id, name:m.name, qty:qty, price_per_unit:m.price_per_unit, currency:m.currency||'USD'});
+    added++;
+  });
+  if (!added) {showToast('Set at least one quantity.','warning');return;}
+  await saveEvents();
+  closeMerchPicker();
+  render();
+  if (PS.drawerItemId===evId) buildDrawer(ev);
+  showToast(added+' item'+(added>1?'s':'')+' added to order ✓','success');
+}
+async function removeMerchOrderItem(evId, idx) {
+  var ev = PS.events.find(function(e){return e.id===evId;}); if (!ev) return;
+  ev.merch_order = (ev.merch_order||[]).filter(function(_,i){return i!==idx;});
+  await saveEvents();
+  render();
+  if (PS.drawerItemId===evId) buildDrawer(ev);
 }
 
 /* ════════════ GENERATE BRIEF ════════════ */
