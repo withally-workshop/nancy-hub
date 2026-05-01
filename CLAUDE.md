@@ -44,6 +44,9 @@ A private internal hub — the team's daily operating system — so nobody gets 
 3. **Never overstate what exists** — if something is a projection, label it projected. If it's unfinished, say so
 4. **One step at a time** — don't jump ahead while the current step is still unverified
 5. **Brainstorm before planning** — when working on a new feature or fix, brainstorm with me first. State your understanding of the problem, ask clarifying questions, then propose a solution. Don't skip straight to a full plan or code.
+6. **Deploy to the right project** — Always push to the **`nancy-hub`** Vercel project (live at `nancy-hub.vercel.app`), NEVER to `nancy-hub-v2`. The git auto-deploy webhook is broken, so use `vercel deploy --prod` from the project folder, then alias to `nancy-hub.vercel.app` if needed. Verify the deployed file matches local before telling me it's done.
+7. **Fix the whole logic, not just the function** — when fixing or building anything, audit the entire flow it touches. Don't just patch the line that's broken. Flag any redundant code, contradictory logic, dead code paths, or shortcuts you find along the way. If a function looks duplicated or the logic doesn't make sense end-to-end, surface it before moving on.
+8. **Flag anything that could block a Vercel deploy** — proactively call out anything that risks breaking the build or hiding a deploy failure: stale/wrong git remote, broken auto-deploy webhook, deployments going to the wrong Vercel project, build errors, missing env vars, files that exceed Vercel limits, syntax errors in HTML/JS, broken imports, large untracked files, or git push redirects. Tell me BEFORE I think it's deployed, not after.
 
 ## Session Protocol
 
