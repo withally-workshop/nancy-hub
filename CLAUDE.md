@@ -43,6 +43,7 @@ A private internal hub — the team's daily operating system — so nobody gets 
 2. **Always think A to Z** — before we call something done, make sure everything from A to Y is connected, polished, and makes sense. No loose ends, no disconnected pieces, no unfinished logic hiding behind a working surface
 3. **Never overstate what exists** — if something is a projection, label it projected. If it's unfinished, say so
 4. **One step at a time** — don't jump ahead while the current step is still unverified
+5. **Brainstorm before planning** — when working on a new feature or fix, brainstorm with me first. State your understanding of the problem, ask clarifying questions, then propose a solution. Don't skip straight to a full plan or code.
 
 ## Session Protocol
 

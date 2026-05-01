@@ -1775,7 +1775,7 @@ function startClock() {
   }
   tick();
   setInterval(tick, 30000);
-  setInterval(() => { checkRewards(); checkRecap(); }, 60000);
+  setInterval(() => { checkRewards(); checkRecap(); refreshRecurring(); checkMorningNudge(); }, 60000);
 }
 
 function getHKT() {
@@ -1857,7 +1857,7 @@ var slackState = {
   activeWorkspaceId: 'own', channels: [], dms: [], activeChannelId: null,
   activeChannelName: '', messages: [], mentions: [], userCache: {},
   lastPulledAt: {}, lastPulledTs: {}, mentionCounts: {}, summaryCache: {},
-  dmNames: {}, starred: [], selectedChannels: [], selectMode: false,
+  dmNames: {}, channelNames: {}, starred: [], selectedChannels: [], selectMode: false,
   summaries: [], activeTab: 'channels', _btns: [],
   archivedChannels: [], showArchived: false,
   reviews: [], reviewStarFilter: 5
@@ -1947,6 +1947,7 @@ async function initSlack() {
   slackState.ownToken = token;
   slackState.ownUserId = (cu && cu.slack_user_id) || '';
   try { slackState.dmNames = JSON.parse(localStorage.getItem('slack_dm_names') || '{}'); } catch(e) {}
+  try { slackState.channelNames = JSON.parse(localStorage.getItem('slack_channel_names') || '{}'); } catch(e) {}
   try { slackState.starred = JSON.parse(localStorage.getItem('slack_starred') || '[]'); } catch(e) {}
   try { slackState.archivedChannels = JSON.parse(localStorage.getItem('slack_archived') || '[]'); } catch(e) {}
 
@@ -1993,7 +1994,12 @@ async function slackAPI(token, method, params) {
     },
     body: JSON.stringify({ method: method, params: params || {}, token: token })
   });
-  if (!res.ok) throw new Error('Proxy HTTP ' + res.status);
+  if (!res.ok) {
+    var errBody = '';
+    try { errBody = await res.text(); } catch(e) {}
+    console.error('[Slack proxy] HTTP ' + res.status + ':', errBody);
+    throw new Error('Proxy HTTP ' + res.status + (errBody ? ' — ' + errBody.slice(0, 120) : ''));
+  }
   return res.json();
 }
 
@@ -2106,23 +2112,26 @@ function renderSlackChannelList() {
     var activeCls = slackState.activeChannelId === ch.id ? ' active' : '';
     var isStarred = slackState.starred.indexOf(ch.id) !== -1;
     var isArchived = slackState.archivedChannels.indexOf(ch.id) !== -1;
+    var displayName = slackState.channelNames[ch.id] || ch.name;
     var starBtn = '<button onclick="slackToggleStar(\'' + ch.id + '\',event)" style="background:none;border:none;cursor:pointer;padding:0 4px 0 0;font-size:.75rem;color:' + (isStarred ? '#f59e0b' : 'var(--muted)') + ';flex-shrink:0;line-height:1" title="' + (isStarred ? 'Unstar' : 'Star') + '">' + (isStarred ? '★' : '☆') + '</button>';
     var archiveBtn = '<button onclick="slackToggleArchive(\'' + ch.id + '\',event)" title="' + (isArchived ? 'Unarchive' : 'Hide channel') + '" style="background:none;border:none;font-size:.7rem;color:var(--muted);cursor:pointer;padding:0 2px;flex-shrink:0;opacity:0;transition:opacity .15s" class="slack-arch-btn">' + (isArchived ? '↩' : '✕') + '</button>';
+    var pencilBtn = '<button onclick="slackRenameChannel(\'' + ch.id + '\',\'' + esc(displayName).replace(/\'/g,'\\\'') + '\');event.stopPropagation()" style="background:none;border:none;cursor:pointer;padding:0 0 0 4px;font-size:.7rem;color:var(--muted);flex-shrink:0;line-height:1;opacity:0;transition:opacity .15s" class="slack-arch-btn" title="Rename">✏️</button>';
     var checkboxHtml = '';
     if (slackState.selectMode) {
       var isChecked = slackState.selectedChannels.indexOf(ch.id) !== -1;
       checkboxHtml = '<input type="checkbox" ' + (isChecked ? 'checked' : '') + ' onclick="slackToggleChannelSelect(\'' + ch.id + '\',event)" style="flex-shrink:0;cursor:pointer;accent-color:var(--primary)" />';
       activeCls += (isChecked ? ' active' : '');
     }
-    html += '<div class="slack-channel-item' + activeCls + '" onclick="' + (slackState.selectMode ? 'slackToggleChannelSelect(\'' + ch.id + '\',event)' : 'openSlackChannel(\'' + ch.id + '\',\'' + esc(ch.name).replace(/'/g,'\\\'') + '\')') + '">' +
+    html += '<div class="slack-channel-item' + activeCls + '" onclick="' + (slackState.selectMode ? 'slackToggleChannelSelect(\'' + ch.id + '\',event)' : 'openSlackChannel(\'' + ch.id + '\',\'' + esc(displayName).replace(/'/g,'\\\'') + '\')') + '">' +
       checkboxHtml +
       starBtn +
       '<span class="slack-channel-hash">#</span>' +
       '<div class="slack-channel-name-wrap">' +
-        '<div class="slack-channel-name">' + esc(ch.name) + '</div>' +
+        '<div class="slack-channel-name" id="slack-ch-name-' + ch.id + '">' + esc(displayName) + '</div>' +
         (pulled ? '<div class="slack-channel-pulled">' + pulled + '</div>' : '') +
       '</div>' +
       '<span class="slack-channel-badge' + badgeCls + '">' + count + '</span>' +
+      pencilBtn +
       archiveBtn +
     '</div>';
   });
@@ -2246,13 +2255,12 @@ function slackInitDatePicker() {
 function slackGetSelectedOldest() {
   var fromInput = document.getElementById('slack-date-from');
   if (!fromInput || !fromInput.value) {
-    var weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
-    weekAgo.setHours(0, 0, 0, 0);
-    return weekAgo.getTime() / 1000;
+    // Default: Jan 1 2020 — pull all history, not just recent messages
+    return '1577836800';
   }
   var parts = fromInput.value.split('-');
   var d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]), 0, 0, 0, 0);
-  return d.getTime() / 1000;
+  return String(Math.floor(d.getTime() / 1000));
 }
 
 function slackGetSelectedLatest() {
@@ -2261,7 +2269,7 @@ function slackGetSelectedLatest() {
   var parts = toInput.value.split('-');
   // End of the "to" day (23:59:59)
   var d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]), 23, 59, 59, 0);
-  return d.getTime() / 1000;
+  return String(Math.floor(d.getTime() / 1000));
 }
 
 async function slackLoadMessages(channelId) {
@@ -2739,6 +2747,27 @@ function timeAgo(date) {
   if (secs < 60) return 'just now';
   if (secs < 3600) return Math.floor(secs/60) + 'm ago';
   return Math.floor(secs/3600) + 'h ago';
+}
+
+// ─── FEATURE 0: Channel Rename (persists to localStorage) ──────────────────
+function slackSaveChannelName(chId, name) {
+  slackState.channelNames[chId] = name;
+  try { localStorage.setItem('slack_channel_names', JSON.stringify(slackState.channelNames)); } catch(e) {}
+  renderSlackChannelList();
+}
+
+function slackRenameChannel(chId, currentName) {
+  var nameEl = document.getElementById('slack-ch-name-' + chId);
+  if (!nameEl) return;
+  var input = document.createElement('input');
+  input.value = currentName;
+  input.style.cssText = 'font-family:Inter,sans-serif;font-size:.84rem;background:var(--bg3);border:1px solid var(--primary);border-radius:5px;padding:1px 6px;color:var(--body);width:100%;outline:none';
+  input.onblur = function() { if (input.value.trim()) slackSaveChannelName(chId, input.value.trim()); else renderSlackChannelList(); };
+  input.onkeydown = function(e) { if (e.key === 'Enter') input.blur(); if (e.key === 'Escape') renderSlackChannelList(); };
+  nameEl.innerHTML = '';
+  nameEl.appendChild(input);
+  input.focus();
+  input.select();
 }
 
 // ─── FEATURE 1: DM Rename ───────────────────────────────────────────────────
@@ -3483,7 +3512,8 @@ function renderBoard() {
   };
 
   tiers.forEach(tier => {
-    const tierTasks = tasks.filter(t => t.tier === tier && !t.completed);
+    const tierTasks = tasks.filter(t => t.tier === tier && !t.completed)
+      .sort((a, b) => (a.task_order ?? 999) - (b.task_order ?? 999));
     const container = document.getElementById(containerIds[tier]);
     if (!container) return;
 
@@ -3554,7 +3584,7 @@ function createTaskCard(task, tier) {
 
   card.innerHTML = `
     <div class="task-top">
-      <div class="task-drag-handle" title="Drag to move">⠿</div>
+      <div class="task-drag-handle" title="Drag to reorder within tier, or drag to another tier" style="cursor:grab">⠿</div>
       <div class="task-check ${task.completed ? 'done' : ''}" onclick="toggleTask('${task.id}')"></div>
       <div class="task-title">${esc(task.title)}</div>
       <div class="task-actions">
@@ -3654,28 +3684,6 @@ function updateNotifBadge() {
   badge.style.display = unread > 0 ? 'flex' : 'none';
 }
 
-function openNotifications() {
-  const panel = document.getElementById('notif-panel');
-  if (!panel) return;
-  const isOpen = panel.style.display !== 'none';
-  // Close if already open
-  if (isOpen) { panel.style.display = 'none'; return; }
-  renderNotifPanel();
-  panel.style.display = 'block';
-  // Close when clicking outside
-  setTimeout(() => {
-    document.addEventListener('click', function closePanel(e) {
-      const trigger = document.querySelector('.notif-trigger');
-      if (trigger && !trigger.contains(e.target)) {
-        panel.style.display = 'none';
-        document.removeEventListener('click', closePanel);
-      }
-    });
-  }, 10);
-  // Mark as read after brief delay
-  setTimeout(() => { markAllRead(); }, 800);
-}
-
 function renderNotifPanel() {
   const list = document.getElementById('notif-list');
   if (!list) return;
@@ -3704,16 +3712,6 @@ function renderNotifPanel() {
       </div>
     </div>`;
   }).join('');
-}
-
-async function markAllRead() {
-  const unread = (state.notifications || []).filter(n => !n.read);
-  if (!unread.length) return;
-  try {
-    await db.from('notifications').update({ read: true }).in('id', unread.map(n => n.id));
-    state.notifications.forEach(n => n.read = true);
-    updateNotifBadge();
-  } catch(e) {}
 }
 
 function formatRelTime(ts) {
@@ -4455,9 +4453,11 @@ function getMonthStart() {
 }
 
 function calcDailyPct() {
-  // Daily = my own Focus Today tasks only — always based on logged-in user, not viewed board
-  const focusToday = getMyOwnTasks().filter(t => t.tier === 'focus-today');
-  if (!focusToday.length) return 0;
+  // Daily = my own Focus Today tasks created TODAY (from 7 AM HKT) only
+  // Tasks added on previous days are NOT counted against today's score — they belong to the day they were created
+  const dayStart = getDayStart7am();
+  const focusToday = getMyOwnTasks().filter(t => t.tier === 'focus-today' && (t.created_at || 0) >= dayStart);
+  if (!focusToday.length) return -1; // -1 = no tasks set today (different from 0%)
   const done = focusToday.filter(t => t.completed);
   return Math.round((done.length / focusToday.length) * 100);
 }
@@ -4545,7 +4545,9 @@ var _rewardShownToday = null;
 
 function checkRewards() {
   const dailyOk = isHKTAfter(18);
-  const dp = calcDailyPct();
+  const dpRaw = calcDailyPct(); // -1 means no tasks set today
+  const dp = dpRaw === -1 ? 0 : dpRaw; // use 0 for tier calc when no tasks set
+  const noTasksToday = dpRaw === -1;
   const wp = calcWeeklyPct();
   const dt = getRewardTier(dp);
 
@@ -4580,7 +4582,7 @@ function checkRewards() {
       banner.innerHTML = `
         <div class="reward-info">
           <div class="reward-title">${isViewing ? '👤 ' + esc(subjectName) + ' · ' : ''}Daily Reward Pending ⏳</div>
-          <div class="reward-quote">${isViewing ? subjectName + ' is at' : 'Keep working —'} ${dp > 0 ? dp + '% completed so far' : (isViewing ? '0% today' : 'Start completing tasks!')}</div>
+          <div class="reward-quote">${noTasksToday && !isViewing ? 'No tasks set today — add your focus tasks to start your streak!' : (isViewing ? subjectName + ' is at' : 'Keep working —') + ' ' + (dp > 0 ? dp + '% completed so far' : (isViewing ? '0% today' : 'Start completing tasks!'))}</div>
         </div>
         ${tierPreviewHTML}`;
     }
@@ -4605,7 +4607,8 @@ async function openRewards() {
   const { streak, weekAvg } = await loadStreak();
   const dailyOk = isHKTAfter(18);
   const weeklyOk = isHKTAfter(17, 5);
-  const dp = calcDailyPct();
+  const dpRaw = calcDailyPct();
+  const dp = dpRaw === -1 ? 0 : dpRaw;
   const wp = calcWeeklyPct();
   const mp = calcMonthlyPct();
   const dt = getRewardTier(dp);
@@ -4740,6 +4743,25 @@ async function generateDailyRecap(completedToday) {
 }
 
 // ═══════════════════════════════════════
+// MORNING NUDGE
+// ═══════════════════════════════════════
+function checkMorningNudge() {
+  const pht = getHKT();
+  const h = pht.getUTCHours(); // HKT is UTC+8, but getHKT() already shifts so UTC hours = HKT hours
+  if (h < 7 || h >= 10) return; // only fire 7–9 AM HKT
+  if (state.currentBoard !== 'personal') return; // only on personal board
+  const focusCount = state.tasks.filter(t =>
+    t.tier === 'focus-today' && !t.completed && (t.created_at || 0) >= getDayStart7am()
+  ).length;
+  if (focusCount >= 3) return; // already set 3+ tasks
+  const key = 'morning_nudge_' + pht.toDateString();
+  if (localStorage.getItem(key)) return; // already shown today
+  localStorage.setItem(key, '1');
+  const slots = 3 - focusCount;
+  showToast('Set your focus tasks for today 🌸 — ' + slots + ' slot' + (slots !== 1 ? 's' : '') + ' open', 'info');
+}
+
+// ═══════════════════════════════════════
 // WEEKLY RECAP
 // ═══════════════════════════════════════
 function checkRecap() {
@@ -4840,11 +4862,6 @@ async function checkStorage() {
 // ═══════════════════════════════════════
 // SHARE BOARD
 // ═══════════════════════════════════════
-function openShareModal() {
-  if (state.currentUser) document.getElementById('my-share-code').textContent = state.currentUser.shareCode || '—';
-  openModal('modal-share');
-}
-
 function copyShareCode() {
   const code = document.getElementById('my-share-code').textContent;
   navigator.clipboard.writeText(code).then(() => showToast('Share code copied! 📋', 'success'));
