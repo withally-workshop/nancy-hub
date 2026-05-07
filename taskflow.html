@@ -5387,6 +5387,28 @@ async function markAllRead() {
 // EMAIL DRAWER — multi-source combined inbox with AI triage
 // ═══════════════════════════════════════════════════════════════════════════
 
+// ── APPS SCRIPT PROXY (self-contained — does NOT depend on hub.js)
+// Defined locally so the email feature works even if shared/hub.js is cached
+// or fails to load. Same signature/behavior as window.callEmailScript.
+async function callEmailScriptLocal(scriptUrl, action, payload) {
+  if (!scriptUrl) throw new Error('No Apps Script URL configured');
+  var body = Object.assign({ action: action }, payload || {});
+  var res = await fetch(scriptUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+    redirect: 'follow'
+  });
+  if (!res.ok) {
+    var errBody = '';
+    try { errBody = await res.text(); } catch(e) {}
+    throw new Error('Apps Script HTTP ' + res.status + (errBody ? ' — ' + errBody.slice(0, 120) : ''));
+  }
+  var data = await res.json();
+  if (!data.success) throw new Error(data.error || 'Apps Script returned no success flag');
+  return data;
+}
+
 // ── CONFIG LOADER ──
 async function loadEmailConfig() {
   var uid = state.currentUser && state.currentUser.id;
@@ -5477,7 +5499,7 @@ async function emailFetchAll(opts) {
 
   var results = await Promise.allSettled(live.map(async function(item) {
     try {
-      var data = await callEmailScript(item.url, 'fetchEmails', {
+      var data = await callEmailScriptLocal(item.url, 'fetchEmails', {
         label: opts.unreadOnly ? 'unread' : 'inbox',
         hours: opts.hours || 24
       });
@@ -5735,7 +5757,7 @@ async function emailSendReply() {
   var btn = document.getElementById('email-reply-send-btn');
   btn.disabled = true; btn.textContent = 'Sending…';
   try {
-    await callEmailScript(url, 'sendEmail', { threadId: emailId, body: body });
+    await callEmailScriptLocal(url, 'sendEmail', { threadId: emailId, body: body });
     showToast('Reply sent ✓', 'success');
     closeEmailReplyPane();
   } catch(e) {
@@ -5806,7 +5828,7 @@ async function emailTestMyScript() {
   if (!url) { result.textContent = '⚠️ Enter a URL first'; result.style.color = '#e05470'; return; }
   result.textContent = 'Testing…'; result.style.color = 'var(--muted)';
   try {
-    await callEmailScript(url, 'usage');
+    await callEmailScriptLocal(url, 'usage');
     result.textContent = '✓ Working';
     result.style.color = '#79b854';
   } catch(e) {
