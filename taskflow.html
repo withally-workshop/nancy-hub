@@ -5548,38 +5548,26 @@ async function emailFetchAll(opts) {
   return allEmails;
 }
 
-// ── REFRESH MODES ──
+// ── REFRESH ──
+// Always fetches ALL unread emails from all sources, applies AI triage,
+// stores in state.email.emails. The tab bar then filters in the render layer:
+//   - "All" tab     = show everything fetched
+//   - "Urgent" tab  = show only those matching user's sender/keyword filters
+//                     (or AI-flagged urgent — both count)
+//   - Label tabs    = show only those matching that custom label
 async function emailRefresh() {
   var hasAnySource = !!(state.email.myScript && state.email.myScript.url) || state.email.sources.length;
   if (!hasAnySource) { showToast('Set your Apps Script in ⚙ first', 'info'); openEmailSettings(); return; }
-  state.email.pullAllMode = false;
   try {
-    var emails = await emailFetchAll({ hours: state.email.fetchHours || 24 });
-    var filtered = state.email.filters.senders.length || state.email.filters.keywords.length
-      ? emails.filter(function(e) { return emailMatchesFilter(e, state.email.filters); })
-      : emails; // no filters = show everything from chosen window
-    state.email.emails = await triageEmails(filtered);
+    var emails = await emailFetchAll({
+      unreadOnly: true,                          // always unread for triage workflow
+      hours: state.email.fetchHours || 24
+    });
+    state.email.emails = await triageEmails(emails);
     renderEmailList();
   } catch(e) {
     state.email.loading = false;
     showToast('Email fetch failed: ' + e.message, 'error');
-    renderEmailList();
-  }
-}
-
-async function emailPullAllUnread() {
-  var hasAnySource = !!(state.email.myScript && state.email.myScript.url) || state.email.sources.length;
-  if (!hasAnySource) { showToast('Set your Apps Script in ⚙ first', 'info'); openEmailSettings(); return; }
-  state.email.pullAllMode = true;
-  try {
-    // Pull All uses a longer window regardless of fetchHours preset
-    var emails = await emailFetchAll({ unreadOnly: true, hours: 720 }); // 30 days
-    state.email.emails = await triageEmails(emails);
-    renderEmailList();
-    showToast('Showing ALL unread from last 30 days (filters off)', 'info');
-  } catch(e) {
-    state.email.loading = false;
-    showToast('Pull all failed: ' + e.message, 'error');
     renderEmailList();
   }
 }
@@ -5669,8 +5657,16 @@ function renderEmailList() {
 
   var emails = state.email.emails;
   var tab = state.email.activeTab;
-  if (tab === 'urgent') emails = emails.filter(function(e) { return e.urgent; });
-  else if (tab && tab !== 'all') {
+  if (tab === 'urgent') {
+    // Urgent = matches user's sender/keyword filter rules OR AI flagged it urgent
+    var f = state.email.filters || { senders: [], keywords: [] };
+    var hasFilters = (f.senders && f.senders.length) || (f.keywords && f.keywords.length);
+    emails = emails.filter(function(e) {
+      var aiUrgent = !!e.urgent;
+      var ruleMatch = hasFilters && emailMatchesFilter(e, f);
+      return aiUrgent || ruleMatch;
+    });
+  } else if (tab && tab !== 'all') {
     emails = emails.filter(function(e) {
       var matched = applyLabelsToEmail(e, state.email.labels);
       return matched.some(function(l) { return l.id === tab; });
@@ -5680,11 +5676,16 @@ function renderEmailList() {
   if (!emails.length) {
     var hasAnySource = !!(state.email.myScript && state.email.myScript.url) || state.email.sources.length;
     var rangeLabel = ({ '24': 'last 24 hours', '72': 'last 3 days', '168': 'last 7 days', '720': 'last 30 days' })[String(state.email.fetchHours || 24)] || 'selected window';
-    var msg = hasAnySource
-      ? (state.email.pullAllMode
-          ? 'No unread emails in the last 30 days.'
-          : 'No emails matching your filters in the ' + rangeLabel + '. Try a longer date range or 📥 Pull All Unread.')
-      : 'No email sources yet. Click ⚙ to set your Apps Script.';
+    var msg;
+    if (!hasAnySource) {
+      msg = 'No email sources yet. Click ⚙ to set your Apps Script.';
+    } else if (tab === 'urgent') {
+      msg = 'No urgent emails right now. (Urgent = matches your sender/keyword filters in ⚙ or AI-flagged urgent.)';
+    } else if (tab === 'all') {
+      msg = 'No unread emails in the ' + rangeLabel + '. Try a longer date range.';
+    } else {
+      msg = 'No emails match this label in the ' + rangeLabel + '.';
+    }
     listEl.innerHTML = '<div class="email-empty">' + esc(msg) + '</div>';
     return;
   }
@@ -5695,15 +5696,11 @@ function renderEmailList() {
     return (new Date(b.date || 0)) - (new Date(a.date || 0));
   });
 
-  var pullBanner = state.email.pullAllMode
-    ? '<div class="email-pull-banner">📥 Showing ALL unread — filters off · <button onclick="emailRefresh()">Apply filters</button></div>'
-    : '';
-
   var deadWarning = state.email.deadSources.length
     ? '<div class="email-pull-banner email-dead">⚠️ ' + state.email.deadSources.length + ' source(s) unavailable (owner may have revoked share)</div>'
     : '';
 
-  listEl.innerHTML = pullBanner + deadWarning + sorted.map(function(e) {
+  listEl.innerHTML = deadWarning + sorted.map(function(e) {
     var labels = applyLabelsToEmail(e, state.email.labels);
     var labelChips = labels.map(function(l) {
       return '<span class="email-label-chip" style="background:' + esc(l.color || '#888') + '22;color:' + esc(l.color || '#888') + '">' + esc(l.name) + '</span>';
@@ -5729,7 +5726,7 @@ function renderEmailTabBar() {
   if (!bar) return;
   var tabs = [
     { id: 'all', label: 'All' },
-    { id: 'urgent', label: '⚠️ Urgent' }
+    { id: 'urgent', label: '⚠️ Urgent', title: 'Emails matching your sender/keyword filters or AI-flagged urgent' }
   ];
   (state.email.labels || []).forEach(function(l) {
     tabs.push({ id: l.id, label: l.name, color: l.color });
@@ -5737,7 +5734,8 @@ function renderEmailTabBar() {
   bar.innerHTML = tabs.map(function(t) {
     var active = state.email.activeTab === t.id ? ' active' : '';
     var style = t.color ? ' style="border-color:' + esc(t.color) + '"' : '';
-    return '<button class="email-tab' + active + '"' + style + ' onclick="emailFilterTab(\'' + esc(t.id) + '\')">' + esc(t.label) + '</button>';
+    var title = t.title ? ' title="' + esc(t.title) + '"' : '';
+    return '<button class="email-tab' + active + '"' + style + title + ' onclick="emailFilterTab(\'' + esc(t.id) + '\')">' + esc(t.label) + '</button>';
   }).join('');
 }
 
@@ -6823,7 +6821,6 @@ initMobileNav();
       <div class="email-drawer-title">📧 Inbox</div>
       <div class="email-drawer-actions">
         <button onclick="emailRefresh()" title="Refresh">↻</button>
-        <button onclick="emailPullAllUnread()" title="Pull all unread (bypass filters)">📥</button>
         <button onclick="openEmailSettings()" title="Settings">⚙</button>
         <button class="email-close-btn" onclick="closeEmailDrawer()" title="Close">✕</button>
       </div>
