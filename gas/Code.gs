@@ -130,35 +130,48 @@ function getOrCreateSubfolder(parent, name) {
 // ══════════════════════════════════════════════════════
 //  ACTION: fetchEmails
 //  Searches Gmail and returns matching messages.
-//  Expects: { label, hours }
-//    label: 'inbox' | 'unread' | 'starred'
-//    hours: 4 | 8 | 24 | 48
+//  Expects: { label, hours, includeRead? }
+//    label: 'inbox' | 'unread' | 'starred' | 'all'
+//    hours: 4 | 8 | 24 | 48 | 168 | 720 ...
+//    includeRead: bool — if true and label='unread' returns 0, retry with read+unread
+//
+//  Query strategy: we explicitly EXCLUDE trash/spam but DO NOT require in:inbox.
+//  This catches emails Gmail auto-routes to Important/Updates/Promotions tabs
+//  which were getting silently dropped before.
 // ══════════════════════════════════════════════════════
 function fetchEmails(payload) {
   try {
-    var label  = payload.label  || 'inbox';
+    var label  = payload.label  || 'unread';
     var hours  = parseInt(payload.hours) || 24;
-    var maxResults = 30;
+    var maxResults = 50;
 
-    // Build Gmail search query
     var cutoff = new Date(Date.now() - hours * 3600 * 1000);
     var dateStr = Utilities.formatDate(cutoff, 'GMT', 'yyyy/MM/dd');
 
     var queryMap = {
-      'inbox':   'in:inbox after:' + dateStr,
-      'unread':  'in:inbox is:unread after:' + dateStr,
-      'starred': 'is:starred after:' + dateStr
+      'inbox':   '-in:trash -in:spam -in:sent after:' + dateStr,
+      'unread':  'is:unread -in:trash -in:spam -in:sent after:' + dateStr,
+      'starred': 'is:starred -in:trash -in:spam after:' + dateStr,
+      'all':     '-in:trash -in:spam -in:sent after:' + dateStr
     };
-    var query = queryMap[label] || ('in:inbox after:' + dateStr);
+    var query = queryMap[label] || queryMap['unread'];
 
     var threads = GmailApp.search(query, 0, maxResults);
-    var emails = [];
 
+    // If unread search returns nothing, fall back to all-mail (read+unread)
+    // so the user at least sees recent emails — they can mark unread in the UI later.
+    var fallbackUsed = false;
+    if (threads.length === 0 && label === 'unread' && payload.includeRead !== false) {
+      query = queryMap['all'];
+      threads = GmailApp.search(query, 0, maxResults);
+      fallbackUsed = true;
+    }
+
+    var emails = [];
     for (var i = 0; i < threads.length; i++) {
       var thread = threads[i];
       var messages = thread.getMessages();
       var lastMsg = messages[messages.length - 1];
-
       emails.push({
         id:      thread.getId(),
         subject: thread.getFirstMessageSubject() || '(no subject)',
@@ -170,9 +183,19 @@ function fetchEmails(payload) {
       });
     }
 
-    return { success: true, emails: emails, count: emails.length };
+    return {
+      success: true,
+      emails: emails,
+      count: emails.length,
+      // Diagnostics so the hub can show what actually happened
+      _debug: {
+        queryUsed: query,
+        fallbackUsed: fallbackUsed,
+        cutoffDate: dateStr,
+        hoursRequested: hours
+      }
+    };
   } catch(err) {
-    // Common cause: GmailApp not authorized yet
     if (err.message && err.message.indexOf('authorization') !== -1) {
       return { success: false, error: 'Gmail not authorized. Run testGmail() in the GAS editor to grant permission.' };
     }

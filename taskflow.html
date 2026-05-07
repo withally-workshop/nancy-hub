@@ -858,7 +858,15 @@ body.reward-time .rtp-icon{display:block}
 .email-tab:hover{color:var(--h2)}
 
 #email-list-scroll{flex:1;overflow-y:auto;padding:.5rem .75rem 1rem}
-.email-empty{font-family:Inter,sans-serif;font-size:.85rem;color:var(--muted);text-align:center;padding:3rem 1rem;line-height:1.6}
+.email-empty{font-family:Inter,sans-serif;font-size:.85rem;color:var(--muted);text-align:center;padding:3rem 1rem 1rem;line-height:1.6}
+.email-diag{font-family:Inter,sans-serif;font-size:.74rem;color:var(--muted);background:var(--bg2);border-radius:8px;padding:.75rem .85rem;margin:0 .5rem;line-height:1.55}
+.email-diag-title{font-weight:600;color:var(--h2);margin-bottom:.4rem}
+.email-diag-row{padding:.2rem 0}
+.email-diag-row.error{color:#e05470}
+.email-diag-query{font-size:.68rem;opacity:.75;margin-top:.15rem}
+.email-diag-query code{background:var(--card);padding:1px 5px;border-radius:4px;font-family:ui-monospace,monospace;font-size:.66rem}
+.email-diag-hint{margin-top:.5rem;padding-top:.5rem;border-top:1px solid var(--border);font-size:.7rem;line-height:1.5}
+.email-diag-hint code{background:var(--card);padding:1px 4px;border-radius:3px;font-family:ui-monospace,monospace;font-size:.66rem}
 .email-pull-banner{font-family:Inter,sans-serif;font-size:.78rem;color:var(--muted);background:var(--bg2);padding:.55rem .75rem;border-radius:8px;margin-bottom:.5rem;display:flex;justify-content:space-between;align-items:center;gap:.5rem}
 .email-pull-banner.email-dead{background:rgba(229,57,53,0.08);color:#e05470}
 .email-pull-banner button{font-family:Inter,sans-serif;font-size:.72rem;background:var(--card);border:1px solid var(--border);color:var(--h2);padding:.2rem .5rem;border-radius:6px;cursor:pointer}
@@ -5527,17 +5535,33 @@ async function emailFetchAll(opts) {
   state.email.deadSources = resolved.filter(function(r) { return !r.url; }).map(function(r) { return r.src; });
 
   var hours = opts.hours || state.email.fetchHours || 24;
+  state.email.lastFetchDiagnostics = []; // for debugging
+
   var results = await Promise.allSettled(live.map(async function(item) {
     try {
       var data = await callEmailScriptLocal(item.url, 'fetchEmails', {
         label: opts.unreadOnly ? 'unread' : 'inbox',
         hours: hours
       });
+      // Capture diagnostic so user can see what query ran + result count
+      state.email.lastFetchDiagnostics.push({
+        source: item.src.name,
+        count: (data.emails || []).length,
+        debug: data._debug || null,
+        ok: true
+      });
+      console.log('[Email] ' + item.src.name + ': ' + (data.emails || []).length + ' emails', data._debug);
       return (data.emails || []).map(function(e) {
         return Object.assign({}, e, { sourceId: item.src.id, sourceName: item.src.name });
       });
     } catch(err) {
-      console.warn('Source fetch failed:', item.src.name, err.message);
+      state.email.lastFetchDiagnostics.push({
+        source: item.src.name,
+        count: 0,
+        error: err.message,
+        ok: false
+      });
+      console.warn('[Email] ' + item.src.name + ' FAILED:', err.message);
       throw err;
     }
   }));
@@ -5682,11 +5706,29 @@ function renderEmailList() {
     } else if (tab === 'urgent') {
       msg = 'No urgent emails right now. (Urgent = matches your sender/keyword filters in ⚙ or AI-flagged urgent.)';
     } else if (tab === 'all') {
-      msg = 'No unread emails in the ' + rangeLabel + '. Try a longer date range.';
+      msg = 'No emails returned in the ' + rangeLabel + '.';
     } else {
       msg = 'No emails match this label in the ' + rangeLabel + '.';
     }
-    listEl.innerHTML = '<div class="email-empty">' + esc(msg) + '</div>';
+
+    // Append per-source diagnostic detail so the user can SEE what happened
+    var diagHtml = '';
+    var diags = state.email.lastFetchDiagnostics || [];
+    if (diags.length && tab !== 'urgent') {
+      diagHtml = '<div class="email-diag">' +
+        '<div class="email-diag-title">What happened on the last fetch:</div>' +
+        diags.map(function(d) {
+          if (!d.ok) return '<div class="email-diag-row error">✗ ' + esc(d.source) + ': ' + esc(d.error || 'failed') + '</div>';
+          var note = '';
+          if (d.debug && d.debug.fallbackUsed) note = ' (fallback used — no unread, showing read too)';
+          var queryStr = d.debug && d.debug.queryUsed ? '<div class="email-diag-query">Gmail query: <code>' + esc(d.debug.queryUsed) + '</code></div>' : '';
+          return '<div class="email-diag-row">' + (d.count > 0 ? '✓' : '·') + ' ' + esc(d.source) + ': ' + d.count + ' emails' + esc(note) + queryStr + '</div>';
+        }).join('') +
+        '<div class="email-diag-hint">Common causes if 0 returned: Gmail filters routed messages to Spam/Trash, no recent activity, or the Apps Script needs <code>testGmail()</code> re-run for permission. Open DevTools (F12) → Console for full details.</div>' +
+      '</div>';
+    }
+
+    listEl.innerHTML = '<div class="email-empty">' + esc(msg) + '</div>' + diagHtml;
     return;
   }
 
