@@ -6808,8 +6808,8 @@ initMobileNav();
       <input type="checkbox" id="email-my-shareable">
       <span>Allow teammates to subscribe to my Apps Script</span>
     </label>
-    <div class="row">
-      <button class="primary" onclick="emailSaveMyScript()">Save</button>
+    <div class="row" style="margin-top:.5rem">
+      <button class="primary" onclick="emailSaveMyScript()" style="padding:.55rem 1.2rem;font-size:.85rem">💾 Save Apps Script</button>
       <button onclick="emailCopyCodeGs()">📋 How to deploy Code.gs</button>
     </div>
     <div class="helper">
@@ -6860,6 +6860,11 @@ initMobileNav();
       </select>
       <input type="text" id="email-label-rule-value" placeholder="value" style="flex:1">
       <button onclick="emailAddLabel()">+</button>
+    </div>
+
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:.5rem;margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--border)">
+      <span style="font-family:Inter,sans-serif;font-size:.7rem;color:var(--muted)">Sources, filters & labels save automatically when you click +</span>
+      <button class="primary" onclick="closeEmailSettings()" style="padding:.55rem 1.2rem">Done</button>
     </div>
   </div>
 </div>
