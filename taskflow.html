@@ -867,6 +867,12 @@ body.reward-time .rtp-icon{display:block}
 .email-diag-query code{background:var(--card);padding:1px 5px;border-radius:4px;font-family:ui-monospace,monospace;font-size:.66rem}
 .email-diag-hint{margin-top:.5rem;padding-top:.5rem;border-top:1px solid var(--border);font-size:.7rem;line-height:1.5}
 .email-diag-hint code{background:var(--card);padding:1px 4px;border-radius:3px;font-family:ui-monospace,monospace;font-size:.66rem}
+.email-quick-add{margin-top:.6rem;padding-top:.6rem;border-top:1px solid var(--border)}
+.email-quick-add-label{font-size:.7rem;color:var(--muted);margin:.4rem 0 .2rem}
+.email-quick-add-row{display:flex;gap:.3rem;align-items:center}
+.email-quick-add-row input{flex:1;font-family:Inter,sans-serif;font-size:.78rem;padding:.4rem .55rem;border:1px solid var(--border);border-radius:6px;background:var(--card);color:var(--body)}
+.email-quick-add-row button{font-family:Inter,sans-serif;font-size:.74rem;font-weight:600;padding:.4rem .7rem;border:1px solid var(--primary);background:var(--primary);color:white;border-radius:6px;cursor:pointer;flex-shrink:0}
+.email-quick-add-row button:hover{opacity:.9}
 .email-pull-banner{font-family:Inter,sans-serif;font-size:.78rem;color:var(--muted);background:var(--bg2);padding:.55rem .75rem;border-radius:8px;margin-bottom:.5rem;display:flex;justify-content:space-between;align-items:center;gap:.5rem}
 .email-pull-banner.email-dead{background:rgba(229,57,53,0.08);color:#e05470}
 .email-pull-banner button{font-family:Inter,sans-serif;font-size:.72rem;background:var(--card);border:1px solid var(--border);color:var(--h2);padding:.2rem .5rem;border-radius:6px;cursor:pointer}
@@ -5621,21 +5627,31 @@ async function triageEmails(emails) {
            ' | Snippet: ' + (e.snippet || '').slice(0, 200);
   }).join('\n');
 
-  var prompt = 'Triage these emails. For each, return JSON array: [{"i": index, "urgent": true/false, "summary": "1-line gist", "labelHint": "one topic word or null"}]. Return only valid JSON, no markdown fences, no prose.\n\n' + list;
+  // Concrete urgency criteria so Groq doesn't play it conservative.
+  var prompt = 'Triage these emails for a busy marketing executive partner.\n' +
+    'Mark urgent=true if ANY of:\n' +
+    '- Asks for a reply, decision, or action from the recipient\n' +
+    '- Mentions a deadline, due date, or time-sensitive event\n' +
+    '- Comes from a real person (not bulk/marketing/automated)\n' +
+    '- Mentions money, contracts, invoices, or legal matters\n' +
+    '- Mentions a specific colleague or client by name asking for help\n' +
+    'Mark urgent=false for: newsletters, promotions, receipts, automated notifications, social media digests, calendar invites that need no action.\n\n' +
+    'For each email, return JSON: {"i": index, "urgent": bool, "summary": "1-line gist (max 12 words)", "labelHint": "one short topic tag or null"}\n' +
+    'Return ONLY a JSON array. No markdown fences, no prose.\n\n' + list;
 
   try {
     var raw = await callGroq(
       [{ role: 'user', content: prompt }],
-      'You triage emails. Output only valid JSON, no prose, no fences.',
-      1500
+      'You triage emails for a busy executive. Output only valid JSON arrays. Be generous with urgency flags — better to over-flag than miss something important.',
+      2000
     );
     var json = raw.replace(/```json|```/g, '').trim();
-    // Extract first JSON array if there's any garbage around
     var firstBracket = json.indexOf('[');
     var lastBracket = json.lastIndexOf(']');
     if (firstBracket !== -1 && lastBracket !== -1) json = json.slice(firstBracket, lastBracket + 1);
     var parsed = JSON.parse(json);
-    return emails.map(function(e, i) {
+
+    var result = emails.map(function(e, i) {
       var t = parsed.find(function(p) { return p.i === i + 1; });
       return Object.assign({}, e, {
         urgent: !!(t && t.urgent),
@@ -5643,8 +5659,12 @@ async function triageEmails(emails) {
         labelHint: (t && t.labelHint) || null
       });
     });
+
+    var urgentCount = result.filter(function(e) { return e.urgent; }).length;
+    console.log('[Email Triage] AI flagged ' + urgentCount + '/' + result.length + ' as urgent');
+    return result;
   } catch(err) {
-    console.warn('Email triage failed:', err.message);
+    console.warn('[Email Triage] Failed:', err.message);
     return emails.map(function(e) { return Object.assign({}, e, { urgent: false, summary: '', labelHint: null }); });
   }
 }
@@ -5704,14 +5724,14 @@ function renderEmailList() {
     if (!hasAnySource) {
       msg = 'No email sources yet. Click ⚙ to set your Apps Script.';
     } else if (tab === 'urgent') {
-      msg = 'No urgent emails right now. (Urgent = matches your sender/keyword filters in ⚙ or AI-flagged urgent.)';
+      msg = 'No urgent emails matched in the ' + rangeLabel + '.';
     } else if (tab === 'all') {
       msg = 'No emails returned in the ' + rangeLabel + '.';
     } else {
       msg = 'No emails match this label in the ' + rangeLabel + '.';
     }
 
-    // Append per-source diagnostic detail so the user can SEE what happened
+    // Diagnostic for All / Label tabs — fetch-level info
     var diagHtml = '';
     var diags = state.email.lastFetchDiagnostics || [];
     if (diags.length && tab !== 'urgent') {
@@ -5725,6 +5745,42 @@ function renderEmailList() {
           return '<div class="email-diag-row">' + (d.count > 0 ? '✓' : '·') + ' ' + esc(d.source) + ': ' + d.count + ' emails' + esc(note) + queryStr + '</div>';
         }).join('') +
         '<div class="email-diag-hint">Common causes if 0 returned: Gmail filters routed messages to Spam/Trash, no recent activity, or the Apps Script needs <code>testGmail()</code> re-run for permission. Open DevTools (F12) → Console for full details.</div>' +
+      '</div>';
+    }
+
+    // Diagnostic for Urgent tab — explain what's matching, quick-add filter
+    if (tab === 'urgent') {
+      var totalEmails = state.email.emails.length;
+      var aiUrgent = state.email.emails.filter(function(e) { return e.urgent; }).length;
+      var f = state.email.filters || { senders: [], keywords: [] };
+      var senderCount = (f.senders || []).length;
+      var keywordCount = (f.keywords || []).length;
+      var ruleMatched = (senderCount + keywordCount) > 0
+        ? state.email.emails.filter(function(e) { return emailMatchesFilter(e, f); }).length
+        : 0;
+
+      diagHtml = '<div class="email-diag">' +
+        '<div class="email-diag-title">Urgent tab signal breakdown:</div>' +
+        '<div class="email-diag-row">📧 Total emails fetched: ' + totalEmails + '</div>' +
+        '<div class="email-diag-row">🤖 AI flagged urgent: ' + aiUrgent + '</div>' +
+        '<div class="email-diag-row">🎯 Match your filter rules: ' + ruleMatched + ' (' + senderCount + ' sender rules, ' + keywordCount + ' keyword rules)</div>' +
+        '<div class="email-diag-hint">' +
+          (senderCount + keywordCount === 0
+            ? '<b>You have no filter rules yet.</b> Add the senders and keywords you care about so they always show up in Urgent.'
+            : 'Want to flag more emails as urgent? Add more senders or keywords below or in ⚙ Settings.') +
+        '</div>' +
+        '<div class="email-quick-add">' +
+          '<div class="email-quick-add-label">Quick add sender (email or @domain):</div>' +
+          '<div class="email-quick-add-row">' +
+            '<input type="text" id="email-quick-sender" placeholder="e.g., crystal@hellonancy.com or @brand.com" />' +
+            '<button onclick="emailQuickAddSender()">+ Add</button>' +
+          '</div>' +
+          '<div class="email-quick-add-label">Quick add keyword:</div>' +
+          '<div class="email-quick-add-row">' +
+            '<input type="text" id="email-quick-keyword" placeholder="e.g., invoice, urgent, deadline" />' +
+            '<button onclick="emailQuickAddKeyword()">+ Add</button>' +
+          '</div>' +
+        '</div>' +
       '</div>';
     }
 
@@ -6082,6 +6138,26 @@ async function emailRemoveKeyword(i) {
   state.email.filters.keywords.splice(i, 1);
   await saveEmailSetting('filters', state.email.filters);
   renderEmailFilters();
+}
+
+// ── Quick-add filter from inside the Urgent tab empty state ──
+async function emailQuickAddSender() {
+  var inp = document.getElementById('email-quick-sender');
+  var v = inp && inp.value.trim();
+  if (!v) return;
+  if (!state.email.filters.senders.includes(v)) state.email.filters.senders.push(v);
+  await saveEmailSetting('filters', state.email.filters);
+  showToast('Added sender filter: ' + v, 'success');
+  renderEmailList(); // re-render Urgent tab — emails matching this sender now appear
+}
+async function emailQuickAddKeyword() {
+  var inp = document.getElementById('email-quick-keyword');
+  var v = inp && inp.value.trim();
+  if (!v) return;
+  if (!state.email.filters.keywords.includes(v)) state.email.filters.keywords.push(v);
+  await saveEmailSetting('filters', state.email.filters);
+  showToast('Added keyword filter: ' + v, 'success');
+  renderEmailList();
 }
 
 // 3D — Labels
