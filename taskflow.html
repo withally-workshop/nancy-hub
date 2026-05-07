@@ -6747,12 +6747,31 @@ async function checkStorageAlert() {
     clearTimeout(timeout);
     var data = await result.json();
     if (!data || !data.success) return;
+
     var pct = data.percentage || 0;
+    var usedBytes = data.used || 0;
+    var totalBytes = data.total || 0;
     var banner = document.getElementById('storage-alert-banner');
     var pctEl = document.getElementById('storage-alert-pct');
     var msgEl = document.getElementById('storage-alert-msg');
     var iconEl = document.getElementById('storage-alert-icon');
     if (!banner) return;
+
+    // SANITY CHECK: a real Drive cannot be more than ~100% used and still accept
+    // uploads. If pct > 110, the Apps Script's "total" field is wrong (older
+    // Code.gs hardcoded 15 GB limit). Suppress the false alarm and log a hint.
+    if (pct > 110 || (totalBytes > 0 && usedBytes > totalBytes * 1.05)) {
+      banner.style.display = 'none';
+      console.warn(
+        '[Storage] Bogus alert suppressed — Apps Script reports ' + pct + '% used (' +
+        (data.usedFormatted || '?') + ' of ' + (data.totalFormatted || '?') + ').\n' +
+        'This means the deployed Code.gs has the OLD hardcoded 15 GB limit.\n' +
+        'Real usage is fine: ' + (data.usedFormatted || '?') + ' on a multi-TB Workspace plan.\n' +
+        'To fix permanently: Apps Script editor → redeploy with new getDriveUsage() that calls DriveApp.getStorageLimit().'
+      );
+      return;
+    }
+
     if (pct >= 95) {
       banner.className = 'critical';
       banner.style.display = 'flex';
