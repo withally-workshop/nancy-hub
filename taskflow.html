@@ -805,6 +805,115 @@ body.reward-time .rtp-icon{display:block}
 .slack-loading-row{display:flex;align-items:center;gap:.5rem;font-family:'Inter',sans-serif;font-size:.82rem;color:var(--muted);padding:.5rem 0}
 @media(max-width:600px){.slack-drawer{width:100vw;right:-100vw}}
 
+/* ── EMAIL DRAWER ─────────────────────────────────────────────────── */
+#email-float{
+  position:fixed;bottom:1.75rem;right:calc(1.75rem + 62px + .85rem + 62px + .85rem);
+  z-index:899;display:flex;flex-direction:column;align-items:center;gap:0;
+  animation:ncFloat 3.2s ease-in-out infinite 1s;cursor:pointer;
+  background:transparent;border:none;padding:0;
+}
+#email-float:hover{animation:none;transform:translateY(-3px);transition:transform .2s}
+#email-float-lbl{
+  font-family:Inter,sans-serif;font-size:.65rem;font-weight:600;
+  color:rgba(255,255,255,.7);background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.12);border-radius:20px;
+  padding:.2rem .5rem;margin-bottom:4px;white-space:nowrap;
+}
+#email-float-head{
+  width:42px;height:42px;border-radius:50%;
+  background:linear-gradient(135deg,#d44638,#ea4335);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 16px rgba(212,70,56,.45);
+  position:relative;font-size:1.25rem;
+}
+#email-float-badge{
+  display:none;position:absolute;top:-4px;right:-4px;
+  width:14px;height:14px;border-radius:50%;background:#e53935;
+  border:2px solid var(--bg);
+}
+
+.email-drawer{position:fixed;top:0;right:-480px;width:460px;height:100vh;z-index:400;background:var(--card);border-left:1px solid var(--border);display:flex;flex-direction:column;transition:right .28s cubic-bezier(.4,0,.2,1);box-shadow:-8px 0 32px rgba(0,0,0,.2)}
+.email-drawer.open{right:0}
+.email-drawer-backdrop{display:none;position:fixed;inset:0;z-index:399;background:rgba(0,0,0,.35)}
+.email-drawer-backdrop.show{display:block}
+.email-drawer-inner{display:flex;flex-direction:column;height:100%;overflow:hidden}
+.email-drawer-hdr{display:flex;align-items:center;padding:1rem 1.25rem;border-bottom:1px solid var(--border);gap:.5rem}
+.email-drawer-title{font-family:'Fraunces',serif;font-size:1.1rem;font-weight:600;color:var(--h2);flex:1}
+.email-drawer-actions{display:flex;align-items:center;gap:.25rem}
+.email-drawer-actions button{background:none;border:none;cursor:pointer;color:var(--muted);font-size:.95rem;padding:.4rem .55rem;border-radius:6px;font-family:Inter,sans-serif}
+.email-drawer-actions button:hover{background:var(--bg2);color:var(--h2)}
+.email-close-btn{font-size:1rem !important}
+
+.email-source-bar{display:flex;flex-wrap:wrap;gap:.3rem;padding:.5rem 1rem;border-bottom:1px solid var(--border);align-items:center}
+.email-source-pill{font-family:Inter,sans-serif;font-size:.7rem;color:var(--muted);background:var(--bg2);padding:.2rem .55rem;border-radius:100px;display:inline-flex;align-items:center;gap:.25rem}
+.email-source-pill.add{background:transparent;border:1px dashed var(--border2);color:var(--muted);cursor:pointer}
+.email-source-pill.add:hover{color:var(--primary);border-color:var(--primary)}
+
+.email-tab-bar{display:flex;gap:.25rem;padding:.5rem 1rem;border-bottom:1px solid var(--border);overflow-x:auto}
+.email-tab{font-family:Inter,sans-serif;font-size:.78rem;font-weight:500;background:transparent;border:1px solid transparent;color:var(--muted);padding:.3rem .7rem;border-radius:100px;cursor:pointer;white-space:nowrap;flex-shrink:0}
+.email-tab.active{background:var(--bg2);color:var(--h2);border-color:var(--border2)}
+.email-tab:hover{color:var(--h2)}
+
+#email-list-scroll{flex:1;overflow-y:auto;padding:.5rem .75rem 1rem}
+.email-empty{font-family:Inter,sans-serif;font-size:.85rem;color:var(--muted);text-align:center;padding:3rem 1rem;line-height:1.6}
+.email-pull-banner{font-family:Inter,sans-serif;font-size:.78rem;color:var(--muted);background:var(--bg2);padding:.55rem .75rem;border-radius:8px;margin-bottom:.5rem;display:flex;justify-content:space-between;align-items:center;gap:.5rem}
+.email-pull-banner.email-dead{background:rgba(229,57,53,0.08);color:#e05470}
+.email-pull-banner button{font-family:Inter,sans-serif;font-size:.72rem;background:var(--card);border:1px solid var(--border);color:var(--h2);padding:.2rem .5rem;border-radius:6px;cursor:pointer}
+
+.email-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:.75rem .85rem;margin-bottom:.5rem;cursor:pointer;transition:all .15s}
+.email-card:hover{border-color:var(--primary);transform:translateY(-1px);box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.email-card.urgent{border-left:3px solid #e05470}
+.email-card-top{display:flex;justify-content:space-between;align-items:center;gap:.5rem;margin-bottom:.25rem}
+.email-from{font-family:Inter,sans-serif;font-size:.8rem;font-weight:600;color:var(--h2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
+.email-source-pill{font-family:Inter,sans-serif;font-size:.62rem;color:var(--muted);background:var(--bg2);padding:.1rem .45rem;border-radius:100px;flex-shrink:0}
+.email-urgent{color:#e05470;margin-right:.2rem}
+.email-subject{font-family:Inter,sans-serif;font-size:.85rem;color:var(--h2);font-weight:500;margin-bottom:.2rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.email-summary{font-family:Inter,sans-serif;font-size:.75rem;color:var(--primary);font-style:italic;margin-bottom:.25rem;line-height:1.4}
+.email-snippet{font-family:Inter,sans-serif;font-size:.72rem;color:var(--muted);line-height:1.4;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.email-chips{display:flex;flex-wrap:wrap;gap:.25rem;margin-top:.4rem}
+.email-label-chip{font-family:Inter,sans-serif;font-size:.62rem;font-weight:600;padding:.1rem .45rem;border-radius:100px}
+.email-label-hint{font-family:Inter,sans-serif;font-size:.62rem;color:var(--muted);background:transparent;border:1px dashed var(--border2);padding:.1rem .45rem;border-radius:100px;cursor:pointer}
+.email-label-hint:hover{color:var(--primary);border-color:var(--primary)}
+
+#email-reply-pane{display:none;flex-direction:column;border-top:1px solid var(--border);padding:1rem;background:var(--bg);gap:.5rem}
+#email-reply-pane .reply-meta{font-family:Inter,sans-serif;font-size:.72rem;color:var(--muted)}
+#email-reply-pane textarea{width:100%;min-height:100px;font-family:Inter,sans-serif;font-size:.85rem;padding:.6rem;border:1px solid var(--border);border-radius:8px;background:var(--card);color:var(--body);resize:vertical}
+#email-reply-pane .reply-actions{display:flex;gap:.5rem;justify-content:flex-end}
+#email-reply-pane .reply-actions button{font-family:Inter,sans-serif;font-size:.78rem;font-weight:600;padding:.45rem 1rem;border-radius:8px;cursor:pointer;border:none}
+#email-reply-send-btn{background:var(--primary);color:white}
+#email-reply-cancel-btn{background:var(--bg2);color:var(--muted)}
+
+/* Settings modal */
+#email-settings-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;align-items:center;justify-content:center;padding:1rem}
+.email-settings-card{background:var(--card);border-radius:14px;width:100%;max-width:560px;max-height:90vh;overflow-y:auto;padding:1.5rem}
+.email-settings-card h2{font-family:'Fraunces',serif;font-size:1.2rem;color:var(--h2);margin:0 0 1rem;font-weight:600}
+.email-settings-card h3{font-family:Inter,sans-serif;font-size:.88rem;color:var(--h2);margin:1.25rem 0 .5rem;font-weight:600}
+.email-settings-card label{font-family:Inter,sans-serif;font-size:.78rem;color:var(--muted);display:block;margin-bottom:.25rem}
+.email-settings-card input[type=text],.email-settings-card input[type=url],.email-settings-card select{width:100%;font-family:Inter,sans-serif;font-size:.85rem;padding:.5rem .65rem;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--body);margin-bottom:.5rem}
+.email-settings-card .row{display:flex;gap:.4rem;align-items:center;margin-bottom:.5rem}
+.email-settings-card .row input{flex:1;margin-bottom:0}
+.email-settings-card button{font-family:Inter,sans-serif;font-size:.78rem;font-weight:600;padding:.4rem .8rem;border-radius:6px;cursor:pointer;border:1px solid var(--border);background:var(--bg2);color:var(--h2)}
+.email-settings-card button.primary{background:var(--primary);color:white;border-color:var(--primary)}
+.email-settings-card button.danger{background:transparent;color:#e05470;border-color:transparent;padding:.2rem .4rem}
+.email-settings-card .helper{font-family:Inter,sans-serif;font-size:.72rem;color:var(--muted);background:var(--bg2);padding:.6rem .75rem;border-radius:8px;line-height:1.5;margin:.5rem 0}
+.email-settings-card .toggle-row{display:flex;align-items:center;gap:.5rem;font-family:Inter,sans-serif;font-size:.82rem;color:var(--body);margin-bottom:.5rem}
+.email-empty-mini{font-family:Inter,sans-serif;font-size:.78rem;color:var(--muted);padding:.5rem 0}
+.email-source-row,.email-label-row{display:flex;align-items:center;gap:.5rem;padding:.4rem 0;border-bottom:1px solid var(--border)}
+.email-source-name,.email-label-name{flex:1;font-family:Inter,sans-serif;font-size:.82rem;color:var(--h2)}
+.email-source-type{font-family:Inter,sans-serif;font-size:.7rem;color:var(--muted);background:var(--bg2);padding:.1rem .45rem;border-radius:100px}
+.email-label-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.email-label-rule{font-family:Inter,sans-serif;font-size:.7rem;color:var(--muted);font-style:italic}
+.email-chip{display:inline-flex;align-items:center;gap:.25rem;font-family:Inter,sans-serif;font-size:.74rem;background:var(--bg2);color:var(--h2);padding:.2rem .55rem;border-radius:100px;margin:.15rem}
+.email-chip button{background:none;border:none;color:var(--muted);cursor:pointer;padding:0;font-size:.7rem}
+.email-chip button:hover{color:#e05470}
+#email-senders-chips,#email-keywords-chips{min-height:1.5rem;margin-bottom:.4rem}
+#email-my-test-result{font-family:Inter,sans-serif;font-size:.75rem;margin-left:.5rem}
+
+@media(max-width:600px){
+  .email-drawer{width:100vw;right:-100vw}
+  #email-float{right:1rem;bottom:8rem}
+}
+
 </style>
 </head>
 <body>
@@ -1662,7 +1771,18 @@ let state = {
   editingTaskId: null,
   selectedAvatar: '#ff30cc',
   completeFiles: [],
-  ideaFiles: []
+  ideaFiles: [],
+  email: {
+    myScript: null,                              // { url, name, shareable }
+    sources: [],                                 // [{ id, ownerUserId?, manualUrl?, name }]
+    filters: { senders: [], keywords: [] },
+    labels: [],                                  // [{ id, name, color, rule }]
+    emails: [],                                  // current loaded set, post-triage
+    pullAllMode: false,
+    activeTab: 'all',                            // 'all' | 'urgent' | label id
+    deadSources: [],                             // sources whose URL couldn't resolve
+    loading: false
+  }
 };
 
 const TIER_LIMITS = { 'top3': 3, 'focus-today': 15, 'focus-week': 6 };
@@ -1776,7 +1896,7 @@ function startClock() {
   }
   tick();
   setInterval(tick, 30000);
-  setInterval(() => { checkRewards(); checkRecap(); refreshRecurring(); checkMorningNudge(); }, 60000);
+  setInterval(() => { checkRewards(); checkRecap(); refreshRecurring(); checkMorningNudge(); checkMorningEmailFetch(); }, 60000);
 }
 
 function getHKT() {
@@ -1842,6 +1962,7 @@ async function showTaskHub() {
   await loadIdeas();
   await Promise.all([loadDeliverables(), loadSharedDeliverables()]);
   await loadNotifications();
+  await loadEmailConfig();
   refreshRecurring();
   // Refresh notifications every 60s
   setInterval(loadNotifications, 60000);
@@ -5262,6 +5383,624 @@ async function markAllRead() {
 }
 
 
+// ═══════════════════════════════════════════════════════════════════════════
+// EMAIL DRAWER — multi-source combined inbox with AI triage
+// ═══════════════════════════════════════════════════════════════════════════
+
+// ── CONFIG LOADER ──
+async function loadEmailConfig() {
+  var uid = state.currentUser && state.currentUser.id;
+  if (!uid) return;
+  try {
+    var keys = [
+      'email_my_script_' + uid,
+      'email_sources_' + uid,
+      'email_filters_' + uid,
+      'email_labels_' + uid
+    ];
+    var rows = await db.from('settings').select('key,value').in('key', keys);
+    var byKey = {};
+    (rows.data || []).forEach(function(r) { byKey[r.key] = r.value; });
+
+    state.email.myScript = byKey['email_my_script_' + uid] ? safeParse(byKey['email_my_script_' + uid], null) : null;
+    state.email.sources  = byKey['email_sources_' + uid]   ? safeParse(byKey['email_sources_' + uid], []) : [];
+    state.email.filters  = byKey['email_filters_' + uid]   ? safeParse(byKey['email_filters_' + uid], { senders: [], keywords: [] }) : { senders: [], keywords: [] };
+    state.email.labels   = byKey['email_labels_' + uid]    ? safeParse(byKey['email_labels_' + uid], []) : [];
+  } catch(e) {
+    console.warn('loadEmailConfig failed:', e);
+  }
+}
+
+function safeParse(s, fallback) { try { return JSON.parse(s); } catch(e) { return fallback; } }
+
+async function saveEmailSetting(suffix, value) {
+  var uid = state.currentUser && state.currentUser.id;
+  if (!uid) return;
+  try {
+    await db.from('settings').upsert(
+      { key: 'email_' + suffix + '_' + uid, value: JSON.stringify(value) },
+      { onConflict: 'key' }
+    );
+  } catch(e) {
+    console.warn('saveEmailSetting failed:', suffix, e);
+    showToast('Could not save email settings', 'error');
+  }
+}
+
+// ── URL RESOLUTION (handles teammate revoking shareable mid-flight) ──
+async function resolveSourceUrl(source) {
+  if (!source) return null;
+  if (source.manualUrl) return source.manualUrl;
+  if (!source.ownerUserId) return null;
+  try {
+    var r = await db.from('settings').select('value').eq('key', 'email_my_script_' + source.ownerUserId).maybeSingle();
+    if (!r.data || !r.data.value) return null;
+    var my = safeParse(r.data.value, null);
+    if (!my || !my.url || !my.shareable) return null;
+    return my.url;
+  } catch(e) { return null; }
+}
+
+// ── DRAWER OPEN/CLOSE ──
+function openEmailDrawer() {
+  document.getElementById('email-drawer').classList.add('open');
+  document.getElementById('email-backdrop').classList.add('show');
+  // Clear morning badge once user opens drawer
+  var badge = document.getElementById('email-float-badge');
+  if (badge) badge.style.display = 'none';
+  if (!state.email.emails.length && state.email.sources.length) emailRefresh();
+  else renderEmailList();
+}
+function closeEmailDrawer() {
+  document.getElementById('email-drawer').classList.remove('open');
+  document.getElementById('email-backdrop').classList.remove('show');
+  closeEmailReplyPane();
+}
+
+// ── FAN-OUT FETCH ──
+async function emailFetchAll(opts) {
+  opts = opts || {};
+  var sources = state.email.sources;
+  if (!sources.length) { showToast('Add an email source first (⚙)', 'info'); return []; }
+
+  state.email.loading = true;
+  renderEmailList();
+
+  // Resolve all URLs in parallel
+  var resolved = await Promise.all(sources.map(async function(src) {
+    var url = await resolveSourceUrl(src);
+    return { src: src, url: url };
+  }));
+
+  var live = resolved.filter(function(r) { return !!r.url; });
+  state.email.deadSources = resolved.filter(function(r) { return !r.url; }).map(function(r) { return r.src; });
+
+  var results = await Promise.allSettled(live.map(async function(item) {
+    try {
+      var data = await callEmailScript(item.url, 'fetchEmails', {
+        label: opts.unreadOnly ? 'unread' : 'inbox',
+        hours: opts.hours || 24
+      });
+      return (data.emails || []).map(function(e) {
+        return Object.assign({}, e, { sourceId: item.src.id, sourceName: item.src.name });
+      });
+    } catch(err) {
+      console.warn('Source fetch failed:', item.src.name, err.message);
+      throw err;
+    }
+  }));
+
+  var allEmails = [];
+  results.forEach(function(r) { if (r.status === 'fulfilled') allEmails = allEmails.concat(r.value); });
+  state.email.loading = false;
+  return allEmails;
+}
+
+// ── REFRESH MODES ──
+async function emailRefresh() {
+  if (!state.email.sources.length) { showToast('Add an email source first (⚙)', 'info'); openEmailSettings(); return; }
+  state.email.pullAllMode = false;
+  try {
+    var emails = await emailFetchAll({ hours: 24 });
+    var filtered = state.email.filters.senders.length || state.email.filters.keywords.length
+      ? emails.filter(function(e) { return emailMatchesFilter(e, state.email.filters); })
+      : emails; // no filters = show everything from last 24h
+    state.email.emails = await triageEmails(filtered);
+    renderEmailList();
+  } catch(e) {
+    state.email.loading = false;
+    showToast('Email fetch failed: ' + e.message, 'error');
+    renderEmailList();
+  }
+}
+
+async function emailPullAllUnread() {
+  if (!state.email.sources.length) { showToast('Add an email source first (⚙)', 'info'); openEmailSettings(); return; }
+  state.email.pullAllMode = true;
+  try {
+    var emails = await emailFetchAll({ unreadOnly: true, hours: 168 });
+    state.email.emails = await triageEmails(emails);
+    renderEmailList();
+    showToast('Showing ALL unread (filters off)', 'info');
+  } catch(e) {
+    state.email.loading = false;
+    showToast('Pull all failed: ' + e.message, 'error');
+    renderEmailList();
+  }
+}
+
+// ── FILTER LOGIC ──
+function emailMatchesFilter(email, filters) {
+  var text = ((email.from || '') + ' ' + (email.subject || '') + ' ' + (email.snippet || '')).toLowerCase();
+  var fromMatch = (filters.senders || []).some(function(s) { return s && text.includes(s.toLowerCase()); });
+  var keywordMatch = (filters.keywords || []).some(function(k) { return k && text.includes(k.toLowerCase()); });
+  return fromMatch || keywordMatch;
+}
+
+// ── AI TRIAGE (Groq) ──
+async function triageEmails(emails) {
+  if (!emails.length) return [];
+  var batch = emails.slice(0, 30); // batch limit
+  var list = batch.map(function(e, i) {
+    return (i + 1) + '. From: ' + (e.from || '') + ' | Subject: ' + (e.subject || '') +
+           ' | Snippet: ' + (e.snippet || '').slice(0, 200);
+  }).join('\n');
+
+  var prompt = 'Triage these emails. For each, return JSON array: [{"i": index, "urgent": true/false, "summary": "1-line gist", "labelHint": "one topic word or null"}]. Return only valid JSON, no markdown fences, no prose.\n\n' + list;
+
+  try {
+    var raw = await callGroq(
+      [{ role: 'user', content: prompt }],
+      'You triage emails. Output only valid JSON, no prose, no fences.',
+      1500
+    );
+    var json = raw.replace(/```json|```/g, '').trim();
+    // Extract first JSON array if there's any garbage around
+    var firstBracket = json.indexOf('[');
+    var lastBracket = json.lastIndexOf(']');
+    if (firstBracket !== -1 && lastBracket !== -1) json = json.slice(firstBracket, lastBracket + 1);
+    var parsed = JSON.parse(json);
+    return emails.map(function(e, i) {
+      var t = parsed.find(function(p) { return p.i === i + 1; });
+      return Object.assign({}, e, {
+        urgent: !!(t && t.urgent),
+        summary: (t && t.summary) || '',
+        labelHint: (t && t.labelHint) || null
+      });
+    });
+  } catch(err) {
+    console.warn('Email triage failed:', err.message);
+    return emails.map(function(e) { return Object.assign({}, e, { urgent: false, summary: '', labelHint: null }); });
+  }
+}
+
+// ── LABEL APPLICATION ──
+function applyLabelsToEmail(email, labels) {
+  return (labels || []).filter(function(lbl) {
+    if (!lbl.rule) return false;
+    if (lbl.rule.from) return (email.from || '').toLowerCase().includes(lbl.rule.from.toLowerCase());
+    if (lbl.rule.keyword) return ((email.subject || '') + ' ' + (email.snippet || '')).toLowerCase().includes(lbl.rule.keyword.toLowerCase());
+    return false;
+  });
+}
+
+// ── RENDER ──
+function emailFilterTab(tab) {
+  state.email.activeTab = tab;
+  renderEmailList();
+}
+
+function renderEmailList() {
+  var listEl = document.getElementById('email-list-scroll');
+  if (!listEl) return;
+
+  // Update tab bar with dynamic labels
+  renderEmailTabBar();
+  // Update source bar
+  renderEmailSourceBar();
+
+  if (state.email.loading) {
+    listEl.innerHTML = '<div class="email-empty">Loading…</div>';
+    return;
+  }
+
+  var emails = state.email.emails;
+  var tab = state.email.activeTab;
+  if (tab === 'urgent') emails = emails.filter(function(e) { return e.urgent; });
+  else if (tab && tab !== 'all') {
+    emails = emails.filter(function(e) {
+      var matched = applyLabelsToEmail(e, state.email.labels);
+      return matched.some(function(l) { return l.id === tab; });
+    });
+  }
+
+  if (!emails.length) {
+    var msg = state.email.sources.length
+      ? (state.email.pullAllMode ? 'No unread emails in the last 7 days.' : 'No emails matching your filters in the last 24h. Try 📥 Pull All Unread.')
+      : 'No email sources yet. Click ⚙ to add one.';
+    listEl.innerHTML = '<div class="email-empty">' + esc(msg) + '</div>';
+    return;
+  }
+
+  // Sort: urgent first, then by date desc
+  var sorted = emails.slice().sort(function(a, b) {
+    if (a.urgent !== b.urgent) return a.urgent ? -1 : 1;
+    return (new Date(b.date || 0)) - (new Date(a.date || 0));
+  });
+
+  var pullBanner = state.email.pullAllMode
+    ? '<div class="email-pull-banner">📥 Showing ALL unread — filters off · <button onclick="emailRefresh()">Apply filters</button></div>'
+    : '';
+
+  var deadWarning = state.email.deadSources.length
+    ? '<div class="email-pull-banner email-dead">⚠️ ' + state.email.deadSources.length + ' source(s) unavailable (owner may have revoked share)</div>'
+    : '';
+
+  listEl.innerHTML = pullBanner + deadWarning + sorted.map(function(e) {
+    var labels = applyLabelsToEmail(e, state.email.labels);
+    var labelChips = labels.map(function(l) {
+      return '<span class="email-label-chip" style="background:' + esc(l.color || '#888') + '22;color:' + esc(l.color || '#888') + '">' + esc(l.name) + '</span>';
+    }).join('');
+    var hint = e.labelHint ? '<button class="email-label-hint" onclick="emailSaveHintAsLabel(\'' + esc(e.id) + '\')">+ ' + esc(e.labelHint) + '</button>' : '';
+    var summary = e.summary ? '<div class="email-summary">' + esc(e.summary) + '</div>' : '';
+    var urgentMark = e.urgent ? '<span class="email-urgent">⚠️</span> ' : '';
+    return '<div class="email-card ' + (e.urgent ? 'urgent' : '') + '" onclick="emailOpenReply(\'' + esc(e.id) + '\')">' +
+      '<div class="email-card-top">' +
+        '<div class="email-from">' + urgentMark + esc(e.from || '(unknown)') + '</div>' +
+        '<div class="email-source-pill">' + esc(e.sourceName || '') + '</div>' +
+      '</div>' +
+      '<div class="email-subject">' + esc(e.subject || '(no subject)') + '</div>' +
+      summary +
+      '<div class="email-snippet">' + esc((e.snippet || '').slice(0, 140)) + '</div>' +
+      '<div class="email-chips">' + labelChips + hint + '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function renderEmailTabBar() {
+  var bar = document.getElementById('email-tab-bar');
+  if (!bar) return;
+  var tabs = [
+    { id: 'all', label: 'All' },
+    { id: 'urgent', label: '⚠️ Urgent' }
+  ];
+  (state.email.labels || []).forEach(function(l) {
+    tabs.push({ id: l.id, label: l.name, color: l.color });
+  });
+  bar.innerHTML = tabs.map(function(t) {
+    var active = state.email.activeTab === t.id ? ' active' : '';
+    var style = t.color ? ' style="border-color:' + esc(t.color) + '"' : '';
+    return '<button class="email-tab' + active + '"' + style + ' onclick="emailFilterTab(\'' + esc(t.id) + '\')">' + esc(t.label) + '</button>';
+  }).join('');
+}
+
+function renderEmailSourceBar() {
+  var bar = document.getElementById('email-source-bar');
+  if (!bar) return;
+  if (!state.email.sources.length) {
+    bar.innerHTML = '<button class="email-source-pill add" onclick="openEmailSettings()">+ Add source</button>';
+    return;
+  }
+  // Count emails per source
+  var counts = {};
+  state.email.emails.forEach(function(e) { counts[e.sourceId] = (counts[e.sourceId] || 0) + 1; });
+  bar.innerHTML = state.email.sources.map(function(s) {
+    return '<span class="email-source-pill">' + esc(s.name) + ' (' + (counts[s.id] || 0) + ')</span>';
+  }).join('') + '<button class="email-source-pill add" onclick="openEmailSettings()">⚙</button>';
+}
+
+// ── SAVE LABEL HINT (AI suggestion → real label) ──
+async function emailSaveHintAsLabel(emailId) {
+  event.stopPropagation && event.stopPropagation();
+  var email = state.email.emails.find(function(e) { return e.id === emailId; });
+  if (!email || !email.labelHint) return;
+  var palette = ['#ff30cc', '#79b854', '#2d7dd2', '#f7b731', '#e05470', '#9b59b6'];
+  var color = palette[(state.email.labels.length) % palette.length];
+  state.email.labels.push({
+    id: 'lbl_' + Date.now(),
+    name: email.labelHint,
+    color: color,
+    rule: { keyword: email.labelHint }
+  });
+  await saveEmailSetting('labels', state.email.labels);
+  showToast('Label "' + email.labelHint + '" saved', 'success');
+  renderEmailList();
+}
+
+// ── REPLY PANE ──
+function emailOpenReply(emailId) {
+  var email = state.email.emails.find(function(e) { return e.id === emailId; });
+  if (!email) return;
+  var pane = document.getElementById('email-reply-pane');
+  document.getElementById('email-reply-to').textContent = email.from || '';
+  document.getElementById('email-reply-subject').textContent = 'Re: ' + (email.subject || '');
+  document.getElementById('email-reply-body').value = '';
+  pane.dataset.emailId = emailId;
+  pane.style.display = 'flex';
+}
+function closeEmailReplyPane() {
+  var pane = document.getElementById('email-reply-pane');
+  if (pane) { pane.style.display = 'none'; pane.dataset.emailId = ''; }
+}
+async function emailSendReply() {
+  var pane = document.getElementById('email-reply-pane');
+  var emailId = pane.dataset.emailId;
+  var body = document.getElementById('email-reply-body').value.trim();
+  if (!body) { showToast('Empty reply', 'error'); return; }
+  var email = state.email.emails.find(function(e) { return e.id === emailId; });
+  if (!email) return;
+  var source = state.email.sources.find(function(s) { return s.id === email.sourceId; });
+  var url = await resolveSourceUrl(source);
+  if (!url) { showToast('Source unavailable — owner may have revoked access', 'error'); return; }
+  var btn = document.getElementById('email-reply-send-btn');
+  btn.disabled = true; btn.textContent = 'Sending…';
+  try {
+    await callEmailScript(url, 'sendEmail', { threadId: emailId, body: body });
+    showToast('Reply sent ✓', 'success');
+    closeEmailReplyPane();
+  } catch(e) {
+    showToast('Send failed: ' + e.message, 'error');
+  }
+  btn.disabled = false; btn.textContent = 'Send';
+}
+
+// ── 7 AM AUTO-FETCH ──
+function checkMorningEmailFetch() {
+  if (typeof isHKTAfter !== 'function' || !isHKTAfter(7)) return;
+  if (!state.email || !state.email.sources || !state.email.sources.length) return;
+  var key = 'email_morning_fetch_' + new Date().toDateString();
+  if (localStorage.getItem(key)) return;
+  localStorage.setItem(key, '1');
+  emailRefresh().then(function() {
+    var urgentCount = (state.email.emails || []).filter(function(e) { return e.urgent; }).length;
+    if (urgentCount > 0) {
+      var badge = document.getElementById('email-float-badge');
+      if (badge) badge.style.display = 'block';
+      showToast('☕ ' + urgentCount + ' urgent email' + (urgentCount === 1 ? '' : 's') + ' this morning', 'info');
+    }
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// EMAIL SETTINGS MODAL
+// ═══════════════════════════════════════════════════════════════════════════
+function openEmailSettings() {
+  document.getElementById('email-settings-modal').style.display = 'flex';
+  renderEmailSettings();
+}
+function closeEmailSettings() {
+  document.getElementById('email-settings-modal').style.display = 'none';
+}
+
+function renderEmailSettings() {
+  // 3A — My Apps Script
+  var my = state.email.myScript || { url: '', name: '', shareable: false };
+  document.getElementById('email-my-name').value = my.name || '';
+  document.getElementById('email-my-url').value = my.url || '';
+  document.getElementById('email-my-shareable').checked = !!my.shareable;
+  document.getElementById('email-my-test-result').textContent = '';
+
+  // 3B — Subscribed sources list
+  renderEmailSourcesList();
+  // 3B — Team member dropdown
+  renderEmailTeamDropdown();
+  // 3C — Filters
+  renderEmailFilters();
+  // 3D — Custom Labels
+  renderEmailLabelsList();
+}
+
+async function emailSaveMyScript() {
+  var name = document.getElementById('email-my-name').value.trim();
+  var url = document.getElementById('email-my-url').value.trim();
+  var shareable = document.getElementById('email-my-shareable').checked;
+  if (!url) { showToast('URL required', 'error'); return; }
+  state.email.myScript = { name: name || 'My Gmail', url: url, shareable: shareable };
+  await saveEmailSetting('my_script', state.email.myScript);
+  showToast('Apps Script saved ✓', 'success');
+}
+
+async function emailTestMyScript() {
+  var url = document.getElementById('email-my-url').value.trim();
+  var result = document.getElementById('email-my-test-result');
+  if (!url) { result.textContent = '⚠️ Enter a URL first'; result.style.color = '#e05470'; return; }
+  result.textContent = 'Testing…'; result.style.color = 'var(--muted)';
+  try {
+    await callEmailScript(url, 'usage');
+    result.textContent = '✓ Working';
+    result.style.color = '#79b854';
+  } catch(e) {
+    result.textContent = '✗ ' + e.message;
+    result.style.color = '#e05470';
+  }
+}
+
+function emailCopyCodeGs() {
+  // Static — known location of Code.gs in this repo
+  // We embed instructions inline since we can't fetch the file at runtime from a static page
+  var instructions = 'Open https://github.com/withally-workshop/nancy-hub/blob/main/gas/Code.gs and copy the entire file contents. Paste into your Apps Script project.';
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(instructions).then(function() {
+      showToast('Instructions copied — open the link', 'info');
+    });
+  } else {
+    showToast(instructions, 'info');
+  }
+}
+
+// 3B — Sources
+function renderEmailSourcesList() {
+  var el = document.getElementById('email-sources-list');
+  if (!el) return;
+  if (!state.email.sources.length) {
+    el.innerHTML = '<div class="email-empty-mini">No sources yet — add one below.</div>';
+    return;
+  }
+  el.innerHTML = state.email.sources.map(function(s) {
+    var typeLabel = s.ownerUserId ? 'From team' : 'Manual';
+    return '<div class="email-source-row">' +
+      '<span class="email-source-name">' + esc(s.name) + '</span>' +
+      '<span class="email-source-type">' + typeLabel + '</span>' +
+      '<button onclick="emailRemoveSource(\'' + esc(s.id) + '\')" title="Remove">🗑</button>' +
+    '</div>';
+  }).join('');
+}
+
+async function renderEmailTeamDropdown() {
+  var sel = document.getElementById('email-team-select');
+  if (!sel) return;
+  // Find members with shareable scripts
+  try {
+    var members = state.members || [];
+    var optionsHtml = '<option value="">— pick a team member —</option>';
+    for (var i = 0; i < members.length; i++) {
+      var m = members[i];
+      if (!m.id || m.id === state.currentUser.id) continue;
+      // Check their settings
+      var r = await db.from('settings').select('value').eq('key', 'email_my_script_' + m.id).maybeSingle();
+      if (r.data && r.data.value) {
+        var their = safeParse(r.data.value, null);
+        if (their && their.shareable) {
+          // Skip if already subscribed
+          var alreadySubscribed = state.email.sources.some(function(s) { return s.ownerUserId === m.id; });
+          if (!alreadySubscribed) {
+            optionsHtml += '<option value="' + esc(m.id) + '" data-name="' + esc(their.name || m.name) + '">' + esc(m.name) + ' — ' + esc(their.name || 'Their Gmail') + '</option>';
+          }
+        }
+      }
+    }
+    sel.innerHTML = optionsHtml;
+  } catch(e) {
+    sel.innerHTML = '<option value="">(could not load team)</option>';
+  }
+}
+
+async function emailAddTeamSource() {
+  var sel = document.getElementById('email-team-select');
+  var ownerUserId = sel.value;
+  if (!ownerUserId) { showToast('Pick a team member first', 'error'); return; }
+  var opt = sel.options[sel.selectedIndex];
+  var name = opt.getAttribute('data-name') || 'Teammate Gmail';
+  state.email.sources.push({
+    id: 'src_' + Date.now(),
+    ownerUserId: ownerUserId,
+    name: name
+  });
+  await saveEmailSetting('sources', state.email.sources);
+  renderEmailSourcesList();
+  renderEmailTeamDropdown();
+  showToast('Source added ✓', 'success');
+}
+
+async function emailAddManualSource() {
+  var name = document.getElementById('email-manual-name').value.trim();
+  var url = document.getElementById('email-manual-url').value.trim();
+  if (!name || !url) { showToast('Name and URL required', 'error'); return; }
+  state.email.sources.push({
+    id: 'src_' + Date.now(),
+    manualUrl: url,
+    name: name
+  });
+  await saveEmailSetting('sources', state.email.sources);
+  document.getElementById('email-manual-name').value = '';
+  document.getElementById('email-manual-url').value = '';
+  renderEmailSourcesList();
+  showToast('Manual source added ✓', 'success');
+}
+
+async function emailRemoveSource(id) {
+  state.email.sources = state.email.sources.filter(function(s) { return s.id !== id; });
+  await saveEmailSetting('sources', state.email.sources);
+  renderEmailSourcesList();
+  renderEmailTeamDropdown();
+}
+
+// 3C — Filters
+function renderEmailFilters() {
+  var sendersEl = document.getElementById('email-senders-chips');
+  var keywordsEl = document.getElementById('email-keywords-chips');
+  if (sendersEl) {
+    sendersEl.innerHTML = (state.email.filters.senders || []).map(function(s, i) {
+      return '<span class="email-chip">' + esc(s) + '<button onclick="emailRemoveSender(' + i + ')">✕</button></span>';
+    }).join('');
+  }
+  if (keywordsEl) {
+    keywordsEl.innerHTML = (state.email.filters.keywords || []).map(function(k, i) {
+      return '<span class="email-chip">' + esc(k) + '<button onclick="emailRemoveKeyword(' + i + ')">✕</button></span>';
+    }).join('');
+  }
+}
+async function emailAddSender() {
+  var inp = document.getElementById('email-sender-input');
+  var v = inp.value.trim();
+  if (!v) return;
+  state.email.filters.senders.push(v);
+  inp.value = '';
+  await saveEmailSetting('filters', state.email.filters);
+  renderEmailFilters();
+}
+async function emailRemoveSender(i) {
+  state.email.filters.senders.splice(i, 1);
+  await saveEmailSetting('filters', state.email.filters);
+  renderEmailFilters();
+}
+async function emailAddKeyword() {
+  var inp = document.getElementById('email-keyword-input');
+  var v = inp.value.trim();
+  if (!v) return;
+  state.email.filters.keywords.push(v);
+  inp.value = '';
+  await saveEmailSetting('filters', state.email.filters);
+  renderEmailFilters();
+}
+async function emailRemoveKeyword(i) {
+  state.email.filters.keywords.splice(i, 1);
+  await saveEmailSetting('filters', state.email.filters);
+  renderEmailFilters();
+}
+
+// 3D — Labels
+function renderEmailLabelsList() {
+  var el = document.getElementById('email-labels-list');
+  if (!el) return;
+  if (!state.email.labels.length) {
+    el.innerHTML = '<div class="email-empty-mini">No labels yet.</div>';
+    return;
+  }
+  el.innerHTML = state.email.labels.map(function(l, i) {
+    var ruleStr = l.rule.from ? 'from: ' + l.rule.from : (l.rule.keyword ? 'keyword: ' + l.rule.keyword : '');
+    return '<div class="email-label-row">' +
+      '<span class="email-label-dot" style="background:' + esc(l.color || '#888') + '"></span>' +
+      '<span class="email-label-name">' + esc(l.name) + '</span>' +
+      '<span class="email-label-rule">' + esc(ruleStr) + '</span>' +
+      '<button onclick="emailRemoveLabel(' + i + ')">🗑</button>' +
+    '</div>';
+  }).join('');
+}
+async function emailAddLabel() {
+  var name = document.getElementById('email-label-name').value.trim();
+  var color = document.getElementById('email-label-color').value || '#ff30cc';
+  var ruleType = document.getElementById('email-label-rule-type').value;
+  var ruleVal = document.getElementById('email-label-rule-value').value.trim();
+  if (!name || !ruleVal) { showToast('Name and rule value required', 'error'); return; }
+  var rule = {};
+  rule[ruleType] = ruleVal;
+  state.email.labels.push({
+    id: 'lbl_' + Date.now(),
+    name: name, color: color, rule: rule
+  });
+  document.getElementById('email-label-name').value = '';
+  document.getElementById('email-label-rule-value').value = '';
+  await saveEmailSetting('labels', state.email.labels);
+  renderEmailLabelsList();
+}
+async function emailRemoveLabel(i) {
+  state.email.labels.splice(i, 1);
+  await saveEmailSetting('labels', state.email.labels);
+  renderEmailLabelsList();
+}
+
+
 // AUTH SYSTEM
 async function boot() {
   loadLocal();
@@ -5982,6 +6721,120 @@ initMobileNav();
     </svg>
   </div>
 </button>
+
+<!-- EMAIL FLOAT BUBBLE -->
+<button id="email-float" onclick="openEmailDrawer()" title="Inbox">
+  <span id="email-float-lbl">Inbox</span>
+  <div id="email-float-head">
+    📧
+    <span id="email-float-badge"></span>
+  </div>
+</button>
+
+<!-- EMAIL DRAWER -->
+<div id="email-drawer" class="email-drawer">
+  <div class="email-drawer-inner">
+    <div class="email-drawer-hdr">
+      <div class="email-drawer-title">📧 Inbox</div>
+      <div class="email-drawer-actions">
+        <button onclick="emailRefresh()" title="Refresh">↻</button>
+        <button onclick="emailPullAllUnread()" title="Pull all unread (bypass filters)">📥</button>
+        <button onclick="openEmailSettings()" title="Settings">⚙</button>
+        <button class="email-close-btn" onclick="closeEmailDrawer()" title="Close">✕</button>
+      </div>
+    </div>
+    <div id="email-source-bar" class="email-source-bar"></div>
+    <div id="email-tab-bar" class="email-tab-bar"></div>
+    <div id="email-list-scroll"></div>
+    <div id="email-reply-pane">
+      <div class="reply-meta">To: <span id="email-reply-to"></span></div>
+      <div class="reply-meta" id="email-reply-subject"></div>
+      <textarea id="email-reply-body" placeholder="Type your reply…"></textarea>
+      <div class="reply-actions">
+        <button id="email-reply-cancel-btn" onclick="closeEmailReplyPane()">Cancel</button>
+        <button id="email-reply-send-btn" onclick="emailSendReply()">Send</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="email-drawer-backdrop" id="email-backdrop" onclick="closeEmailDrawer()"></div>
+
+<!-- EMAIL SETTINGS MODAL -->
+<div id="email-settings-modal">
+  <div class="email-settings-card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+      <h2 style="margin:0">📧 Email Settings</h2>
+      <button onclick="closeEmailSettings()" style="background:none;border:none;font-size:1.1rem;color:var(--muted);cursor:pointer">✕</button>
+    </div>
+
+    <h3>1. My Apps Script</h3>
+    <label>Name (e.g., "My Personal Gmail")</label>
+    <input type="text" id="email-my-name" placeholder="My Gmail">
+    <label>Apps Script Web App URL</label>
+    <input type="url" id="email-my-url" placeholder="https://script.google.com/macros/s/.../exec">
+    <div class="row">
+      <button onclick="emailTestMyScript()">Test</button>
+      <span id="email-my-test-result"></span>
+    </div>
+    <label class="toggle-row">
+      <input type="checkbox" id="email-my-shareable">
+      <span>Allow teammates to subscribe to my Apps Script</span>
+    </label>
+    <div class="row">
+      <button class="primary" onclick="emailSaveMyScript()">Save</button>
+      <button onclick="emailCopyCodeGs()">📋 How to deploy Code.gs</button>
+    </div>
+    <div class="helper">
+      ℹ️ How to set up:<br>
+      1. Go to script.google.com → New Project<br>
+      2. Paste contents of <code>gas/Code.gs</code> from the repo<br>
+      3. Save → Deploy → New Deployment → Web app<br>
+      4. Execute as: <b>Me</b> · Access: <b>Anyone with link</b><br>
+      5. Copy URL → paste above → Test → Save
+    </div>
+
+    <h3>2. Subscribed Sources</h3>
+    <label>Add from team (members who shared their Apps Script)</label>
+    <div class="row">
+      <select id="email-team-select"></select>
+      <button onclick="emailAddTeamSource()">+ Add</button>
+    </div>
+    <label>Or paste a URL manually</label>
+    <div class="row">
+      <input type="text" id="email-manual-name" placeholder="Name">
+      <input type="url" id="email-manual-url" placeholder="https://script.google.com/...">
+      <button onclick="emailAddManualSource()">+ Add</button>
+    </div>
+    <div id="email-sources-list"></div>
+
+    <h3>3. Filters</h3>
+    <label>Senders (email or @domain)</label>
+    <div id="email-senders-chips"></div>
+    <div class="row">
+      <input type="text" id="email-sender-input" placeholder="crystal@hellonancy.com or @brand.com">
+      <button onclick="emailAddSender()">+</button>
+    </div>
+    <label>Keywords</label>
+    <div id="email-keywords-chips"></div>
+    <div class="row">
+      <input type="text" id="email-keyword-input" placeholder="urgent, invoice, Coachella">
+      <button onclick="emailAddKeyword()">+</button>
+    </div>
+
+    <h3>4. Custom Labels</h3>
+    <div id="email-labels-list"></div>
+    <div class="row">
+      <input type="text" id="email-label-name" placeholder="Label name" style="flex:1.2">
+      <input type="color" id="email-label-color" value="#ff30cc" style="width:42px;height:34px;padding:0;border-radius:6px">
+      <select id="email-label-rule-type" style="flex:.7">
+        <option value="from">From contains</option>
+        <option value="keyword">Keyword</option>
+      </select>
+      <input type="text" id="email-label-rule-value" placeholder="value" style="flex:1">
+      <button onclick="emailAddLabel()">+</button>
+    </div>
+  </div>
+</div>
 
 <script src="shared/hub.js"></script>
 <script src="shared/chat.js?v=11"></script>

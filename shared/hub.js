@@ -570,6 +570,29 @@ async function callGroqLight(messages, systemPrompt, maxTokens) {
 window.callGroq = callGroq;
 window.callGroqLight = callGroqLight;
 
+// ── EMAIL APPS SCRIPT HELPER ──
+// Routes a request through any user-deployed Apps Script web app.
+// Supports actions: 'usage', 'fetchEmails', 'sendEmail'
+async function callEmailScript(scriptUrl, action, payload) {
+  if (!scriptUrl) throw new Error('No Apps Script URL configured');
+  var body = Object.assign({ action: action }, payload || {});
+  var res = await fetch(scriptUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+    redirect: 'follow'
+  });
+  if (!res.ok) {
+    var errBody = '';
+    try { errBody = await res.text(); } catch(e) {}
+    throw new Error('Apps Script HTTP ' + res.status + (errBody ? ' — ' + errBody.slice(0, 120) : ''));
+  }
+  var data = await res.json();
+  if (!data.success) throw new Error(data.error || 'Apps Script returned no success flag');
+  return data;
+}
+window.callEmailScript = callEmailScript;
+
 // ── CLAUDE COST TRACKING ──
 async function trackClaudeCost(inputTokens, outputTokens) {
   var cost = (inputTokens / 1000000 * 0.80) + (outputTokens / 1000000 * 4.00);

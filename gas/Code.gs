@@ -20,6 +20,7 @@ function doPost(e) {
     if (action === 'usage')        return respond(getDriveUsage());
     if (action === 'upload')       return respond(uploadFile(payload));
     if (action === 'fetchEmails')  return respond(fetchEmails(payload));
+    if (action === 'sendEmail')    return respond(sendEmail(payload));
 
     return respond({ success: false, error: 'Unknown action: ' + action });
   } catch(err) {
@@ -174,6 +175,35 @@ function fetchEmails(payload) {
     // Common cause: GmailApp not authorized yet
     if (err.message && err.message.indexOf('authorization') !== -1) {
       return { success: false, error: 'Gmail not authorized. Run testGmail() in the GAS editor to grant permission.' };
+    }
+    return { success: false, error: err.message };
+  }
+}
+
+// ══════════════════════════════════════════════════════
+//  ACTION: sendEmail
+//  Replies to a Gmail thread.
+//  Expects: { threadId, body, replyAll? }
+// ══════════════════════════════════════════════════════
+function sendEmail(payload) {
+  try {
+    var threadId = payload.threadId;
+    var body     = payload.body;
+    var replyAll = !!payload.replyAll;
+
+    if (!threadId) return { success: false, error: 'Missing threadId' };
+    if (!body)     return { success: false, error: 'Missing reply body' };
+
+    var thread = GmailApp.getThreadById(threadId);
+    if (!thread) return { success: false, error: 'Thread not found (may have been deleted)' };
+
+    if (replyAll) thread.replyAll(body);
+    else          thread.reply(body);
+
+    return { success: true };
+  } catch(err) {
+    if (err.message && err.message.indexOf('authorization') !== -1) {
+      return { success: false, error: 'Gmail send not authorized. Run testGmail() in the GAS editor to grant permission.' };
     }
     return { success: false, error: err.message };
   }
