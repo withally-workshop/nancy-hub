@@ -101,6 +101,10 @@ button{font-family:inherit;}
 .video-title{font-size:0.88rem;font-weight:700;color:#fff;flex:1;line-height:1.3;}
 .video-outlier{font-size:0.72rem;font-weight:700;color:var(--m);white-space:nowrap;padding-top:0.1rem;}
 
+/* ── VIDEO TAG — left-edge ribbon ── */
+.video-embed-container{position:relative;}
+.video-tag{position:absolute;left:0;top:0.85rem;background:var(--m);color:#fff;font-size:0.58rem;font-weight:800;padding:0.22rem 0.65rem 0.22rem 0.5rem;border-radius:0 20px 20px 0;letter-spacing:0.05em;z-index:3;box-shadow:2px 2px 10px rgba(255,0,170,0.35);white-space:nowrap;}
+
 /* Side-by-side SHOTS | SCRIPT */
 .ts-header{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--border);background:#0a0a0a;}
 .ts-header-cell{padding:0.5rem 0.6rem;font-size:0.62rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#666;}
@@ -255,6 +259,14 @@ button{font-family:inherit;}
       <input class="modal-input" type="text" id="v-outlier" placeholder="e.g. 10x">
     </div>
 
+    <div class="modal-field">
+      <label class="modal-label">Tag (optional)</label>
+      <select class="modal-input" id="v-tag">
+        <option value="">— No tag —</option>
+        <option value="rahuls-outlier">Rahul's Outlier</option>
+      </select>
+    </div>
+
     <div class="modal-section-divider">SHOTS — max 6 words per entry</div>
     <div class="modal-field">
       <label class="modal-label">Shots (one per line: "0:30 - description")</label>
@@ -291,12 +303,18 @@ const STORAGE_KEY = 'nancy_content_guide_v1';
 
 var isEditor = false;
 
+// Available tags
+var TAGS = {
+  'rahuls-outlier': "Rahul's Outlier"
+};
+
 // Placeholder video factory — ready to be replaced with real content
 function PH() {
   return {
     url: null,
     title: 'Video Title',
     outlierScore: '—',
+    tag: null,
     shots: [
       { time:'0:00 - 0:30', text:'Placeholder shot description' },
       { time:'0:30 - 1:00', text:'Placeholder shot description' },
@@ -558,8 +576,12 @@ function buildVideoEntry(video, uid) {
       +'<button class="ts-more-btn" id="tsmore-'+uid+'" onclick="toggleExtra(\''+uid+'\')">Show more ▾</button>'
     : '';
 
+  var tagHTML = (video.tag && TAGS[video.tag])
+    ? '<div class="video-tag">🏷 '+esc(TAGS[video.tag])+'</div>'
+    : '';
+
   return '<div class="video-entry">'
-    +buildVideoEmbed(video.url||null)
+    +'<div class="video-embed-container">'+buildVideoEmbed(video.url||null)+tagHTML+'</div>'
     +(video.url
       ? '<a href="'+esc(video.url)+'" target="_blank" rel="noopener" class="video-link-bar">'+esc(video.url)+'</a>'
       : '<span class="video-link-bar" style="color:#2a2a2a;cursor:default;">Link to be added</span>')
@@ -645,12 +667,13 @@ function closeModalOnOverlay(e, id) {
 
 async function saveVideo() {
   var guideId = document.getElementById('modal-guide-id').value;
-  var url     = document.getElementById('v-url').value.trim();
-  var title   = document.getElementById('v-title').value.trim();
-  var outlier = document.getElementById('v-outlier').value.trim();
-  var shotsRaw   = document.getElementById('v-shots').value;
-  var scriptRaw  = document.getElementById('v-script').value;
-  var fullGuide  = document.getElementById('v-fullguide').value.trim();
+  var url       = document.getElementById('v-url').value.trim();
+  var title     = document.getElementById('v-title').value.trim();
+  var outlier   = document.getElementById('v-outlier').value.trim();
+  var tag       = document.getElementById('v-tag').value || null;
+  var shotsRaw  = document.getElementById('v-shots').value;
+  var scriptRaw = document.getElementById('v-script').value;
+  var fullGuide = document.getElementById('v-fullguide').value.trim();
 
   if (!url) { alert('Please enter a video URL.'); return; }
 
@@ -661,6 +684,7 @@ async function saveVideo() {
     url: url,
     title: title,
     outlierScore: outlier,
+    tag: tag,
     shots: parseTimestamps(shotsRaw),
     script: parseTimestamps(scriptRaw),
     fullGuide: fullGuide
