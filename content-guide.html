@@ -165,6 +165,39 @@ button{font-family:inherit;}
 .how-item-desc{font-size:0.78rem;color:#666;line-height:1.5;}
 .how-item-desc strong{color:#999;font-weight:600;}
 
+/* ── TAG PILLS (on video cards) ── */
+.v-tags-row{display:flex;flex-wrap:wrap;gap:0.35rem;padding:0.55rem 0.75rem 0;}
+.v-tag-pill{font-size:0.55rem;font-weight:800;letter-spacing:0.07em;text-transform:uppercase;padding:0.2rem 0.6rem;border-radius:20px;line-height:1.5;}
+.v-tag-pill.ct{background:#1c1c1c;color:#666;border:1px solid #2a2a2a;}
+.v-tag-pill.creator{background:var(--m);color:#fff;}
+
+/* ── VIDEO DESCRIPTION ── */
+.v-desc{font-size:0.76rem;color:#999;line-height:1.5;padding:0.35rem 0.75rem 0.1rem;}
+.v-title-row{display:flex;justify-content:space-between;align-items:baseline;gap:0.5rem;padding:0.25rem 0.75rem 0;}
+.v-title{font-size:0.88rem;font-weight:800;color:#fff;flex:1;line-height:1.3;}
+.v-outlier{font-size:0.7rem;font-weight:700;color:var(--m);white-space:nowrap;}
+
+/* ── THREE BUTTON ROW ── */
+.three-btn-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.35rem;padding:0.6rem 0.75rem 0.8rem;}
+.three-btn{background:none;border:1.5px solid #2a2a2a;color:#666;border-radius:8px;font-size:0.58rem;font-weight:800;letter-spacing:0.05em;text-transform:uppercase;padding:0.5rem 0.2rem;cursor:pointer;min-height:38px;transition:border-color 0.15s,color 0.15s;}
+.three-btn:active,.three-btn:hover{border-color:var(--m);color:var(--m);}
+.three-btn.primary{border-color:var(--m);color:var(--m);}
+
+/* ── HOME TAG FILTER ── */
+.tag-filter-wrap{padding:0 1.25rem 0.5rem;}
+.tag-filter-row{display:flex;gap:0.45rem;overflow-x:auto;padding-bottom:0.1rem;scrollbar-width:none;}
+.tag-filter-row::-webkit-scrollbar{display:none;}
+.tag-filter-pill{flex-shrink:0;font-size:0.58rem;font-weight:800;letter-spacing:0.07em;text-transform:uppercase;padding:0.28rem 0.7rem;border-radius:20px;border:1.5px solid #2a2a2a;color:#555;background:none;cursor:pointer;white-space:nowrap;transition:border-color 0.15s,color 0.15s,background 0.15s;}
+.tag-filter-pill.active{border-color:var(--m);color:var(--m);background:rgba(255,0,170,0.08);}
+
+/* ── GUIDE SHEET SCENE LIST ── */
+.gs-type-label{font-size:0.6rem;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;color:var(--m);padding:0.9rem 1rem 0.35rem;}
+.gs-scene-row{display:flex;gap:0.75rem;padding:0.55rem 1rem;border-top:1px solid #111;}
+.gs-scene-time{font-size:0.6rem;font-weight:700;color:var(--m);white-space:nowrap;flex-shrink:0;min-width:56px;padding-top:0.1rem;}
+.gs-scene-text{font-size:0.8rem;color:#ccc;line-height:1.45;}
+.gs-script-block{margin:0 1rem 1rem;padding:1rem;background:#0a0a0a;border:1px solid var(--border);border-radius:12px;font-size:0.9rem;color:#fff;line-height:1.8;font-style:italic;}
+.gs-no-scenes{padding:1rem;font-size:0.8rem;color:#333;font-style:italic;}
+
 /* ── MODAL OVERLAY ── */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:999;display:none;align-items:flex-end;justify-content:center;}
 .modal-overlay.open{display:flex;}
@@ -209,6 +242,9 @@ button{font-family:inherit;}
       <span class="section-label-text">Content Shooting Guides</span>
       <span class="section-label-line"></span>
       <span class="section-label-arrow">→</span>
+    </div>
+    <div class="tag-filter-wrap">
+      <div class="tag-filter-row" id="tag-filter-row"></div>
     </div>
     <div class="scroll-row" id="guides-row"></div>
 
@@ -337,30 +373,22 @@ const STORAGE_KEY = 'nancy_content_guide_v1';
 
 var isEditor = false;
 
-// Available tags
+// Tag registry — content-type tags + creator tags
 var TAGS = {
-  'rahuls-outlier': "Rahul's Outlier"
+  'rahuls-outlier':    "Rahul's Outlier",
+  'event-milestone':   'Event / Milestone',
+  'event-lifestyle':   'Event / Lifestyle',
+  'event-product':     'Event / Product',
+  'event-spectacle':   'Event / Spectacle',
+  'carousel-utility':  'Carousel / Utility',
+  'event-gamification':'Event / Gamification'
 };
 
-// Placeholder video factory — ready to be replaced with real content
+// Content-type tags only (used for home filter — excludes creator tags)
+var CONTENT_TYPE_TAGS = ['event-milestone','event-lifestyle','event-product','event-spectacle','carousel-utility','event-gamification'];
+
 function PH() {
-  return {
-    url: null,
-    title: 'Video Title',
-    outlierScore: '—',
-    tag: null,
-    shots: [
-      { time:'0:00 - 0:30', text:'Placeholder shot description' },
-      { time:'0:30 - 1:00', text:'Placeholder shot description' },
-      { time:'1:00 - 2:00', text:'Placeholder shot description' },
-    ],
-    script: [
-      { time:'0:00 - 0:30', text:'Placeholder Nancified script line here' },
-      { time:'0:30 - 1:00', text:'Placeholder Nancified script line here' },
-      { time:'1:00 - 2:00', text:'Placeholder Nancified script line here' },
-    ],
-    fullGuide: 'Full guide and video context will be added here.'
-  };
+  return { url:null, title:'Video Title', outlierScore:'—', tags:[], description:'Content coming soon.', shots:[], script:'', fullGuide:'' };
 }
 
 // ══════════════════════════════════════
@@ -391,12 +419,89 @@ var DATA = {
   ],
   guides: [
     { id:'event', title:'Event', label:'Event', subtitle:'On Site Visuals', emoji:'🎪', videos:[
-      { url:'https://www.tiktok.com/video/7627595673759780126', title:'Sephora Launch Emotional POV',   outlierScore:'315.13x', tag:'rahuls-outlier', shots:[], script:[], fullGuide:'' },
-      { url:'https://www.tiktok.com/video/7648371423903354142', title:'High-Energy Pop-Up Recap',        outlierScore:'10.57x',  tag:'rahuls-outlier', shots:[], script:[], fullGuide:'' },
-      { url:'https://www.tiktok.com/video/7642391595798564110', title:'Local Call-Out Product Macro',    outlierScore:'31.62x',  tag:'rahuls-outlier', shots:[], script:[], fullGuide:'' },
-      { url:'https://www.tiktok.com/video/7647625624739253526', title:'Giant Product Pop-Up Spectacle',  outlierScore:'39.77x',  tag:'rahuls-outlier', shots:[], script:[], fullGuide:'' },
-      { url:'https://www.instagram.com/p/DYKtlEcCqC5/',        title:"The 'Save This' Listicle Guide",  outlierScore:'8.63x',   tag:'rahuls-outlier', shots:[], script:[], fullGuide:'' },
-      { url:'https://www.tiktok.com/video/7637473727772462358', title:'Mystery Locker Reveal',           outlierScore:'23.08x',  tag:'rahuls-outlier', shots:[], script:[], fullGuide:'' },
+      {
+        url:'https://www.tiktok.com/@indewild.us/video/7627595673759780126',
+        title:'Sephora Launch Emotional POV', outlierScore:'315.13x',
+        tags:['event-milestone','rahuls-outlier'],
+        description:'Community identity meets emotional resonance — a public gesture of deep gratitude that turns a brand milestone into a tear-jerking family moment. Use this when celebrating a major launch with a meaningful person.',
+        shots:[
+          {time:'0:00–0:03', text:'Hook: Younger woman and older woman stand in front of Nancy display, hugging or holding hands in deep gratitude.'},
+          {time:'0:03–0:08', text:'Demo: Both look at the Lem display together. Older woman touches younger woman\'s face proudly.'},
+          {time:'0:08–0:12', text:'Reveal: Long, tearful embrace in front of the display.'},
+          {time:'0:12–0:15', text:'End: Both turn to camera, smiling proudly with arms around each other in front of the yellow Nancy display.'},
+        ],
+        script:'pov: showing the woman who taught me to own my confidence that our little brand just hit the big leagues 🥹🍋',
+        fullGuide:'Film in a public retail or pop-up setting. Focus on a genuine, emotional interaction between two people — a founder and a mentor or mother figure — in front of the brand display. The key is the physical gesture of deep gratitude and the prolonged, tearful hug, set to nostalgic audio like "Slipping Through My Fingers." No speaking required. The text overlay carries everything. Energy: warm, emotional, authentic.'
+      },
+      {
+        url:'https://www.tiktok.com/@claribellaaa/video/7648371423903354142',
+        title:'High-Energy Pop-Up Recap', outlierScore:'10.57x',
+        tags:['event-lifestyle','rahuls-outlier'],
+        description:'Aesthetic FOMO and niche specificity — a VIP event experience that makes viewers wish they were there. Use this for any high-energy Nancy pop-up or brand activation.',
+        shots:[
+          {time:'0:00–0:03', text:'Hook: POV shot receiving a yellow Nancy wristband or stamp, cut immediately to a giant yellow lemon inflatable or neon sign.'},
+          {time:'0:03–0:15', text:'Demo: Rapid cuts — women taking selfies in branded mirror, hand grabbing lemon popsicle from cooler, someone holding a Lem box.'},
+          {time:'0:15–0:18', text:'Reveal: Group of friends laughing and posing in front of a Nancy backdrop.'},
+          {time:'0:18–0:22', text:'End: Close-up of hand interacting with claw machine grabbing a Lem box.'},
+        ],
+        script:'come with me to the ultimate self-care sanctuary ✨🍋',
+        fullGuide:'Use a fast-paced rap or upbeat track. Start with a POV shot of gaining entry — getting a wristband or stamp. Use rapid cuts of 1–2 seconds each to show the most aesthetic and highly-branded parts of the event: giant yellow props, women posing in mirrors, hands grabbing themed snacks like lemon popsicles. End with a group lifestyle shot. The hyper-coordinated yellow color palette must run through every frame.'
+      },
+      {
+        url:'https://www.tiktok.com/@happyshoppinq/video/7642391595798564110',
+        title:'Local Call-Out Product Macro', outlierScore:'31.62x',
+        tags:['event-product','rahuls-outlier'],
+        description:'Niche specificity meets hyper-local callout — a direct city shoutout drives massive local engagement. Use this to promote any Nancy pop-up with a location-specific text overlay.',
+        shots:[
+          {time:'0:00–0:03', text:'Hook: Macro shot of colorful Nancy packaging (Lem and Avo boxes) neatly arranged. Text overlay immediately calls out the specific city.'},
+          {time:'0:03–0:10', text:'Demo: Hands picking up a Lem massager and placing it into a bright yellow tote bag with candles or bath salts.'},
+          {time:'0:10–0:12', text:'Reveal: Quick cuts of smiling attendees holding yellow Nancy totes.'},
+          {time:'0:12–0:14', text:'End: Final text overlay displaying the event date, time, and address.'},
+        ],
+        script:'hey [CITY] are you FREE THIS WEEKEND? 🍋✨ we\'re hosting the ultimate self-care pop-up',
+        fullGuide:'The text overlay MUST call out a specific city in the very first second. Open with a macro shot of the products neatly arranged. Show hands interacting with the products — packing a yellow tote bag — to create a DIY and interactive feel. Keep cuts quick and energy high. The specific city callout is what drives locals to tag their friends and share.'
+      },
+      {
+        url:'https://www.tiktok.com/@londonforless/video/7647625624739253526',
+        title:'Giant Product Pop-Up Spectacle', outlierScore:'39.77x',
+        tags:['event-spectacle','rahuls-outlier'],
+        description:'Spectacle and high value — a surreal oversized prop combined with free giveaways drives massive shareability. Use this for a major Nancy public activation featuring a giant lemon prop.',
+        shots:[
+          {time:'0:00–0:03', text:'Hook: Wide shot of a giant bright yellow Lemon or Lem replica in a recognizable public plaza.'},
+          {time:'0:03–0:15', text:'Demo: Staff in yellow handing out branded bags, close-ups of the Lem product, hands putting on a yellow Nancy wristband.'},
+          {time:'0:15–0:18', text:'Reveal: Attendee sitting on a lemon-shaped bench taking a selfie.'},
+          {time:'0:18–0:22', text:'End: Wide shot of the giant Lemon structure surrounded by a crowd.'},
+        ],
+        script:'Score FREE Nancy self-care kits & exclusive merch (📍[Location]) 🍋',
+        fullGuide:'Rely on a surreal, oversized prop — a giant lemon or Lem box — in a recognizable public space. The text overlay must persistently offer high value: the word "FREE" must appear immediately and stay on screen. Show the scale of the event, then intersperse with close-ups of hands receiving branded bags and wristbands to make viewers desire the physical items. Location tag is essential.'
+      },
+      {
+        url:'https://www.instagram.com/p/DYKtlEcCqC5/',
+        title:"The 'Save This' Listicle Guide", outlierScore:'8.63x',
+        tags:['carousel-utility','rahuls-outlier'],
+        description:'Utility meets forced save mechanic — a curated guide that the algorithm rewards for saves over likes. Use this format as a carousel wellness guide that explicitly tells viewers to save it.',
+        shots:[
+          {time:'Slide 1', text:'Hook: Editorial portrait of a woman holding a lemon or Nancy product, overlaid with massive high-contrast text.'},
+          {time:'Slides 2–5', text:'Demo: Clean numbered listicle — "1. Morning stretch," "2. Unwind with Lem," "3. Hydrate" — with clean lifestyle photos for each step.'},
+          {time:'Final Slide', text:'End: Call to action — "Tag a friend who needs a reset 💛"'},
+        ],
+        script:'THE ULTIMATE WEEKEND RESET GUIDE 🍋✨ (Save this for Sunday)',
+        fullGuide:'This is a static carousel — no audio hook. Slide 1 must feature an editorial, high-quality portrait with massive, high-contrast text. The caption AND the image text must explicitly tell the user to Save the post — this drives the algorithm. Subsequent slides are clean, numbered listicles offering genuine utility: a self-care routine, a local Nancy event guide, or a wellness checklist. The save prompt is the entire mechanic.'
+      },
+      {
+        url:'https://www.tiktok.com/@londonforless/video/7637473727772462358',
+        title:'Mystery Locker Reveal', outlierScore:'23.08x',
+        tags:['event-gamification','rahuls-outlier'],
+        description:'Gamification and mystery — opening numbered lockers creates an addictive loop that forces watch-time. Use this with yellow lockers or a multi-door unboxing setup at a Nancy event.',
+        shots:[
+          {time:'0:00–0:03', text:'Hook: Hand reaching to open a bright yellow locker or compartment in a large custom box.'},
+          {time:'0:03–0:15', text:'Demo: Quick cuts of different compartments opening — Lem massager in one, yellow tote in another, lemon popsicle in a third.'},
+          {time:'0:15–0:18', text:'Reveal: Close-up POV shot of pulling the Lem box out of the locker.'},
+          {time:'0:18–0:21', text:'End: Wide shot of the full locker setup. Text overlay: "Find your match at [Link/Location]."'},
+        ],
+        script:'Unlock your new favorite routine 🍋✨ (Wait for locker #3)',
+        fullGuide:'Gamify the product reveal. Use a physical structure with doors or lockers — or a custom multi-door unboxing kit. The entire video is a satisfying loop of hands opening doors to reveal different products inside. Use a high-energy, recognizable audio track. The text overlay MUST tease a specific reveal ("Wait for locker #3") to force viewers to watch all the way through. The mystery element is the engine of the format.'
+      },
     ] },
     { id:'product-focus',        title:'Product Focus',        label:'Product Focus',  subtitle:'',                             emoji:'📦', videos:[PH(),PH()] },
     { id:'capturing-celebrities',title:'Capturing Celebrities',label:'Celebrities',    subtitle:'',                             emoji:'⭐', videos:[PH(),PH()] },
@@ -527,10 +632,14 @@ function parseTimestamps(text) {
 // ══════════════════════════════════════
 // RENDER HOME
 // ══════════════════════════════════════
-function renderHome() {
-  var shotsRow = document.getElementById('shots-row');
-  var guidesRow = document.getElementById('guides-row');
+var activeFilterTag = null;
 
+function renderHome() {
+  var shotsRow   = document.getElementById('shots-row');
+  var guidesRow  = document.getElementById('guides-row');
+  var filterRow  = document.getElementById('tag-filter-row');
+
+  // Shot cards (unchanged)
   shotsRow.innerHTML = DATA.shots.map(function(shot){
     var img = shot.image
       ? '<img class="shot-card-img" src="'+esc(shot.image)+'" alt="'+esc(shot.title)+'">'
@@ -538,12 +647,43 @@ function renderHome() {
     return '<div class="shot-card" onclick="goShot(\''+shot.id+'\')">'+img+'<div class="shot-card-label">'+esc(shot.title)+'</div></div>';
   }).join('');
 
-  guidesRow.innerHTML = DATA.guides.map(function(guide){
+  // Build tag filter pills from all content-type tags used across guides
+  var usedTags = [];
+  DATA.guides.forEach(function(g){
+    g.videos.forEach(function(v){
+      var vtags = v.tags || (v.tag ? [v.tag] : []);
+      vtags.forEach(function(t){
+        if (CONTENT_TYPE_TAGS.indexOf(t) !== -1 && usedTags.indexOf(t) === -1) usedTags.push(t);
+      });
+    });
+  });
+
+  filterRow.innerHTML = '<button class="tag-filter-pill'+(activeFilterTag===null?' active':'')+'" onclick="setTagFilter(null)">All</button>'
+    + usedTags.map(function(t){
+        return '<button class="tag-filter-pill'+(activeFilterTag===t?' active':'')+'" onclick="setTagFilter(\''+t+'\')">'+esc(TAGS[t])+'</button>';
+      }).join('');
+
+  // Guide cards — filtered if a tag is selected
+  var visibleGuides = activeFilterTag
+    ? DATA.guides.filter(function(g){
+        return g.videos.some(function(v){
+          var vtags = v.tags || (v.tag ? [v.tag] : []);
+          return vtags.indexOf(activeFilterTag) !== -1;
+        });
+      })
+    : DATA.guides;
+
+  guidesRow.innerHTML = visibleGuides.map(function(guide){
     return '<div class="guide-card" onclick="goGuide(\''+guide.id+'\')">'
       +'<div class="guide-card-top">'+(guide.emoji||'🎬')+'</div>'
       +'<div class="guide-card-label">'+esc(guide.label||guide.title)+'</div>'
       +'</div>';
   }).join('');
+}
+
+function setTagFilter(tag) {
+  activeFilterTag = tag;
+  renderHome();
 }
 
 // ══════════════════════════════════════
@@ -608,20 +748,33 @@ function renderGuide(id) {
 }
 
 function buildVideoEntry(video, uid, guideId, videoIdx) {
-  var tagHTML = (video.tag && TAGS[video.tag])
-    ? '<div class="video-tag">🏷 '+esc(TAGS[video.tag])+'</div>'
-    : '';
-
   var gId  = guideId  !== undefined ? guideId  : uid;
   var vIdx = videoIdx !== undefined ? videoIdx : 0;
 
+  // Tags — backward compat: handle old single `tag` field
+  var tags = video.tags || (video.tag ? [video.tag] : []);
+  var tagPillsHTML = tags.map(function(t) {
+    if (!TAGS[t]) return '';
+    var cls = (t === 'rahuls-outlier') ? 'v-tag-pill creator' : 'v-tag-pill ct';
+    return '<span class="'+cls+'">'+esc(TAGS[t])+'</span>';
+  }).join('');
+
+  var embedHTML = '<div class="video-embed-container">'+buildVideoEmbed(video.url||null)+'</div>';
+  var linkHTML  = video.url
+    ? '<a href="'+esc(video.url)+'" target="_blank" rel="noopener" class="video-link-bar">'+esc(video.url)+'</a>'
+    : '';
+
   return '<div class="video-entry">'
-    +'<div class="video-embed-container">'+buildVideoEmbed(video.url||null)+tagHTML+'</div>'
-    +(video.url
-      ? '<a href="'+esc(video.url)+'" target="_blank" rel="noopener" class="video-link-bar">'+esc(video.url)+'</a>'
-      : '<span class="video-link-bar" style="color:#2a2a2a;cursor:default;">Link to be added</span>')
-    +'<div class="video-meta"><div class="video-title">'+esc(video.title||'Untitled')+'</div><div class="video-outlier">'+esc(video.outlierScore||'—')+'</div></div>'
-    +'<button class="full-guide-sheet-btn" onclick="openGuideSheet(\''+gId+'\','+vIdx+')">Full Guide <span style="font-size:0.8rem;">›</span></button>'
+    +embedHTML
+    +linkHTML
+    +'<div class="v-tags-row">'+tagPillsHTML+'</div>'
+    +'<div class="v-title-row"><div class="v-title">'+esc(video.title||'Untitled')+'</div><div class="v-outlier">'+esc(video.outlierScore||'—')+'</div></div>'
+    +'<div class="v-desc">'+esc(video.description||'')+'</div>'
+    +'<div class="three-btn-row">'
+      +'<button class="three-btn primary" onclick="openGuideSheet(\''+gId+'\','+vIdx+',\'shots\')">Shooting Guide</button>'
+      +'<button class="three-btn primary" onclick="openGuideSheet(\''+gId+'\','+vIdx+',\'script\')">Script Guide</button>'
+      +'<button class="three-btn primary" onclick="openGuideSheet(\''+gId+'\','+vIdx+',\'fullGuide\')">Full Guide</button>'
+    +'</div>'
     +'</div>';
 }
 
@@ -640,45 +793,40 @@ function toggleExtra(uid) {
 // ══════════════════════════════════════
 // GUIDE BOTTOM SHEET
 // ══════════════════════════════════════
-function openGuideSheet(guideId, videoIdx) {
+function openGuideSheet(guideId, videoIdx, type) {
   var guide = DATA.guides.find(function(g){ return g.id === guideId; });
   if (!guide) return;
   var video = guide.videos[videoIdx];
   if (!video) return;
 
-  var shots  = video.shots  || [];
-  var script = video.script || [];
-  var maxLen = Math.max(shots.length, script.length);
+  var typeLabels = { shots:'Shooting Guide', script:'Script Guide', fullGuide:'Full Guide' };
+  var label = typeLabels[type] || 'Guide';
 
-  var tagHTML = (video.tag && TAGS[video.tag])
-    ? '<div class="video-tag">🏷 '+esc(TAGS[video.tag])+'</div>'
-    : '';
+  var contentHTML = '';
 
-  var pairsHTML = '';
-  for (var i = 0; i < maxLen; i++) {
-    var s  = shots[i]  || { time:'', text:'' };
-    var sc = script[i] || { time:'', text:'' };
-    pairsHTML += '<div class="ts-pair">'
-      +'<div class="ts-cell"><div class="ts-time">'+esc(s.time)+'</div><div class="ts-body">'+esc(s.text)+'</div></div>'
-      +'<div class="ts-cell"><div class="ts-time">'+esc(sc.time)+'</div><div class="ts-body">'+esc(sc.text)+'</div></div>'
-      +'</div>';
+  if (type === 'shots') {
+    var scenes = video.shots || [];
+    if (scenes.length > 0) {
+      contentHTML = scenes.map(function(s) {
+        return '<div class="gs-scene-row"><div class="gs-scene-time">'+esc(s.time)+'</div><div class="gs-scene-text">'+esc(s.text)+'</div></div>';
+      }).join('');
+    } else {
+      contentHTML = '<div class="gs-no-scenes">Shooting guide coming soon.</div>';
+    }
+  } else if (type === 'script') {
+    var scriptText = (typeof video.script === 'string') ? video.script : '';
+    contentHTML = '<div class="gs-script-block">'+(scriptText ? esc(scriptText) : '<span style="color:#333;">Script coming soon.</span>')+'</div>';
+  } else {
+    var fg = video.fullGuide || '';
+    contentHTML = '<div class="gs-fullguide">'+(fg ? esc(fg) : '<span style="color:#333;font-style:italic;">Full guide coming soon.</span>')+'</div>';
   }
 
-  var tsSection = maxLen > 0
-    ? '<div class="ts-header" style="margin-top:0.25rem;"><div class="ts-header-cell">Shots</div><div class="ts-header-cell">Script</div></div>'+pairsHTML
-    : '<div class="gs-no-content">Shots &amp; script coming soon.</div>';
-
-  var fgText = video.fullGuide || '';
-  var fgSection = '<div class="gs-section-title">Full Guide</div>'
-    +'<div class="gs-fullguide">'+(fgText ? esc(fgText) : '<span style="color:#333;font-style:italic;">Full guide coming soon.</span>')+'</div>';
-
   document.getElementById('gs-body').innerHTML =
-    '<div class="gs-embed-wrap">'+buildVideoEmbed(video.url||null)+tagHTML+'</div>'
+    '<div class="gs-embed-wrap">'+buildVideoEmbed(video.url||null)+'</div>'
     +(video.url ? '<a href="'+esc(video.url)+'" target="_blank" rel="noopener" class="gs-link">'+esc(video.url)+'</a>' : '')
     +'<div class="gs-meta"><div class="gs-title">'+esc(video.title||'Untitled')+'</div><div class="gs-outlier">'+esc(video.outlierScore||'—')+'</div></div>'
-    +'<div class="gs-section-title">Shots &amp; Script</div>'
-    +tsSection
-    +fgSection;
+    +'<div class="gs-type-label">'+esc(label)+'</div>'
+    +contentHTML;
 
   document.getElementById('gs-body').scrollTop = 0;
   document.getElementById('gs-overlay').classList.add('open');
