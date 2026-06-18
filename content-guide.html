@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Hello Nancy — Content Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+/* ── RESET ── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{background:#000;color:#fff;font-family:'Inter',system-ui,sans-serif;min-height:100vh;overflow-x:hidden;-webkit-tap-highlight-color:transparent;-webkit-text-size-adjust:100%;}
+button{font-family:inherit;}
+/* safe area for notched phones */
+.page{padding-bottom:calc(3rem + env(safe-area-inset-bottom,0px));}
+
+/* ── TOKENS ── */
+:root{
+  --m:#FF00AA;
+  --m-dark:#cc0088;
+  --black:#000;
+  --white:#fff;
+  --gray:#888;
+  --border:#1e1e1e;
+  --card-bg:#0d0d0d;
+}
+
+/* ── APP ── */
+#app{max-width:480px;margin:0 auto;min-height:100vh;}
+
+/* ── PAGES ── */
+.page{display:none;min-height:100vh;padding-bottom:3rem;}
+.page.active{display:block;}
+
+/* ── SHARED HEADER ── */
+.top-header{padding:2rem 1.25rem 0.5rem;text-align:center;}
+.top-title{font-size:2.1rem;font-weight:900;letter-spacing:-0.03em;line-height:1;}
+.top-sub{font-size:0.7rem;font-weight:700;color:var(--m);letter-spacing:0.14em;text-transform:uppercase;margin-top:0.3rem;}
+
+/* ── DETAIL HEADER ── */
+.detail-header{display:flex;align-items:center;padding:0.75rem 1.25rem;border-bottom:1px solid var(--border);gap:0.75rem;}
+.back-btn{background:none;border:none;color:var(--m);font-size:0.9rem;font-weight:700;cursor:pointer;padding:0.5rem 0;min-height:44px;display:flex;align-items:center;gap:0.3rem;white-space:nowrap;}
+.detail-header-center{flex:1;text-align:center;}
+.detail-header-title{font-size:0.75rem;font-weight:700;color:#fff;}
+.detail-header-sub{font-size:0.6rem;font-weight:700;color:var(--m);letter-spacing:0.1em;text-transform:uppercase;margin-top:0.1rem;}
+
+/* ── SECTION LABEL ── */
+.section-label{display:flex;align-items:center;gap:0.75rem;padding:1.25rem 1.25rem 0.65rem;}
+.section-label-text{font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--gray);white-space:nowrap;}
+.section-label-line{flex:1;height:1px;background:linear-gradient(to right,var(--border),transparent);}
+.section-label-arrow{color:var(--m);font-size:0.85rem;}
+
+/* ── SCROLL ROW ── */
+.scroll-row{display:flex;gap:0.85rem;overflow-x:auto;padding:0 1.25rem 1.25rem;scrollbar-width:none;-ms-overflow-style:none;-webkit-overflow-scrolling:touch;}
+.scroll-row::-webkit-scrollbar{display:none;}
+
+/* ── ROW 1: SHOT CARDS ── */
+.shot-card{flex-shrink:0;width:160px;border-radius:18px;overflow:hidden;cursor:pointer;border:1px solid var(--border);transition:transform 0.18s ease;-webkit-user-select:none;user-select:none;}
+.shot-card:active{transform:scale(0.95);}
+.shot-card-img{width:160px;height:160px;object-fit:cover;display:block;}
+.shot-card-placeholder{width:160px;height:160px;background:#141414;display:flex;align-items:center;justify-content:center;font-size:3.2rem;}
+.shot-card-label{background:var(--m);padding:0.65rem 0.75rem;font-size:0.75rem;font-weight:700;color:#fff;text-align:center;letter-spacing:0.04em;}
+
+/* ── ROW 2: GUIDE CARDS ── */
+.guide-card{flex-shrink:0;width:160px;height:160px;border-radius:18px;background:var(--m);display:flex;align-items:center;justify-content:center;cursor:pointer;padding:1rem;transition:transform 0.18s ease,filter 0.18s ease;-webkit-user-select:none;user-select:none;}
+.guide-card:active{transform:scale(0.95);filter:brightness(0.85);}
+.guide-card-text{font-size:0.82rem;font-weight:700;color:#fff;text-align:center;line-height:1.4;}
+.guide-card-sub{display:block;font-size:0.67rem;font-weight:500;opacity:0.8;margin-top:0.25rem;}
+
+/* ── EDITOR BAR ── */
+.editor-bar{background:var(--m);padding:0.45rem 1.25rem;font-size:0.7rem;font-weight:700;color:#fff;display:none;align-items:center;justify-content:space-between;}
+.editor-bar.visible{display:flex;}
+.editor-badge{background:rgba(0,0,0,0.2);border-radius:4px;padding:0.15rem 0.5rem;letter-spacing:0.05em;}
+.editor-mini-btn{background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.3);color:#fff;border-radius:6px;padding:0.2rem 0.6rem;font-size:0.65rem;font-weight:700;cursor:pointer;letter-spacing:0.04em;}
+
+/* ── PAGE 2: SHOT DETAIL ── */
+.shot-detail-title{font-size:1.5rem;font-weight:800;padding:1rem 1.25rem 0.5rem;letter-spacing:-0.02em;}
+.full-img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block;}
+.full-img-placeholder{width:100%;aspect-ratio:16/9;background:#141414;display:flex;align-items:center;justify-content:center;font-size:5rem;}
+.shots-heading{font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:var(--m);padding:1rem 1.25rem 0.5rem;}
+.scene-item{display:flex;align-items:flex-start;gap:0.85rem;padding:0.75rem 1.25rem;border-bottom:1px solid var(--border);}
+.scene-check{width:22px;height:22px;min-width:22px;border:2px solid var(--m);border-radius:5px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.15s;margin-top:1px;}
+.scene-check.checked{background:var(--m);}
+.scene-check.checked::after{content:'✓';color:#fff;font-size:13px;font-weight:800;}
+.scene-lbl{font-size:0.75rem;font-weight:700;color:var(--m);margin-bottom:0.2rem;}
+.scene-desc{font-size:0.88rem;color:#ddd;line-height:1.45;}
+
+/* ── PAGE 3: GUIDE DETAIL ── */
+.guide-cat-label{font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.14em;color:var(--m);padding:0.85rem 1.25rem 0.5rem;}
+.video-entry{margin:0 1rem 1.5rem;border:1px solid var(--border);border-radius:16px;overflow:hidden;background:var(--card-bg);}
+
+/* Video embed */
+.video-embed-wrap{border:3px solid var(--m);position:relative;}
+.video-embed-wrap iframe{width:100%;aspect-ratio:16/9;display:block;border:none;}
+.video-placeholder{width:100%;aspect-ratio:16/9;background:#0a0a0a;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.6rem;text-decoration:none;cursor:pointer;}
+.video-play-ring{width:52px;height:52px;border-radius:50%;border:2.5px solid var(--m);display:flex;align-items:center;justify-content:center;color:var(--m);font-size:1.4rem;}
+.video-platform{font-size:0.65rem;font-weight:700;color:var(--gray);letter-spacing:0.08em;text-transform:uppercase;}
+.video-tap{font-size:0.72rem;color:#444;}
+
+.video-link-bar{display:block;padding:0.45rem 0.75rem;font-size:0.65rem;color:var(--m);text-decoration:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;border-bottom:1px solid var(--border);}
+.video-meta{display:flex;justify-content:space-between;align-items:flex-start;padding:0.7rem 0.75rem;border-bottom:1px solid var(--border);gap:0.5rem;}
+.video-title{font-size:0.88rem;font-weight:700;color:#fff;flex:1;line-height:1.3;}
+.video-outlier{font-size:0.72rem;font-weight:700;color:var(--m);white-space:nowrap;padding-top:0.1rem;}
+
+/* Two-column accordion */
+.two-col{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--border);}
+.col-section{overflow:hidden;}
+.col-section:first-child{border-right:1px solid var(--border);}
+.col-btn{width:100%;background:#0a0a0a;border:none;padding:0.6rem 0.75rem;font-size:0.65rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#999;cursor:pointer;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid transparent;transition:color 0.15s;}
+.col-btn.open{color:var(--m);border-bottom-color:var(--border);}
+.col-arrow{font-size:0.55rem;transition:transform 0.2s;}
+.col-btn.open .col-arrow{transform:rotate(180deg);}
+.col-panel{display:none;padding:0.6rem 0.5rem;}
+.col-panel.open{display:block;}
+.ts-row{display:flex;flex-direction:column;gap:0.1rem;padding:0.3rem 0;border-bottom:1px solid var(--border);}
+.ts-row:last-child{border-bottom:none;}
+.ts-time{font-size:0.62rem;font-weight:700;color:var(--m);}
+.ts-text{font-size:0.75rem;color:#ddd;line-height:1.4;}
+
+/* See Full Guide */
+.full-guide-btn{width:100%;background:none;border:none;border-top:1px solid var(--border);padding:0.7rem 0.75rem;font-size:0.72rem;font-weight:700;color:var(--m);cursor:pointer;text-align:left;display:flex;justify-content:space-between;align-items:center;letter-spacing:0.04em;}
+.fg-arrow{font-size:0.55rem;transition:transform 0.2s;}
+.full-guide-btn.open .fg-arrow{transform:rotate(180deg);}
+.full-guide-content{display:none;padding:0.75rem;font-size:0.82rem;line-height:1.65;color:#bbb;border-top:1px solid var(--border);background:#060606;white-space:pre-wrap;word-break:break-word;}
+.full-guide-content.open{display:block;}
+
+/* Empty state */
+.empty-state{padding:2.5rem 1.25rem;text-align:center;color:#333;font-size:0.82rem;line-height:1.6;}
+
+/* Add-video-btn */
+.add-video-btn{display:block;margin:0 1rem 1rem;background:var(--m);border:none;padding:0.6rem 1.25rem;border-radius:10px;font-size:0.8rem;font-weight:700;color:#fff;cursor:pointer;width:calc(100% - 2rem);letter-spacing:0.04em;}
+
+/* ── HOW TO USE ── */
+.how-to-use{margin:0.5rem 1.25rem 1.5rem;padding:1.25rem;background:#0a0a0a;border:1px solid var(--border);border-radius:18px;}
+.how-title{font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:var(--gray);margin-bottom:1rem;}
+.how-item{display:flex;gap:0.85rem;padding:0.65rem 0;border-bottom:1px solid var(--border);align-items:flex-start;}
+.how-item:last-child{border-bottom:none;padding-bottom:0;}
+.how-icon{font-size:1.2rem;line-height:1;margin-top:0.05rem;flex-shrink:0;}
+.how-item-title{font-size:0.82rem;font-weight:700;color:#fff;margin-bottom:0.25rem;}
+.how-item-desc{font-size:0.78rem;color:#666;line-height:1.5;}
+.how-item-desc strong{color:#999;font-weight:600;}
+
+/* ── MODAL OVERLAY ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:999;display:none;align-items:flex-end;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal-sheet{background:#111;border-radius:20px 20px 0 0;padding:1.5rem 1.25rem 2rem;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;}
+.modal-title{font-size:1rem;font-weight:800;margin-bottom:1.25rem;}
+.modal-field{margin-bottom:0.9rem;}
+.modal-label{font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--m);display:block;margin-bottom:0.35rem;}
+.modal-input,.modal-textarea{width:100%;background:#1a1a1a;border:1px solid var(--border);border-radius:8px;padding:0.6rem 0.75rem;font-size:0.85rem;color:#fff;font-family:inherit;outline:none;}
+.modal-input:focus,.modal-textarea:focus{border-color:var(--m);}
+.modal-textarea{resize:vertical;min-height:80px;}
+.modal-hint{font-size:0.65rem;color:#444;margin-top:0.3rem;}
+.modal-actions{display:flex;gap:0.75rem;margin-top:1.25rem;}
+.modal-save{flex:1;background:var(--m);border:none;border-radius:10px;padding:0.65rem;font-size:0.85rem;font-weight:700;color:#fff;cursor:pointer;}
+.modal-cancel{background:#1a1a1a;border:1px solid var(--border);border-radius:10px;padding:0.65rem 1rem;font-size:0.85rem;font-weight:700;color:#666;cursor:pointer;}
+.modal-section-divider{font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#444;padding:0.75rem 0 0.5rem;border-top:1px solid var(--border);margin-top:0.25rem;}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- ══ PAGE 1: HOME ══ -->
+  <div class="page active" id="page-home">
+    <div class="top-header">
+      <div class="top-title">Hello Nancy</div>
+      <div class="top-sub">Content Guide</div>
+    </div>
+
+    <div class="editor-bar" id="editor-bar-home">
+      <span class="editor-badge">✎ Editor Mode</span>
+    </div>
+
+    <!-- Row 1 -->
+    <div class="section-label">
+      <span class="section-label-text">General Shooting Shots</span>
+      <span class="section-label-line"></span>
+      <span class="section-label-arrow">→</span>
+    </div>
+    <div class="scroll-row" id="shots-row"></div>
+
+    <!-- Row 2 -->
+    <div class="section-label">
+      <span class="section-label-text">Content Shooting Guides</span>
+      <span class="section-label-line"></span>
+      <span class="section-label-arrow">→</span>
+    </div>
+    <div class="scroll-row" id="guides-row"></div>
+
+    <!-- How to use -->
+    <div class="how-to-use">
+      <div class="how-title">How to use this guide</div>
+      <div class="how-item">
+        <div class="how-icon">📸</div>
+        <div>
+          <div class="how-item-title">General Shooting Shots</div>
+          <div class="how-item-desc">Tap a card to open the shot checklist for that subject. Check off each scene as you capture it on set.</div>
+        </div>
+      </div>
+      <div class="how-item">
+        <div class="how-icon">🎬</div>
+        <div>
+          <div class="how-item-title">Content Shooting Guides</div>
+          <div class="how-item-desc">Tap a card to browse video references for that content type. Each video has a shot breakdown and a ready-to-use script.</div>
+        </div>
+      </div>
+      <div class="how-item">
+        <div class="how-icon">👆</div>
+        <div>
+          <div class="how-item-title">Inside a guide</div>
+          <div class="how-item-desc">Tap <strong>Shots</strong> to see the timestamp breakdown. Tap <strong>Script</strong> for the Nancified version. Tap <strong>See Full Guide</strong> for the complete context.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PAGE 2: SHOT DETAIL ══ -->
+  <div class="page" id="page-shot">
+    <div class="detail-header">
+      <button class="back-btn" onclick="goHome()">← Home</button>
+      <div class="detail-header-center">
+        <div class="detail-header-title">Hello Nancy</div>
+        <div class="detail-header-sub">Content Guide</div>
+      </div>
+    </div>
+    <div id="shot-detail-content"></div>
+  </div>
+
+  <!-- ══ PAGE 3: GUIDE DETAIL ══ -->
+  <div class="page" id="page-guide">
+    <div class="detail-header">
+      <button class="back-btn" onclick="goHome()">← Home</button>
+      <div class="detail-header-center">
+        <div class="detail-header-title">Hello Nancy</div>
+        <div class="detail-header-sub">Content Guide</div>
+      </div>
+    </div>
+    <div id="guide-detail-content"></div>
+  </div>
+
+</div>
+
+<!-- ══ ADD VIDEO MODAL ══ -->
+<div class="modal-overlay" id="modal-add-video" onclick="closeModalOnOverlay(event,'modal-add-video')">
+  <div class="modal-sheet">
+    <div class="modal-title">Add Video</div>
+    <input type="hidden" id="modal-guide-id">
+
+    <div class="modal-field">
+      <label class="modal-label">Video URL</label>
+      <input class="modal-input" type="url" id="v-url" placeholder="YouTube, TikTok, Instagram, Pinterest…">
+      <div class="modal-hint">Any video platform link works.</div>
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">Content Title</label>
+      <input class="modal-input" type="text" id="v-title" placeholder="e.g. How We Set Up a Pop-Up in 2 Hours">
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">Outlier Score</label>
+      <input class="modal-input" type="text" id="v-outlier" placeholder="e.g. 10x">
+    </div>
+
+    <div class="modal-section-divider">SHOTS — max 6 words per entry</div>
+    <div class="modal-field">
+      <label class="modal-label">Shots (one per line: "0:30 - description")</label>
+      <textarea class="modal-textarea" id="v-shots" rows="5" placeholder="0:00 - Wide establishing shot crowd&#10;0:30 - Close-up product on table&#10;1:00 - Team reacting to opening"></textarea>
+    </div>
+
+    <div class="modal-section-divider">SCRIPT — Nancified</div>
+    <div class="modal-field">
+      <label class="modal-label">Script (one per line: "0:30 - script line")</label>
+      <textarea class="modal-textarea" id="v-script" rows="5" placeholder="0:00 - Welcome to Hello Nancy's pop-up…&#10;0:30 - Here's the one thing everyone asks about…"></textarea>
+    </div>
+
+    <div class="modal-section-divider">FULL GUIDE</div>
+    <div class="modal-field">
+      <label class="modal-label">Full Guide (optional)</label>
+      <textarea class="modal-textarea" id="v-fullguide" rows="6" placeholder="Complete original guide and context…"></textarea>
+    </div>
+
+    <div class="modal-actions">
+      <button class="modal-cancel" onclick="closeModal('modal-add-video')">Cancel</button>
+      <button class="modal-save" onclick="saveVideo()">Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════
+// CONFIG
+// ══════════════════════════════════════
+const SUPABASE_URL = 'https://yiqniylxflulzfghujzw.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlpcW5peWx4Zmx1bHpmZ2h1anp3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUwNzcwMTEsImV4cCI6MjA5MDY1MzAxMX0.ZVT3XwHkBrL1leBaQevew8G4k5syHmT5gYDznPQeAFY';
+const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const STORAGE_KEY = 'nancy_content_guide_v1';
+
+var isEditor = false;
+
+// ══════════════════════════════════════
+// DATA
+// ══════════════════════════════════════
+var DATA = {
+  shots: [
+    { id:'inflatable-lemon', title:'Inflatable Lemon', emoji:'🍋', image:null, scenes:[
+      { label:'Scene 1', description:'Wide shot — full lemon with event backdrop' },
+      { label:'Scene 2', description:'Close-up texture and surface detail' },
+      { label:'Scene 3', description:'Person posing or interacting with it' },
+      { label:'Scene 4', description:'Overhead or wide-angle establishing shot' },
+    ]},
+    { id:'nick', title:'Nick', emoji:'🎬', image:null, scenes:[
+      { label:'Scene 1', description:'Candid working shot — natural environment' },
+      { label:'Scene 2', description:'Close-up portrait, natural light preferred' },
+      { label:'Scene 3', description:'Group moment with the team' },
+    ]},
+    { id:'pickleball-court', title:'Pickleball Court', emoji:'🏓', image:null, scenes:[
+      { label:'Scene 1', description:'Full court establishing wide shot' },
+      { label:'Scene 2', description:'Players mid-game — action shot' },
+      { label:'Scene 3', description:'Detail shots — paddles, net, ball' },
+      { label:'Scene 4', description:'Crowd or spectators reacting' },
+    ]},
+    { id:'products', title:'Products', emoji:'📦', image:null, scenes:[
+      { label:'Scene 1', description:'Flat lay on clean surface, brand visible' },
+      { label:'Scene 2', description:'Product in hand — lifestyle context' },
+      { label:'Scene 3', description:'Close-up texture and label detail' },
+      { label:'Scene 4', description:'Multiple products styled together' },
+    ]},
+  ],
+  guides: [
+    { id:'event',                title:'Event',           subtitle:'On Site Visuals',                 videos:[] },
+    { id:'product-focus',        title:'Product Focus',   subtitle:'',                                videos:[] },
+    { id:'capturing-celebrities',title:'Capturing Celebrities', subtitle:'',                          videos:[] },
+    { id:'reactions',            title:'Reactions',       subtitle:'',                                videos:[] },
+    { id:'street-interview',     title:'Street Interview', subtitle:'Street Style',                   videos:[] },
+    { id:'team-type',            title:'Team Type',       subtitle:'Preparations, Fun Team Shots',    videos:[] },
+    { id:'after-event',          title:'After Event',     subtitle:'',                                videos:[] },
+  ]
+};
+
+// ══════════════════════════════════════
+// PERSIST — save/load guide video data
+// ══════════════════════════════════════
+async function loadData() {
+  try {
+    var { data, error } = await db
+      .from('settings')
+      .select('value')
+      .eq('key', STORAGE_KEY)
+      .single();
+    if (data && data.value) {
+      var saved = JSON.parse(data.value);
+      // Merge saved videos into guide data (non-destructive)
+      if (saved.guides) {
+        saved.guides.forEach(function(sg) {
+          var g = DATA.guides.find(function(x){ return x.id === sg.id; });
+          if (g && sg.videos) g.videos = sg.videos;
+        });
+      }
+    }
+  } catch(e) { /* no saved data yet — use defaults */ }
+}
+
+async function saveData() {
+  var payload = { guides: DATA.guides.map(function(g){ return { id:g.id, videos:g.videos }; }) };
+  try {
+    await db.from('settings').upsert({ key: STORAGE_KEY, value: JSON.stringify(payload) });
+  } catch(e) { console.error('Save failed', e); }
+}
+
+// ══════════════════════════════════════
+// AUTH CHECK
+// ══════════════════════════════════════
+async function checkEditorAccess() {
+  try {
+    var res = await db.auth.getSession();
+    if (res.data && res.data.session && res.data.session.user) {
+      isEditor = true;
+      document.querySelectorAll('.editor-bar').forEach(function(el){ el.classList.add('visible'); });
+    }
+  } catch(e) {}
+}
+
+// ══════════════════════════════════════
+// VIDEO EMBED
+// ══════════════════════════════════════
+function esc(str) {
+  return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function detectPlatform(url) {
+  if (!url) return 'unknown';
+  if (/youtube\.com|youtu\.be/.test(url)) return 'youtube';
+  if (/tiktok\.com/.test(url)) return 'tiktok';
+  if (/instagram\.com/.test(url)) return 'instagram';
+  if (/pinterest\.com|pin\.it/.test(url)) return 'pinterest';
+  return 'other';
+}
+
+function extractYouTubeId(url) {
+  var m = url.match(/(?:v=|youtu\.be\/|embed\/)([^&?/\s]{11})/);
+  return m ? m[1] : null;
+}
+
+function buildVideoEmbed(url) {
+  var platform = detectPlatform(url);
+  if (platform === 'youtube') {
+    var id = extractYouTubeId(url);
+    if (id) {
+      return '<div class="video-embed-wrap"><iframe src="https://www.youtube.com/embed/'+id+'" allow="autoplay;clipboard-write;encrypted-media;picture-in-picture" allowfullscreen loading="lazy"></iframe></div>';
+    }
+  }
+  var icons = { tiktok:'🎵', instagram:'📸', pinterest:'📌', other:'▶', unknown:'▶' };
+  var labels = { tiktok:'TikTok', instagram:'Instagram', pinterest:'Pinterest', other:'Video', unknown:'Video' };
+  return '<a href="'+esc(url)+'" target="_blank" rel="noopener" class="video-embed-wrap video-placeholder">'
+    +'<div class="video-play-ring">'+icons[platform]+'</div>'
+    +'<div class="video-platform">'+labels[platform]+'</div>'
+    +'<div class="video-tap">Tap to watch</div>'
+    +'</a>';
+}
+
+// ══════════════════════════════════════
+// PARSE TIMESTAMPED LINES
+// "0:30 - description text"
+// ══════════════════════════════════════
+function parseTimestamps(text) {
+  if (!text || !text.trim()) return [];
+  return text.trim().split('\n').map(function(line){
+    var m = line.match(/^([^\-]+?)\s*-\s*(.+)/);
+    return m ? { time: m[1].trim(), text: m[2].trim() } : { time:'', text: line.trim() };
+  }).filter(function(r){ return r.text; });
+}
+
+// ══════════════════════════════════════
+// RENDER HOME
+// ══════════════════════════════════════
+function renderHome() {
+  var shotsRow = document.getElementById('shots-row');
+  var guidesRow = document.getElementById('guides-row');
+
+  shotsRow.innerHTML = DATA.shots.map(function(shot){
+    var img = shot.image
+      ? '<img class="shot-card-img" src="'+esc(shot.image)+'" alt="'+esc(shot.title)+'">'
+      : '<div class="shot-card-placeholder">'+shot.emoji+'</div>';
+    return '<div class="shot-card" onclick="goShot(\''+shot.id+'\')">'+img+'<div class="shot-card-label">'+esc(shot.title)+'</div></div>';
+  }).join('');
+
+  guidesRow.innerHTML = DATA.guides.map(function(guide){
+    var sub = guide.subtitle ? '<span class="guide-card-sub">'+esc(guide.subtitle)+'</span>' : '';
+    return '<div class="guide-card" onclick="goGuide(\''+guide.id+'\')"><div class="guide-card-text">'+esc(guide.title)+sub+'</div></div>';
+  }).join('');
+}
+
+// ══════════════════════════════════════
+// RENDER SHOT DETAIL (PAGE 2)
+// ══════════════════════════════════════
+function renderShot(id) {
+  var shot = DATA.shots.find(function(s){ return s.id === id; });
+  if (!shot) { goHome(); return; }
+
+  var img = shot.image
+    ? '<img class="full-img" src="'+esc(shot.image)+'" alt="'+esc(shot.title)+'">'
+    : '<div class="full-img-placeholder">'+shot.emoji+'</div>';
+
+  var scenes = shot.scenes.map(function(sc, i){
+    return '<div class="scene-item">'
+      +'<div class="scene-check" onclick="this.classList.toggle(\'checked\')"></div>'
+      +'<div><div class="scene-lbl">'+esc(sc.label)+'</div><div class="scene-desc">'+esc(sc.description)+'</div></div>'
+      +'</div>';
+  }).join('');
+
+  document.getElementById('shot-detail-content').innerHTML =
+    '<div class="shot-detail-title">'+esc(shot.title)+'</div>'
+    +img
+    +'<div class="shots-heading">Shots Required</div>'
+    +scenes;
+}
+
+// ══════════════════════════════════════
+// RENDER GUIDE DETAIL (PAGE 3)
+// ══════════════════════════════════════
+function renderGuide(id) {
+  var guide = DATA.guides.find(function(g){ return g.id === id; });
+  if (!guide) { goHome(); return; }
+
+  var catLabel = guide.subtitle ? guide.title+' — '+guide.subtitle : guide.title;
+
+  var videosHTML;
+  if (!guide.videos || guide.videos.length === 0) {
+    videosHTML = '<div class="empty-state">'+(isEditor ? 'No videos yet.<br>Add the first one below.' : 'Content coming soon.')+'</div>';
+  } else {
+    videosHTML = guide.videos.map(function(video, idx){
+      return buildVideoEntry(video, id+'-'+idx);
+    }).join('');
+  }
+
+  var editorBtn = isEditor
+    ? '<button class="add-video-btn" onclick="openAddVideoModal(\''+id+'\')">+ Add Video</button>'
+    : '';
+
+  document.getElementById('guide-detail-content').innerHTML =
+    '<div class="guide-cat-label">'+esc(catLabel)+'</div>'
+    +videosHTML
+    +editorBtn;
+}
+
+function buildVideoEntry(video, uid) {
+  var shotsHTML = (video.shots||[]).map(function(s){
+    return '<div class="ts-row"><div class="ts-time">'+esc(s.time)+'</div><div class="ts-text">'+esc(s.text)+'</div></div>';
+  }).join('') || '<span style="font-size:0.72rem;color:#333;">None added yet.</span>';
+
+  var scriptHTML = (video.script||[]).map(function(s){
+    return '<div class="ts-row"><div class="ts-time">'+esc(s.time)+'</div><div class="ts-text">'+esc(s.text)+'</div></div>';
+  }).join('') || '<span style="font-size:0.72rem;color:#333;">None added yet.</span>';
+
+  return '<div class="video-entry">'
+    +buildVideoEmbed(video.url||'')
+    +'<a href="'+esc(video.url||'')+'" target="_blank" rel="noopener" class="video-link-bar">'+esc(video.url||'No URL')+'</a>'
+    +'<div class="video-meta"><div class="video-title">'+esc(video.title||'Untitled')+'</div><div class="video-outlier">Outlier: '+esc(video.outlierScore||'—')+'</div></div>'
+    // Two-column accordion
+    +'<div class="two-col">'
+      +'<div class="col-section">'
+        +'<button class="col-btn" id="btn-shots-'+uid+'" onclick="toggleCol(\'shots-'+uid+'\',this)">Shots <span class="col-arrow">▾</span></button>'
+        +'<div class="col-panel" id="shots-'+uid+'">'+shotsHTML+'</div>'
+      +'</div>'
+      +'<div class="col-section">'
+        +'<button class="col-btn" id="btn-script-'+uid+'" onclick="toggleCol(\'script-'+uid+'\',this)">Script <span class="col-arrow">▾</span></button>'
+        +'<div class="col-panel" id="script-'+uid+'">'+scriptHTML+'</div>'
+      +'</div>'
+    +'</div>'
+    +'<button class="full-guide-btn" id="fg-btn-'+uid+'" onclick="toggleFullGuide(\''+uid+'\')">See Full Guide <span class="fg-arrow">▾</span></button>'
+    +'<div class="full-guide-content" id="fg-'+uid+'">'+esc(video.fullGuide||'Full guide coming soon.')+'</div>'
+    +'</div>';
+}
+
+// ══════════════════════════════════════
+// ACCORDION TOGGLES
+// ══════════════════════════════════════
+function toggleCol(panelId, btn) {
+  var panel = document.getElementById(panelId);
+  if (!panel) return;
+  var open = panel.classList.toggle('open');
+  if (btn) btn.classList.toggle('open', open);
+}
+
+function toggleFullGuide(uid) {
+  var content = document.getElementById('fg-'+uid);
+  var btn = document.getElementById('fg-btn-'+uid);
+  if (!content) return;
+  content.classList.toggle('open');
+  if (btn) btn.classList.toggle('open', content.classList.contains('open'));
+}
+
+// ══════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
+  var page = document.getElementById(id);
+  if (page) page.classList.add('active');
+  window.scrollTo(0,0);
+}
+function goHome()       { window.location.hash = '#home'; }
+function goShot(id)     { window.location.hash = '#shot/'+id; }
+function goGuide(id)    { window.location.hash = '#guide/'+id; }
+
+function handleRoute() {
+  var hash = window.location.hash || '#home';
+  if (!hash || hash === '#home') {
+    renderHome();
+    showPage('page-home');
+  } else if (hash.startsWith('#shot/')) {
+    renderShot(hash.replace('#shot/',''));
+    showPage('page-shot');
+  } else if (hash.startsWith('#guide/')) {
+    renderGuide(hash.replace('#guide/',''));
+    showPage('page-guide');
+  } else {
+    renderHome();
+    showPage('page-home');
+  }
+}
+window.addEventListener('hashchange', handleRoute);
+
+// ══════════════════════════════════════
+// MODAL — ADD VIDEO
+// ══════════════════════════════════════
+function openAddVideoModal(guideId) {
+  document.getElementById('modal-guide-id').value = guideId;
+  document.getElementById('v-url').value = '';
+  document.getElementById('v-title').value = '';
+  document.getElementById('v-outlier').value = '';
+  document.getElementById('v-shots').value = '';
+  document.getElementById('v-script').value = '';
+  document.getElementById('v-fullguide').value = '';
+  document.getElementById('modal-add-video').classList.add('open');
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+function closeModalOnOverlay(e, id) {
+  if (e.target.classList.contains('modal-overlay')) closeModal(id);
+}
+
+async function saveVideo() {
+  var guideId = document.getElementById('modal-guide-id').value;
+  var url     = document.getElementById('v-url').value.trim();
+  var title   = document.getElementById('v-title').value.trim();
+  var outlier = document.getElementById('v-outlier').value.trim();
+  var shotsRaw   = document.getElementById('v-shots').value;
+  var scriptRaw  = document.getElementById('v-script').value;
+  var fullGuide  = document.getElementById('v-fullguide').value.trim();
+
+  if (!url) { alert('Please enter a video URL.'); return; }
+
+  var guide = DATA.guides.find(function(g){ return g.id === guideId; });
+  if (!guide) return;
+
+  guide.videos.push({
+    url: url,
+    title: title,
+    outlierScore: outlier,
+    shots: parseTimestamps(shotsRaw),
+    script: parseTimestamps(scriptRaw),
+    fullGuide: fullGuide
+  });
+
+  await saveData();
+  closeModal('modal-add-video');
+  renderGuide(guideId);
+}
+
+// ══════════════════════════════════════
+// INIT
+// ══════════════════════════════════════
+async function init() {
+  await checkEditorAccess();
+  await loadData();
+  handleRoute();
+}
+init();
+</script>
+</body>
+</html>
