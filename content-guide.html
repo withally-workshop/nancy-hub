@@ -101,20 +101,19 @@ button{font-family:inherit;}
 .video-title{font-size:0.88rem;font-weight:700;color:#fff;flex:1;line-height:1.3;}
 .video-outlier{font-size:0.72rem;font-weight:700;color:var(--m);white-space:nowrap;padding-top:0.1rem;}
 
-/* Two-column accordion */
-.two-col{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--border);}
-.col-section{overflow:hidden;}
-.col-section:first-child{border-right:1px solid var(--border);}
-.col-btn{width:100%;background:#0a0a0a;border:none;padding:0.6rem 0.75rem;font-size:0.65rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#999;cursor:pointer;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid transparent;transition:color 0.15s;}
-.col-btn.open{color:var(--m);border-bottom-color:var(--border);}
-.col-arrow{font-size:0.55rem;transition:transform 0.2s;}
-.col-btn.open .col-arrow{transform:rotate(180deg);}
-.col-panel{display:none;padding:0.6rem 0.5rem;}
-.col-panel.open{display:block;}
-.ts-row{display:flex;flex-direction:column;gap:0.1rem;padding:0.3rem 0;border-bottom:1px solid var(--border);}
-.ts-row:last-child{border-bottom:none;}
-.ts-time{font-size:0.62rem;font-weight:700;color:var(--m);}
-.ts-text{font-size:0.75rem;color:#ddd;line-height:1.4;}
+/* Side-by-side SHOTS | SCRIPT */
+.ts-header{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--border);background:#0a0a0a;}
+.ts-header-cell{padding:0.5rem 0.6rem;font-size:0.62rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#666;}
+.ts-header-cell:first-child{border-right:1px solid var(--border);}
+.ts-pair{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid #111;}
+.ts-cell{padding:0.5rem 0.55rem;}
+.ts-cell:first-child{border-right:1px solid var(--border);}
+.ts-time{font-size:0.58rem;font-weight:700;color:var(--m);margin-bottom:0.15rem;}
+.ts-body{font-size:0.72rem;color:#ccc;line-height:1.35;}
+.ts-extra{display:none;}
+.ts-extra.open{display:block;}
+.ts-more-btn{width:100%;background:none;border:none;border-top:1px solid #111;padding:0.5rem;font-size:0.68rem;font-weight:700;color:var(--m);cursor:pointer;letter-spacing:0.04em;}
+.ts-more-btn.open{color:#555;}
 
 /* See Full Guide */
 .full-guide-btn{width:100%;background:none;border:none;border-top:1px solid var(--border);padding:0.7rem 0.75rem;font-size:0.72rem;font-weight:700;color:var(--m);cursor:pointer;text-align:left;display:flex;justify-content:space-between;align-items:center;letter-spacing:0.04em;}
@@ -536,13 +535,28 @@ function renderGuide(id) {
 }
 
 function buildVideoEntry(video, uid) {
-  var shotsHTML = (video.shots||[]).map(function(s){
-    return '<div class="ts-row"><div class="ts-time">'+esc(s.time)+'</div><div class="ts-text">'+esc(s.text)+'</div></div>';
-  }).join('') || '<span style="font-size:0.72rem;color:#333;">None added yet.</span>';
+  var shots  = video.shots  || [];
+  var script = video.script || [];
+  var maxLen = Math.max(shots.length, script.length);
 
-  var scriptHTML = (video.script||[]).map(function(s){
-    return '<div class="ts-row"><div class="ts-time">'+esc(s.time)+'</div><div class="ts-text">'+esc(s.text)+'</div></div>';
-  }).join('') || '<span style="font-size:0.72rem;color:#333;">None added yet.</span>';
+  var previewRows = '';
+  var extraRows   = '';
+
+  for (var i = 0; i < maxLen; i++) {
+    var s  = shots[i]  || { time:'', text:'' };
+    var sc = script[i] || { time:'', text:'' };
+    var row = '<div class="ts-pair">'
+      +'<div class="ts-cell"><div class="ts-time">'+esc(s.time)+'</div><div class="ts-body">'+esc(s.text)+'</div></div>'
+      +'<div class="ts-cell"><div class="ts-time">'+esc(sc.time)+'</div><div class="ts-body">'+esc(sc.text)+'</div></div>'
+      +'</div>';
+    if (i < 2) previewRows += row;
+    else        extraRows  += row;
+  }
+
+  var moreSection = extraRows
+    ? '<div class="ts-extra" id="tsex-'+uid+'">'+extraRows+'</div>'
+      +'<button class="ts-more-btn" id="tsmore-'+uid+'" onclick="toggleExtra(\''+uid+'\')">Show more ▾</button>'
+    : '';
 
   return '<div class="video-entry">'
     +buildVideoEmbed(video.url||null)
@@ -550,29 +564,23 @@ function buildVideoEntry(video, uid) {
       ? '<a href="'+esc(video.url)+'" target="_blank" rel="noopener" class="video-link-bar">'+esc(video.url)+'</a>'
       : '<span class="video-link-bar" style="color:#2a2a2a;cursor:default;">Link to be added</span>')
     +'<div class="video-meta"><div class="video-title">'+esc(video.title||'Untitled')+'</div><div class="video-outlier">Outlier: '+esc(video.outlierScore||'—')+'</div></div>'
-    // Two-column accordion
-    +'<div class="two-col">'
-      +'<div class="col-section">'
-        +'<button class="col-btn" id="btn-shots-'+uid+'" onclick="toggleCol(\'shots-'+uid+'\',this)">Shots <span class="col-arrow">▾</span></button>'
-        +'<div class="col-panel" id="shots-'+uid+'">'+shotsHTML+'</div>'
-      +'</div>'
-      +'<div class="col-section">'
-        +'<button class="col-btn" id="btn-script-'+uid+'" onclick="toggleCol(\'script-'+uid+'\',this)">Script <span class="col-arrow">▾</span></button>'
-        +'<div class="col-panel" id="script-'+uid+'">'+scriptHTML+'</div>'
-      +'</div>'
-    +'</div>'
+    +'<div class="ts-header"><div class="ts-header-cell">Shots</div><div class="ts-header-cell">Script</div></div>'
+    +previewRows
+    +moreSection
     +'<button class="full-guide-btn" id="fg-btn-'+uid+'" onclick="toggleFullGuide(\''+uid+'\')">See Full Guide <span class="fg-arrow">▾</span></button>'
     +'<div class="full-guide-content" id="fg-'+uid+'">'+esc(video.fullGuide||'Full guide coming soon.')+'</div>'
     +'</div>';
 }
 
 // ══════════════════════════════════════
-// ACCORDION TOGGLES
+// EXPAND / COLLAPSE
 // ══════════════════════════════════════
-function toggleCol(panelId, btn) {
-  var panel = document.getElementById(panelId);
-  if (!panel) return;
-  var open = panel.classList.toggle('open');
+function toggleExtra(uid) {
+  var extra = document.getElementById('tsex-'+uid);
+  var btn   = document.getElementById('tsmore-'+uid);
+  if (!extra) return;
+  var open = extra.classList.toggle('open');
+  if (btn) btn.textContent = open ? 'Show less ▴' : 'Show more ▾';
   if (btn) btn.classList.toggle('open', open);
 }
 
