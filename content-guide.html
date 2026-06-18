@@ -74,13 +74,15 @@ button{font-family:inherit;}
 .full-img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block;}
 .full-img-placeholder{width:100%;aspect-ratio:16/9;background:#141414;display:flex;align-items:center;justify-content:center;font-size:5rem;}
 .shots-heading{font-size:0.82rem;font-weight:700;color:#fff;padding:1rem 1.25rem 0.35rem;}
-.scene-item{padding:0.85rem 1.25rem;border-bottom:1px solid var(--border);}
-.scene-item-row{display:flex;align-items:center;gap:0.85rem;margin-bottom:0.35rem;}
+/* Scene group: title + checklist items */
+.scene-group{border-top:1px solid var(--border);}
+.scene-group-title{font-size:0.78rem;font-weight:800;color:var(--m);text-transform:uppercase;letter-spacing:0.08em;padding:0.85rem 1.25rem 0.4rem;}
+.scene-check-row{display:flex;align-items:center;gap:0.85rem;padding:0.6rem 1.25rem;border-bottom:1px solid #111;}
+.scene-check-row:last-child{border-bottom:none;margin-bottom:0.4rem;}
 .scene-check{width:24px;height:24px;min-width:24px;border:2px solid var(--m);border-radius:5px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.15s;flex-shrink:0;}
 .scene-check.checked{background:var(--m);}
 .scene-check.checked::after{content:'✓';color:#fff;font-size:13px;font-weight:800;}
-.scene-lbl{font-size:0.92rem;font-weight:700;color:#fff;}
-.scene-desc{font-size:0.82rem;color:#888;line-height:1.5;padding-left:calc(24px + 0.85rem);}
+.scene-check-text{font-size:0.85rem;color:#ddd;line-height:1.4;}
 
 /* ── PAGE 3: GUIDE DETAIL ── */
 .guide-cat-label{font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.14em;color:var(--m);padding:0.85rem 1.25rem 0.5rem;}
@@ -290,43 +292,60 @@ const STORAGE_KEY = 'nancy_content_guide_v1';
 
 var isEditor = false;
 
+// Placeholder video factory — ready to be replaced with real content
+function PH() {
+  return {
+    url: null,
+    title: 'Video Title',
+    outlierScore: '—',
+    shots: [
+      { time:'0:00 - 0:30', text:'Placeholder shot description' },
+      { time:'0:30 - 1:00', text:'Placeholder shot description' },
+      { time:'1:00 - 2:00', text:'Placeholder shot description' },
+    ],
+    script: [
+      { time:'0:00 - 0:30', text:'Placeholder Nancified script line here' },
+      { time:'0:30 - 1:00', text:'Placeholder Nancified script line here' },
+      { time:'1:00 - 2:00', text:'Placeholder Nancified script line here' },
+    ],
+    fullGuide: 'Full guide and video context will be added here.'
+  };
+}
+
 // ══════════════════════════════════════
 // DATA
 // ══════════════════════════════════════
 var DATA = {
   shots: [
     { id:'inflatable-lemon', title:'Inflatable Lemon', emoji:'🍋', image:null, scenes:[
-      { label:'Scene 1', description:'Wide shot — full lemon with event backdrop' },
-      { label:'Scene 2', description:'Close-up texture and surface detail' },
-      { label:'Scene 3', description:'Person posing or interacting with it' },
-      { label:'Scene 4', description:'Overhead or wide-angle establishing shot' },
+      { title:'Scene 1', items:['Wide establishing shot with event backdrop','Side angle showing full height','Lemon against sky or crowd','Branding / logo detail close-up'] },
+      { title:'Scene 2', items:['Close-up of texture and surface','Seam or valve detail','Reflection or shadow on ground'] },
+      { title:'Scene 3', items:['Person posing next to lemon','Group photo in front','Candid interaction / touching it'] },
     ]},
     { id:'nick', title:'Nick', emoji:'🎬', image:null, scenes:[
-      { label:'Scene 1', description:'Candid working shot — natural environment' },
-      { label:'Scene 2', description:'Close-up portrait, natural light preferred' },
-      { label:'Scene 3', description:'Group moment with the team' },
+      { title:'Scene 1', items:['Candid shot while working','Camera or equipment detail','Focused / in-the-zone expression'] },
+      { title:'Scene 2', items:['Natural light portrait — clean background','Close-up face shot','Looking at camera — confident'] },
+      { title:'Scene 3', items:['With the team — group candid','Behind-the-scenes setup shot','Laughing or relaxed moment'] },
     ]},
     { id:'pickleball-court', title:'Pickleball Court', emoji:'🏓', image:null, scenes:[
-      { label:'Scene 1', description:'Full court establishing wide shot' },
-      { label:'Scene 2', description:'Players mid-game — action shot' },
-      { label:'Scene 3', description:'Detail shots — paddles, net, ball' },
-      { label:'Scene 4', description:'Crowd or spectators reacting' },
+      { title:'Scene 1', items:['Full court wide establishing shot','Net close-up — detail shot','Court lines and surface texture','Hello Nancy branding on court if any'] },
+      { title:'Scene 2', items:['Players mid-rally — action blur okay','Serve motion — full body','Ball in play close-up','Doubles pair in position'] },
+      { title:'Scene 3', items:['Crowd or spectators watching','Cheering reaction after point','Post-match handshake or celebration'] },
     ]},
     { id:'products', title:'Products', emoji:'📦', image:null, scenes:[
-      { label:'Scene 1', description:'Flat lay on clean surface, brand visible' },
-      { label:'Scene 2', description:'Product in hand — lifestyle context' },
-      { label:'Scene 3', description:'Close-up texture and label detail' },
-      { label:'Scene 4', description:'Multiple products styled together' },
+      { title:'Scene 1', items:['Flat lay on clean surface — brand facing up','Top-down overhead arrangement','Diagonal styled layout'] },
+      { title:'Scene 2', items:['Product in hand — lifestyle feel','Person using or holding product','Product with complementary props'] },
+      { title:'Scene 3', items:['Close-up of label and text detail','Texture or material macro shot','Logo / wordmark isolated close-up'] },
     ]},
   ],
   guides: [
-    { id:'event',                title:'Event',                label:'Event',          subtitle:'On Site Visuals',              emoji:'🎪', videos:[] },
-    { id:'product-focus',        title:'Product Focus',        label:'Product Focus',   subtitle:'',                             emoji:'📦', videos:[] },
-    { id:'capturing-celebrities',title:'Capturing Celebrities',label:'Celebrities',     subtitle:'',                             emoji:'⭐', videos:[] },
-    { id:'reactions',            title:'Reactions',            label:'Reactions',       subtitle:'',                             emoji:'🤩', videos:[] },
-    { id:'street-interview',     title:'Street Interview',     label:'Street Style',    subtitle:'Street Style',                 emoji:'🎤', videos:[] },
-    { id:'team-type',            title:'Team Type',            label:'Team Type',       subtitle:'Preparations, Fun Team Shots', emoji:'👥', videos:[] },
-    { id:'after-event',          title:'After Event',          label:'After Event',     subtitle:'',                             emoji:'🌅', videos:[] },
+    { id:'event',                title:'Event',                label:'Event',          subtitle:'On Site Visuals',              emoji:'🎪', videos:[PH(),PH()] },
+    { id:'product-focus',        title:'Product Focus',        label:'Product Focus',  subtitle:'',                             emoji:'📦', videos:[PH(),PH()] },
+    { id:'capturing-celebrities',title:'Capturing Celebrities',label:'Celebrities',    subtitle:'',                             emoji:'⭐', videos:[PH(),PH()] },
+    { id:'reactions',            title:'Reactions',            label:'Reactions',      subtitle:'',                             emoji:'🤩', videos:[PH(),PH()] },
+    { id:'street-interview',     title:'Street Interview',     label:'Street Style',   subtitle:'Street Style',                 emoji:'🎤', videos:[PH(),PH()] },
+    { id:'team-type',            title:'Team Type',            label:'Team Type',      subtitle:'Preparations, Fun Team Shots', emoji:'👥', videos:[PH(),PH()] },
+    { id:'after-event',          title:'After Event',          label:'After Event',    subtitle:'',                             emoji:'🌅', videos:[PH(),PH()] },
   ]
 };
 
@@ -346,7 +365,10 @@ async function loadData() {
       if (saved.guides) {
         saved.guides.forEach(function(sg) {
           var g = DATA.guides.find(function(x){ return x.id === sg.id; });
-          if (g && sg.videos) g.videos = sg.videos;
+          // Only override if there are real (non-placeholder) videos saved
+          if (g && sg.videos && sg.videos.some(function(v){ return v.url; })) {
+            g.videos = sg.videos;
+          }
         });
       }
     }
@@ -395,6 +417,13 @@ function extractYouTubeId(url) {
 }
 
 function buildVideoEmbed(url) {
+  if (!url) {
+    return '<div class="video-embed-wrap video-placeholder video-coming-soon">'
+      +'<div class="video-play-ring" style="border-color:#2a2a2a;color:#333;">▶</div>'
+      +'<div class="video-platform" style="color:#2a2a2a;">VIDEO</div>'
+      +'<div class="video-tap" style="color:#2a2a2a;">Coming soon</div>'
+      +'</div>';
+  }
   var platform = detectPlatform(url);
   if (platform === 'youtube') {
     var id = extractYouTubeId(url);
@@ -457,12 +486,15 @@ function renderShot(id) {
     : '<div class="full-img-placeholder">'+shot.emoji+'</div>';
 
   var scenes = shot.scenes.map(function(sc){
-    return '<div class="scene-item">'
-      +'<div class="scene-item-row">'
+    var items = (sc.items||[]).map(function(item){
+      return '<div class="scene-check-row">'
         +'<div class="scene-check" onclick="this.classList.toggle(\'checked\')"></div>'
-        +'<div class="scene-lbl">'+esc(sc.label)+'</div>'
-      +'</div>'
-      +'<div class="scene-desc">'+esc(sc.description)+'</div>'
+        +'<div class="scene-check-text">'+esc(item)+'</div>'
+        +'</div>';
+    }).join('');
+    return '<div class="scene-group">'
+      +'<div class="scene-group-title">'+esc(sc.title)+'</div>'
+      +items
       +'</div>';
   }).join('');
 
@@ -513,8 +545,10 @@ function buildVideoEntry(video, uid) {
   }).join('') || '<span style="font-size:0.72rem;color:#333;">None added yet.</span>';
 
   return '<div class="video-entry">'
-    +buildVideoEmbed(video.url||'')
-    +'<a href="'+esc(video.url||'')+'" target="_blank" rel="noopener" class="video-link-bar">'+esc(video.url||'No URL')+'</a>'
+    +buildVideoEmbed(video.url||null)
+    +(video.url
+      ? '<a href="'+esc(video.url)+'" target="_blank" rel="noopener" class="video-link-bar">'+esc(video.url)+'</a>'
+      : '<span class="video-link-bar" style="color:#2a2a2a;cursor:default;">Link to be added</span>')
     +'<div class="video-meta"><div class="video-title">'+esc(video.title||'Untitled')+'</div><div class="video-outlier">Outlier: '+esc(video.outlierScore||'—')+'</div></div>'
     // Two-column accordion
     +'<div class="two-col">'
