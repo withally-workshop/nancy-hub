@@ -60,10 +60,11 @@ button{font-family:inherit;}
 .shot-card-label{background:var(--m);padding:0.65rem 0.75rem;font-size:0.75rem;font-weight:700;color:#fff;text-align:center;letter-spacing:0.04em;}
 
 /* ── ROW 2: GUIDE CARDS ── */
-.guide-card{flex-shrink:0;width:160px;height:160px;border-radius:18px;background:var(--m);display:flex;align-items:center;justify-content:center;cursor:pointer;padding:1rem;transition:transform 0.18s ease,filter 0.18s ease;-webkit-user-select:none;user-select:none;}
-.guide-card:active{transform:scale(0.95);filter:brightness(0.85);}
-.guide-card-text{font-size:0.82rem;font-weight:700;color:#fff;text-align:center;line-height:1.4;}
-.guide-card-sub{display:block;font-size:0.67rem;font-weight:500;opacity:0.8;margin-top:0.25rem;}
+.guide-card{flex-shrink:0;width:160px;border-radius:18px;overflow:hidden;cursor:pointer;border:1px solid var(--border);transition:transform 0.18s ease;-webkit-user-select:none;user-select:none;}
+.guide-card:active{transform:scale(0.95);}
+.guide-card-top{width:160px;height:110px;background:#141414;display:flex;align-items:center;justify-content:center;font-size:3rem;}
+.guide-card-label{background:var(--m);padding:0.55rem 0.75rem;font-size:0.75rem;font-weight:700;color:#fff;text-align:center;line-height:1.3;}
+.guide-card-sub{display:block;font-size:0.65rem;font-weight:500;opacity:0.85;margin-top:0.15rem;}
 
 /* ── EDITOR BAR ── */
 .editor-bar{background:var(--m);padding:0.45rem 1.25rem;font-size:0.7rem;font-weight:700;color:#fff;display:none;align-items:center;justify-content:space-between;}
@@ -322,13 +323,13 @@ var DATA = {
     ]},
   ],
   guides: [
-    { id:'event',                title:'Event',           subtitle:'On Site Visuals',                 videos:[] },
-    { id:'product-focus',        title:'Product Focus',   subtitle:'',                                videos:[] },
-    { id:'capturing-celebrities',title:'Capturing Celebrities', subtitle:'',                          videos:[] },
-    { id:'reactions',            title:'Reactions',       subtitle:'',                                videos:[] },
-    { id:'street-interview',     title:'Street Interview', subtitle:'Street Style',                   videos:[] },
-    { id:'team-type',            title:'Team Type',       subtitle:'Preparations, Fun Team Shots',    videos:[] },
-    { id:'after-event',          title:'After Event',     subtitle:'',                                videos:[] },
+    { id:'event',                title:'Event',           subtitle:'On Site Visuals',              emoji:'🎪', videos:[] },
+    { id:'product-focus',        title:'Product Focus',   subtitle:'',                             emoji:'📦', videos:[] },
+    { id:'capturing-celebrities',title:'Capturing Celebrities', subtitle:'',                       emoji:'⭐', videos:[] },
+    { id:'reactions',            title:'Reactions',       subtitle:'',                             emoji:'🤩', videos:[] },
+    { id:'street-interview',     title:'Street Interview', subtitle:'Street Style',                emoji:'🎤', videos:[] },
+    { id:'team-type',            title:'Team Type',       subtitle:'Preparations, Fun Team Shots', emoji:'👥', videos:[] },
+    { id:'after-event',          title:'After Event',     subtitle:'',                             emoji:'🌅', videos:[] },
   ]
 };
 
@@ -441,7 +442,10 @@ function renderHome() {
 
   guidesRow.innerHTML = DATA.guides.map(function(guide){
     var sub = guide.subtitle ? '<span class="guide-card-sub">'+esc(guide.subtitle)+'</span>' : '';
-    return '<div class="guide-card" onclick="goGuide(\''+guide.id+'\')"><div class="guide-card-text">'+esc(guide.title)+sub+'</div></div>';
+    return '<div class="guide-card" onclick="goGuide(\''+guide.id+'\')">'
+      +'<div class="guide-card-top">'+(guide.emoji||'🎬')+'</div>'
+      +'<div class="guide-card-label">'+esc(guide.title)+sub+'</div>'
+      +'</div>';
   }).join('');
 }
 
