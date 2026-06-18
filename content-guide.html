@@ -4,13 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Hello Nancy — Content Guide</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 /* ── RESET ── */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-html,body{background:#000;color:#fff;font-family:'Inter',system-ui,sans-serif;min-height:100vh;overflow-x:hidden;-webkit-tap-highlight-color:transparent;-webkit-text-size-adjust:100%;}
+html,body{background:#000;color:#fff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;min-height:100vh;overflow-x:hidden;-webkit-tap-highlight-color:transparent;-webkit-text-size-adjust:100%;}
 button{font-family:inherit;}
 /* safe area for notched phones */
 .page{padding-bottom:calc(3rem + env(safe-area-inset-bottom,0px));}
@@ -632,12 +630,11 @@ async function saveVideo() {
 }
 
 // ══════════════════════════════════════
-// INIT
+// INIT — render immediately, load remote data in background
 // ══════════════════════════════════════
-async function init() {
-  await checkEditorAccess();
-  await loadData();
-  handleRoute();
+function init() {
+  handleRoute(); // instant render with hardcoded data
+  Promise.all([checkEditorAccess(), loadData()]).then(handleRoute); // update once Supabase responds
 }
 init();
 </script>
