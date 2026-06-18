@@ -91,6 +91,8 @@ button{font-family:inherit;}
 /* Video embed */
 .video-embed-wrap{border:3px solid var(--m);position:relative;}
 .video-embed-wrap iframe{width:100%;aspect-ratio:16/9;display:block;border:none;}
+.video-embed-wrap.tiktok-wrap iframe{aspect-ratio:9/16;max-height:520px;}
+.video-embed-wrap.instagram-wrap iframe{aspect-ratio:4/5;max-height:520px;}
 .video-placeholder{width:100%;aspect-ratio:16/9;background:#0a0a0a;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.6rem;text-decoration:none;cursor:pointer;}
 .video-play-ring{width:52px;height:52px;border-radius:50%;border:2.5px solid var(--m);display:flex;align-items:center;justify-content:center;color:var(--m);font-size:1.4rem;}
 .video-platform{font-size:0.65rem;font-weight:700;color:var(--gray);letter-spacing:0.08em;text-transform:uppercase;}
@@ -356,7 +358,14 @@ var DATA = {
     ]},
   ],
   guides: [
-    { id:'event',                title:'Event',                label:'Event',          subtitle:'On Site Visuals',              emoji:'🎪', videos:[PH(),PH()] },
+    { id:'event', title:'Event', label:'Event', subtitle:'On Site Visuals', emoji:'🎪', videos:[
+      { url:'https://www.tiktok.com/video/7627595673759780126', title:'Sephora Launch Emotional POV',   outlierScore:'315.13x', tag:'rahuls-outlier', shots:[], script:[], fullGuide:'' },
+      { url:'https://www.tiktok.com/video/7648371423903354142', title:'High-Energy Pop-Up Recap',        outlierScore:'10.57x',  tag:'rahuls-outlier', shots:[], script:[], fullGuide:'' },
+      { url:'https://www.tiktok.com/video/7642391595798564110', title:'Local Call-Out Product Macro',    outlierScore:'31.62x',  tag:'rahuls-outlier', shots:[], script:[], fullGuide:'' },
+      { url:'https://www.tiktok.com/video/7647625624739253526', title:'Giant Product Pop-Up Spectacle',  outlierScore:'39.77x',  tag:'rahuls-outlier', shots:[], script:[], fullGuide:'' },
+      { url:'https://www.instagram.com/p/DYKtlEcCqC5/',        title:"The 'Save This' Listicle Guide",  outlierScore:'8.63x',   tag:'rahuls-outlier', shots:[], script:[], fullGuide:'' },
+      { url:'https://www.tiktok.com/video/7637473727772462358', title:'Mystery Locker Reveal',           outlierScore:'23.08x',  tag:'rahuls-outlier', shots:[], script:[], fullGuide:'' },
+    ] },
     { id:'product-focus',        title:'Product Focus',        label:'Product Focus',  subtitle:'',                             emoji:'📦', videos:[PH(),PH()] },
     { id:'capturing-celebrities',title:'Capturing Celebrities',label:'Celebrities',    subtitle:'',                             emoji:'⭐', videos:[PH(),PH()] },
     { id:'reactions',            title:'Reactions',            label:'Reactions',      subtitle:'',                             emoji:'🤩', videos:[PH(),PH()] },
@@ -432,6 +441,14 @@ function extractYouTubeId(url) {
   var m = url.match(/(?:v=|youtu\.be\/|embed\/)([^&?/\s]{11})/);
   return m ? m[1] : null;
 }
+function extractTikTokId(url) {
+  var m = url.match(/\/video\/(\d+)/);
+  return m ? m[1] : null;
+}
+function extractInstagramId(url) {
+  var m = url.match(/\/p\/([A-Za-z0-9_-]+)/);
+  return m ? m[1] : null;
+}
 
 function buildVideoEmbed(url) {
   if (!url) {
@@ -444,15 +461,21 @@ function buildVideoEmbed(url) {
   var platform = detectPlatform(url);
   if (platform === 'youtube') {
     var id = extractYouTubeId(url);
-    if (id) {
-      return '<div class="video-embed-wrap"><iframe src="https://www.youtube.com/embed/'+id+'" allow="autoplay;clipboard-write;encrypted-media;picture-in-picture" allowfullscreen loading="lazy"></iframe></div>';
-    }
+    if (id) return '<div class="video-embed-wrap"><iframe src="https://www.youtube.com/embed/'+id+'" allow="autoplay;clipboard-write;encrypted-media;picture-in-picture" allowfullscreen loading="lazy"></iframe></div>';
   }
-  var icons = { tiktok:'🎵', instagram:'📸', pinterest:'📌', other:'▶', unknown:'▶' };
-  var labels = { tiktok:'TikTok', instagram:'Instagram', pinterest:'Pinterest', other:'Video', unknown:'Video' };
+  if (platform === 'tiktok') {
+    var id = extractTikTokId(url);
+    if (id) return '<div class="video-embed-wrap tiktok-wrap"><iframe src="https://www.tiktok.com/embed/v2/'+id+'" allow="fullscreen" sandbox="allow-scripts allow-same-origin allow-popups" loading="lazy"></iframe></div>';
+  }
+  if (platform === 'instagram') {
+    var id = extractInstagramId(url);
+    if (id) return '<div class="video-embed-wrap instagram-wrap"><iframe src="https://www.instagram.com/p/'+id+'/embed/" allow="fullscreen" loading="lazy" scrolling="no"></iframe></div>';
+  }
+  var icons = { pinterest:'📌', other:'▶', unknown:'▶' };
+  var labels = { pinterest:'Pinterest', other:'Video', unknown:'Video' };
   return '<a href="'+esc(url)+'" target="_blank" rel="noopener" class="video-embed-wrap video-placeholder">'
-    +'<div class="video-play-ring">'+icons[platform]+'</div>'
-    +'<div class="video-platform">'+labels[platform]+'</div>'
+    +'<div class="video-play-ring">'+(icons[platform]||'▶')+'</div>'
+    +'<div class="video-platform">'+(labels[platform]||'Video')+'</div>'
     +'<div class="video-tap">Tap to watch</div>'
     +'</a>';
 }
@@ -653,6 +676,7 @@ function openAddVideoModal(guideId) {
   document.getElementById('v-url').value = '';
   document.getElementById('v-title').value = '';
   document.getElementById('v-outlier').value = '';
+  document.getElementById('v-tag').value = '';
   document.getElementById('v-shots').value = '';
   document.getElementById('v-script').value = '';
   document.getElementById('v-fullguide').value = '';
