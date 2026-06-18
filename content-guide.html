@@ -131,6 +131,27 @@ button{font-family:inherit;}
 /* Empty state */
 .empty-state{padding:2.5rem 1.25rem;text-align:center;color:#333;font-size:0.82rem;line-height:1.6;}
 
+/* ── GUIDE BOTTOM SHEET ── */
+.gs-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.82);z-index:1000;display:none;align-items:flex-end;justify-content:center;-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);}
+.gs-overlay.open{display:flex;}
+.gs-sheet{width:100%;max-width:480px;max-height:92vh;background:#0d0d0d;border-radius:22px 22px 0 0;display:flex;flex-direction:column;transform:translateY(100%);transition:transform 0.32s cubic-bezier(0.32,0.72,0,1);overflow:hidden;}
+.gs-overlay.open .gs-sheet{transform:translateY(0);}
+.gs-handle-bar{flex-shrink:0;position:relative;display:flex;align-items:center;justify-content:center;padding:0.65rem 0 0.3rem;}
+.gs-handle{width:38px;height:4px;border-radius:2px;background:#2a2a2a;}
+.gs-close{position:absolute;right:0.85rem;top:0.45rem;width:30px;height:30px;background:#1c1c1c;border:none;border-radius:50%;color:#666;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;}
+.gs-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+.gs-body::-webkit-scrollbar{display:none;}
+.gs-embed-wrap{position:relative;}
+.gs-meta{display:flex;justify-content:space-between;align-items:flex-start;padding:0.75rem 1rem;border-bottom:1px solid var(--border);gap:0.5rem;}
+.gs-title{font-size:1rem;font-weight:800;flex:1;line-height:1.3;}
+.gs-outlier{font-size:0.72rem;font-weight:700;color:var(--m);white-space:nowrap;padding-top:0.1rem;}
+.gs-link{display:block;padding:0.45rem 1rem;font-size:0.65rem;color:var(--m);text-decoration:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;border-bottom:1px solid var(--border);}
+.gs-section-title{font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:#444;padding:0.85rem 1rem 0.35rem;}
+.gs-fullguide{padding:0 1rem calc(2rem + env(safe-area-inset-bottom,0px));font-size:0.84rem;line-height:1.7;color:#bbb;white-space:pre-wrap;word-break:break-word;}
+.gs-no-content{padding:1.5rem 1rem;font-size:0.8rem;color:#333;font-style:italic;}
+/* "Full Guide" button on video cards */
+.full-guide-sheet-btn{width:100%;background:none;border:none;border-top:1px solid var(--border);padding:0.75rem 1rem;font-size:0.78rem;font-weight:700;color:var(--m);cursor:pointer;text-align:left;display:flex;justify-content:space-between;align-items:center;letter-spacing:0.03em;min-height:44px;}
+
 /* Add-video-btn */
 .add-video-btn{display:block;margin:0 1rem 1rem;background:var(--m);border:none;padding:0.6rem 1.25rem;border-radius:10px;font-size:0.8rem;font-weight:700;color:#fff;cursor:pointer;width:calc(100% - 2rem);letter-spacing:0.04em;}
 
@@ -291,6 +312,17 @@ button{font-family:inherit;}
       <button class="modal-cancel" onclick="closeModal('modal-add-video')">Cancel</button>
       <button class="modal-save" onclick="saveVideo()">Save</button>
     </div>
+  </div>
+</div>
+
+<!-- ══ GUIDE BOTTOM SHEET ══ -->
+<div class="gs-overlay" id="gs-overlay" onclick="gsBackdropClose(event)">
+  <div class="gs-sheet" id="gs-sheet">
+    <div class="gs-handle-bar">
+      <div class="gs-handle"></div>
+      <button class="gs-close" onclick="closeGuideSheet()">✕</button>
+    </div>
+    <div class="gs-body" id="gs-body"></div>
   </div>
 </div>
 
@@ -560,7 +592,7 @@ function renderGuide(id) {
     videosHTML = '<div class="empty-state">'+(isEditor ? 'No videos yet.<br>Add the first one below.' : 'Content coming soon.')+'</div>';
   } else {
     videosHTML = guide.videos.map(function(video, idx){
-      return buildVideoEntry(video, id+'-'+idx);
+      return buildVideoEntry(video, id+'-'+idx, id, idx);
     }).join('');
   }
 
@@ -575,45 +607,21 @@ function renderGuide(id) {
     +'<div class="home-btn-wrap"><button class="home-btn" onclick="goHome()">← Home</button></div>';
 }
 
-function buildVideoEntry(video, uid) {
-  var shots  = video.shots  || [];
-  var script = video.script || [];
-  var maxLen = Math.max(shots.length, script.length);
-
-  var previewRows = '';
-  var extraRows   = '';
-
-  for (var i = 0; i < maxLen; i++) {
-    var s  = shots[i]  || { time:'', text:'' };
-    var sc = script[i] || { time:'', text:'' };
-    var row = '<div class="ts-pair">'
-      +'<div class="ts-cell"><div class="ts-time">'+esc(s.time)+'</div><div class="ts-body">'+esc(s.text)+'</div></div>'
-      +'<div class="ts-cell"><div class="ts-time">'+esc(sc.time)+'</div><div class="ts-body">'+esc(sc.text)+'</div></div>'
-      +'</div>';
-    if (i < 2) previewRows += row;
-    else        extraRows  += row;
-  }
-
-  var moreSection = extraRows
-    ? '<div class="ts-extra" id="tsex-'+uid+'">'+extraRows+'</div>'
-      +'<button class="ts-more-btn" id="tsmore-'+uid+'" onclick="toggleExtra(\''+uid+'\')">Show more ▾</button>'
-    : '';
-
+function buildVideoEntry(video, uid, guideId, videoIdx) {
   var tagHTML = (video.tag && TAGS[video.tag])
     ? '<div class="video-tag">🏷 '+esc(TAGS[video.tag])+'</div>'
     : '';
+
+  var gId  = guideId  !== undefined ? guideId  : uid;
+  var vIdx = videoIdx !== undefined ? videoIdx : 0;
 
   return '<div class="video-entry">'
     +'<div class="video-embed-container">'+buildVideoEmbed(video.url||null)+tagHTML+'</div>'
     +(video.url
       ? '<a href="'+esc(video.url)+'" target="_blank" rel="noopener" class="video-link-bar">'+esc(video.url)+'</a>'
       : '<span class="video-link-bar" style="color:#2a2a2a;cursor:default;">Link to be added</span>')
-    +'<div class="video-meta"><div class="video-title">'+esc(video.title||'Untitled')+'</div><div class="video-outlier">Outlier: '+esc(video.outlierScore||'—')+'</div></div>'
-    +'<div class="ts-header"><div class="ts-header-cell">Shots</div><div class="ts-header-cell">Script</div></div>'
-    +previewRows
-    +moreSection
-    +'<button class="full-guide-btn" id="fg-btn-'+uid+'" onclick="toggleFullGuide(\''+uid+'\')">See Full Guide <span class="fg-arrow">▾</span></button>'
-    +'<div class="full-guide-content" id="fg-'+uid+'">'+esc(video.fullGuide||'Full guide coming soon.')+'</div>'
+    +'<div class="video-meta"><div class="video-title">'+esc(video.title||'Untitled')+'</div><div class="video-outlier">'+esc(video.outlierScore||'—')+'</div></div>'
+    +'<button class="full-guide-sheet-btn" onclick="openGuideSheet(\''+gId+'\','+vIdx+')">Full Guide <span style="font-size:0.8rem;">›</span></button>'
     +'</div>';
 }
 
@@ -629,12 +637,61 @@ function toggleExtra(uid) {
   if (btn) btn.classList.toggle('open', open);
 }
 
-function toggleFullGuide(uid) {
-  var content = document.getElementById('fg-'+uid);
-  var btn = document.getElementById('fg-btn-'+uid);
-  if (!content) return;
-  content.classList.toggle('open');
-  if (btn) btn.classList.toggle('open', content.classList.contains('open'));
+// ══════════════════════════════════════
+// GUIDE BOTTOM SHEET
+// ══════════════════════════════════════
+function openGuideSheet(guideId, videoIdx) {
+  var guide = DATA.guides.find(function(g){ return g.id === guideId; });
+  if (!guide) return;
+  var video = guide.videos[videoIdx];
+  if (!video) return;
+
+  var shots  = video.shots  || [];
+  var script = video.script || [];
+  var maxLen = Math.max(shots.length, script.length);
+
+  var tagHTML = (video.tag && TAGS[video.tag])
+    ? '<div class="video-tag">🏷 '+esc(TAGS[video.tag])+'</div>'
+    : '';
+
+  var pairsHTML = '';
+  for (var i = 0; i < maxLen; i++) {
+    var s  = shots[i]  || { time:'', text:'' };
+    var sc = script[i] || { time:'', text:'' };
+    pairsHTML += '<div class="ts-pair">'
+      +'<div class="ts-cell"><div class="ts-time">'+esc(s.time)+'</div><div class="ts-body">'+esc(s.text)+'</div></div>'
+      +'<div class="ts-cell"><div class="ts-time">'+esc(sc.time)+'</div><div class="ts-body">'+esc(sc.text)+'</div></div>'
+      +'</div>';
+  }
+
+  var tsSection = maxLen > 0
+    ? '<div class="ts-header" style="margin-top:0.25rem;"><div class="ts-header-cell">Shots</div><div class="ts-header-cell">Script</div></div>'+pairsHTML
+    : '<div class="gs-no-content">Shots &amp; script coming soon.</div>';
+
+  var fgText = video.fullGuide || '';
+  var fgSection = '<div class="gs-section-title">Full Guide</div>'
+    +'<div class="gs-fullguide">'+(fgText ? esc(fgText) : '<span style="color:#333;font-style:italic;">Full guide coming soon.</span>')+'</div>';
+
+  document.getElementById('gs-body').innerHTML =
+    '<div class="gs-embed-wrap">'+buildVideoEmbed(video.url||null)+tagHTML+'</div>'
+    +(video.url ? '<a href="'+esc(video.url)+'" target="_blank" rel="noopener" class="gs-link">'+esc(video.url)+'</a>' : '')
+    +'<div class="gs-meta"><div class="gs-title">'+esc(video.title||'Untitled')+'</div><div class="gs-outlier">'+esc(video.outlierScore||'—')+'</div></div>'
+    +'<div class="gs-section-title">Shots &amp; Script</div>'
+    +tsSection
+    +fgSection;
+
+  document.getElementById('gs-body').scrollTop = 0;
+  document.getElementById('gs-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeGuideSheet() {
+  document.getElementById('gs-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function gsBackdropClose(e) {
+  if (e.target === document.getElementById('gs-overlay')) closeGuideSheet();
 }
 
 // ══════════════════════════════════════
