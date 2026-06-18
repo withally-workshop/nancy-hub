@@ -33,17 +33,14 @@ button{font-family:inherit;}
 .page{display:none;min-height:100vh;padding-bottom:3rem;}
 .page.active{display:block;}
 
-/* ── SHARED HEADER ── */
-.top-header{padding:2rem 1.25rem 0.5rem;text-align:center;}
+/* ── SHARED HEADER — left-aligned, same on every page ── */
+.top-header{padding:2rem 1.25rem 0.5rem;text-align:left;}
 .top-title{font-size:2.1rem;font-weight:900;letter-spacing:-0.03em;line-height:1;}
-.top-sub{font-size:0.7rem;font-weight:700;color:var(--m);letter-spacing:0.14em;text-transform:uppercase;margin-top:0.3rem;}
+.top-sub{font-size:0.78rem;font-weight:700;color:#fff;margin-top:0.15rem;}
 
-/* ── DETAIL HEADER ── */
-.detail-header{display:flex;align-items:center;padding:0.75rem 1.25rem;border-bottom:1px solid var(--border);gap:0.75rem;}
-.back-btn{background:none;border:none;color:var(--m);font-size:0.9rem;font-weight:700;cursor:pointer;padding:0.5rem 0;min-height:44px;display:flex;align-items:center;gap:0.3rem;white-space:nowrap;}
-.detail-header-center{flex:1;text-align:center;}
-.detail-header-title{font-size:0.75rem;font-weight:700;color:#fff;}
-.detail-header-sub{font-size:0.6rem;font-weight:700;color:var(--m);letter-spacing:0.1em;text-transform:uppercase;margin-top:0.1rem;}
+/* ── HOME BUTTON — bottom of detail pages ── */
+.home-btn-wrap{padding:1.75rem 1.25rem 1rem;}
+.home-btn{background:none;border:none;color:var(--m);font-size:0.95rem;font-weight:700;cursor:pointer;padding:0.5rem 0;min-height:44px;display:flex;align-items:center;gap:0.3rem;}
 
 /* ── SECTION LABEL ── */
 .section-label{display:flex;align-items:center;gap:0.75rem;padding:1.25rem 1.25rem 0.65rem;}
@@ -75,16 +72,17 @@ button{font-family:inherit;}
 .editor-mini-btn{background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.3);color:#fff;border-radius:6px;padding:0.2rem 0.6rem;font-size:0.65rem;font-weight:700;cursor:pointer;letter-spacing:0.04em;}
 
 /* ── PAGE 2: SHOT DETAIL ── */
-.shot-detail-title{font-size:1.5rem;font-weight:800;padding:1rem 1.25rem 0.5rem;letter-spacing:-0.02em;}
+.shot-detail-title{font-size:1.3rem;font-weight:800;padding:0.75rem 1.25rem 0.5rem;letter-spacing:-0.02em;}
 .full-img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block;}
 .full-img-placeholder{width:100%;aspect-ratio:16/9;background:#141414;display:flex;align-items:center;justify-content:center;font-size:5rem;}
-.shots-heading{font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:var(--m);padding:1rem 1.25rem 0.5rem;}
-.scene-item{display:flex;align-items:flex-start;gap:0.85rem;padding:0.75rem 1.25rem;border-bottom:1px solid var(--border);}
-.scene-check{width:22px;height:22px;min-width:22px;border:2px solid var(--m);border-radius:5px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.15s;margin-top:1px;}
+.shots-heading{font-size:0.82rem;font-weight:700;color:#fff;padding:1rem 1.25rem 0.35rem;}
+.scene-item{padding:0.85rem 1.25rem;border-bottom:1px solid var(--border);}
+.scene-item-row{display:flex;align-items:center;gap:0.85rem;margin-bottom:0.35rem;}
+.scene-check{width:24px;height:24px;min-width:24px;border:2px solid var(--m);border-radius:5px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.15s;flex-shrink:0;}
 .scene-check.checked{background:var(--m);}
 .scene-check.checked::after{content:'✓';color:#fff;font-size:13px;font-weight:800;}
-.scene-lbl{font-size:0.75rem;font-weight:700;color:var(--m);margin-bottom:0.2rem;}
-.scene-desc{font-size:0.88rem;color:#ddd;line-height:1.45;}
+.scene-lbl{font-size:0.92rem;font-weight:700;color:#fff;}
+.scene-desc{font-size:0.82rem;color:#888;line-height:1.5;padding-left:calc(24px + 0.85rem);}
 
 /* ── PAGE 3: GUIDE DETAIL ── */
 .guide-cat-label{font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.14em;color:var(--m);padding:0.85rem 1.25rem 0.5rem;}
@@ -217,24 +215,21 @@ button{font-family:inherit;}
 
   <!-- ══ PAGE 2: SHOT DETAIL ══ -->
   <div class="page" id="page-shot">
-    <div class="detail-header">
-      <button class="back-btn" onclick="goHome()">← Home</button>
-      <div class="detail-header-center">
-        <div class="detail-header-title">Hello Nancy</div>
-        <div class="detail-header-sub">Content Guide</div>
-      </div>
+    <div class="top-header">
+      <div class="top-title">Hello Nancy</div>
+      <div class="top-sub">Content Guide</div>
     </div>
     <div id="shot-detail-content"></div>
   </div>
 
   <!-- ══ PAGE 3: GUIDE DETAIL ══ -->
   <div class="page" id="page-guide">
-    <div class="detail-header">
-      <button class="back-btn" onclick="goHome()">← Home</button>
-      <div class="detail-header-center">
-        <div class="detail-header-title">Hello Nancy</div>
-        <div class="detail-header-sub">Content Guide</div>
-      </div>
+    <div class="top-header">
+      <div class="top-title">Hello Nancy</div>
+      <div class="top-sub">Content Guide</div>
+    </div>
+    <div class="editor-bar" id="editor-bar-guide">
+      <span class="editor-badge">✎ Editor Mode</span>
     </div>
     <div id="guide-detail-content"></div>
   </div>
@@ -461,10 +456,13 @@ function renderShot(id) {
     ? '<img class="full-img" src="'+esc(shot.image)+'" alt="'+esc(shot.title)+'">'
     : '<div class="full-img-placeholder">'+shot.emoji+'</div>';
 
-  var scenes = shot.scenes.map(function(sc, i){
+  var scenes = shot.scenes.map(function(sc){
     return '<div class="scene-item">'
-      +'<div class="scene-check" onclick="this.classList.toggle(\'checked\')"></div>'
-      +'<div><div class="scene-lbl">'+esc(sc.label)+'</div><div class="scene-desc">'+esc(sc.description)+'</div></div>'
+      +'<div class="scene-item-row">'
+        +'<div class="scene-check" onclick="this.classList.toggle(\'checked\')"></div>'
+        +'<div class="scene-lbl">'+esc(sc.label)+'</div>'
+      +'</div>'
+      +'<div class="scene-desc">'+esc(sc.description)+'</div>'
       +'</div>';
   }).join('');
 
@@ -472,7 +470,8 @@ function renderShot(id) {
     '<div class="shot-detail-title">'+esc(shot.title)+'</div>'
     +img
     +'<div class="shots-heading">Shots Required</div>'
-    +scenes;
+    +scenes
+    +'<div class="home-btn-wrap"><button class="home-btn" onclick="goHome()">← Home</button></div>';
 }
 
 // ══════════════════════════════════════
@@ -500,7 +499,8 @@ function renderGuide(id) {
   document.getElementById('guide-detail-content').innerHTML =
     '<div class="guide-cat-label">'+esc(catLabel)+'</div>'
     +videosHTML
-    +editorBtn;
+    +editorBtn
+    +'<div class="home-btn-wrap"><button class="home-btn" onclick="goHome()">← Home</button></div>';
 }
 
 function buildVideoEntry(video, uid) {
