@@ -1,339 +1,170 @@
-# Content Guide System — Context for Collaborators
+# Content Guide — How It Works
 
-> Read this **entire file** before touching any `content-guide*.html` file.
-> These two pages are tightly coupled. A change in one can break the other.
-
----
-
-## Overview
-
-The Content Guide is Hello Nancy's internal tool for planning, tracking, and executing video content shoots. It has two pages — a **read-only view** for the full team and a **protected editor** for admins. Everything runs on vanilla HTML/CSS/JS with Supabase as the backend. There is no build step, no framework, no bundler.
+Read this before making changes to the Content Guide.
 
 ---
 
-## The Two Pages — View vs Edit
+## What Is the Content Guide?
 
-| | View Page | Edit Page |
-|---|---|---|
-| **File** | `content-guide.html` | `content-guide-edit.html` |
-| **URL** | `nancy-hub.vercel.app/content-guide.html` | `nancy-hub.vercel.app/content-guide-edit.html` |
-| **Who uses it** | Full team — anyone with the link | Admins only (Dione, Crystal) |
-| **Auth** | None — public link, no login | Supabase email/password login gate |
-| **Can edit data?** | **No.** Read-only. No save buttons, no modals, no editing UI. | **Yes.** Full CRUD — add/edit/delete videos, shots, schedule, pipeline |
-| **Purpose** | Reference during shoots. See what needs filming, check off shots, view concepts. | Build and manage the guide. Add videos, tag content, create shoot schedules, manage pipeline. |
+The Content Guide is Hello Nancy's internal tool for planning, tracking, and executing video content shoots. It lives at two links:
 
-### What this means in practice
+- View page: https://nancy-hub.vercel.app/content-guide.html
+  This is the read-only version. The full team uses this during shoots to see what needs filming, check off completed shots, and reference concept details. Nobody can accidentally edit anything here.
 
-- The **view page** is what gets opened on phones during a shoot. It shows shot checklists, concept guides, and the schedule — but nobody can accidentally change anything.
-- The **edit page** is where Dione (or Crystal) builds the guide before a shoot: adding videos, tagging them, setting up the shoot schedule, managing the edit & publish pipeline.
-- Both pages load the **same data from Supabase**, so edits made in the editor appear on the view page immediately (on refresh).
+- Edit page: https://nancy-hub.vercel.app/content-guide-edit.html
+  This is the admin version. Only Dione and Crystal can log in. This is where videos get added, tagged, analysed, and organised. All changes made here show up on the view page immediately (on refresh).
 
-### Rule: View page must NEVER have editing UI
-
-No save buttons, no text inputs that write to Supabase, no modals that modify data, no "+ Add" buttons. The only interactive elements allowed on the view page are:
-- Navigation (clicking into guides, shots, back buttons)
-- Shot checkboxes (marking shots as done — this is the ONE write action allowed)
-- Filter pills (filtering by tags)
-
-If you see editing UI on the view page, it's a bug — remove it.
+Both pages pull the same data from Supabase. There is no build step — everything is plain HTML/CSS/JS.
 
 ---
 
-## General Mandatory Shots — How It Works
+## What Changed in the June 2025 Redesign
 
-This is the core system. It answers: **"What shots do we need to capture at this event?"**
+Before, the guide was a flat list of concept guides with stacked cards — video on top, small text below. Hooks were buried in body text and hard to scan. The Original and Nancy analysis sections sat at the very bottom of each card.
 
-### The data structure
+Now the layout is completely different:
 
-All shot data lives in one Supabase key: **`nancy_content_guide_shots_config_v1`**
-
-```json
-{
-  "shots": [...],           // GENERAL_SHOTS — individual shot items
-  "groups": [...],          // GS_GROUPS — how shots are organized into categories
-  "schedule": [...],        // PEOPLE_SCHEDULE — legacy, still stored but not displayed
-  "shootSchedule": [...],   // SHOOT_BLOCKS — the Shoot Schedule page data
-  "pipeline": [...]         // PIPELINE — the Edit & Publish page data
-}
-```
-
-**This data is NOT hardcoded.** Both pages load it dynamically via `loadShotsConfig()`. Never hardcode shot data into the HTML files.
-
-### GENERAL_SHOTS (the `shots` array)
-
-Each shot is one thing that needs filming:
-
-```json
-{
-  "id": "nick-court-rally",
-  "person": "Nick Kyrgios",
-  "label": "Court rally & serve — wide action shots",
-  "detail": "Wide and medium shots of Nick doing rallies...",
-  "videoTitles": ["Nick Kyrgios - this was nuts", "Daily Mail Sport - Knockout game"]
-}
-```
-
-- `id` — unique identifier, used for tracking completion
-- `person` — which person/product/prop this shot belongs to (links to a group)
-- `label` — what to film (shown as the checkbox label)
-- `detail` — extra context (shown smaller below the label)
-- `videoTitles` — which concept videos use this shot (links shots to videos by title)
-
-### GS_GROUPS (the `groups` array)
-
-Groups organize shots into categories shown as clickable cards on the home screen:
-
-```json
-{
-  "label": "Celebrity",
-  "items": [
-    { "key": "Nick Kyrgios", "emoji": "🎬", "short": "Nick" }
-  ]
-}
-```
-
-Current groups (after migration): Product, Big Prop, Venue, Celeb, Creators / People, Founder / Team. Old labels (Celebrity, People, Products, Locations, Props & B-roll) are migrated on load via `GS_GROUP_MIGRATION_MAP`.
-
-### How it displays
-
-**Home screen** → 3-tab navigation: **Concepts** (default), **Shoot Schedule**, **Edit & Publish**. Under Concepts tab, shows 6 category cards (Product 🧴, Big Prop 🎈, Venue 📍, Celeb ⭐, Creators / People 👥, Founder / Team 🎬) with concept + shot count badges.
-
-**Click a category** → Shows **Concepts | Shots** pill toggle. Under Concepts: horizontal concept cards with video embed, tags, script, outlier score. Under Shots: shot checklist with checkboxes, filter pills, progress bar, and connected concept thumbnails per shot.
-
-**Checking a shot** → Saves to a separate Supabase key (`nancy_content_guide_gs_v1`) as a done set: `{ "done": ["nick-court-rally", ...] }`. This works on BOTH view and edit pages — it's the one write action allowed on the view page.
-
-### How shots link to videos
-
-The `videoTitles` array on each shot references concept videos by their title string. When a video title is renamed in the editor, the shots config auto-updates to match.
-
-### CATEGORIES and migration maps
-
-Both files define a `CATEGORIES` array (6 unified categories replacing old GS_GROUPS labels and GUIDES_LIST entries), a `GUIDE_MIGRATION_MAP` (remaps old guide IDs to new category IDs), and a `GS_GROUP_MIGRATION_MAP` (remaps old group labels to new category labels). The teaser guide is mapped to `null` (dropped). DM References videos land in Celeb temporarily.
+- Three tabs at the top: Concepts, Shoot Schedule, and Edit & Publish
+- Under Concepts, there are six category cards: Product, Big Prop, Venue, Celeb, Creators / People, and Founder / Team
+- Each category has a toggle between Concepts and Shots
+- Detail cards use a side-by-side layout: video embed on the left, metadata fields on the right (Tags, People, Hook, Caption, Text Overlay), with Original and Nancy analysis cards filling the space below the metadata — not pushed to the bottom
+- Hook types are now color-coded badges: pink for Visual, green for Script, blue for Audio, yellow for Mix
+- Tags are solid colored pills: purple for People, green for Product, yellow for Location, blue for Prop
+- Views and likes now show icons (eye and heart) next to the numbers
 
 ---
 
-## Shoot Schedule & Edit & Publish
+## The Three Tabs
 
-Accessible via tabs on the home screen (replacing the old 2-pill navigation):
+### Concepts Tab (default)
 
-### Shoot Schedule pill
+This is the main workspace. It shows six category cards on the home screen:
 
-Opens a **full page** (replaces the home screen content) showing time-blocked shoot plans:
+- Product (the drink products — Lem, BeRRi, Avo, etc.)
+- Big Prop (inflatables, truck, mirrors — large visual props)
+- Venue (shoot locations — London Street, Mandrake, Paddle Court)
+- Celeb (celebrity content — Nick Kyrgios and similar)
+- Creators / People (street interviews, creator content)
+- Founder / Team (behind-the-scenes, team content)
 
-```
-SHOOT_BLOCKS = [
-  {
-    "location": "Main Court",
-    "time": "9:00 – 11:00",
-    "scenes": [
-      {
-        "label": "Giant inflatable — zoom OUT reveal",
-        "equipment": "Giant inflatable · gimbal/crane",
-        "icon": "🎈",
-        "concepts": [
-          { "num": 4, "shot": 1, "hook": "It's THIS big 🤩 (Inflatable reveal)" }
-        ]
-      }
-    ]
-  }
-]
-```
+Click a category to see its concepts (video reference cards) or shots (filming checklist).
 
-The idea: group scenes by location and time, not by concept. If three concepts all need the same inflatable shot, you set up the inflatable ONCE and film for all three.
+### Shoot Schedule Tab
 
-- **View page:** Read-only display. No add/edit/delete.
-- **Edit page:** Full CRUD. Click a time block header to edit/delete. Click a scene to edit/delete. "+ Add Time Block" and "+ Add Scene" buttons.
+Shows the shoot plan organised by location and time block. The idea is that if three concepts all need the same prop or location, you set it up once and film everything in that block.
 
-### Edit & Publish pill
+On the view page, this is read-only. On the edit page, admins can add, edit, and delete time blocks and scenes.
 
-Opens a **full page** showing a kanban-style pipeline board. Concepts move through 7 statuses:
+### Edit & Publish Tab
 
-```
-SHOT → INGESTED → ASSIGNED → EDITING → REVIEW → APPROVED → PUBLISHED
-```
+A kanban board that tracks where each concept is in the editing pipeline. Concepts move through seven stages:
 
-```
-PIPELINE = [
-  {
-    "conceptNum": "4",
-    "name": "POV: you finally found the one",
-    "status": "editing",
-    "editor": "Crystal",
-    "publishTime": "12:00"
-  }
-]
-```
+Shot → Ingested → Assigned → Editing → Review → Approved → Published
 
-- **View page:** Read-only kanban. See where each concept is in the pipeline.
-- **Edit page:** Full CRUD. Click a card to edit (change status, reassign editor, update publish time). "+ Add Concept" button.
-
-Both pages use the same `PIPELINE_STATUSES` array for column definitions:
-```javascript
-var PIPELINE_STATUSES = [
-  { key:'shot', label:'SHOT', color:'#888' },
-  { key:'ingested', label:'INGESTED', color:'#f5a623' },
-  { key:'assigned', label:'ASSIGNED', color:'#44aaff' },
-  { key:'editing', label:'EDITING', color:'#ff00aa' },
-  { key:'review', label:'REVIEW', color:'#d966ff' },
-  { key:'approved', label:'APPROVED', color:'#4caf50' },
-  { key:'published', label:'PUBLISHED', color:'#222' }
-];
-```
+On the view page, this is read-only. On the edit page, admins can add concepts to the pipeline, change their status, assign editors, and set publish times.
 
 ---
 
-## Concept Guides (the video lists)
+## How the Shooting Workflow Flows
 
-Below the General Mandatory Shots section, both pages show **Concept cards** (Event, Teaser, Franchise, Daily, etc.). Each concept guide contains a list of videos with:
+This is the end-to-end process from planning to publishing:
 
-- Video URL + embedded preview
-- Content title
-- Outlier score (performance metric)
-- Production shots (what to film for this video)
-- Script (Nancified caption)
-- Tags (People, Product, Location, Prop, Type)
-- Full Guide (detailed breakdown — Why It Works, How to Nancify, etc.)
+1. Concepts get added in the edit page — each one is a video reference with analysis, tags, hook type, and filming instructions.
 
----
+2. Shots are created and linked to concepts. Each shot describes one specific thing to film (for example, "Court rally — wide action shots of Nick"). Shots are grouped by category and person.
 
-## Supabase Keys Reference
+3. During the shoot, the team opens the view page on their phones. They use the shot checklist to tick off each shot as it's filmed. This is the one thing the view page can write — checkbox completions save to Supabase in real time.
 
-| Key | What it stores | Who writes to it |
-|-----|---------------|-----------------|
-| `nancy_content_guide_v1` | Full video list (all concepts + their videos) | Edit page only |
-| `nancy_cg_full_guides_v1` | Full Guide content per video (Why It Works, etc.) | Edit page only |
-| `nancy_content_guide_shots_config_v1` | General Mandatory Shots + groups + schedule + pipeline | Edit page only |
-| `nancy_content_guide_gs_v1` | Shot completion checkboxes (`done` set) | Both pages (checkboxes) |
-| `nancy_content_guide_tags_v1` | Custom tags added via editor | Edit page only |
+4. As shots complete, a progress bar fills up on each concept card. When ALL shots linked to a concept are done, it shows a "Ready for Editors" badge. This tells the team that concept has all the footage it needs.
 
-**Never rename these keys.** Both pages depend on the exact strings.
+5. "Ready for Editors" is a signal, not an automatic action. An admin then manually adds that concept to the Edit & Publish pipeline (on the edit page) and sets its status to "Ingested" or "Assigned."
+
+6. From there, editors move concepts through the pipeline stages: Assigned → Editing → Review → Approved → Published. The whole team can see progress on the view page's Edit & Publish tab.
 
 ---
 
-## Data Flow
+## How a Detail Card Works
 
-```
-Edit page (content-guide-edit.html)
-  → Admin logs in
-  → Adds/edits videos, tags, shots, schedule, pipeline
-  → Saves to Supabase keys above
+When you click on a concept, the detail card shows:
 
-View page (content-guide.html)
-  → No login required
-  → On load: reads all Supabase keys, merges with hardcoded defaults
-  → Displays everything read-only
-  → Only write: shot checkboxes → nancy_content_guide_gs_v1
-```
+Left side:
+- Title of the concept
+- Link to the original video (Instagram, TikTok, or YouTube)
+- Embedded video preview with the outlier score badge (e.g. "13.94x")
+- Views and likes counts with icons
 
-### Hardcoded defaults
-
-Both pages contain hardcoded default data (the original 13 event videos, guide structure, full guide content). Supabase data is **merged on top** — it doesn't replace the defaults. This means:
-
-- `content-guide.html` has `DATA.guides[0].videos` with rich fields like `filmingGuide` and `description`
-- `content-guide-edit.html` has `VIDEOS` array with `shots` and `script` defaults
-- The merge is **field-by-field** (title, outlierScore, shots, script only) — never replace the whole video object
+Right side:
+- Tags — the products, locations, and props involved (colored pills)
+- People — who appears in or films this concept (purple pills)
+- Hook — the hook type and description (e.g. "Visual Hook. Rapid-fire close-ups of luxury materials")
+- Caption — the suggested post caption
+- Text Overlay — any on-screen text
+- Two dark cards side by side:
+  - Original — analysis of why the original video went viral, with timestamped frame breakdowns (lime green badges)
+  - Nancy — how Hello Nancy will recreate this concept, with production shot breakdowns (pink badges)
 
 ---
 
-## What You CAN Touch
+## How the Analysis Works
 
-- Adding new concept guides or videos (through the edit page UI, not by editing HTML)
-- Adding new tags to `TAG_CATEGORIES` (**must be done in BOTH files** — they each have their own copy)
-- CSS styling changes (colors, spacing, fonts)
-- Adding new `PIPELINE_STATUSES` entries (add to both files)
-- Adding new `GS_GROUPS` entries (via Supabase, not hardcoded)
+Each concept video has analysis data that breaks down why the original went viral and how Nancy should recreate it:
 
-## What You CANNOT Touch
+**Original side (why it worked):**
+- Deep Analysis — a written breakdown of the viral mechanics (what made the hook work, pacing, visual strategy)
+- Frame Breakdown — timestamped shots from the original video (e.g. "0:00–0:02 Extreme close-up of product texture"). These show as lime green timestamp badges.
 
-1. **Supabase key names** — `nancy_content_guide_v1`, `nancy_cg_full_guides_v1`, etc. Changing these breaks data loading.
-2. **The field-by-field merge in `loadData()`** — Do NOT replace `g.videos = sg.videos`. The merge is intentional to preserve rich fields from hardcoded data.
-3. **The `status` field logic** — Videos without a status default to `"approved"` for backwards compatibility. Don't change this.
-4. **Adding editing UI to the view page** — No save buttons, no modals, no text inputs that write to Supabase. The view page is read-only.
-5. **Changing one page without the other** — `TAG_CATEGORIES`, `PIPELINE_STATUSES`, `GUIDES_LIST` / `DATA.guides`, `GUIDE_EMOJIS`, group card layout, filter tab UI — all must stay in sync between both files.
-6. **Hardcoding shot data** — `GENERAL_SHOTS` and `GS_GROUPS` come from Supabase. Never put them inline in HTML.
+**Nancy side (how to recreate it):**
+- Execution — a description of how Nancy will adapt this concept (who films it, what to focus on, what to change)
+- Production Shots — the specific shots the Nancy team needs to capture (e.g. "Wide shot of Nick serving on court"). These show as pink timestamp badges.
+
+All of this data is entered through the edit page. The view page just displays it.
 
 ---
 
-## What Currently Needs Fixing
+## Tags
 
-### Pipeline modal Save button (Edit & Publish page — edit page only)
+Tags describe what appears in each concept video. They are organised into five categories:
 
-When clicking "+ Add Concept" on the Edit & Publish page, filling the form, and clicking Save, the `PIPELINE` array sometimes stays empty. Adding data via the browser JS console (`PIPELINE.push({...}); saveShotsFullConfig();`) works fine — the issue is isolated to the modal's Save button click handler. The most likely cause is an event propagation issue or the dynamically created modal's onclick not binding correctly. The data and save logic are correct — it's the UI click path that's broken.
+- People (purple pills): Nick Kyrgios, Rahul, Momoko, Rachana, Crystal, Susan, Jackie, Kem, Gillian, Lottie Moss
+- Product (green pills): Lem, Avo, BeRRi, Blanket, Snack Pack, Lem-Avo-BeRRi
+- Location (yellow pills): London Street, Mandrake, Paddle Court
+- Prop (blue pills): Inflatable Lem, Inflatable BeRRi, Big Inflatable Tennis Ball, Merch, Nancy Truck, Court, Mirrors
+- Type: AI
 
-### Legacy data still stored
+Note: Crystal should only appear in 2–3 videos max. Susan and Jackie take most people shots. Corrine is the videographer (not a People tag — she films, she doesn't appear in concepts).
 
-`PEOPLE_SCHEDULE` (per-person schedule pills like "Nick 2-4pm") is still stored in the Supabase config under the `schedule` key but is no longer displayed anywhere. It was replaced by the Shoot Schedule and Edit & Publish pills. It's harmless but could be cleaned up.
+---
 
-### Old CSS still present
+## What You Can Change
 
-Some unused CSS classes from the old per-person schedule system (`.sched-pill`, `.sched-add-btn`, etc.) may still exist in the edit page. Harmless but could be cleaned up.
+- Styling — colors, spacing, fonts, layout tweaks
+- Adding new tags — but you must add them in both the view page and the edit page files. They each have their own copy of the tag list.
+- Adding new pipeline stages — add to both files
+- Adding videos, shots, and schedule blocks — through the edit page, not by editing the code
+- Rearranging the order of fields on the detail card
+- Grid card appearance
+
+## What You Must Not Change
+
+- The five Supabase key names. Renaming any of them breaks the entire data connection between the two pages.
+- The data merge logic in the loading function. It merges Supabase data on top of defaults field by field — this is intentional and changing it will lose data.
+- The load and save functions for shots. Both pages depend on the exact same data shape.
+- The view page's read-only rule. No save buttons, no edit modals, no forms. The only thing that writes is the shot checkbox.
+- Changing one page without the other. The tag list, categories, pipeline statuses, and migration maps must stay identical in both files. If you change one and not the other, they will show different data.
+- The video embed function. It detects Instagram, TikTok, and YouTube URLs and renders the correct embed. It works — leave it alone.
+- Shot data in the code. Shots come from Supabase dynamically. Never hardcode them.
+- The migration maps. These remap old category names to new ones. Removing them breaks all existing data in Supabase.
 
 ---
 
 ## Deployment
 
-No build step. All files are plain HTML/CSS/JS served directly.
+There is no build step. To deploy:
 
-```
-npx vercel deploy --prod --yes
-```
+    npx vercel deploy --prod --yes
 
-**Always deploy to the `nancy-hub` Vercel project** (live at `nancy-hub.vercel.app`).
-Never deploy to `nancy-hub-v2`. The git auto-deploy webhook is broken — always use the CLI.
+Always deploy to the nancy-hub Vercel project (nancy-hub.vercel.app). Never deploy to nancy-hub-v2. The git auto-deploy webhook is broken — always use the CLI command above.
 
 ---
 
-## Tag System
-
-Tags are organized into categories in `TAG_CATEGORIES` (defined in BOTH files — keep them in sync):
-
-| Category | Tags |
-|----------|------|
-| **People** | Nick Kyrgios, Rahul, Momoko, Rachana, Crystal, Susan, Jackie, Kem, Gillian, Lottie Moss |
-| **Product** | Lem, Avo, BeRRi, Blanket, Snack Pack, Lem-Avo-BeRRi |
-| **Location** | London Street, Mandrake, Paddle Court |
-| **Prop** | Inflatable Lem, Inflatable BeRRi, Big Inflatable Tennis Ball, Merch, Nancy Truck, Court, Mirrors |
-| **Type** | AI |
-
-To add a new tag: add the string to `TAG_CATEGORIES` in **both** files. Do not rename existing tag strings without migrating Supabase data.
-
----
-
-## Key Functions Reference
-
-### Edit page (`content-guide-edit.html`)
-
-| Function | What it does |
-|----------|-------------|
-| `renderEditorHome()` | Renders 3-tab bar + 6 category cards |
-| `edSwitchTab(tabId)` | Switches between Concepts / Schedule / Pipeline tabs |
-| `renderEdCategoryDetail(catId, pill)` | Category detail with Concepts / Shots pill toggle |
-| `renderEdCategoryConcepts(catId)` | Concept summary cards with link to full editor |
-| `renderEdCategoryShots(catId, filter)` | Shot checklist inside category detail |
-| `renderShootSchedulePage(wrap)` | Shoot Schedule with time blocks and scenes |
-| `renderPipelinePage(wrap)` | Edit & Publish kanban board |
-| `saveShotsFullConfig()` | Saves ALL config (shots, groups, schedule, shootSchedule, pipeline) to Supabase |
-| `loadShotsConfig()` | Loads config from Supabase into JS variables + applies GS migration |
-| `addShootBlock()` / `editShootBlock(bi)` | CRUD for time blocks |
-| `addScene(bi)` / `editScene(bi, si)` | CRUD for scenes within a time block |
-| `addPipelineCard()` / `editPipelineCard(idx)` | CRUD for pipeline kanban cards |
-
-### View page (`content-guide.html`)
-
-| Function | What it does |
-|----------|-------------|
-| `renderHome()` | Sets active tab and renders tab bar + concepts tab |
-| `renderTabBar()` | 3-tab bar: Concepts / Shoot Schedule / Edit & Publish |
-| `switchTab(tabId)` | Switches tab content |
-| `renderConceptsTab(wrap)` | 6 category cards grid |
-| `renderCategoryDetail(catId, pill)` | Category detail with Concepts / Shots pill toggle |
-| `renderCategoryConcepts(catId)` | Horizontal concept cards with video embed + full details |
-| `renderCategoryShots(catId, filter)` | Shot checklist with connected video thumbnails |
-| `showSchedulePageView(wrap)` | Read-only Shoot Schedule |
-| `showPipelinePageView(wrap)` | Read-only Edit & Publish kanban |
-| `renderShot(id)` | Renders shot detail page (page 2) |
-| `renderGuide(id)` | Renders concept guide detail page (page 3) |
-
----
-
-*Last updated: 2026-06-21*
+*Last updated: 21 June 2025*

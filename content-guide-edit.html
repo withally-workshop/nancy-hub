@@ -2087,8 +2087,7 @@ function toggleMic(btn, fieldId) {
 
 // ── BOOT ──
 (async function() {
-  var res = await db.auth.getSession();
-  if (res.data && res.data.session) startEditor();
+  startEditor();
 })();
 </script>
 </body>
