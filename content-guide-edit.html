@@ -392,6 +392,20 @@ textarea.fg-ta.sm{min-height:52px;}
 .shot-prog-bar{height:3px;background:#1e1e1e;border-radius:2px;margin:0 1.25rem 0.3rem;}
 .shot-prog-fill{height:100%;background:var(--m);border-radius:2px;transition:width 0.3s;}
 .shot-prog-label{font-size:0.6rem;font-weight:700;color:#555;padding:0 1.25rem 0.6rem;display:flex;justify-content:space-between;}
+.shot-prog-label.all-done{color:var(--m);}
+.shot-ready-badge{font-size:0.55rem;font-weight:800;background:var(--m);color:#fff;border-radius:20px;padding:0.15rem 0.5rem;letter-spacing:0.04em;}
+
+/* ── LINKED SHOTS CHECKLIST (on video cards) ── */
+.ve-linked-shots{padding:0.5rem 0;border-top:1px solid #1a1a2a;margin-top:0.5rem;}
+.ve-linked-shots .ve-sec-lbl{margin-bottom:0.15rem;}
+.ve-linked-shot{display:flex;align-items:center;gap:0.4rem;padding:0.15rem 0;font-size:0.6rem;color:#555;}
+.ve-linked-shot.done{color:var(--m);}
+.ve-ls-check{font-size:0.65rem;width:1rem;text-align:center;flex-shrink:0;}
+.ve-linked-shot.done .ve-ls-check{color:var(--m);}
+.ve-ls-title{line-height:1.3;}
+.ve-shot-prog{margin-top:0.4rem;}
+.ve-shot-prog .shot-prog-bar{margin:0 0 0.2rem;}
+.ve-shot-prog .shot-prog-label{padding:0;}
 
 /* ── CONCEPT FILTER + BIG GRID ── */
 .concept-filter-pills{display:flex;gap:6px;padding:0.5rem 1.25rem 0.75rem;flex-wrap:wrap;}
@@ -688,6 +702,7 @@ var GS_GROUPS = [];
 var PEOPLE_SCHEDULE = [];
 var SHOOT_BLOCKS = [];
 var PIPELINE = [];
+var videoGSMap = {};
 var PIPELINE_STATUSES = [
   { key:'shot', label:'SHOT', color:'#888' },
   { key:'ingested', label:'INGESTED', color:'#f5a623' },
@@ -699,7 +714,42 @@ var PIPELINE_STATUSES = [
 ];
 
 function buildVideoGSMap() {
-  // not needed on editor page but keep parity
+  videoGSMap = {};
+  GENERAL_SHOTS.forEach(function(gs) {
+    (gs.videoTitles||[]).forEach(function(title) {
+      if (!videoGSMap[title]) videoGSMap[title] = [];
+      if (videoGSMap[title].indexOf(gs.id) === -1) videoGSMap[title].push(gs.id);
+    });
+  });
+}
+
+function calcVideoProgress(video) {
+  var title = video.title || '';
+  var needed = videoGSMap[title] || [];
+  if (!needed.length) return null;
+  var done = needed.filter(function(id){ return doneGS.has(id); }).length;
+  return { done: done, total: needed.length, pct: Math.round(done*100/needed.length), complete: done === needed.length };
+}
+
+function checkAutoShotComplete(shotId) {
+  var gs = GENERAL_SHOTS.find(function(s){ return s.id === shotId; });
+  if (!gs || !gs.videoTitles) return;
+  var added = false;
+  gs.videoTitles.forEach(function(title) {
+    var video = null;
+    Object.keys(savedVid).forEach(function(k) {
+      if (savedVid[k] && savedVid[k].title === title) video = savedVid[k];
+    });
+    if (!video) return;
+    var prog = calcVideoProgress(video);
+    if (!prog || !prog.complete) return;
+    var exists = PIPELINE.some(function(p){ return p.name === video.title; });
+    if (exists) return;
+    var idx = Object.keys(savedVid).find(function(k){ return savedVid[k] && savedVid[k].title === title; });
+    PIPELINE.push({ conceptNum: parseInt(idx)+1, name: video.title, status: 'shot', editor: '', publishTime: '' });
+    added = true;
+  });
+  if (added) saveShotsFullConfig();
 }
 
 async function loadShotsConfig() {
@@ -721,6 +771,7 @@ async function loadShotsConfig() {
       });
     }
   } catch(e) {}
+  buildVideoGSMap();
 }
 
 
@@ -739,6 +790,7 @@ function toggleGSEl(el) {
   if (!id) return;
   if (doneGS.has(id)) { doneGS.delete(id); el.classList.remove('checked'); } else { doneGS.add(id); el.classList.add('checked'); }
   saveGS();
+  checkAutoShotComplete(id);
   var counter = document.getElementById('gs-counter');
   if (counter) {
     var groupLabel = counter.getAttribute('data-group');
@@ -1242,6 +1294,13 @@ function renderEdConceptsTab() {
       });
       html += '</div>';
     }
+    var prog = calcVideoProgress(v);
+    if (prog) {
+      html += '<div style="padding:0.2rem 0.5rem 0;">'
+        +'<div class="shot-prog-bar" style="margin:0 0 0.15rem;"><div class="shot-prog-fill" style="width:'+prog.pct+'%"></div></div>'
+        +'<div style="font-size:0.5rem;font-weight:700;color:'+(prog.complete?'var(--m)':'#555')+';">'+prog.done+'/'+prog.total+' shots'+(prog.complete?' ✓':'')+'</div>'
+        +'</div>';
+    }
     html += '</div></div>';
   });
   html += '</div>';
@@ -1284,11 +1343,14 @@ function renderEdCategoryConcepts(catId) {
   videos.forEach(function(v, idx) {
     var tags = Array.isArray(v.tags) ? v.tags : [];
     var tagStr = tags.length ? tags.slice(0,3).join(', ') + (tags.length > 3 ? ' +' + (tags.length-3) : '') : '';
+    var prog = calcVideoProgress(v);
+    var progLabel = prog ? prog.done+'/'+prog.total+' shots' : '';
     html += '<div class="ed-concept-card" onclick="openGuide(\''+catId+'\')">'
       +'<div class="ed-concept-num">'+(idx+1)+'</div>'
       +'<div class="ed-concept-body">'
         +'<div class="ed-concept-title">'+esc(v.title||'Untitled')+'</div>'
         +(tagStr ? '<div class="ed-concept-sub">'+esc(tagStr)+'</div>' : '')
+        +(progLabel ? '<div class="ed-concept-sub" style="color:'+(prog.complete?'var(--m)':'#555')+';">'+progLabel+(prog.complete?' ✓':'')+'</div>' : '')
       +'</div>'
       +'<div class="ed-concept-arrow">→</div>'
       +'</div>';
@@ -1787,7 +1849,36 @@ function renderVideos(guideId) {
         '</div>' +
         '<div class="ve-saved" id="savemsg-' + i + '" style="display:none;text-align:right;margin-top:0.25rem;">✓ Saved</div>' +
         actionRow +
-      '</div>';
+      '</div>' +
+
+      /* ── SHOT PROGRESS + LINKED SHOTS ── */
+      (function(){
+        var prog = calcVideoProgress({title: title});
+        if (!prog) return '';
+        var inPipeline = PIPELINE.some(function(p){ return p.name === title; });
+        var html = '<div class="ve-shot-prog" style="padding:0.4rem 0.6rem;">';
+        html += '<div class="shot-prog-bar"><div class="shot-prog-fill" style="width:'+prog.pct+'%"></div></div>';
+        html += '<div class="shot-prog-label'+(prog.complete?' all-done':'')+'">';
+        html += '<span>'+prog.done+' / '+prog.total+' shots done</span>';
+        if (prog.complete) html += '<span class="shot-ready-badge">'+(inPipeline?'In Pipeline ✓':'Ready for Editors ✓')+'</span>';
+        html += '</div>';
+        var shotIds = videoGSMap[title] || [];
+        if (shotIds.length) {
+          html += '<div class="ve-linked-shots"><div class="ve-sec-lbl">Shooting Checklist</div>';
+          shotIds.forEach(function(sid) {
+            var gs = GENERAL_SHOTS.find(function(s){ return s.id === sid; });
+            if (!gs) return;
+            var isDone = doneGS.has(sid);
+            html += '<div class="ve-linked-shot'+(isDone?' done':'')+'">'
+              +'<span class="ve-ls-check">'+(isDone?'✓':'○')+'</span>'
+              +'<span class="ve-ls-title">'+esc(gs.title||gs.id)+'</span>'
+              +'</div>';
+          });
+          html += '</div>';
+        }
+        html += '</div>';
+        return html;
+      })();
 
     list.appendChild(card);
   });
