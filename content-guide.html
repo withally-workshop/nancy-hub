@@ -514,12 +514,12 @@ button{font-family:inherit;}
 .concept-filter-pills{display:flex;gap:6px;padding:0.5rem 1.25rem 0.75rem;flex-wrap:wrap;}
 .concept-filter-pill{font-size:0.62rem;font-weight:700;padding:0.3rem 0.8rem;border-radius:20px;background:#111;color:#555;border:1px solid #222;cursor:pointer;transition:all 0.15s;white-space:nowrap;}
 .concept-filter-pill.active{background:var(--m);color:#fff;border-color:var(--m);}
-.concept-grid-big{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;padding:0 1.25rem 1.5rem;}
-.concept-card-big{background:#0d0d0d;border-radius:12px;border:1px solid var(--border);overflow:hidden;transition:transform 0.15s;}
-.concept-card-big-thumb{width:100%;aspect-ratio:9/16;max-height:280px;background:#0a0a0a;overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center;clip-path:inset(0 round 0);}
+.concept-grid-big{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:6px;padding:0 0.75rem 1rem;}
+.concept-card-big{background:#0d0d0d;border-radius:10px;border:1px solid var(--border);overflow:hidden;}
+.concept-card-big-thumb{width:100%;aspect-ratio:9/16;max-height:340px;background:#0a0a0a;overflow:hidden;position:relative;clip-path:inset(0 round 0);}
 .concept-card-big-thumb .video-embed-wrap{border:none!important;width:100%;height:100%;position:absolute;top:0;left:0;overflow:hidden;}
-.concept-card-big-thumb .video-embed-wrap iframe{max-width:100%;max-height:100%;}
-.concept-card-big-thumb .video-embed-wrap.tiktok-wrap iframe,.concept-card-big-thumb .video-embed-wrap.instagram-wrap iframe{width:325px!important;height:580px!important;aspect-ratio:unset!important;max-height:none!important;transform:scale(0.62);transform-origin:top left;}
+.concept-card-big-thumb .video-embed-wrap iframe{width:100%;height:100%;border:none;}
+.concept-card-big-thumb .video-embed-wrap.tiktok-wrap iframe,.concept-card-big-thumb .video-embed-wrap.instagram-wrap iframe{width:325px!important;height:580px!important;aspect-ratio:unset!important;max-height:none!important;transform:scale(0.72);transform-origin:top left;}
 .concept-filter-pills-mini{display:flex;gap:5px;padding:0 1.25rem 0.65rem;flex-wrap:wrap;}
 .concept-filter-mini{font-size:0.52rem;font-weight:600;padding:0.18rem 0.55rem;border-radius:12px;background:#111;color:#444;border:1px solid #1a1a1a;cursor:pointer;transition:all 0.15s;white-space:nowrap;}
 .concept-filter-mini.active{background:rgba(255,0,170,0.12);color:var(--m);border-color:rgba(255,0,170,0.3);}
@@ -538,7 +538,7 @@ button{font-family:inherit;}
 .concept-card-big-badge.badge-platform{background:rgba(17,17,17,0.85);color:#fff;}
 .concept-card-big-badge.badge-category{background:rgba(255,0,170,0.85);color:#fff;}
 .concept-card-big-outlier{position:absolute;top:8px;right:8px;background:rgba(76,175,80,0.9);color:#fff;font-size:0.62rem;font-weight:800;padding:0.2rem 0.55rem;border-radius:6px;z-index:2;}
-.concept-card-big-info{padding:0.55rem 0.65rem;cursor:pointer;}
+.concept-card-big-info{padding:0.35rem 0.5rem 0.4rem;cursor:pointer;}
 .concept-card-big-info:hover{background:#111;}
 .concept-card-big-title{font-size:0.72rem;font-weight:700;color:#ccc;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
 .concept-card-big-hook-type{display:inline-block;font-size:0.46rem;font-weight:800;padding:0.14rem 0.42rem;border-radius:6px;margin-top:0.3rem;letter-spacing:0.03em;text-transform:uppercase;}
@@ -1929,21 +1929,19 @@ function buildVideoEntry(video, uid, guideId, videoIdx) {
     +     '</div>'
     +   '</div>'
 
-    // Right: Tags, People, Hook, Caption, Overlay
+    // Right: Tags, People, Hook, Caption, Overlay + Original/Nancy cards
     +   '<div class="vev2-right">'
     +     (nonPeopleTags ? '<div class="vev2-field"><span class="vev2-field-label">Tags</span><div class="vev2-field-value">'+nonPeopleTags+'</div></div>' : '')
     +     (tagPills('People') ? '<div class="vev2-field"><span class="vev2-field-label">People</span><div class="vev2-field-value">'+tagPills('People')+'</div></div>' : '')
     +     (hookText ? '<div class="vev2-field"><span class="vev2-field-label">Hook</span><span class="vev2-field-text">'+esc(hookText)+'</span></div>' : '')
     +     (video.postCaption ? '<div class="vev2-field"><span class="vev2-field-label">Caption</span><span class="vev2-field-text">'+esc(video.postCaption)+'</span></div>' : '')
     +     (video.overlayCaption ? '<div class="vev2-field"><span class="vev2-field-label">Text Overlay</span><span class="vev2-field-text">'+esc(video.overlayCaption)+'</span></div>' : '')
+    +     '<div class="vev2-split">'
+    +       '<div class="vev2-col"><div class="vev2-col-hdr o">Original</div>'+origHTML+'</div>'
+    +       '<div class="vev2-col"><div class="vev2-col-hdr n">Nancy</div>'+nancyHTML+'</div>'
+    +     '</div>'
     +   '</div>'
 
-    + '</div>'
-
-    // Original | Nancy cards below
-    + '<div class="vev2-split">'
-    +   '<div class="vev2-col"><div class="vev2-col-hdr o">Original</div>'+origHTML+'</div>'
-    +   '<div class="vev2-col"><div class="vev2-col-hdr n">Nancy</div>'+nancyHTML+'</div>'
     + '</div>'
 
     // Shot progress bar
