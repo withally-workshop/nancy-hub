@@ -188,14 +188,17 @@ input.ve-field-in:focus{border-color:#2a2a2a;color:#aaa;}
 .brief-vid-item{width:100%;background:#0a0a0a;border-radius:8px;overflow:hidden;border:1px solid #222;cursor:pointer;transition:border-color 0.15s;}
 .brief-vid-item:hover{border-color:var(--m);}
 .brief-vid-thumb{width:100%;aspect-ratio:9/16;max-height:180px;background:#0a0a0a;overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center;}
-.brief-vid-thumb .video-embed-wrap{border:none!important;width:100%;height:100%;position:absolute;top:0;left:0;pointer-events:none;}
+.brief-vid-thumb .video-embed-wrap{border:none!important;width:100%;height:100%;position:absolute;top:0;left:0;}
 .brief-vid-thumb .video-embed-wrap.tiktok-wrap iframe,.brief-vid-thumb .video-embed-wrap.instagram-wrap iframe{width:325px!important;height:580px!important;aspect-ratio:unset!important;max-height:none!important;transform:scale(0.47);transform-origin:top left;}
 .brief-vid-thumb .video-embed-wrap iframe{width:100%;height:100%;border:none;}
-.brief-vid-play{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:3;background:rgba(0,0,0,0.15);}
-.brief-vid-play::after{content:'';width:0;height:0;border-left:14px solid #fff;border-top:9px solid transparent;border-bottom:9px solid transparent;filter:drop-shadow(0 0 4px rgba(0,0,0,0.5));}
+.brief-vid-play{display:none;}
 .brief-vid-info{padding:0.25rem 0.4rem 0.3rem;}
 .brief-vid-num{font-size:0.5rem;color:var(--m);font-weight:700;}
 .brief-vid-title{font-size:0.48rem;color:#666;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.brief-overflow-row{padding:0.75rem 0.9rem;border-top:1px solid #1a1a1a;}
+.brief-overflow-vids{display:flex;gap:8px;overflow-x:auto;padding-top:6px;}
+.brief-overflow-vids .brief-vid-item{width:120px;flex-shrink:0;}
+.brief-overflow-vids .brief-vid-thumb{max-height:150px;}
 .brief-info-cols{flex:1;min-width:0;display:grid;grid-template-columns:1fr 1fr;}
 .brief-col{padding:0.75rem 0.9rem;}
 .brief-col+.brief-col{border-left:1px solid #1a1a1a;}
@@ -389,11 +392,9 @@ textarea.fg-ta.sm{min-height:52px;}
 .concept-filter-pill{font-size:0.62rem;font-weight:700;padding:0.3rem 0.8rem;border-radius:20px;background:#111;color:#555;border:1px solid #222;cursor:pointer;transition:all 0.15s;white-space:nowrap;}
 .concept-filter-pill.active{background:var(--m);color:#fff;border-color:var(--m);}
 .concept-grid-big{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;padding:0 1.25rem 1.5rem;}
-.concept-card-big{background:#0d0d0d;border-radius:12px;border:1px solid var(--border);overflow:hidden;cursor:pointer;transition:transform 0.15s;}
-.concept-card-big:active{transform:scale(0.97);}
+.concept-card-big{background:#0d0d0d;border-radius:12px;border:1px solid var(--border);overflow:hidden;}
 .concept-card-big-thumb{width:100%;aspect-ratio:9/16;max-height:280px;background:#0a0a0a;overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center;clip-path:inset(0 round 0);}
-.concept-card-big-thumb::after{content:'';position:absolute;inset:0;z-index:3;background:transparent;}
-.concept-card-big-thumb .video-embed-wrap{border:none!important;width:100%;height:100%;position:absolute;top:0;left:0;pointer-events:none;overflow:hidden;}
+.concept-card-big-thumb .video-embed-wrap{border:none!important;width:100%;height:100%;position:absolute;top:0;left:0;overflow:hidden;}
 .concept-card-big-thumb .video-embed-wrap iframe{max-width:100%;max-height:100%;}
 .concept-card-big-thumb .video-embed-wrap.tiktok-wrap iframe,.concept-card-big-thumb .video-embed-wrap.instagram-wrap iframe{width:325px!important;height:580px!important;aspect-ratio:unset!important;max-height:none!important;transform:scale(0.62);transform-origin:top left;}
 .concept-filter-pills-mini{display:flex;gap:5px;padding:0 1.25rem 0.65rem;flex-wrap:wrap;}
@@ -414,7 +415,8 @@ textarea.fg-ta.sm{min-height:52px;}
 .concept-card-big-badge.badge-platform{background:rgba(17,17,17,0.85);color:#fff;}
 .concept-card-big-badge.badge-category{background:rgba(255,0,170,0.85);color:#fff;}
 .concept-card-big-outlier{position:absolute;top:8px;right:8px;background:rgba(76,175,80,0.9);color:#fff;font-size:0.62rem;font-weight:800;padding:0.2rem 0.55rem;border-radius:6px;z-index:2;}
-.concept-card-big-info{padding:0.55rem 0.65rem;}
+.concept-card-big-info{padding:0.55rem 0.65rem;cursor:pointer;}
+.concept-card-big-info:hover{background:#111;}
 .concept-card-big-title{font-size:0.72rem;font-weight:700;color:#ccc;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
 .concept-card-big-tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:0.35rem;}
 .concept-card-big-tag{font-size:0.48rem;font-weight:600;padding:0.1rem 0.4rem;border-radius:8px;}
@@ -1150,7 +1152,7 @@ function renderEdConceptsTab() {
     var v = item.v;
     var embedHTML = buildEmbed(v.url || '') || '';
     var tags = Array.isArray(v.tags) ? v.tags : [];
-    html += '<div class="concept-card-big" onclick="openGuide(\''+item.catId+'\')">'
+    html += '<div class="concept-card-big">'
       +'<div class="concept-card-big-thumb">'
         +embedHTML
         +'<div class="concept-card-big-badges">'
@@ -1158,7 +1160,7 @@ function renderEdConceptsTab() {
         +'</div>'
         +(v.outlierScore ? '<div class="concept-card-big-outlier">'+esc(v.outlierScore)+'</div>' : '')
       +'</div>'
-      +'<div class="concept-card-big-info">'
+      +'<div class="concept-card-big-info" onclick="openGuide(\''+item.catId+'\')">'
         +'<div class="concept-card-big-title">'+esc(v.title||'Untitled')+'</div>';
     if (tags.length) {
       html += '<div class="concept-card-big-tags">';
@@ -1296,11 +1298,13 @@ function renderEdCategoryShots(catId, filter) {
     // Body: ALL connected concept videos stacked left + info columns right
     html += '<div class="brief-body">';
 
-    // Left: all connected concept videos stacked vertically
-    if (connectedVids.length) {
+    // Left: max 4 connected concept videos stacked vertically
+    var sideVids = connectedVids.slice(0, 4);
+    var overflowVids = connectedVids.slice(4);
+    if (sideVids.length) {
       html += '<div class="brief-vid-col">';
       html += '<div class="brief-vid-col-lbl">Connected Concepts</div>';
-      connectedVids.forEach(function(cv) {
+      sideVids.forEach(function(cv) {
         var vidThumb = buildEmbed(cv.url) || '';
         html += '<div class="brief-vid-item" onclick="window.open(\''+esc(cv.url||'').replace(/'/g,"\\'")+'\',\'_blank\')">'
           +'<div class="brief-vid-thumb">'
@@ -1328,6 +1332,24 @@ function renderEdCategoryShots(catId, filter) {
       +'</div>';
     html += '</div>'; // close brief-info-cols
     html += '</div>'; // close brief-body
+
+    // Overflow videos (5+) in horizontal row below
+    if (overflowVids.length) {
+      html += '<div class="brief-overflow-row">';
+      html += '<div class="brief-vid-col-lbl">More Connected Concepts</div>';
+      html += '<div class="brief-overflow-vids">';
+      overflowVids.forEach(function(cv) {
+        var vidThumb = buildEmbed(cv.url) || '';
+        html += '<div class="brief-vid-item" onclick="window.open(\''+esc(cv.url||'').replace(/'/g,"\\'")+'\',\'_blank\')">'
+          +'<div class="brief-vid-thumb">'
+            +vidThumb
+            +'<div class="brief-vid-play"></div>'
+          +'</div>'
+          +'<div class="brief-vid-info"><span class="brief-vid-num">C'+cv.num+'</span> <span class="brief-vid-title">'+esc(cv.title)+'</span></div>'
+          +'</div>';
+      });
+      html += '</div></div>';
+    }
 
     // Edit Recipe box
     html += '<div class="brief-recipe">'
