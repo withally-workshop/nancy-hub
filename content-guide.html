@@ -1860,7 +1860,7 @@ function showSingleVideo(videoTitle) {
       if (v.title === videoTitle) { video = v; guideId = g.id; videoIdx = vi; }
     });
   });
-  if (!video) { goHome(); return; }
+  if (!video) { if (!(window.location.hash||'').startsWith('#video/')) goHome(); return; }
   var el = document.getElementById('guide-detail-content');
   var uid = guideId + '-' + videoIdx;
   el.innerHTML = '<div style="padding:0.5rem 1.25rem;"><button class="home-btn" onclick="goHome()" style="padding:0;">← Back</button></div>'
@@ -2190,6 +2190,8 @@ function handleRoute() {
       renderShot(_shotId);
     }
     showPage('page-shot');
+  } else if (hash.startsWith('#video/')) {
+    showSingleVideo(decodeURIComponent(hash.replace('#video/','')));
   } else if (hash.startsWith('#guide/')) {
     renderGuide(hash.replace('#guide/',''));
     showPage('page-guide');
