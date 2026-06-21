@@ -1863,7 +1863,7 @@ function showSingleVideo(videoTitle) {
   if (!video) { if (!(window.location.hash||'').startsWith('#video/')) goHome(); return; }
   var el = document.getElementById('guide-detail-content');
   var uid = guideId + '-' + videoIdx;
-  el.innerHTML = '<div style="padding:0.5rem 1.25rem;"><button class="home-btn" onclick="goHome()" style="padding:0;">← Back</button></div>'
+  el.innerHTML = '<div style="padding:0.5rem 1.25rem;"><button class="home-btn" onclick="history.back()" style="padding:0;">← Back</button></div>'
     + '<div class="guide-cat-label" style="font-size:0.65rem;">Concept '+(videoIdx+1)+'</div>'
     + buildVideoEntry(video, uid, guideId, videoIdx);
   showPage('page-guide');
