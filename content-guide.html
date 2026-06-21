@@ -410,22 +410,51 @@ button{font-family:inherit;}
 .shot-progress-text{display:flex;justify-content:space-between;font-size:0.68rem;margin-bottom:0.4rem;}
 .shot-progress-track{background:#1a1a1a;border-radius:4px;height:6px;overflow:hidden;}
 .shot-progress-fill{background:#4caf50;height:100%;border-radius:4px;transition:width 0.3s;}
-.shot-item{background:#0d0d0d;border-radius:10px;border:1px solid var(--border);margin:0 1.25rem 0.6rem;overflow:hidden;}
-.shot-item-head{display:flex;align-items:flex-start;gap:0.6rem;padding:0.7rem 0.75rem;}
-.shot-item-check{width:18px;height:18px;border-radius:4px;border:2px solid #333;flex-shrink:0;margin-top:2px;cursor:pointer;transition:all 0.15s;display:flex;align-items:center;justify-content:center;}
-.shot-item-check.done{background:#4caf50;border-color:#4caf50;}
-.shot-item-check.done::after{content:'✓';color:#fff;font-size:0.65rem;font-weight:800;}
-.shot-item-label{font-size:0.76rem;font-weight:700;color:#ccc;line-height:1.4;}
-.shot-item-detail{font-size:0.6rem;color:#444;margin-top:0.15rem;}
-.shot-connected{padding:0 0.75rem 0.65rem;}
-.shot-connected-label{font-size:0.5rem;text-transform:uppercase;letter-spacing:0.06em;color:#333;font-weight:700;margin-bottom:0.4rem;}
-.shot-connected-vids{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;}
-.shot-connected-vids::-webkit-scrollbar{display:none;}
-.shot-connected-vid{width:110px;flex-shrink:0;background:#0a0a0a;border-radius:8px;overflow:hidden;border:1px solid #1a1a1a;cursor:pointer;}
-.shot-connected-thumb{width:110px;height:62px;background:#0a0a0a;position:relative;display:flex;align-items:center;justify-content:center;}
-.shot-connected-play{width:20px;height:20px;border-radius:50%;background:rgba(255,0,170,0.5);display:flex;align-items:center;justify-content:center;}
-.shot-connected-play::after{content:'';border-left:6px solid #fff;border-top:4px solid transparent;border-bottom:4px solid transparent;margin-left:1px;}
-.shot-connected-title{padding:0.3rem 0.4rem;font-size:0.5rem;color:#666;line-height:1.3;}
+
+/* ── RICH SHOT CARDS (Momo-style) ── */
+.shot-card-rich{background:#0d0d0d;border-radius:12px;border:1px solid var(--border);margin:0 1.25rem 0.75rem;overflow:hidden;}
+.shot-card-rich.done-card{opacity:0.45;}
+.shot-card-header{display:flex;align-items:center;gap:0.5rem;padding:0.65rem 0.75rem;border-bottom:1px solid var(--border);}
+.shot-card-check{width:18px;height:18px;border-radius:4px;border:2px solid #333;flex-shrink:0;cursor:pointer;transition:all 0.15s;display:flex;align-items:center;justify-content:center;}
+.shot-card-check.done{background:#4caf50;border-color:#4caf50;}
+.shot-card-check.done::after{content:'✓';color:#fff;font-size:0.65rem;font-weight:800;}
+.shot-card-num{background:var(--m);color:#fff;font-size:0.55rem;font-weight:800;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.shot-card-num.done-num{background:#4caf50;}
+.shot-card-hinfo{flex:1;min-width:0;}
+.shot-card-label{font-size:0.78rem;font-weight:700;color:#ccc;line-height:1.3;}
+.shot-card-label.done-label{text-decoration:line-through;color:#555;}
+.shot-card-framing{font-size:0.58rem;color:#555;margin-top:0.1rem;}
+.shot-card-type{font-size:0.5rem;font-weight:700;padding:0.12rem 0.5rem;border-radius:10px;flex-shrink:0;text-transform:uppercase;letter-spacing:0.04em;}
+.shot-card-type.t-video{background:rgba(68,170,255,0.12);color:#44aaff;}
+.shot-card-type.t-photo{background:rgba(68,255,153,0.12);color:#44ff99;}
+.shot-card-type.t-still{background:rgba(255,204,68,0.12);color:#ffcc44;}
+.shot-card-body{display:flex;}
+.shot-card-details{flex:1;padding:0.65rem 0.75rem;border-right:1px solid var(--border);min-width:0;}
+.shot-card-refs{width:145px;flex-shrink:0;padding:0.65rem 0.55rem;}
+.shot-field-label{font-size:0.48rem;text-transform:uppercase;letter-spacing:0.08em;color:#444;font-weight:700;margin-bottom:0.25rem;}
+.shot-field-group{margin-bottom:0.55rem;}
+.shot-field-group:last-child{margin-bottom:0;}
+.shot-field-tags{display:flex;gap:4px;flex-wrap:wrap;}
+.shot-field-tag{font-size:0.52rem;font-weight:600;padding:0.1rem 0.45rem;border-radius:8px;}
+.shot-field-tag.tag-product{background:rgba(68,255,153,0.1);color:#44ff99;}
+.shot-field-tag.tag-prop{background:rgba(68,170,255,0.1);color:#44aaff;}
+.shot-field-tag.tag-location{background:rgba(255,204,68,0.1);color:#ffcc44;}
+.shot-onset-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.25rem;}
+.shot-onset-item-label{font-size:0.45rem;color:#444;text-transform:uppercase;letter-spacing:0.05em;}
+.shot-onset-item-value{font-size:0.62rem;color:#bbb;font-weight:600;}
+.shot-recipe{font-size:0.58rem;color:#999;line-height:1.45;background:rgba(255,255,255,0.02);border-radius:6px;padding:0.3rem 0.45rem;}
+.shot-director-note{font-size:0.58rem;color:#f5a623;line-height:1.45;background:rgba(245,166,35,0.05);border-radius:6px;padding:0.3rem 0.45rem;}
+.shot-ref-vid{background:#111;border-radius:6px;overflow:hidden;cursor:pointer;border:1px solid #1a1a1a;margin-bottom:0.4rem;}
+.shot-ref-vid:last-child{margin-bottom:0;}
+.shot-ref-thumb{width:100%;height:50px;background:#0a0a0a;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+.shot-ref-thumb .video-embed-wrap{border:none !important;width:100%;height:100%;position:absolute;top:0;left:0;}
+.shot-ref-thumb .video-embed-wrap.tiktok-wrap iframe,.shot-ref-thumb .video-embed-wrap.instagram-wrap iframe{width:325px !important;height:580px !important;aspect-ratio:unset !important;max-height:none !important;transform:scale(0.18);transform-origin:top left;}
+.shot-ref-play{width:18px;height:18px;border-radius:50%;background:rgba(255,0,170,0.5);display:flex;align-items:center;justify-content:center;}
+.shot-ref-play::after{content:'';border-left:5px solid #fff;border-top:3px solid transparent;border-bottom:3px solid transparent;margin-left:1px;}
+.shot-ref-info{padding:0.2rem 0.35rem;}
+.shot-ref-num{font-size:0.48rem;color:var(--m);font-weight:700;}
+.shot-ref-title{font-size:0.5rem;color:#666;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.shot-empty-details{font-size:0.58rem;color:#333;font-style:italic;padding:0.25rem 0;}
 
 /* ── HOME SECTION LABELS + CONCEPT GRID ── */
 .home-section-label{font-size:0.6rem;text-transform:uppercase;letter-spacing:0.12em;color:var(--m);font-weight:700;padding:0.75rem 1.25rem 0.5rem;}
@@ -1207,12 +1236,11 @@ function renderCategoryShots(catId, filter) {
     +'<div class="shot-progress-track"><div class="shot-progress-fill" style="width:'+pct+'%;"></div></div>'
     +'</div>';
 
-  // Shot items with connected videos
-  filteredShots.forEach(function(gs) {
+  // Rich shot cards
+  filteredShots.forEach(function(gs, idx) {
     var isDone = doneGS.has(gs.id);
     var connectedVids = (gs.videoTitles||[]).map(function(title) {
-      var found = null;
-      var conceptNum = 0;
+      var found = null; var conceptNum = 0;
       DATA.guides.forEach(function(g) {
         (g.videos||[]).forEach(function(v, vi) {
           if (v.title === title) { found = v; conceptNum = vi + 1; }
@@ -1222,30 +1250,80 @@ function renderCategoryShots(catId, filter) {
       return { title: title, url: found.url, num: conceptNum };
     }).filter(Boolean);
 
-    html += '<div class="shot-item">'
-      +'<div class="shot-item-head">'
-        +'<div class="shot-item-check'+(isDone?' done':'')+'" data-gs-id="'+esc(gs.id)+'" onclick="toggleGS(this);renderCategoryDetail(\''+catId+'\',\'shots\')"></div>'
-        +'<div>'
-          +'<div class="shot-item-label">'+esc(gs.label)+'</div>'
-          +(gs.detail ? '<div class="shot-item-detail">'+esc(gs.detail)+'</div>' : '')
-        +'</div>'
+    var shotNum = idx + 1;
+    var typeClass = gs.shotType === 'photo' ? 't-photo' : gs.shotType === 'still' ? 't-still' : 't-video';
+    var typeLabel = gs.shotType || 'video';
+    var hasDetails = gs.videographer || gs.talent || gs.propStation || gs.editRecipe || gs.directorNote;
+
+    html += '<div class="shot-card-rich'+(isDone?' done-card':'')+'">';
+
+    // Header
+    html += '<div class="shot-card-header">'
+      +'<div class="shot-card-check'+(isDone?' done':'')+'" data-gs-id="'+esc(gs.id)+'" onclick="toggleGS(this);renderCategoryDetail(\''+catId+'\',\'shots\')"></div>'
+      +'<div class="shot-card-num'+(isDone?' done-num':'')+'">'+shotNum+'</div>'
+      +'<div class="shot-card-hinfo">'
+        +'<div class="shot-card-label'+(isDone?' done-label':'')+'">'+esc(gs.label)+'</div>'
+        +(gs.detail ? '<div class="shot-card-framing">'+esc(gs.detail)+'</div>' : '')
+      +'</div>'
+      +(gs.shotType ? '<span class="shot-card-type '+typeClass+'">'+esc(typeLabel)+'</span>' : '')
       +'</div>';
 
-    if (connectedVids.length) {
-      html += '<div class="shot-connected">'
-        +'<div class="shot-connected-label">Connected concepts</div>'
-        +'<div class="shot-connected-vids">';
-      connectedVids.forEach(function(cv) {
-        html += '<div class="shot-connected-vid" onclick="showSingleVideo(\''+cv.title.replace(/'/g,"\\'")+'\')">'
-          +'<div class="shot-connected-thumb">'
-            +'<div class="concept-num">'+cv.num+'</div>'
-            +'<div class="shot-connected-play"></div>'
-          +'</div>'
-          +'<div class="shot-connected-title">'+esc(cv.title)+'</div>'
-          +'</div>';
-      });
-      html += '</div></div>';
+    // Body: two columns (details left, reference videos right)
+    if (hasDetails || connectedVids.length) {
+      html += '<div class="shot-card-body">';
+
+      // Left: on-set details
+      html += '<div class="shot-card-details">';
+      if (hasDetails) {
+        if (gs.propStation) {
+          html += '<div class="shot-field-group"><div class="shot-field-label">Props / setup</div>'
+            +'<div class="shot-field-tags">';
+          gs.propStation.split(',').forEach(function(p) {
+            p = p.trim();
+            if (p) html += '<span class="shot-field-tag tag-prop">'+esc(p)+'</span>';
+          });
+          html += '</div></div>';
+        }
+        if (gs.videographer || gs.talent) {
+          html += '<div class="shot-field-group"><div class="shot-field-label">On set</div>'
+            +'<div class="shot-onset-grid">';
+          if (gs.videographer) html += '<div><div class="shot-onset-item-label">Videographer</div><div class="shot-onset-item-value">'+esc(gs.videographer)+'</div></div>';
+          if (gs.talent) html += '<div><div class="shot-onset-item-label">Talent</div><div class="shot-onset-item-value">'+esc(gs.talent)+'</div></div>';
+          html += '</div></div>';
+        }
+        if (gs.editRecipe) {
+          html += '<div class="shot-field-group"><div class="shot-field-label">Edit recipe</div>'
+            +'<div class="shot-recipe">'+esc(gs.editRecipe)+'</div></div>';
+        }
+        if (gs.directorNote) {
+          html += '<div class="shot-field-group"><div class="shot-field-label">Director note</div>'
+            +'<div class="shot-director-note">'+esc(gs.directorNote)+'</div></div>';
+        }
+      } else {
+        html += '<div class="shot-empty-details">No on-set details yet</div>';
+      }
+      html += '</div>';
+
+      // Right: reference videos
+      if (connectedVids.length) {
+        html += '<div class="shot-card-refs">'
+          +'<div class="shot-field-label">Reference videos</div>';
+        connectedVids.forEach(function(cv) {
+          var thumbEmbed = buildVideoEmbed(cv.url) || '';
+          html += '<div class="shot-ref-vid" onclick="showSingleVideo(\''+cv.title.replace(/'/g,"\\'")+'\')">'
+            +'<div class="shot-ref-thumb">'+(thumbEmbed || '<div class="shot-ref-play"></div>')+'</div>'
+            +'<div class="shot-ref-info">'
+              +'<div class="shot-ref-num">C'+cv.num+'</div>'
+              +'<div class="shot-ref-title">'+esc(cv.title)+'</div>'
+            +'</div>'
+            +'</div>';
+        });
+        html += '</div>';
+      }
+
+      html += '</div>';
     }
+
     html += '</div>';
   });
 

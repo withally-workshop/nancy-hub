@@ -68,6 +68,13 @@ At the end of every session:
 - `bootHub()` → `onPageReady()` pattern per page
 - Super admin check: `email === 'danielle@carenbloom.com'`
 
+## Content Guide System
+The content guide is a 3-page system. Before touching any `content-guide*.html` file, read **`CONTENT_GUIDE_CONTEXT.md`** — it covers the data flow, shared Supabase keys, what not to change, and how to add new video batches.
+
+**View + Edit pages must stay in sync.** When changing any shared data structure or layout in `content-guide.html` (view) or `content-guide-edit.html` (edit), apply the same change to **both** files. Shared structures include: `TAG_CATEGORIES`, `GUIDES_LIST` / `DATA.guides`, `GUIDE_EMOJIS`, custom tags system, group card layout, and filter tab UI. If you change one page and not the other, you've introduced a bug.
+
+**GENERAL_SHOTS and GS_GROUPS are stored in Supabase** (key: `nancy_content_guide_shots_config_v1`), NOT hardcoded. Both pages load them dynamically via `loadShotsConfig()`. Shots reference videos by title (the `videoTitles` array on each shot). When a video title is renamed in the editor, the shots config auto-updates. Never hardcode shot data in HTML files.
+
 ## Hub Pages
 | Page | Status |
 |------|--------|
@@ -76,6 +83,7 @@ At the end of every session:
 | Events (projects.html — Events tab) | ✅ Built, testing |
 | Projects (projects.html — Projects tab) | 🔧 Just built, needs refinement |
 | Social (social.html) | 🔧 In progress |
+| Carousel Studio (social.html → Carousel Studio) | ✅ Built — upload photos/videos → Google Drive, phone mockup preview, save to Supabase, shareable link with OG meta tags for WhatsApp previews, bulk delete |
 | Partnerships (creators.html) | 🔧 Needs work |
 | Dashboard (index.html) | ✅ Exists |
 | Brand Guidelines (brand.html) | ✅ Exists |
@@ -88,4 +96,4 @@ At the end of every session:
 
 ---
 
-*Last updated: 2026-04-22*
+*Last updated: 2026-06-05*
