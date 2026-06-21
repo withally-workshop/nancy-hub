@@ -312,59 +312,52 @@ button{font-family:inherit;}
 .modal-section-divider{font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#444;padding:0.75rem 0 0.5rem;border-top:1px solid var(--border);margin-top:0.25rem;}
 
 /* ── VIDEO ENTRY V2 ── */
-.video-entry-v2{border:1px solid var(--border);border-radius:18px;overflow:hidden;background:var(--card-bg);margin:0 0.75rem 1.5rem;}
-.vev2-hdr{display:flex;align-items:center;justify-content:space-between;padding:0.75rem 0.85rem 0.35rem;gap:0.4rem;}
-.vev2-title{font-size:0.88rem;font-weight:800;color:#fff;flex:1;line-height:1.25;}
-.vev2-outlier{font-size:0.72rem;font-weight:800;color:var(--m);white-space:nowrap;background:rgba(255,0,170,0.08);border:1px solid rgba(255,0,170,0.22);padding:0.18rem 0.55rem;border-radius:20px;}
-.vev2-hook-banner{padding:0.45rem 0.85rem 0.55rem;border-bottom:1px solid var(--border);}
-.vev2-hook-type{display:inline-block;font-size:0.58rem;font-weight:800;padding:0.2rem 0.6rem;border-radius:8px;letter-spacing:0.04em;text-transform:uppercase;}
-.vev2-hook-type.hook-visual{background:rgba(255,107,157,0.15);color:#ff6b9d;border:1px solid rgba(255,107,157,0.35);}
-.vev2-hook-type.hook-script{background:rgba(68,255,153,0.12);color:#44ff99;border:1px solid rgba(68,255,153,0.35);}
-.vev2-hook-type.hook-audio{background:rgba(68,170,255,0.12);color:#44aaff;border:1px solid rgba(68,170,255,0.35);}
-.vev2-hook-type.hook-mix{background:rgba(255,204,68,0.12);color:#ffcc44;border:1px solid rgba(255,204,68,0.35);}
-.vev2-hook-desc{font-size:0.58rem;color:#999;margin-top:0.25rem;line-height:1.4;}
-.vev2-tag-group{margin-bottom:0.2rem;}
-.vev2-tag-group-label{font-size:0.42rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#444;margin-bottom:0.15rem;}
-.vev2-videographer-row{display:flex;align-items:center;gap:0.35rem;padding:0.3rem 0.6rem;border-bottom:1px solid var(--border);background:rgba(255,255,255,0.02);}
-.vev2-videographer-label{font-size:0.46rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#555;}
-.vev2-videographer-name{font-size:0.55rem;font-weight:800;color:#ccc;}
-.vev2-body{display:flex;align-items:flex-start;}
-/* Left: phone + stats */
-.vev2-left{width:126px;flex-shrink:0;padding:0.65rem 0 0.75rem 0.7rem;display:flex;flex-direction:column;}
-.vev2-embed{width:100%;height:195px;border:2px solid var(--m);border-radius:10px;overflow:hidden;background:#111;position:relative;flex-shrink:0;}
+/* ── CONCEPT DETAIL CARD (Momo reference layout) ── */
+.video-entry-v2{margin:0 0.75rem 1.5rem;}
+.vev2-top{display:flex;gap:1rem;align-items:flex-start;margin-bottom:0.75rem;}
+.vev2-left{width:200px;flex-shrink:0;display:flex;flex-direction:column;}
+.vev2-title{font-size:1rem;font-weight:800;color:#fff;line-height:1.25;margin-bottom:0.25rem;}
+.vev2-url{display:block;font-size:0.5rem;color:var(--m);margin-bottom:0.5rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-decoration:underline;text-underline-offset:2px;}
+.vev2-url:hover{color:#fff;}
+.vev2-embed{width:100%;aspect-ratio:9/16;max-height:320px;border:3px solid var(--m);border-radius:14px;overflow:hidden;background:#111;position:relative;flex-shrink:0;}
 .vev2-embed iframe{width:100%;height:100%;border:none;display:block;}
 .vev2-embed .video-embed-wrap{border:none!important;width:100%;height:100%;position:absolute;top:0;left:0;}
-.vev2-embed .video-embed-wrap.tiktok-wrap iframe,.vev2-embed .video-embed-wrap.instagram-wrap iframe{width:325px!important;height:580px!important;aspect-ratio:unset!important;max-height:none!important;transform:scale(0.388);transform-origin:top left;}
-.vev2-embed .video-embed-wrap.facebook-wrap iframe,.vev2-embed .video-embed-wrap.twitter-wrap iframe{width:500px!important;height:900px!important;aspect-ratio:unset!important;max-height:none!important;transform:scale(0.252);transform-origin:top left;}
-.vev2-url{display:block;font-size:0.42rem;color:#333;margin:0.22rem 0 0.4rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%;text-decoration:none;}
-.vev2-url:hover{color:var(--m);}
-.vev2-stats{display:flex;flex-direction:column;gap:0.22rem;}
-.vev2-stat{font-size:0.58rem;font-weight:800;padding:0.22rem 0.5rem;border-radius:20px;display:inline-block;}
-.vev2-stat.s-score{background:rgba(255,0,170,0.1);border:1px solid rgba(255,0,170,0.25);color:var(--m);}
-.vev2-stat.s-views{background:rgba(68,255,153,0.07);border:1px solid rgba(68,255,153,0.2);color:#44ff99;}
-.vev2-stat.s-likes{background:rgba(68,170,255,0.07);border:1px solid rgba(68,170,255,0.2);color:#44aaff;}
-.vev2-stat.s-hook{background:rgba(255,204,68,0.07);border:1px solid rgba(255,204,68,0.2);color:#ffcc44;}
-/* Right: tags + split */
-.vev2-right{flex:1;min-width:0;border-left:1px solid var(--border);}
-.vev2-tags{display:flex;flex-wrap:wrap;gap:0.3rem;padding:0.55rem 0.6rem 0.45rem;border-bottom:1px solid var(--border);}
-.vev2-tag{font-size:0.55rem;font-weight:800;padding:0.18rem 0.5rem;border-radius:20px;letter-spacing:0.03em;}
-.vev2-tag[data-cat="People"]  {border:1px solid #d966ff;color:#d966ff;background:rgba(217,102,255,0.1);}
-.vev2-tag[data-cat="Product"] {border:1px solid #44ff99;color:#44ff99;background:rgba(68,255,153,0.1);}
-.vev2-tag[data-cat="Location"]{border:1px solid #ffcc44;color:#ffcc44;background:rgba(255,204,68,0.1);}
-.vev2-tag[data-cat="Prop"]    {border:1px solid #44aaff;color:#44aaff;background:rgba(68,170,255,0.1);}
-/* Original | Nancy columns */
-.vev2-split{display:grid;grid-template-columns:1fr 1fr;}
-.vev2-col{padding:0.5rem 0.5rem 0.75rem;}
-.vev2-col:first-child{border-right:1px solid var(--border);}
-.vev2-col-hdr{font-size:0.55rem;font-weight:900;letter-spacing:0.1em;text-transform:uppercase;padding:0.28rem 0.4rem;border-radius:20px;text-align:center;margin-bottom:0.45rem;}
+.vev2-embed .video-embed-wrap.tiktok-wrap iframe,.vev2-embed .video-embed-wrap.instagram-wrap iframe{width:325px!important;height:580px!important;aspect-ratio:unset!important;max-height:none!important;transform:scale(0.62);transform-origin:top left;}
+.vev2-embed .video-embed-wrap.facebook-wrap iframe,.vev2-embed .video-embed-wrap.twitter-wrap iframe{width:500px!important;height:900px!important;aspect-ratio:unset!important;max-height:none!important;transform:scale(0.4);transform-origin:top left;}
+.vev2-embed::after{content:'';position:absolute;inset:0;z-index:2;cursor:pointer;}
+.vev2-outlier{position:absolute;top:8px;left:8px;background:#c8ff00;color:#000;font-size:0.72rem;font-weight:900;padding:0.22rem 0.65rem;border-radius:20px;z-index:3;}
+.vev2-stats{display:flex;gap:0.4rem;margin-top:0.5rem;}
+.vev2-stat{font-size:0.62rem;font-weight:800;padding:0.25rem 0.65rem;border-radius:20px;flex:1;text-align:center;}
+.vev2-stat.s-views{background:#c8ff00;color:#000;}
+.vev2-stat.s-likes{background:#44aaff;color:#000;}
+/* Right: meta fields */
+.vev2-right{flex:1;min-width:0;display:flex;flex-direction:column;gap:0.55rem;}
+.vev2-field{display:flex;align-items:flex-start;gap:0.55rem;}
+.vev2-field-label{font-size:0.72rem;font-weight:800;color:#fff;min-width:68px;flex-shrink:0;padding-top:0.12rem;}
+.vev2-field-value{display:flex;flex-wrap:wrap;gap:0.3rem;flex:1;align-items:center;}
+.vev2-tag{font-size:0.6rem;font-weight:800;padding:0.2rem 0.6rem;border-radius:20px;letter-spacing:0.02em;}
+.vev2-tag[data-cat="People"]  {background:#d966ff;color:#fff;}
+.vev2-tag[data-cat="Product"] {background:#44ff99;color:#000;}
+.vev2-tag[data-cat="Location"]{background:#ffcc44;color:#000;}
+.vev2-tag[data-cat="Prop"]    {background:#44aaff;color:#000;}
+.vev2-tag[data-cat="Type"]    {background:#ff6b9d;color:#fff;}
+.vev2-tag[data-cat="other"]   {background:#555;color:#fff;}
+.vev2-field-text{font-size:0.68rem;color:#ccc;line-height:1.4;}
+/* Original | Nancy cards */
+.vev2-split{display:grid;grid-template-columns:1fr 1fr;gap:0.65rem;margin-top:0.25rem;}
+.vev2-col{background:#0d0d14;border:1px solid #1a1a2a;border-radius:16px;padding:0.75rem 0.85rem 1rem;overflow:hidden;}
+.vev2-col-hdr{font-size:0.75rem;font-weight:800;padding:0.35rem 0;border-radius:24px;text-align:center;margin-bottom:0.55rem;letter-spacing:0.04em;}
 .vev2-col-hdr.o{background:var(--m);color:#fff;}
-.vev2-col-hdr.n{background:#88ff44;color:#000;}
-.vev2-slbl{font-size:0.5rem;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;color:#888;margin:0.4rem 0 0.1rem;}
+.vev2-col-hdr.n{background:#c8ff00;color:#000;}
+.vev2-slbl{font-size:0.55rem;font-weight:800;color:var(--m);margin:0.5rem 0 0.2rem;letter-spacing:0.04em;}
 .vev2-slbl:first-child{margin-top:0;}
-.vev2-txt{font-size:0.6rem;color:#aaa;line-height:1.45;}
-.vev2-shot{font-size:0.58rem;color:#bbb;line-height:1.4;padding:0.18rem 0;border-bottom:1px solid #0f0f0f;}
-.vev2-shot:last-child{border-bottom:none;}
-.vev2-hr{border:none;border-top:1px solid #111;margin:0.35rem 0;}
+.vev2-txt{font-size:0.62rem;color:#aaa;line-height:1.5;}
+.vev2-frame{display:flex;align-items:flex-start;gap:0.45rem;padding:0.25rem 0;}
+.vev2-frame-time{font-size:0.52rem;font-weight:800;padding:0.18rem 0.5rem;border-radius:14px;white-space:nowrap;flex-shrink:0;}
+.vev2-frame-time.ft-orig{background:#c8ff00;color:#000;}
+.vev2-frame-time.ft-nancy{background:var(--m);color:#fff;}
+.vev2-frame-text{font-size:0.58rem;color:#bbb;line-height:1.4;}
+.vev2-hr{border:none;border-top:1px solid #1a1a2a;margin:0.4rem 0;}
 
 /* ── SHOT PROGRESS (on video cards) ── */
 .shot-prog-bar{height:3px;background:#1e1e1e;border-radius:2px;margin:0.6rem 0.7rem 0;}
@@ -440,25 +433,29 @@ button{font-family:inherit;}
 .brief-type.t-photo{background:rgba(68,255,153,0.12);color:#44ff99;}
 .brief-type.t-still{background:rgba(255,204,68,0.12);color:#ffcc44;}
 .brief-body{display:flex;border-top:1px solid #1a1a1a;}
-.brief-vid-col{flex-shrink:0;width:150px;padding:0.75rem 0.9rem;display:flex;flex-direction:column;gap:8px;border-right:1px solid #1a1a1a;}
-.brief-vid-col-lbl{font-size:0.42rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--m);font-weight:700;}
-.brief-vid-item{width:100%;background:#0a0a0a;border-radius:8px;overflow:hidden;border:1px solid #222;cursor:pointer;transition:border-color 0.15s;}
-.brief-vid-item:hover{border-color:var(--m);}
-.brief-vid-thumb{width:100%;aspect-ratio:9/16;max-height:180px;background:#0a0a0a;overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center;}
+.brief-vid-col{flex:1;min-width:0;padding:0.75rem 0.9rem;border-right:1px solid #1a1a1a;}
+.brief-vid-col-lbl{font-size:0.42rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--m);font-weight:700;margin-bottom:8px;}
+.brief-vid-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.brief-vid-item{background:#0a0a0a;border-radius:10px;overflow:hidden;border:2px solid var(--m);transition:border-color 0.15s;}
+.brief-vid-item:hover{border-color:#fff;}
+.brief-vid-thumb{width:100%;aspect-ratio:9/16;max-height:220px;background:#0a0a0a;overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center;}
 .brief-vid-thumb .video-embed-wrap{border:none!important;width:100%;height:100%;position:absolute;top:0;left:0;}
-.brief-vid-thumb .video-embed-wrap.tiktok-wrap iframe,.brief-vid-thumb .video-embed-wrap.instagram-wrap iframe{width:325px!important;height:580px!important;aspect-ratio:unset!important;max-height:none!important;transform:scale(0.47);transform-origin:top left;}
+.brief-vid-thumb .video-embed-wrap.tiktok-wrap iframe,.brief-vid-thumb .video-embed-wrap.instagram-wrap iframe{width:325px!important;height:580px!important;aspect-ratio:unset!important;max-height:none!important;transform:scale(0.55);transform-origin:top left;}
 .brief-vid-thumb .video-embed-wrap iframe{width:100%;height:100%;border:none;}
-.brief-vid-play{display:none;}
-.brief-vid-info{padding:0.25rem 0.4rem 0.3rem;}
-.brief-vid-num{font-size:0.5rem;color:var(--m);font-weight:700;}
-.brief-vid-title{font-size:0.48rem;color:#666;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.brief-vid-play{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:3;background:rgba(0,0,0,0.2);pointer-events:none;}
+.brief-vid-play::after{content:'';width:0;height:0;border-left:18px solid #fff;border-top:12px solid transparent;border-bottom:12px solid transparent;filter:drop-shadow(0 0 6px rgba(0,0,0,0.5));}
+.brief-vid-guide-btn{display:block;text-align:center;padding:0.3rem 0.5rem;background:var(--m);color:#fff;font-size:0.55rem;font-weight:700;cursor:pointer;text-decoration:none;transition:background 0.15s;}
+.brief-vid-guide-btn:hover{background:#ff33bb;}
+.brief-detail-col{flex:1;min-width:0;padding:0.75rem 0.9rem;display:flex;flex-direction:column;gap:12px;}
+.brief-detail-section{background:rgba(255,255,255,0.03);border:1px solid #222;border-radius:10px;padding:0.65rem 0.85rem;}
+.brief-detail-section-hdr{font-size:0.52rem;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;color:var(--m);margin-bottom:0.4rem;display:flex;align-items:center;gap:0.4rem;}
+.brief-detail-section-hdr::before{content:'';width:3px;height:12px;background:var(--m);border-radius:2px;}
+.brief-detail-section-txt{font-size:0.65rem;color:#aaa;line-height:1.5;}
+.brief-detail-row{display:grid;grid-template-columns:1fr 1fr;gap:0.55rem;}
+.brief-detail-lbl{font-size:0.42rem;text-transform:uppercase;letter-spacing:0.08em;color:#555;font-weight:700;}
+.brief-detail-val{font-size:0.7rem;color:#ccc;font-weight:600;margin-top:0.1rem;}
 .brief-overflow-row{padding:0.75rem 0.9rem;border-top:1px solid #1a1a1a;}
-.brief-overflow-vids{display:flex;gap:8px;overflow-x:auto;padding-top:6px;}
-.brief-overflow-vids .brief-vid-item{width:120px;flex-shrink:0;}
-.brief-overflow-vids .brief-vid-thumb{max-height:150px;}
-.brief-info-cols{flex:1;min-width:0;display:grid;grid-template-columns:1fr 1fr;}
-.brief-col{padding:0.75rem 0.9rem;}
-.brief-col+.brief-col{border-left:1px solid #1a1a1a;}
+.brief-overflow-vids{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding-top:6px;}
 .brief-lbl{font-size:0.48rem;text-transform:uppercase;letter-spacing:0.1em;color:#444;font-weight:700;margin-bottom:0.3rem;}
 .brief-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:0.15rem;}
 .brief-tag{font-size:0.55rem;font-weight:600;padding:0.12rem 0.5rem;border-radius:8px;background:rgba(68,170,255,0.08);color:#44aaff;border:1px solid rgba(68,170,255,0.12);}
@@ -602,6 +599,8 @@ button{font-family:inherit;}
   .ve-embed{width:160px;height:224px;}
   .ve-link{max-width:160px;}
   .video-entry-v2{margin:0 1.25rem 1.5rem;}
+  .vev2-left{width:260px;}
+  .vev2-embed{max-height:400px;}
   .ready-card{margin:0 2rem 0.5rem;}
   .home-btn-wrap{padding:1.75rem 2rem 1rem;}
   .shot-detail-title{padding:0.75rem 2rem 0.5rem;}
@@ -1431,83 +1430,89 @@ function renderCategoryShots(catId, filter) {
     // Body: ALL connected concept videos stacked left + info columns right
     html += '<div class="brief-body">';
 
-    // Left: max 4 connected concept videos stacked vertically
+    // LEFT: connected concept videos in 2-col grid (max 4 on side)
     var sideVids = connectedVids.slice(0, 4);
     var overflowVids = connectedVids.slice(4);
     if (sideVids.length) {
       html += '<div class="brief-vid-col">';
       html += '<div class="brief-vid-col-lbl">Connected Concepts</div>';
+      html += '<div class="brief-vid-grid">';
       sideVids.forEach(function(cv) {
         var vidThumb = buildVideoEmbed(cv.url) || '';
-        html += '<div class="brief-vid-item" onclick="showSingleVideo(\''+cv.title.replace(/'/g,"\\'")+'\')">'
+        html += '<div class="brief-vid-item">'
           +'<div class="brief-vid-thumb">'
             +vidThumb
             +'<div class="brief-vid-play"></div>'
           +'</div>'
-          +'<div class="brief-vid-info"><span class="brief-vid-num">C'+cv.num+'</span> <span class="brief-vid-title">'+esc(cv.title)+'</span></div>'
+          +'<div class="brief-vid-guide-btn" onclick="showSingleVideo(\''+cv.title.replace(/'/g,"\\'")+'\')">'
+            +'view guide'
+          +'</div>'
           +'</div>';
       });
-      html += '</div>';
+      html += '</div></div>';
     }
 
-    // Right: props + on set columns
-    html += '<div class="brief-info-cols">';
-    html += '<div class="brief-col">';
-    if (gs.propStation) {
-      html += '<div class="brief-lbl">Props / Station</div><div class="brief-tags">';
-      gs.propStation.split(',').forEach(function(p) {
-        p = p.trim();
-        if (p) html += '<span class="brief-tag">'+esc(p)+'</span>';
-      });
-      html += '</div>';
+    // RIGHT: Edit Recipe, Director Note, On Set, Props stacked vertically
+    html += '<div class="brief-detail-col">';
+
+    if (gs.editRecipe) {
+      html += '<div class="brief-detail-section">'
+        +'<div class="brief-detail-section-hdr">Edit Recipe</div>'
+        +'<div class="brief-detail-section-txt">'+esc(gs.editRecipe)+'</div>'
+        +'</div>';
     }
-    html += '</div>';
+
+    if (gs.directorNote) {
+      html += '<div class="brief-detail-section">'
+        +'<div class="brief-detail-section-hdr">Director Note</div>'
+        +'<div class="brief-detail-section-txt">'+esc(gs.directorNote)+'</div>'
+        +'</div>';
+    }
+
     if (hasOnset) {
-      html += '<div class="brief-col">';
-      html += '<div class="brief-onset-hdr">On Set</div>';
+      html += '<div class="brief-detail-section">';
+      html += '<div class="brief-detail-section-hdr">On Set</div>';
       if (gs.videographer || gs.talent) {
-        html += '<div class="brief-onset-row">';
-        if (gs.videographer) html += '<div><div class="brief-onset-lbl">Videographer</div><div class="brief-onset-val">'+esc(gs.videographer)+'</div></div>';
-        if (gs.talent) html += '<div><div class="brief-onset-lbl">Talent</div><div class="brief-onset-val">'+esc(gs.talent)+'</div></div>';
+        html += '<div class="brief-detail-row">';
+        if (gs.videographer) html += '<div><div class="brief-detail-lbl">Videographer</div><div class="brief-detail-val">'+esc(gs.videographer)+'</div></div>';
+        if (gs.talent) html += '<div><div class="brief-detail-lbl">Talent</div><div class="brief-detail-val">'+esc(gs.talent)+'</div></div>';
         html += '</div>';
       }
       html += '</div>';
     }
-    html += '</div>'; // close brief-info-cols
+
+    if (gs.propStation) {
+      html += '<div class="brief-detail-section">';
+      html += '<div class="brief-detail-section-hdr">Props</div>';
+      html += '<div class="brief-tags">';
+      gs.propStation.split(',').forEach(function(p) {
+        p = p.trim();
+        if (p) html += '<span class="brief-tag">'+esc(p)+'</span>';
+      });
+      html += '</div></div>';
+    }
+
+    html += '</div>'; // close brief-detail-col
     html += '</div>'; // close brief-body
 
-    // Overflow videos (5+) in horizontal row below
+    // Overflow videos (5+) in grid row below
     if (overflowVids.length) {
       html += '<div class="brief-overflow-row">';
       html += '<div class="brief-vid-col-lbl">More Connected Concepts</div>';
       html += '<div class="brief-overflow-vids">';
       overflowVids.forEach(function(cv) {
         var vidThumb = buildVideoEmbed(cv.url) || '';
-        html += '<div class="brief-vid-item" onclick="showSingleVideo(\''+cv.title.replace(/'/g,"\\'")+'\')">'
+        html += '<div class="brief-vid-item">'
           +'<div class="brief-vid-thumb">'
             +vidThumb
             +'<div class="brief-vid-play"></div>'
           +'</div>'
-          +'<div class="brief-vid-info"><span class="brief-vid-num">C'+cv.num+'</span> <span class="brief-vid-title">'+esc(cv.title)+'</span></div>'
+          +'<div class="brief-vid-guide-btn" onclick="showSingleVideo(\''+cv.title.replace(/'/g,"\\'")+'\')">'
+            +'view guide'
+          +'</div>'
           +'</div>';
       });
       html += '</div></div>';
-    }
-
-    // Edit Recipe box
-    if (gs.editRecipe) {
-      html += '<div class="brief-recipe">'
-        +'<div class="brief-recipe-hdr"><span class="brief-recipe-lbl">Edit Recipe</span><span class="brief-recipe-badge">travels with the footage</span></div>'
-        +'<div class="brief-recipe-txt">'+esc(gs.editRecipe)+'</div>'
-        +'</div>';
-    }
-
-    // Director Note box
-    if (gs.directorNote) {
-      html += '<div class="brief-note">'
-        +'<div class="brief-note-hdr"><span class="brief-note-lbl">Director Note</span><span class="brief-note-badge">edit freely</span></div>'
-        +'<div class="brief-note-txt">'+esc(gs.directorNote)+'</div>'
-        +'</div>';
     }
 
     html += '</div>';
@@ -1840,128 +1845,117 @@ function renderGuide(id) {
 function buildVideoEntry(video, uid, guideId, videoIdx) {
   var embedInner = buildVideoEmbed(video.url || null) || '<div class="ve-embed-placeholder"><div class="ve-play"></div></div>';
 
-  // Stats pills (no hook — moved to banner)
-  var statsHTML = [
-    video.outlierScore ? '<span class="vev2-stat s-score">'+esc(video.outlierScore)+'</span>' : '',
-    video.views        ? '<span class="vev2-stat s-views">'+esc(video.views)+' views</span>' : '',
-    video.likes        ? '<span class="vev2-stat s-likes">'+esc(video.likes)+' likes</span>' : ''
-  ].filter(Boolean).join('');
-
-  // Hook banner
-  var hookBannerHTML = '';
-  var _parsedHook = parseHookPattern(video.hookPattern);
-  if (_parsedHook) {
-    hookBannerHTML = '<div class="vev2-hook-banner"><span class="vev2-hook-type '+_parsedHook.cls+'">'+esc(_parsedHook.type)+'</span>'
-      + (_parsedHook.desc ? '<div class="vev2-hook-desc">'+esc(_parsedHook.desc)+'</div>' : '') + '</div>';
-  }
-
-  // Tags grouped by category
+  // Tags by category
   var vtags = Array.isArray(video.tags) ? video.tags : [];
   var tagGroups = {};
-  var tagOrder = ['People','Product','Location','Prop'];
   vtags.forEach(function(t) {
     var cat = Object.keys(TAG_CATEGORIES).find(function(c){ return getAllTags(c).indexOf(t) !== -1; }) || 'Other';
     if (!tagGroups[cat]) tagGroups[cat] = [];
     tagGroups[cat].push(t);
   });
-  var tagsHTML = '';
-  tagOrder.forEach(function(cat) {
-    if (!tagGroups[cat] || !tagGroups[cat].length) return;
-    tagsHTML += '<div class="vev2-tag-group"><div class="vev2-tag-group-label">'+cat+'</div>';
-    tagGroups[cat].forEach(function(t) {
-      tagsHTML += '<span class="vev2-tag" data-cat="'+cat+'">'+esc(t)+'</span>';
-    });
-    tagsHTML += '</div>';
-  });
-  if (tagGroups['Other'] && tagGroups['Other'].length) {
-    tagsHTML += '<div class="vev2-tag-group">';
-    tagGroups['Other'].forEach(function(t) {
-      tagsHTML += '<span class="vev2-tag" data-cat="other">'+esc(t)+'</span>';
-    });
-    tagsHTML += '</div>';
+
+  function tagPills(catName) {
+    var tags = tagGroups[catName];
+    if (!tags || !tags.length) return '';
+    return tags.map(function(t){ return '<span class="vev2-tag" data-cat="'+catName+'">'+esc(t)+'</span>'; }).join('');
   }
 
-  // Shot list builder
-  function shots(arr) {
+  // Non-people tags combined
+  var nonPeopleTags = '';
+  ['Product','Location','Prop','Type'].forEach(function(c) { nonPeopleTags += tagPills(c); });
+  if (tagGroups['Other']) nonPeopleTags += tagGroups['Other'].map(function(t){ return '<span class="vev2-tag" data-cat="other">'+esc(t)+'</span>'; }).join('');
+
+  // Hook text
+  var parsedHook = parseHookPattern(video.hookPattern);
+  var hookText = '';
+  if (parsedHook) hookText = parsedHook.type + (parsedHook.desc ? '. ' + parsedHook.desc : '');
+
+  // Frame builder (timestamp badge + text)
+  function buildFrames(arr, cls) {
     if (!Array.isArray(arr) || !arr.length) return '';
-    return arr.map(function(s){ return '<div class="vev2-shot">'+esc(s)+'</div>'; }).join('');
+    return arr.map(function(s) {
+      var m = s.match(/^(\d[\d:.\-–\s]+\d)\s*:?\s*(.*)/);
+      if (m) return '<div class="vev2-frame"><span class="vev2-frame-time '+cls+'">'+esc(m[1].trim())+'</span><span class="vev2-frame-text">'+esc(m[2].trim())+'</span></div>';
+      return '<div class="vev2-frame"><span class="vev2-frame-text">'+esc(s)+'</span></div>';
+    }).join('');
   }
 
-  // Original column
+  // Original column — parse analysis + extract frames (timestamps or Shot N:)
   var origHTML = '';
   if (video.deepAnalysis) {
     var da = video.deepAnalysis;
-    var shotSplit = da.split(/\s*(Shot\s+\d+\s*:?)\s*/i);
-    if (shotSplit.length > 1) {
-      var analysisPart = shotSplit[0].replace(/\s*shot\s*breakdown\s*:?\s*$/i,'').trim();
-      if (analysisPart) origHTML += '<div class="vev2-slbl">Analysis</div><div class="vev2-txt">'+esc(analysisPart)+'</div>';
-      var origShots = [];
-      for (var si = 1; si < shotSplit.length; si += 2) {
-        var shotLabel = (shotSplit[si]||'').trim();
-        var shotBody = (shotSplit[si+1]||'').trim();
-        if (shotLabel || shotBody) origShots.push(shotLabel + ' ' + shotBody);
+    var tsParts = da.split(/\s*(?:Shot\s*breakdown\s*:?\s*)?(\d{1,2}:\d{2}[\s–\-]+\d{1,2}:\d{2})\s*/);
+    var shotNumParts = da.split(/\s*(Shot\s+\d+\s*:?)\s*/i);
+    if (tsParts.length > 2) {
+      var aPart = tsParts[0].replace(/\s*shot\s*breakdown\s*:?\s*$/i,'').trim();
+      if (aPart) origHTML += '<div class="vev2-slbl">Analysis</div><div class="vev2-txt">'+esc(aPart)+'</div>';
+      var oFrames = [];
+      for (var ti = 1; ti < tsParts.length; ti += 2) {
+        var ts = (tsParts[ti]||'').trim();
+        var body = (tsParts[ti+1]||'').trim();
+        if (ts) oFrames.push(ts + ' ' + body);
       }
-      if (origShots.length) origHTML += '<div class="vev2-slbl">Shot Breakdown</div>' + origShots.map(function(s){ return '<div class="vev2-shot">'+esc(s.trim())+'</div>'; }).join('');
+      if (oFrames.length) origHTML += '<div class="vev2-slbl">Frames</div>'+buildFrames(oFrames, 'ft-orig');
+    } else if (shotNumParts.length > 1) {
+      var aPart2 = shotNumParts[0].replace(/\s*shot\s*breakdown\s*:?\s*$/i,'').trim();
+      if (aPart2) origHTML += '<div class="vev2-slbl">Analysis</div><div class="vev2-txt">'+esc(aPart2)+'</div>';
+      var oFrames2 = [];
+      for (var si = 1; si < shotNumParts.length; si += 2) {
+        oFrames2.push((shotNumParts[si]||'').trim() + ' ' + (shotNumParts[si+1]||'').trim());
+      }
+      if (oFrames2.length) origHTML += '<div class="vev2-slbl">Frames</div>'+buildFrames(oFrames2, 'ft-orig');
     } else {
       origHTML += '<div class="vev2-slbl">Analysis</div><div class="vev2-txt">'+esc(da)+'</div>';
     }
   }
-  if (video.shots && video.shots.length) origHTML += '<div class="vev2-slbl">Shot Breakdown</div>'+shots(video.shots);
+  if (video.shots && video.shots.length) origHTML += '<div class="vev2-slbl">Frames</div>'+buildFrames(video.shots, 'ft-orig');
 
-  // Nancy column (videographer moved to its own row above the split)
+  // Nancy column
   var nancyHTML = '';
   if (video.nancyExecution) nancyHTML += '<div class="vev2-slbl">Execution</div><div class="vev2-txt">'+esc(video.nancyExecution)+'</div>';
-  if (video.productionShots && video.productionShots.length) nancyHTML += '<div class="vev2-slbl">Shot by Shot</div>'+shots(video.productionShots);
-  if (video.peopleInstructions) nancyHTML += '<hr class="vev2-hr"><div class="vev2-slbl">People</div><div class="vev2-txt">'+esc(video.peopleInstructions)+'</div>';
-  if (video.postCaption) nancyHTML += '<hr class="vev2-hr"><div class="vev2-slbl">Post Caption</div><div class="vev2-txt">'+esc(video.postCaption)+'</div>';
-  if (video.overlayCaption) nancyHTML += '<div class="vev2-slbl">Overlay Caption</div><div class="vev2-txt">'+esc(video.overlayCaption)+'</div>';
-
-  // Videographer row (above the split, not inside Nancy column)
-  var videographerHTML = '';
-  if (video.videographer) {
-    videographerHTML = '<div class="vev2-videographer-row">'
-      + '<span class="vev2-videographer-label">Videographer</span>'
-      + '<span class="vev2-videographer-name">'+esc(video.videographer)+'</span>'
-      + '</div>';
-  }
+  if (video.productionShots && video.productionShots.length) nancyHTML += '<div class="vev2-slbl">Frames</div>'+buildFrames(video.productionShots, 'ft-nancy');
 
   return '<div class="video-entry-v2">'
 
-    // Title + outlier badge
-    + '<div class="vev2-hdr">'
-    +   '<div class="vev2-title">'+esc(video.title||'Untitled')+'</div>'
-    +   (video.outlierScore ? '<div class="vev2-outlier">'+esc(video.outlierScore)+'</div>' : '')
-    + '</div>'
+    // Top section: left (video) + right (meta fields)
+    + '<div class="vev2-top">'
 
-    // Hook banner
-    + hookBannerHTML
-
-    + '<div class="vev2-body">'
-
-    // Left: phone embed + link + stats
+    // Left: title + link + embed + stats
     +   '<div class="vev2-left">'
-    +     '<div class="vev2-embed" data-url="'+esc(video.url||'')+'">'+embedInner+'</div>'
+    +     '<div class="vev2-title">'+esc(video.title||'Untitled')+'</div>'
     +     (video.url ? '<a href="'+esc(video.url)+'" target="_blank" rel="noopener" class="vev2-url">'+esc(video.url)+'</a>' : '')
-    +     (statsHTML ? '<div class="vev2-stats">'+statsHTML+'</div>' : '')
-    +   '</div>'
-
-    // Right: tags + videographer + Original | Nancy split
-    +   '<div class="vev2-right">'
-    +     (tagsHTML ? '<div class="vev2-tags">'+tagsHTML+'</div>' : '')
-    +     videographerHTML
-    +     '<div class="vev2-split">'
-    +       '<div class="vev2-col"><div class="vev2-col-hdr o">Original</div>'+origHTML+'</div>'
-    +       '<div class="vev2-col"><div class="vev2-col-hdr n">Nancy</div>'+nancyHTML+'</div>'
+    +     '<div class="vev2-embed" data-url="'+esc(video.url||'')+'">'
+    +       (video.outlierScore ? '<div class="vev2-outlier">'+esc(video.outlierScore)+'</div>' : '')
+    +       embedInner
+    +     '</div>'
+    +     '<div class="vev2-stats">'
+    +       (video.views ? '<span class="vev2-stat s-views">'+esc(video.views)+'</span>' : '')
+    +       (video.likes ? '<span class="vev2-stat s-likes">'+esc(video.likes)+'</span>' : '')
     +     '</div>'
     +   '</div>'
 
+    // Right: Tags, People, Hook, Caption, Overlay
+    +   '<div class="vev2-right">'
+    +     (nonPeopleTags ? '<div class="vev2-field"><span class="vev2-field-label">Tags</span><div class="vev2-field-value">'+nonPeopleTags+'</div></div>' : '')
+    +     (tagPills('People') ? '<div class="vev2-field"><span class="vev2-field-label">People</span><div class="vev2-field-value">'+tagPills('People')+'</div></div>' : '')
+    +     (hookText ? '<div class="vev2-field"><span class="vev2-field-label">Hook</span><span class="vev2-field-text">'+esc(hookText)+'</span></div>' : '')
+    +     (video.postCaption ? '<div class="vev2-field"><span class="vev2-field-label">Caption</span><span class="vev2-field-text">'+esc(video.postCaption)+'</span></div>' : '')
+    +     (video.overlayCaption ? '<div class="vev2-field"><span class="vev2-field-label">Text Overlay</span><span class="vev2-field-text">'+esc(video.overlayCaption)+'</span></div>' : '')
+    +   '</div>'
+
+    + '</div>'
+
+    // Original | Nancy cards below
+    + '<div class="vev2-split">'
+    +   '<div class="vev2-col"><div class="vev2-col-hdr o">Original</div>'+origHTML+'</div>'
+    +   '<div class="vev2-col"><div class="vev2-col-hdr n">Nancy</div>'+nancyHTML+'</div>'
     + '</div>'
 
     // Shot progress bar
     + (function(){
         var prog = calcVideoProgress(video);
         if (!prog) return '';
-        return '<div class="shot-prog-bar"><div class="shot-prog-fill" style="width:'+prog.pct+'%"></div></div>'
+        return '<div class="shot-prog-bar" style="margin-top:0.5rem;"><div class="shot-prog-fill" style="width:'+prog.pct+'%"></div></div>'
           +'<div class="shot-prog-label'+(prog.complete?' all-done':'')+'">'
           +'<span>'+prog.done+' / '+prog.total+' shots done</span>'
           +(prog.complete?'<span class="shot-ready-badge">Ready for Editors ✓</span>':'')
