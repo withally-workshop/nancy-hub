@@ -183,25 +183,29 @@ input.ve-field-in:focus{border-color:#2a2a2a;color:#aaa;}
 .brief-type.t-photo{background:rgba(68,255,153,0.12);color:#44ff99;}
 .brief-type.t-still{background:rgba(255,204,68,0.12);color:#ffcc44;}
 .brief-body{display:flex;border-top:1px solid #1a1a1a;}
-.brief-vid-col{flex-shrink:0;width:150px;padding:0.75rem 0.9rem;display:flex;flex-direction:column;gap:8px;border-right:1px solid #1a1a1a;}
-.brief-vid-col-lbl{font-size:0.42rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--m);font-weight:700;}
-.brief-vid-item{width:100%;background:#0a0a0a;border-radius:8px;overflow:hidden;border:1px solid #222;cursor:pointer;transition:border-color 0.15s;}
-.brief-vid-item:hover{border-color:var(--m);}
-.brief-vid-thumb{width:100%;aspect-ratio:9/16;max-height:180px;background:#0a0a0a;overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center;}
+.brief-vid-col{flex:1;min-width:0;padding:0.75rem 0.9rem;border-right:1px solid #1a1a1a;}
+.brief-vid-col-lbl{font-size:0.42rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--m);font-weight:700;margin-bottom:8px;}
+.brief-vid-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.brief-vid-item{background:#0a0a0a;border-radius:10px;overflow:hidden;border:2px solid var(--m);transition:border-color 0.15s;}
+.brief-vid-item:hover{border-color:#fff;}
+.brief-vid-thumb{width:100%;aspect-ratio:9/16;max-height:220px;background:#0a0a0a;overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center;}
 .brief-vid-thumb .video-embed-wrap{border:none!important;width:100%;height:100%;position:absolute;top:0;left:0;}
-.brief-vid-thumb .video-embed-wrap.tiktok-wrap iframe,.brief-vid-thumb .video-embed-wrap.instagram-wrap iframe{width:325px!important;height:580px!important;aspect-ratio:unset!important;max-height:none!important;transform:scale(0.47);transform-origin:top left;}
+.brief-vid-thumb .video-embed-wrap.tiktok-wrap iframe,.brief-vid-thumb .video-embed-wrap.instagram-wrap iframe{width:325px!important;height:580px!important;aspect-ratio:unset!important;max-height:none!important;transform:scale(0.55);transform-origin:top left;}
 .brief-vid-thumb .video-embed-wrap iframe{width:100%;height:100%;border:none;}
-.brief-vid-play{display:none;}
-.brief-vid-info{padding:0.25rem 0.4rem 0.3rem;}
-.brief-vid-num{font-size:0.5rem;color:var(--m);font-weight:700;}
-.brief-vid-title{font-size:0.48rem;color:#666;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.brief-vid-play{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:3;background:rgba(0,0,0,0.2);pointer-events:none;}
+.brief-vid-play::after{content:'';width:0;height:0;border-left:18px solid #fff;border-top:12px solid transparent;border-bottom:12px solid transparent;filter:drop-shadow(0 0 6px rgba(0,0,0,0.5));}
+.brief-vid-guide-btn{display:block;text-align:center;padding:0.3rem 0.5rem;background:var(--m);color:#fff;font-size:0.55rem;font-weight:700;cursor:pointer;text-decoration:none;transition:background 0.15s;}
+.brief-vid-guide-btn:hover{background:#ff33bb;}
+.brief-detail-col{flex:1;min-width:0;padding:0.75rem 0.9rem;display:flex;flex-direction:column;gap:12px;}
+.brief-detail-section{background:rgba(255,255,255,0.03);border:1px solid #222;border-radius:10px;padding:0.65rem 0.85rem;}
+.brief-detail-section-hdr{font-size:0.52rem;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;color:var(--m);margin-bottom:0.4rem;display:flex;align-items:center;gap:0.4rem;}
+.brief-detail-section-hdr::before{content:'';width:3px;height:12px;background:var(--m);border-radius:2px;}
+.brief-detail-section-txt{font-size:0.65rem;color:#aaa;line-height:1.5;}
+.brief-detail-row{display:grid;grid-template-columns:1fr 1fr;gap:0.55rem;}
+.brief-detail-lbl{font-size:0.42rem;text-transform:uppercase;letter-spacing:0.08em;color:#555;font-weight:700;}
+.brief-detail-val{font-size:0.7rem;color:#ccc;font-weight:600;margin-top:0.1rem;}
 .brief-overflow-row{padding:0.75rem 0.9rem;border-top:1px solid #1a1a1a;}
-.brief-overflow-vids{display:flex;gap:8px;overflow-x:auto;padding-top:6px;}
-.brief-overflow-vids .brief-vid-item{width:120px;flex-shrink:0;}
-.brief-overflow-vids .brief-vid-thumb{max-height:150px;}
-.brief-info-cols{flex:1;min-width:0;display:grid;grid-template-columns:1fr 1fr;}
-.brief-col{padding:0.75rem 0.9rem;}
-.brief-col+.brief-col{border-left:1px solid #1a1a1a;}
+.brief-overflow-vids{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding-top:6px;}
 .brief-lbl{font-size:0.48rem;text-transform:uppercase;letter-spacing:0.1em;color:#444;font-weight:700;margin-bottom:0.3rem;}
 .brief-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:0.15rem;}
 .brief-tag{font-size:0.55rem;font-weight:600;padding:0.12rem 0.5rem;border-radius:8px;background:rgba(68,170,255,0.08);color:#44aaff;border:1px solid rgba(68,170,255,0.12);}
@@ -1295,73 +1299,79 @@ function renderEdCategoryShots(catId, filter) {
       +'</select>'
       +'</div>';
 
-    // Body: ALL connected concept videos stacked left + info columns right
+    // Body: videos LEFT in 2-col grid, details RIGHT stacked
     html += '<div class="brief-body">';
 
-    // Left: max 4 connected concept videos stacked vertically
+    // LEFT: connected concept videos in 2-col grid (max 4 on side)
     var sideVids = connectedVids.slice(0, 4);
     var overflowVids = connectedVids.slice(4);
     if (sideVids.length) {
       html += '<div class="brief-vid-col">';
       html += '<div class="brief-vid-col-lbl">Connected Concepts</div>';
+      html += '<div class="brief-vid-grid">';
       sideVids.forEach(function(cv) {
         var vidThumb = buildEmbed(cv.url) || '';
-        html += '<div class="brief-vid-item" onclick="window.open(\''+esc(cv.url||'').replace(/'/g,"\\'")+'\',\'_blank\')">'
+        html += '<div class="brief-vid-item">'
           +'<div class="brief-vid-thumb">'
             +vidThumb
             +'<div class="brief-vid-play"></div>'
           +'</div>'
-          +'<div class="brief-vid-info"><span class="brief-vid-num">C'+cv.num+'</span> <span class="brief-vid-title">'+esc(cv.title)+'</span></div>'
+          +'<div class="brief-vid-guide-btn" onclick="window.open(\''+esc(cv.url||'').replace(/'/g,"\\'")+'\',\'_blank\')">'
+            +'view guide'
+          +'</div>'
           +'</div>';
       });
-      html += '</div>';
+      html += '</div></div>';
     }
 
-    // Right: props + on set columns
-    html += '<div class="brief-info-cols">';
-    html += '<div class="brief-col">'
-      +'<div class="brief-lbl">Props / Station</div>'
-      +'<input class="brief-ed-input" placeholder="e.g. Lem, seamless backdrop" value="'+esc(gs.propStation||'')+'" onblur="updateShotField(\''+sid+'\',\'propStation\',this.value)">'
+    // RIGHT: Edit Recipe, Director Note, On Set, Props stacked vertically
+    html += '<div class="brief-detail-col">';
+
+    html += '<div class="brief-detail-section">'
+      +'<div class="brief-detail-section-hdr">Edit Recipe</div>'
+      +'<textarea class="brief-ed-textarea brief-detail-section-txt" placeholder="How the editor should handle this footage" onblur="updateShotField(\''+sid+'\',\'editRecipe\',this.value)">'+esc(gs.editRecipe||'')+'</textarea>'
       +'</div>';
-    html += '<div class="brief-col">'
-      +'<div class="brief-onset-hdr">On Set</div>'
-      +'<div class="brief-onset-row">'
-        +'<div><div class="brief-onset-lbl">Videographer</div><input class="brief-ed-input" placeholder="Who films" value="'+esc(gs.videographer||'')+'" onblur="updateShotField(\''+sid+'\',\'videographer\',this.value)"></div>'
-        +'<div><div class="brief-onset-lbl">Talent</div><input class="brief-ed-input" placeholder="Who appears" value="'+esc(gs.talent||'')+'" onblur="updateShotField(\''+sid+'\',\'talent\',this.value)"></div>'
-      +'</div>'
+
+    html += '<div class="brief-detail-section">'
+      +'<div class="brief-detail-section-hdr">Director Note</div>'
+      +'<textarea class="brief-ed-textarea brief-detail-section-txt" placeholder="Special instructions for this shot" onblur="updateShotField(\''+sid+'\',\'directorNote\',this.value)">'+esc(gs.directorNote||'')+'</textarea>'
       +'</div>';
-    html += '</div>'; // close brief-info-cols
+
+    html += '<div class="brief-detail-section">';
+    html += '<div class="brief-detail-section-hdr">On Set</div>';
+    html += '<div class="brief-detail-row">'
+      +'<div><div class="brief-detail-lbl">Videographer</div><input class="brief-ed-input" placeholder="Who films" value="'+esc(gs.videographer||'')+'" onblur="updateShotField(\''+sid+'\',\'videographer\',this.value)"></div>'
+      +'<div><div class="brief-detail-lbl">Talent</div><input class="brief-ed-input" placeholder="Who appears" value="'+esc(gs.talent||'')+'" onblur="updateShotField(\''+sid+'\',\'talent\',this.value)"></div>'
+      +'</div>';
+    html += '</div>';
+
+    html += '<div class="brief-detail-section">';
+    html += '<div class="brief-detail-section-hdr">Props</div>';
+    html += '<input class="brief-ed-input" placeholder="e.g. Lem, seamless backdrop" value="'+esc(gs.propStation||'')+'" onblur="updateShotField(\''+sid+'\',\'propStation\',this.value)">';
+    html += '</div>';
+
+    html += '</div>'; // close brief-detail-col
     html += '</div>'; // close brief-body
 
-    // Overflow videos (5+) in horizontal row below
+    // Overflow videos (5+) in grid row below
     if (overflowVids.length) {
       html += '<div class="brief-overflow-row">';
       html += '<div class="brief-vid-col-lbl">More Connected Concepts</div>';
       html += '<div class="brief-overflow-vids">';
       overflowVids.forEach(function(cv) {
         var vidThumb = buildEmbed(cv.url) || '';
-        html += '<div class="brief-vid-item" onclick="window.open(\''+esc(cv.url||'').replace(/'/g,"\\'")+'\',\'_blank\')">'
+        html += '<div class="brief-vid-item">'
           +'<div class="brief-vid-thumb">'
             +vidThumb
             +'<div class="brief-vid-play"></div>'
           +'</div>'
-          +'<div class="brief-vid-info"><span class="brief-vid-num">C'+cv.num+'</span> <span class="brief-vid-title">'+esc(cv.title)+'</span></div>'
+          +'<div class="brief-vid-guide-btn" onclick="window.open(\''+esc(cv.url||'').replace(/'/g,"\\'")+'\',\'_blank\')">'
+            +'view guide'
+          +'</div>'
           +'</div>';
       });
       html += '</div></div>';
     }
-
-    // Edit Recipe box
-    html += '<div class="brief-recipe">'
-      +'<div class="brief-recipe-hdr"><span class="brief-recipe-lbl">Edit Recipe</span><span class="brief-recipe-badge">travels with the footage</span></div>'
-      +'<textarea class="brief-ed-textarea brief-recipe-txt" placeholder="How the editor should handle this footage" onblur="updateShotField(\''+sid+'\',\'editRecipe\',this.value)">'+esc(gs.editRecipe||'')+'</textarea>'
-      +'</div>';
-
-    // Director Note box
-    html += '<div class="brief-note">'
-      +'<div class="brief-note-hdr"><span class="brief-note-lbl">Director Note</span><span class="brief-note-badge">edit freely</span></div>'
-      +'<textarea class="brief-ed-textarea brief-note-txt" placeholder="Special instructions for this shot" onblur="updateShotField(\''+sid+'\',\'directorNote\',this.value)">'+esc(gs.directorNote||'')+'</textarea>'
-      +'</div>';
 
     html += '</div>';
   });
