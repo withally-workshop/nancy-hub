@@ -366,6 +366,16 @@ button{font-family:inherit;}
 .shot-prog-label.all-done{color:var(--m);}
 .shot-ready-badge{font-size:0.55rem;font-weight:800;background:var(--m);color:#fff;border-radius:20px;padding:0.15rem 0.5rem;letter-spacing:0.04em;}
 
+/* ── LINKED SHOTS CHECKLIST (on concept cards) ── */
+.vev2-linked-shots{padding:0.4rem 0.7rem 0.5rem;border-top:1px solid #1a1a2a;}
+.vev2-linked-shot{display:flex;align-items:center;gap:0.4rem;padding:0.2rem 0;font-size:0.6rem;color:#555;}
+.vev2-linked-shot.done{color:var(--m);}
+.vev2-ls-check{font-size:0.65rem;width:1rem;text-align:center;flex-shrink:0;}
+.vev2-linked-shot.done .vev2-ls-check{color:var(--m);}
+.vev2-ls-title{line-height:1.3;}
+.vev2-auto-added{font-size:0.52rem;color:var(--m);font-weight:700;padding:0.25rem 0.7rem 0.1rem;letter-spacing:0.03em;opacity:0;transition:opacity 0.5s;}
+.vev2-auto-added.show{opacity:1;}
+
 /* ── MAIN TAB BAR ── */
 .cg-main-tabs{display:flex;gap:6px;background:#111;border-radius:10px;padding:4px;margin:0.5rem 1.25rem 1rem;}
 .cg-main-tab{flex:1;text-align:center;padding:0.55rem 0.5rem;border-radius:8px;font-size:0.72rem;font-weight:700;color:#555;cursor:pointer;transition:all 0.15s;white-space:nowrap;}
@@ -1041,6 +1051,32 @@ async function loadGS() {
 }
 async function saveGS() {
   try { await db.from('settings').upsert({ key: GS_KEY, value: JSON.stringify({ done: Array.from(doneGS) }) }); } catch(e) {}
+}
+
+async function saveShotsFullConfig() {
+  try {
+    await db.from('settings').update({ value: JSON.stringify({ shots: GENERAL_SHOTS, groups: GS_GROUPS, schedule: PEOPLE_SCHEDULE, shootSchedule: SHOOT_BLOCKS, pipeline: PIPELINE }) }).eq('key', SHOTS_CONFIG_KEY);
+  } catch(e) { console.error('Config save failed', e); }
+}
+
+function checkAutoShotComplete(shotId) {
+  var gs = GENERAL_SHOTS.find(function(s){ return s.id === shotId; });
+  if (!gs || !gs.videoTitles) return;
+  var added = false;
+  gs.videoTitles.forEach(function(title) {
+    DATA.guides.forEach(function(guide) {
+      (guide.videos || []).forEach(function(video, idx) {
+        if (video.title !== title) return;
+        var prog = calcVideoProgress(video);
+        if (!prog || !prog.complete) return;
+        var exists = PIPELINE.some(function(p){ return p.name === video.title; });
+        if (exists) return;
+        PIPELINE.push({ conceptNum: idx + 1, name: video.title, status: 'shot', editor: '', publishTime: '' });
+        added = true;
+      });
+    });
+  });
+  if (added) saveShotsFullConfig();
 }
 
 function calcVideoProgress(video) {
@@ -1766,6 +1802,7 @@ function toggleGS(el) {
   if (doneGS.has(id)) { doneGS.delete(id); el.classList.remove('checked'); }
   else { doneGS.add(id); el.classList.add('checked'); }
   saveGS();
+  checkAutoShotComplete(id);
   var counter = document.getElementById('gs-counter');
   if (counter) {
     var groupLabel = counter.getAttribute('data-group');
@@ -1853,6 +1890,7 @@ function renderTagShots(categoryKey) {
 // ══════════════════════════════════════
 // RENDER GUIDE DETAIL (PAGE 3)
 // ══════════════════════════════════════
+var _prevView = null;
 function showSingleVideo(videoTitle) {
   var video = null; var guideId = null; var videoIdx = 0;
   DATA.guides.forEach(function(g) {
@@ -1861,12 +1899,22 @@ function showSingleVideo(videoTitle) {
     });
   });
   if (!video) { if (!(window.location.hash||'').startsWith('#video/')) goHome(); return; }
+  if (!_prevView) _prevView = { catId: guideId, hash: window.location.hash };
   var el = document.getElementById('guide-detail-content');
   var uid = guideId + '-' + videoIdx;
-  el.innerHTML = '<div style="padding:0.5rem 1.25rem;"><button class="home-btn" onclick="history.back()" style="padding:0;">← Back</button></div>'
+  el.innerHTML = '<div style="padding:0.5rem 1.25rem;"><button class="home-btn" onclick="videoBack()" style="padding:0;">← Back</button></div>'
     + '<div class="guide-cat-label" style="font-size:0.65rem;">Concept '+(videoIdx+1)+'</div>'
     + buildVideoEntry(video, uid, guideId, videoIdx);
   showPage('page-guide');
+}
+function videoBack() {
+  if (_prevView && _prevView.catId) {
+    showPage('page-home');
+    renderCategoryDetail(_prevView.catId, 'shots');
+    _prevView = null;
+  } else {
+    goHome();
+  }
 }
 
 function renderGuide(id) {
@@ -2030,11 +2078,30 @@ function buildVideoEntry(video, uid, guideId, videoIdx) {
     + (function(){
         var prog = calcVideoProgress(video);
         if (!prog) return '';
+        var inPipeline = PIPELINE.some(function(p){ return p.name === video.title; });
         return '<div class="shot-prog-bar" style="margin-top:0.5rem;"><div class="shot-prog-fill" style="width:'+prog.pct+'%"></div></div>'
           +'<div class="shot-prog-label'+(prog.complete?' all-done':'')+'">'
           +'<span>'+prog.done+' / '+prog.total+' shots done</span>'
-          +(prog.complete?'<span class="shot-ready-badge">Ready for Editors ✓</span>':'')
+          +(prog.complete?'<span class="shot-ready-badge">'+(inPipeline?'In Pipeline ✓':'Ready for Editors ✓')+'</span>':'')
           +'</div>';
+      })()
+
+    // Linked shooting guide shots
+    + (function(){
+        var shotIds = videoGSMap[video.title] || [];
+        if (!shotIds.length) return '';
+        var html = '<div class="vev2-linked-shots"><div class="vev2-slbl" style="margin-bottom:0.15rem;">Shooting Checklist</div>';
+        shotIds.forEach(function(id) {
+          var gs = GENERAL_SHOTS.find(function(s){ return s.id === id; });
+          if (!gs) return;
+          var isDone = doneGS.has(id);
+          html += '<div class="vev2-linked-shot'+(isDone?' done':'')+'">'
+            +'<span class="vev2-ls-check">'+(isDone?'✓':'○')+'</span>'
+            +'<span class="vev2-ls-title">'+esc(gs.title||gs.id)+'</span>'
+            +'</div>';
+        });
+        html += '</div>';
+        return html;
       })()
 
     + '</div>';
