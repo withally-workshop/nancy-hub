@@ -455,7 +455,10 @@ button{font-family:inherit;}
 .brief-detail-lbl{font-size:0.42rem;text-transform:uppercase;letter-spacing:0.08em;color:#555;font-weight:700;}
 .brief-detail-val{font-size:0.7rem;color:#ccc;font-weight:600;margin-top:0.1rem;}
 .brief-overflow-row{padding:0.75rem 0.9rem;border-top:1px solid #1a1a1a;}
-.brief-overflow-vids{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding-top:6px;}
+.brief-overflow-lbl{font-size:0.48rem;font-weight:700;color:#aaa;margin-bottom:6px;}
+.brief-overflow-pills{display:flex;gap:6px;flex-wrap:wrap;padding-top:4px;}
+.brief-overflow-pill{font-size:0.55rem;font-weight:700;padding:0.3rem 0.75rem;border-radius:20px;background:var(--m);color:#fff;cursor:pointer;transition:background 0.15s;white-space:nowrap;}
+.brief-overflow-pill:hover{background:#ff33bb;}
 .brief-lbl{font-size:0.48rem;text-transform:uppercase;letter-spacing:0.1em;color:#444;font-weight:700;margin-bottom:0.3rem;}
 .brief-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:0.15rem;}
 .brief-tag{font-size:0.55rem;font-weight:600;padding:0.12rem 0.5rem;border-radius:8px;background:rgba(68,170,255,0.08);color:#44aaff;border:1px solid rgba(68,170,255,0.12);}
@@ -1495,22 +1498,15 @@ function renderCategoryShots(catId, filter) {
     html += '</div>'; // close brief-detail-col
     html += '</div>'; // close brief-body
 
-    // Overflow videos (5+) in grid row below
+    // Overflow videos (5+) as simple pills below
     if (overflowVids.length) {
       html += '<div class="brief-overflow-row">';
-      html += '<div class="brief-vid-col-lbl">More Connected Concepts</div>';
-      html += '<div class="brief-overflow-vids">';
+      html += '<div class="brief-overflow-lbl">more...</div>';
+      html += '<div class="brief-overflow-pills">';
       overflowVids.forEach(function(cv) {
-        var vidThumb = buildVideoEmbed(cv.url) || '';
-        html += '<div class="brief-vid-item">'
-          +'<div class="brief-vid-thumb">'
-            +vidThumb
-            +'<div class="brief-vid-play"></div>'
-          +'</div>'
-          +'<div class="brief-vid-guide-btn" onclick="showSingleVideo(\''+cv.title.replace(/'/g,"\\'")+'\')">'
-            +'view guide'
-          +'</div>'
-          +'</div>';
+        html += '<span class="brief-overflow-pill" onclick="showSingleVideo(\''+cv.title.replace(/'/g,"\\'")+'\')">'
+          +'C'+cv.num+' '+esc(cv.title)
+          +'</span>';
       });
       html += '</div></div>';
     }
