@@ -1512,6 +1512,11 @@ async function startEditor() {
 }
 
 // ── ADD BLANK VIDEO ──
+function scrollToCard(idx) {
+  var el = document.getElementById('card-' + idx);
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
 function addBlankVideo() {
   var url = (window.prompt('Paste video URL (TikTok or Instagram):') || '').trim();
   if (!url) return;
@@ -1589,11 +1594,21 @@ function renderVideos(guideId) {
 
     var i = v.idx;
     var embed = buildEmbed(url);
+    var cardPos = filtered.indexOf(v);
+    var totalInGuide = filtered.length;
+    var prevIdx = cardPos > 0 ? filtered[cardPos - 1].idx : -1;
+    var nextIdx = cardPos < totalInGuide - 1 ? filtered[cardPos + 1].idx : -1;
 
     var card = document.createElement('div');
     card.className = 'video-entry';
     card.id = 'card-' + i;
     card.innerHTML =
+      '<div class="concept-nav">'
+        +'<button class="concept-nav-btn"'+(prevIdx===-1?' disabled':' onclick="scrollToCard('+prevIdx+')"')+'>← Prev</button>'
+        +'<span class="concept-nav-label">Concept '+(cardPos+1)+' of '+totalInGuide+'</span>'
+        +'<button class="concept-nav-btn"'+(nextIdx===-1?' disabled':' onclick="scrollToCard('+nextIdx+')"')+'>Next →</button>'
+      +'</div>'
+      +
 
       /* ── LEFT COLUMN ── */
       '<div class="ve-left">' +
