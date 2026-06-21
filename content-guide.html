@@ -428,7 +428,17 @@ button{font-family:inherit;}
 .brief-type.t-video{background:rgba(68,170,255,0.12);color:#44aaff;}
 .brief-type.t-photo{background:rgba(68,255,153,0.12);color:#44ff99;}
 .brief-type.t-still{background:rgba(255,204,68,0.12);color:#ffcc44;}
-.brief-body{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid #1a1a1a;}
+.brief-body{display:flex;border-top:1px solid #1a1a1a;}
+.brief-vid-col{flex-shrink:0;width:140px;padding:0.75rem 0 0.75rem 0.9rem;}
+.brief-vid-thumb{width:140px;height:200px;background:#0a0a0a;border-radius:10px;overflow:hidden;position:relative;border:2px solid #222;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.brief-vid-thumb .video-embed-wrap{border:none!important;width:100%;height:100%;position:absolute;top:0;left:0;pointer-events:none;}
+.brief-vid-thumb .video-embed-wrap.tiktok-wrap iframe,.brief-vid-thumb .video-embed-wrap.instagram-wrap iframe{width:325px!important;height:580px!important;aspect-ratio:unset!important;max-height:none!important;transform:scale(0.435);transform-origin:top left;}
+.brief-vid-thumb .video-embed-wrap iframe{width:100%;height:100%;border:none;}
+.brief-vid-play{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:3;background:rgba(0,0,0,0.2);}
+.brief-vid-play::after{content:'';width:0;height:0;border-left:16px solid #fff;border-top:10px solid transparent;border-bottom:10px solid transparent;filter:drop-shadow(0 0 4px rgba(0,0,0,0.5));}
+.brief-vid-play:hover{background:rgba(255,0,170,0.15);}
+.brief-vid-label{position:absolute;bottom:6px;left:6px;background:rgba(0,0,0,0.75);color:#fff;font-size:0.48rem;font-weight:700;padding:0.12rem 0.4rem;border-radius:4px;z-index:4;}
+.brief-info-cols{flex:1;min-width:0;display:grid;grid-template-columns:1fr 1fr;}
 .brief-col{padding:0.75rem 0.9rem;}
 .brief-col+.brief-col{border-left:1px solid #1a1a1a;}
 .brief-lbl{font-size:0.48rem;text-transform:uppercase;letter-spacing:0.1em;color:#444;font-weight:700;margin-bottom:0.3rem;}
@@ -1121,8 +1131,7 @@ function buildVideoEmbed(url) {
   }
   if (platform === 'instagram') {
     var id = extractInstagramId(url);
-    var type = extractInstagramType(url);
-    if (id) return '<div class="video-embed-wrap instagram-wrap"><iframe src="https://www.instagram.com/'+type+'/'+id+'/embed/" allow="autoplay;clipboard-write;encrypted-media;picture-in-picture;web-share" allowfullscreen loading="lazy" scrolling="no"></iframe></div>';
+    if (id) return '<div class="video-embed-wrap instagram-wrap"><iframe src="https://www.instagram.com/reel/'+id+'/embed/" allow="autoplay;clipboard-write;encrypted-media;picture-in-picture;web-share" allowfullscreen loading="lazy" scrolling="no"></iframe></div>';
   }
   if (platform === 'facebook') {
     return '<div class="video-embed-wrap facebook-wrap"><iframe src="https://www.facebook.com/plugins/video.php?href='+encodeURIComponent(url)+'&show_text=false" allow="autoplay;clipboard-write;encrypted-media;picture-in-picture;web-share" allowfullscreen loading="lazy" scrolling="no"></iframe></div>';
@@ -1376,9 +1385,26 @@ function renderCategoryShots(catId, filter) {
       +(gs.shotType ? '<span class="brief-type '+typeClass+'">'+esc(typeLabel)+'</span>' : '')
       +'</div>';
 
-    // Body: two columns (Props left, On Set right)
-    if (hasOnset) {
+    // Body: video preview left + two info columns right
+    var hasBody = hasOnset || connectedVids.length;
+    if (hasBody) {
       html += '<div class="brief-body">';
+
+      // Left: first reference video as prominent preview
+      if (connectedVids.length) {
+        var firstVid = connectedVids[0];
+        var vidThumb = buildVideoEmbed(firstVid.url) || '';
+        html += '<div class="brief-vid-col">'
+          +'<div class="brief-vid-thumb" onclick="openVideoModal(\''+esc(firstVid.url||'').replace(/'/g,"\\'")+'\')">'
+            +vidThumb
+            +'<div class="brief-vid-play"></div>'
+            +'<div class="brief-vid-label">C'+firstVid.num+'</div>'
+          +'</div>'
+          +'</div>';
+      }
+
+      // Right: props + on set columns
+      html += '<div class="brief-info-cols">';
       html += '<div class="brief-col">';
       if (gs.propStation) {
         html += '<div class="brief-lbl">Props / Station</div><div class="brief-tags">';
@@ -1389,16 +1415,19 @@ function renderCategoryShots(catId, filter) {
         html += '</div>';
       }
       html += '</div>';
-      html += '<div class="brief-col">';
-      html += '<div class="brief-onset-hdr">On Set</div>';
-      if (gs.videographer || gs.talent) {
-        html += '<div class="brief-onset-row">';
-        if (gs.videographer) html += '<div><div class="brief-onset-lbl">Videographer</div><div class="brief-onset-val">'+esc(gs.videographer)+'</div></div>';
-        if (gs.talent) html += '<div><div class="brief-onset-lbl">Talent</div><div class="brief-onset-val">'+esc(gs.talent)+'</div></div>';
+      if (hasOnset) {
+        html += '<div class="brief-col">';
+        html += '<div class="brief-onset-hdr">On Set</div>';
+        if (gs.videographer || gs.talent) {
+          html += '<div class="brief-onset-row">';
+          if (gs.videographer) html += '<div><div class="brief-onset-lbl">Videographer</div><div class="brief-onset-val">'+esc(gs.videographer)+'</div></div>';
+          if (gs.talent) html += '<div><div class="brief-onset-lbl">Talent</div><div class="brief-onset-val">'+esc(gs.talent)+'</div></div>';
+          html += '</div>';
+        }
         html += '</div>';
       }
-      html += '</div>';
-      html += '</div>';
+      html += '</div>'; // close brief-info-cols
+      html += '</div>'; // close brief-body
     }
 
     // Edit Recipe box
@@ -1417,10 +1446,10 @@ function renderCategoryShots(catId, filter) {
         +'</div>';
     }
 
-    // Reference videos row
-    if (connectedVids.length) {
+    // Additional reference videos row (skip the first since it's shown as the side preview)
+    if (connectedVids.length > 1) {
       html += '<div class="brief-refs"><div class="brief-refs-lbl">Reference Videos</div><div class="brief-refs-row">';
-      connectedVids.forEach(function(cv) {
+      connectedVids.slice(1).forEach(function(cv) {
         var thumbEmbed = buildVideoEmbed(cv.url) || '';
         html += '<div class="brief-ref" onclick="showSingleVideo(\''+cv.title.replace(/'/g,"\\'")+'\')">'
           +'<div class="brief-ref-thumb">'+(thumbEmbed || '<div class="brief-ref-play"></div>')+'</div>'
@@ -1981,7 +2010,7 @@ function showPage(id) {
   if (page) page.classList.add('active');
   window.scrollTo(0,0);
 }
-function goHome()       { window.location.hash = '#home'; }
+function goHome()       { window.location.hash = '#home'; renderHome(); showPage('page-home'); }
 function goHub()        { window.location.href = 'index.html'; }
 function goShot(id)     { window.location.hash = '#shot/'+id; }
 function goGuide(id)    { window.location.hash = '#guide/'+id; }

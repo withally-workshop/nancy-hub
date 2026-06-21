@@ -182,7 +182,17 @@ input.ve-field-in:focus{border-color:#2a2a2a;color:#aaa;}
 .brief-type.t-video{background:rgba(68,170,255,0.12);color:#44aaff;}
 .brief-type.t-photo{background:rgba(68,255,153,0.12);color:#44ff99;}
 .brief-type.t-still{background:rgba(255,204,68,0.12);color:#ffcc44;}
-.brief-body{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid #1a1a1a;}
+.brief-body{display:flex;border-top:1px solid #1a1a1a;}
+.brief-vid-col{flex-shrink:0;width:140px;padding:0.75rem 0 0.75rem 0.9rem;}
+.brief-vid-thumb{width:140px;height:200px;background:#0a0a0a;border-radius:10px;overflow:hidden;position:relative;border:2px solid #222;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.brief-vid-thumb .video-embed-wrap{border:none!important;width:100%;height:100%;position:absolute;top:0;left:0;pointer-events:none;}
+.brief-vid-thumb .video-embed-wrap.tiktok-wrap iframe,.brief-vid-thumb .video-embed-wrap.instagram-wrap iframe{width:325px!important;height:580px!important;aspect-ratio:unset!important;max-height:none!important;transform:scale(0.435);transform-origin:top left;}
+.brief-vid-thumb .video-embed-wrap iframe{width:100%;height:100%;border:none;}
+.brief-vid-play{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:3;background:rgba(0,0,0,0.2);}
+.brief-vid-play::after{content:'';width:0;height:0;border-left:16px solid #fff;border-top:10px solid transparent;border-bottom:10px solid transparent;filter:drop-shadow(0 0 4px rgba(0,0,0,0.5));}
+.brief-vid-play:hover{background:rgba(255,0,170,0.15);}
+.brief-vid-label{position:absolute;bottom:6px;left:6px;background:rgba(0,0,0,0.75);color:#fff;font-size:0.48rem;font-weight:700;padding:0.12rem 0.4rem;border-radius:4px;z-index:4;}
+.brief-info-cols{flex:1;min-width:0;display:grid;grid-template-columns:1fr 1fr;}
 .brief-col{padding:0.75rem 0.9rem;}
 .brief-col+.brief-col{border-left:1px solid #1a1a1a;}
 .brief-lbl{font-size:0.48rem;text-transform:uppercase;letter-spacing:0.1em;color:#444;font-weight:700;margin-bottom:0.3rem;}
@@ -1279,8 +1289,24 @@ function renderEdCategoryShots(catId, filter) {
       +'</select>'
       +'</div>';
 
-    // Body: Props left, On Set right
+    // Body: video preview left + props + on set right
     html += '<div class="brief-body">';
+
+    // Left: first reference video as prominent preview
+    if (connectedVids.length) {
+      var firstVid = connectedVids[0];
+      var vidThumb = buildEmbed(firstVid.url) || '';
+      html += '<div class="brief-vid-col">'
+        +'<div class="brief-vid-thumb" onclick="window.open(\''+esc(firstVid.url||'').replace(/'/g,"\\'")+'\',\'_blank\')">'
+          +vidThumb
+          +'<div class="brief-vid-play"></div>'
+          +'<div class="brief-vid-label">C'+firstVid.num+'</div>'
+        +'</div>'
+        +'</div>';
+    }
+
+    // Right: props + on set columns
+    html += '<div class="brief-info-cols">';
     html += '<div class="brief-col">'
       +'<div class="brief-lbl">Props / Station</div>'
       +'<input class="brief-ed-input" placeholder="e.g. Lem, seamless backdrop" value="'+esc(gs.propStation||'')+'" onblur="updateShotField(\''+sid+'\',\'propStation\',this.value)">'
@@ -1292,7 +1318,8 @@ function renderEdCategoryShots(catId, filter) {
         +'<div><div class="brief-onset-lbl">Talent</div><input class="brief-ed-input" placeholder="Who appears" value="'+esc(gs.talent||'')+'" onblur="updateShotField(\''+sid+'\',\'talent\',this.value)"></div>'
       +'</div>'
       +'</div>';
-    html += '</div>';
+    html += '</div>'; // close brief-info-cols
+    html += '</div>'; // close brief-body
 
     // Edit Recipe box
     html += '<div class="brief-recipe">'
@@ -1306,20 +1333,20 @@ function renderEdCategoryShots(catId, filter) {
       +'<textarea class="brief-ed-textarea brief-note-txt" placeholder="Special instructions for this shot" onblur="updateShotField(\''+sid+'\',\'directorNote\',this.value)">'+esc(gs.directorNote||'')+'</textarea>'
       +'</div>';
 
-    // Reference videos row
-    html += '<div class="brief-refs"><div class="brief-refs-lbl">Reference Videos</div><div class="brief-refs-row">';
-    if (connectedVids.length) {
-      connectedVids.forEach(function(cv) {
+    // Additional reference videos row (skip first since it's the side preview)
+    if (connectedVids.length > 1) {
+      html += '<div class="brief-refs"><div class="brief-refs-lbl">More Reference Videos</div><div class="brief-refs-row">';
+      connectedVids.slice(1).forEach(function(cv) {
         var thumbEmbed = buildEmbed(cv.url) || '';
         html += '<div class="brief-ref">'
           +'<div class="brief-ref-thumb">'+(thumbEmbed || '<div class="brief-ref-play"></div>')+'</div>'
           +'<div class="brief-ref-info"><div class="brief-ref-num">C'+cv.num+'</div><div class="brief-ref-title">'+esc(cv.title)+'</div></div>'
           +'</div>';
       });
-    } else {
-      html += '<div class="brief-empty">No videos linked</div>';
+      html += '</div></div>';
+    } else if (!connectedVids.length) {
+      html += '<div class="brief-refs"><div class="brief-refs-lbl">Reference Videos</div><div class="brief-refs-row"><div class="brief-empty">No videos linked</div></div></div>';
     }
-    html += '</div></div>';
 
     html += '</div>';
   });
@@ -1693,7 +1720,7 @@ function buildEmbed(url) {
   }
   if (/instagram\.com/.test(url)) {
     var m2 = url.match(/\/(p|reel)\/([A-Za-z0-9_-]+)/);
-    if (m2) return '<div class="video-embed-wrap instagram-wrap"><iframe src="https://www.instagram.com/'+m2[1]+'/'+m2[2]+'/embed/" allow="autoplay;clipboard-write;encrypted-media;picture-in-picture;web-share" allowfullscreen loading="lazy" scrolling="no"></iframe></div>';
+    if (m2) return '<div class="video-embed-wrap instagram-wrap"><iframe src="https://www.instagram.com/reel/'+m2[2]+'/embed/" allow="autoplay;clipboard-write;encrypted-media;picture-in-picture;web-share" allowfullscreen loading="lazy" scrolling="no"></iframe></div>';
   }
   if (/facebook\.com|fb\.watch/.test(url)) {
     return '<div class="video-embed-wrap facebook-wrap"><iframe src="https://www.facebook.com/plugins/video.php?href='+encodeURIComponent(url)+'&show_text=false" allow="autoplay;clipboard-write;encrypted-media;picture-in-picture;web-share" allowfullscreen loading="lazy" scrolling="no"></iframe></div>';
