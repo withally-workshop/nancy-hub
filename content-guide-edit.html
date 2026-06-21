@@ -352,6 +352,30 @@ textarea.fg-ta.sm{min-height:52px;}
 .shot-prog-fill{height:100%;background:var(--m);border-radius:2px;transition:width 0.3s;}
 .shot-prog-label{font-size:0.6rem;font-weight:700;color:#555;padding:0 1.25rem 0.6rem;display:flex;justify-content:space-between;}
 
+/* ── CONCEPT FILTER + BIG GRID ── */
+.concept-filter-pills{display:flex;gap:6px;padding:0.5rem 1.25rem 0.75rem;flex-wrap:wrap;}
+.concept-filter-pill{font-size:0.62rem;font-weight:700;padding:0.3rem 0.8rem;border-radius:20px;background:#111;color:#555;border:1px solid #222;cursor:pointer;transition:all 0.15s;white-space:nowrap;}
+.concept-filter-pill.active{background:var(--m);color:#fff;border-color:var(--m);}
+.concept-grid-big{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;padding:0 1.25rem 1.5rem;}
+.concept-card-big{background:#0d0d0d;border-radius:12px;border:1px solid var(--border);overflow:hidden;cursor:pointer;transition:transform 0.15s;}
+.concept-card-big:active{transform:scale(0.97);}
+.concept-card-big-thumb{width:100%;aspect-ratio:9/16;max-height:280px;background:#0a0a0a;overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center;}
+.concept-card-big-thumb .video-embed-wrap{border:none!important;width:100%;height:100%;position:absolute;top:0;left:0;}
+.concept-card-big-thumb .video-embed-wrap.tiktok-wrap iframe,.concept-card-big-thumb .video-embed-wrap.instagram-wrap iframe{width:325px!important;height:580px!important;aspect-ratio:unset!important;max-height:none!important;transform:scale(0.62);transform-origin:top left;}
+.concept-card-big-badges{position:absolute;top:8px;left:8px;display:flex;flex-direction:column;gap:4px;z-index:2;}
+.concept-card-big-badge{font-size:0.5rem;font-weight:800;padding:0.18rem 0.5rem;border-radius:6px;letter-spacing:0.04em;}
+.concept-card-big-badge.badge-platform{background:rgba(17,17,17,0.85);color:#fff;}
+.concept-card-big-badge.badge-category{background:rgba(255,0,170,0.85);color:#fff;}
+.concept-card-big-outlier{position:absolute;top:8px;right:8px;background:rgba(76,175,80,0.9);color:#fff;font-size:0.62rem;font-weight:800;padding:0.2rem 0.55rem;border-radius:6px;z-index:2;}
+.concept-card-big-info{padding:0.55rem 0.65rem;}
+.concept-card-big-title{font-size:0.72rem;font-weight:700;color:#ccc;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.concept-card-big-tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:0.35rem;}
+.concept-card-big-tag{font-size:0.48rem;font-weight:600;padding:0.1rem 0.4rem;border-radius:8px;}
+
+/* ── SHOT REF THUMB EMBEDS ── */
+.shot-ref-thumb .video-embed-wrap{border:none !important;width:100%;height:100%;position:absolute;top:0;left:0;}
+.shot-ref-thumb .video-embed-wrap.tiktok-wrap iframe,.shot-ref-thumb .video-embed-wrap.instagram-wrap iframe{width:325px !important;height:580px !important;aspect-ratio:unset !important;max-height:none !important;transform:scale(0.18);transform-origin:top left;}
+
 /* ── DESKTOP RESPONSIVE ── */
 @media(min-width:769px){
   .top-header{padding:1.75rem 2rem 0.75rem;}
@@ -382,7 +406,7 @@ textarea.fg-ta.sm{min-height:52px;}
 <div id="editor">
   <div class="top-header">
     <div>
-      <div class="top-title">Hello Nancy</div>
+      <a href="index.html" style="text-decoration:none;color:inherit;"><span class="top-title">Hello Nancy</span></a>
       <div class="top-sub" id="editor-subtitle">Content Guide Editor</div>
     </div>
     <div style="display:flex;gap:0.5rem;align-items:flex-start;margin-top:0.55rem;">
@@ -949,6 +973,12 @@ function showPipelineModal(data, onSave, onDelete) {
 var edActiveTab = 'concepts';
 var edActiveCatPill = 'concepts';
 var edCatShotFilter = null;
+var edConceptFilter = null;
+
+function setEdConceptFilter(f) {
+  edConceptFilter = (edConceptFilter === f) ? null : f;
+  renderEdConceptsTab();
+}
 
 function renderEditorHome() {
   CURRENT_GUIDE = null;
@@ -999,9 +1029,8 @@ function renderEdConceptsTab() {
   if (!content) return;
   var html = '';
 
-  // Shots section label
+  // Shots section (keep existing)
   html += '<div class="home-section-label">Shots</div>';
-
   html += '<div class="cat-grid">';
   CATEGORIES.forEach(function(cat) {
     var count = Object.keys(savedVid).filter(function(k){ return savedVid[k] && savedVid[k].guideId === cat.id; }).length;
@@ -1018,31 +1047,45 @@ function renderEdConceptsTab() {
   });
   html += '</div>';
 
-  // Concepts section label + all videos grouped by category
   html += '<div class="home-section-divider"></div>';
   html += '<div class="home-section-label">Concepts</div>';
 
+  // Gather all videos
+  var allVideos = [];
   CATEGORIES.forEach(function(cat) {
-    var videos = Object.keys(savedVid).filter(function(k){ return savedVid[k] && savedVid[k].guideId === cat.id; }).map(function(k){ return savedVid[k]; });
-    if (!videos.length) return;
-
-    html += '<div class="home-concept-group">'
-      +'<div class="home-concept-group-header">'
-        +'<span class="home-concept-group-emoji">'+cat.emoji+'</span>'
-        +'<span class="home-concept-group-name">'+esc(cat.label)+'</span>'
-        +'<span class="home-concept-group-count">&middot; '+videos.length+' video'+(videos.length!==1?'s':'')+'</span>'
-      +'</div>'
-      +'<div class="home-concept-grid">';
-
-    videos.forEach(function(v, idx) {
-      html += '<div class="home-concept-card" onclick="openGuide(\''+cat.id+'\')">'
-        +'<div class="home-concept-num">C'+(idx+1)+'</div>'
-        +'<div class="home-concept-title">'+esc(v.title||'Untitled')+'</div>'
-        +'</div>';
-    });
-
-    html += '</div></div>';
+    var vids = Object.keys(savedVid).filter(function(k){ return savedVid[k] && savedVid[k].guideId === cat.id; }).map(function(k){ return { key: k, v: savedVid[k], catId: cat.id, catLabel: cat.label, catEmoji: cat.emoji }; });
+    vids.forEach(function(item) { allVideos.push(item); });
   });
+
+  // Filter pills
+  html += '<div class="concept-filter-pills">';
+  html += '<div class="concept-filter-pill'+(edConceptFilter===null?' active':'')+'" onclick="setEdConceptFilter(null)">All ('+allVideos.length+')</div>';
+  CATEGORIES.forEach(function(cat) {
+    var count = allVideos.filter(function(v){ return v.catId === cat.id; }).length;
+    if (count) html += '<div class="concept-filter-pill'+(edConceptFilter===cat.id?' active':'')+'" onclick="setEdConceptFilter(\''+cat.id+'\')">'+cat.emoji+' '+esc(cat.label)+' ('+count+')</div>';
+  });
+  html += '</div>';
+
+  var filtered = edConceptFilter ? allVideos.filter(function(v){ return v.catId === edConceptFilter; }) : allVideos;
+
+  html += '<div class="concept-grid-big">';
+  filtered.forEach(function(item) {
+    var v = item.v;
+    var embedHTML = buildEmbed(v.url || '') || '';
+    html += '<div class="concept-card-big" onclick="openGuide(\''+item.catId+'\')">'
+      +'<div class="concept-card-big-thumb">'
+        +embedHTML
+        +'<div class="concept-card-big-badges">'
+          +'<span class="concept-card-big-badge badge-category">'+item.catEmoji+' '+esc(item.catLabel)+'</span>'
+        +'</div>'
+        +(v.outlierScore ? '<div class="concept-card-big-outlier">'+esc(v.outlierScore)+'</div>' : '')
+      +'</div>'
+      +'<div class="concept-card-big-info">'
+        +'<div class="concept-card-big-title">'+esc(v.title||'Untitled')+'</div>'
+      +'</div>'
+      +'</div>';
+  });
+  html += '</div>';
 
   content.innerHTML = html;
 }
@@ -1198,8 +1241,9 @@ function renderEdCategoryShots(catId, filter) {
       +'<div class="shot-field-label">Reference videos</div>';
     if (connectedVids.length) {
       connectedVids.forEach(function(cv) {
+        var thumbEmbed = buildEmbed(cv.url) || '';
         html += '<div class="shot-ref-vid">'
-          +'<div class="shot-ref-thumb"><div class="shot-ref-play"></div></div>'
+          +'<div class="shot-ref-thumb">'+(thumbEmbed || '<div class="shot-ref-play"></div>')+'</div>'
           +'<div class="shot-ref-info">'
             +'<div class="shot-ref-num">C'+cv.num+'</div>'
             +'<div class="shot-ref-title">'+esc(cv.title)+'</div>'
@@ -1298,6 +1342,88 @@ async function loadSaved() {
   } catch(e) {}
 }
 
+// ── SHOT DATA PREFILL MIGRATION ──
+function prefillShotDefaults() {
+  var changed = false;
+  GENERAL_SHOTS.forEach(function(gs) {
+    if (gs.videographer || gs.talent || gs.editRecipe || gs.directorNote) return;
+    changed = true;
+
+    // Assign videographer based on person/category
+    var person = gs.person || '';
+    if (/Lem|Avo|BeRRi|Blanket|Snack|Trio/.test(person)) {
+      gs.videographer = 'Susan';
+      gs.talent = 'Product only';
+      gs.shotType = gs.shotType || 'video';
+      if (/macro|close/i.test(gs.label)) {
+        gs.propStation = person + ', seamless backdrop, ring light';
+        gs.editRecipe = 'Slow-motion macro. Cut tight on texture and detail. Trending audio, 9:16.';
+        gs.directorNote = 'Fill the frame. No distracting background.';
+      } else if (/in-use|applying/i.test(gs.label)) {
+        gs.talent = 'Crystal or model';
+        gs.propStation = person + ', mirror, good lighting';
+        gs.editRecipe = 'Tutorial style — show application step by step. Split-screen before/after if possible. 9:16.';
+        gs.directorNote = 'Hands must be clean, nails done. Natural light preferred.';
+      } else {
+        gs.propStation = person + ', styled surface, props';
+        gs.editRecipe = 'Lifestyle B-roll. Cut between angles. Ambient audio or trending sound. 9:16.';
+        gs.directorNote = 'Make it look editorial. Think magazine flat lay.';
+      }
+    } else if (/Nick/i.test(person)) {
+      gs.videographer = 'Jackie';
+      gs.talent = 'Nick Kyrgios';
+      gs.shotType = gs.shotType || 'video';
+      gs.propStation = 'Court, racquet, Nancy merch';
+      if (/serve|rally|action/i.test(gs.label)) {
+        gs.editRecipe = 'Slow-mo action cuts. Wide → medium → close-up sequence. Hype audio. 9:16.';
+        gs.directorNote = 'Capture genuine intensity. No posing — catch real moments.';
+      } else if (/reaction|candid|crowd/i.test(gs.label)) {
+        gs.editRecipe = 'Quick cuts of genuine reactions. Trending reaction audio. 9:16.';
+        gs.directorNote = 'Stay close, be invisible. Candid > posed.';
+      } else {
+        gs.editRecipe = 'Portrait style. Clean background. Natural light. 9:16.';
+        gs.directorNote = 'Get eye contact. One great frame > ten average ones.';
+      }
+    } else if (/Inflatable|Giant|Tennis Ball/i.test(person)) {
+      gs.videographer = 'Jackie';
+      gs.talent = 'Crowd + passersby';
+      gs.shotType = gs.shotType || 'video';
+      gs.propStation = person + ', court, merch';
+      gs.editRecipe = 'Wide establishing → crowd reactions → product macro → wide crowd. Trending "look at this" audio · bold location text · 9:16.';
+      gs.directorNote = 'Spectacle = shares. Lead with the prop in one wide frame. Grab a still for the grid.';
+    } else if (/Covent|London|Mandrake|Paddle|venue/i.test(person)) {
+      gs.videographer = 'Susan';
+      gs.talent = 'Crowd + passersby';
+      gs.shotType = gs.shotType || 'video';
+      gs.propStation = 'Nancy truck, signage, queue barriers';
+      gs.editRecipe = 'Establishing → queue energy → product moment → crowd wide. Location text overlay. 9:16.';
+      gs.directorNote = 'Show the ENERGY. Queue length = social proof.';
+    } else if (/Lottie|Rachana|Momoko|Rahul/i.test(person)) {
+      gs.videographer = 'Jackie';
+      gs.talent = person;
+      gs.shotType = gs.shotType || 'video';
+      gs.propStation = 'Nancy products, backdrop';
+      gs.editRecipe = 'Interview style or candid. Clean cuts with name lower-third. 9:16.';
+      gs.directorNote = 'Get a genuine moment. 30 seconds max per clip.';
+    } else if (/Crystal|Susan|Gillian|Jackie|Kem|founder|team/i.test(person)) {
+      gs.videographer = 'Susan';
+      gs.talent = person;
+      gs.shotType = gs.shotType || 'video';
+      gs.propStation = 'Nancy merch, products';
+      gs.editRecipe = 'BTS style — real moments, not staged. Quick cuts. Trending audio. 9:16.';
+      gs.directorNote = 'Show the team being the team. Authentic > polished.';
+    } else {
+      gs.videographer = 'Jackie';
+      gs.talent = 'TBC';
+      gs.shotType = gs.shotType || 'video';
+      gs.propStation = '';
+      gs.editRecipe = 'Standard cut. Trending audio. 9:16.';
+      gs.directorNote = '';
+    }
+  });
+  if (changed) saveShotsFullConfig();
+}
+
 // ── START EDITOR ──
 async function startEditor() {
   document.getElementById('gate').style.display = 'none';
@@ -1317,6 +1443,7 @@ async function startEditor() {
     await persistVids();
   }
   renderEditorHome();
+  prefillShotDefaults();
 }
 
 // ── ADD BLANK VIDEO ──

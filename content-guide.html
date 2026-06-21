@@ -474,6 +474,26 @@ button{font-family:inherit;}
 .home-concept-title{font-size:0.6rem;font-weight:700;color:#ccc;padding:0 0.45rem;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
 .home-concept-outlier{font-size:0.5rem;color:#4caf50;font-weight:600;padding:0.15rem 0.45rem 0.4rem;}
 
+/* ── CONCEPT FILTER + BIG GRID (viral-outliers style) ── */
+.concept-filter-pills{display:flex;gap:6px;padding:0.5rem 1.25rem 0.75rem;flex-wrap:wrap;}
+.concept-filter-pill{font-size:0.62rem;font-weight:700;padding:0.3rem 0.8rem;border-radius:20px;background:#111;color:#555;border:1px solid #222;cursor:pointer;transition:all 0.15s;white-space:nowrap;}
+.concept-filter-pill.active{background:var(--m);color:#fff;border-color:var(--m);}
+.concept-grid-big{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;padding:0 1.25rem 1.5rem;}
+.concept-card-big{background:#0d0d0d;border-radius:12px;border:1px solid var(--border);overflow:hidden;cursor:pointer;transition:transform 0.15s;}
+.concept-card-big:active{transform:scale(0.97);}
+.concept-card-big-thumb{width:100%;aspect-ratio:9/16;max-height:280px;background:#0a0a0a;overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center;}
+.concept-card-big-thumb .video-embed-wrap{border:none!important;width:100%;height:100%;position:absolute;top:0;left:0;}
+.concept-card-big-thumb .video-embed-wrap.tiktok-wrap iframe,.concept-card-big-thumb .video-embed-wrap.instagram-wrap iframe{width:325px!important;height:580px!important;aspect-ratio:unset!important;max-height:none!important;transform:scale(0.62);transform-origin:top left;}
+.concept-card-big-badges{position:absolute;top:8px;left:8px;display:flex;flex-direction:column;gap:4px;z-index:2;}
+.concept-card-big-badge{font-size:0.5rem;font-weight:800;padding:0.18rem 0.5rem;border-radius:6px;letter-spacing:0.04em;}
+.concept-card-big-badge.badge-platform{background:rgba(17,17,17,0.85);color:#fff;}
+.concept-card-big-badge.badge-category{background:rgba(255,0,170,0.85);color:#fff;}
+.concept-card-big-outlier{position:absolute;top:8px;right:8px;background:rgba(76,175,80,0.9);color:#fff;font-size:0.62rem;font-weight:800;padding:0.2rem 0.55rem;border-radius:6px;z-index:2;}
+.concept-card-big-info{padding:0.55rem 0.65rem;}
+.concept-card-big-title{font-size:0.72rem;font-weight:700;color:#ccc;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.concept-card-big-tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:0.35rem;}
+.concept-card-big-tag{font-size:0.48rem;font-weight:600;padding:0.1rem 0.4rem;border-radius:8px;}
+
 /* ── SHOOT SCHEDULE (view) ── */
 .ss-block{margin:0 1.25rem 0.75rem;border:1px solid var(--border);border-radius:14px;overflow:hidden;background:#0a0a0a;}
 .ss-block-header{display:flex;align-items:baseline;justify-content:space-between;padding:0.75rem 1rem 0.5rem;}
@@ -547,7 +567,7 @@ button{font-family:inherit;}
   <div class="page active" id="page-home">
     <div class="top-header" style="display:flex;align-items:flex-start;justify-content:space-between;">
       <div>
-        <a href="social.html" style="text-decoration:none;color:inherit;display:block;"><div class="top-title">Hello Nancy</div></a>
+        <a href="index.html" style="text-decoration:none;color:inherit;display:block;"><div class="top-title">Hello Nancy</div></a>
         <div class="top-sub">Content Guide</div>
       </div>
     </div>
@@ -562,7 +582,7 @@ button{font-family:inherit;}
   <div class="page" id="page-shot">
     <div class="top-header" style="display:flex;align-items:flex-start;justify-content:space-between;">
       <div>
-        <div class="top-title" onclick="goHome()" style="cursor:pointer;">Hello Nancy</div>
+        <div class="top-title" onclick="goHub()" style="cursor:pointer;">Hello Nancy</div>
         <div class="top-sub">Content Guide</div>
       </div>
     </div>
@@ -573,7 +593,7 @@ button{font-family:inherit;}
   <div class="page" id="page-guide">
     <div class="top-header" style="display:flex;align-items:flex-start;justify-content:space-between;">
       <div>
-        <div class="top-title" onclick="goHome()" style="cursor:pointer;">Hello Nancy</div>
+        <div class="top-title" onclick="goHub()" style="cursor:pointer;">Hello Nancy</div>
         <div class="top-sub">Content Guide</div>
       </div>
     </div>
@@ -703,6 +723,13 @@ function switchTab(tabId) {
   else if (tabId === 'pipeline') showPipelinePageView(content);
 }
 
+var conceptFilter = null;
+function setConceptFilter(f) {
+  conceptFilter = (conceptFilter === f) ? null : f;
+  var wrap = document.getElementById('cg-tab-content');
+  if (wrap) renderConceptsTab(wrap);
+}
+
 function renderConceptsTab(wrap) {
   var html = '';
 
@@ -726,35 +753,60 @@ function renderConceptsTab(wrap) {
   });
   html += '</div>';
 
-  // Concepts section label + all videos grouped by category
   html += '<div class="home-section-divider"></div>';
   html += '<div class="home-section-label">Concepts</div>';
 
+  // Gather ALL approved videos
+  var allVideos = [];
   CATEGORIES.forEach(function(cat) {
     var guide = DATA.guides.find(function(g){ return g.id === cat.id; });
     var videos = guide ? (guide.videos||[]).filter(function(v){ return !v.status || v.status === 'approved'; }) : [];
-    if (!videos.length) return;
-
-    html += '<div class="home-concept-group">'
-      +'<div class="home-concept-group-header">'
-        +'<span class="home-concept-group-emoji">'+cat.emoji+'</span>'
-        +'<span class="home-concept-group-name">'+esc(cat.label)+'</span>'
-        +'<span class="home-concept-group-count">&middot; '+videos.length+' video'+(videos.length!==1?'s':'')+'</span>'
-      +'</div>'
-      +'<div class="home-concept-grid">';
-
     videos.forEach(function(v, idx) {
-      var embedHTML = buildVideoEmbed(v.url || null) || '';
-      html += '<div class="home-concept-card" onclick="showSingleVideo(\''+esc(v.title||'').replace(/'/g,"\\'")+'\')">'
-        +'<div class="home-concept-thumb">'+embedHTML+'</div>'
-        +'<div class="home-concept-num">C'+(idx+1)+'</div>'
-        +'<div class="home-concept-title">'+esc(v.title||'Untitled')+'</div>'
-        +(v.outlierScore ? '<div class="home-concept-outlier">'+esc(v.outlierScore)+'</div>' : '')
-        +'</div>';
+      allVideos.push({ video: v, catId: cat.id, catLabel: cat.label, catEmoji: cat.emoji, idx: idx });
     });
+  });
 
+  // Filter pills
+  html += '<div class="concept-filter-pills">';
+  html += '<div class="concept-filter-pill'+(conceptFilter===null?' active':'')+'" onclick="setConceptFilter(null)">All ('+allVideos.length+')</div>';
+  CATEGORIES.forEach(function(cat) {
+    var count = allVideos.filter(function(v){ return v.catId === cat.id; }).length;
+    if (count) html += '<div class="concept-filter-pill'+(conceptFilter===cat.id?' active':'')+'" onclick="setConceptFilter(\''+cat.id+'\')">'+cat.emoji+' '+esc(cat.label)+' ('+count+')</div>';
+  });
+  html += '</div>';
+
+  var filtered = conceptFilter ? allVideos.filter(function(v){ return v.catId === conceptFilter; }) : allVideos;
+
+  // Big grid
+  html += '<div class="concept-grid-big">';
+  filtered.forEach(function(item) {
+    var v = item.video;
+    var platform = detectPlatform(v.url);
+    var platformLabel = platform==='tiktok'?'TIKTOK':platform==='instagram'?'INSTAGRAM':platform==='youtube'?'YOUTUBE':'VIDEO';
+    var embedHTML = buildVideoEmbed(v.url || null) || '';
+    var tags = Array.isArray(v.tags) ? v.tags : [];
+
+    html += '<div class="concept-card-big" onclick="showSingleVideo(\''+esc(v.title||'').replace(/\'/g,"\\'")+'\')">'
+      +'<div class="concept-card-big-thumb">'
+        +embedHTML
+        +'<div class="concept-card-big-badges">'
+          +'<span class="concept-card-big-badge badge-platform">'+platformLabel+'</span>'
+          +'<span class="concept-card-big-badge badge-category">'+item.catEmoji+' '+esc(item.catLabel)+'</span>'
+        +'</div>'
+        +(v.outlierScore ? '<div class="concept-card-big-outlier">'+esc(v.outlierScore)+'</div>' : '')
+      +'</div>'
+      +'<div class="concept-card-big-info">'
+        +'<div class="concept-card-big-title">'+esc(v.title||'Untitled')+'</div>';
+    if (tags.length) {
+      html += '<div class="concept-card-big-tags">';
+      tags.slice(0,4).forEach(function(t) {
+        html += '<span class="concept-card-big-tag concept-tag '+getTagClass(t)+'">'+esc(t)+'</span>';
+      });
+      html += '</div>';
+    }
     html += '</div></div>';
   });
+  html += '</div>';
 
   wrap.innerHTML = html;
 }
@@ -1336,7 +1388,8 @@ function renderCategoryShots(catId, filter) {
 function renderShot(id) {
   var shot = DATA.shots.find(function(s){ return s.id === id; });
   if (!shot) { goHome(); return; }
-  var html = '<div class="shot-detail-title">'+esc(shot.title)+'</div>';
+  var html = '<div style="padding:0.5rem 1.25rem;"><button class="home-btn" onclick="goHome()" style="padding:0;">← Back</button></div>';
+  html += '<div class="shot-detail-title">'+esc(shot.title)+'</div>';
   (shot.scenes||[]).forEach(function(scene){
     html += '<div class="scene-group"><div class="scene-group-title">'+esc(scene.title)+'</div>';
     (scene.items||[]).forEach(function(item){
@@ -1366,7 +1419,6 @@ function renderShot(id) {
       html += '</div></div>';
     }
   }
-  html += '<div class="home-btn-wrap"><button class="home-btn" onclick="goHome()">← Home</button></div>';
   document.getElementById('shot-detail-content').innerHTML = html;
   showPage('page-shot');
 }
@@ -1387,7 +1439,8 @@ function renderPersonShots(personKey) {
   var shots = GENERAL_SHOTS.filter(function(gs){ return gs.person === personKey; });
   var doneCount = shots.filter(function(gs){ return doneGS.has(gs.id); }).length;
 
-  var html = '<div class="shot-detail-title">'+person.emoji+' '+esc(personKey)+'</div>'
+  var html = '<div style="padding:0.5rem 1.25rem;"><button class="home-btn" onclick="goHome()" style="padding:0;">← Back</button></div>';
+  html += '<div class="shot-detail-title">'+person.emoji+' '+esc(personKey)+'</div>'
     +'<div id="gs-counter" data-person="'+esc(personKey)+'" style="padding:0 1.25rem 0.75rem;color:#888;font-size:0.75rem;">'+doneCount+' of '+shots.length+' shots completed</div>';
 
   html += shots.map(function(gs) {
@@ -1413,7 +1466,6 @@ function renderPersonShots(personKey) {
       +'</div>';
   }).join('');
 
-  html += '<div class="home-btn-wrap"><button class="home-btn" onclick="goHome()">← Home</button></div>';
   document.getElementById('shot-detail-content').innerHTML = html;
   showPage('page-shot');
 }
@@ -1439,7 +1491,8 @@ function renderGroupShots(groupLabel) {
   var totalAll = allShots.length;
   var doneAll = allShots.filter(function(gs){ return doneGS.has(gs.id); }).length;
 
-  var html = '<div class="shot-detail-title">'+emoji+' '+esc(groupLabel)+'</div>'
+  var html = '<div style="padding:0.5rem 1.25rem;"><button class="home-btn" onclick="goHome()" style="padding:0;">← Back</button></div>';
+  html += '<div class="shot-detail-title">'+emoji+' '+esc(groupLabel)+'</div>'
     +'<div id="gs-counter" data-group="'+esc(groupLabel)+'" style="padding:0 1.25rem 0.5rem;color:#888;font-size:0.75rem;">'+doneAll+' of '+totalAll+' shots completed</div>';
 
   if (group.items.length > 1) {
@@ -1487,7 +1540,6 @@ function renderGroupShots(groupLabel) {
       +'</div>';
   });
 
-  html += '<div class="home-btn-wrap"><button class="home-btn" onclick="goHome()">← Home</button></div>';
   document.getElementById('shot-detail-content').innerHTML = html;
   showPage('page-shot');
 }
@@ -1551,9 +1603,9 @@ function renderTagShots(categoryKey) {
 
   if (!sections.length) {
     document.getElementById('shot-detail-content').innerHTML =
-      '<div class="shot-detail-title">'+esc(label)+'</div>'
-      +'<div style="padding:1rem 1.25rem;color:#444;font-size:0.8rem;">No shots yet — tag videos and add production shots in the editor to build this list.</div>'
-      +'<div class="home-btn-wrap"><button class="home-btn" onclick="goHome()">← Home</button></div>';
+      '<div style="padding:0.5rem 1.25rem;"><button class="home-btn" onclick="goHome()" style="padding:0;">← Back</button></div>'
+      +'<div class="shot-detail-title">'+esc(label)+'</div>'
+      +'<div style="padding:1rem 1.25rem;color:#444;font-size:0.8rem;">No shots yet — tag videos and add production shots in the editor to build this list.</div>';
     return;
   }
 
@@ -1576,10 +1628,10 @@ function renderTagShots(categoryKey) {
   }).join('');
 
   document.getElementById('shot-detail-content').innerHTML =
-    '<div class="shot-detail-title">'+esc(label)+'</div>'
+    '<div style="padding:0.5rem 1.25rem;"><button class="home-btn" onclick="goHome()" style="padding:0;">← Back</button></div>'
+    +'<div class="shot-detail-title">'+esc(label)+'</div>'
     +'<div class="shots-heading">Compiled Shot List</div>'
-    +sectionsHTML
-    +'<div class="home-btn-wrap"><button class="home-btn" onclick="goHome()">← Home</button></div>';
+    +sectionsHTML;
 }
 
 // ══════════════════════════════════════
@@ -1595,9 +1647,9 @@ function showSingleVideo(videoTitle) {
   if (!video) { goHome(); return; }
   var el = document.getElementById('guide-detail-content');
   var uid = guideId + '-' + videoIdx;
-  el.innerHTML = '<div class="guide-cat-label" style="font-size:0.65rem;">Concept '+(videoIdx+1)+'</div>'
-    + buildVideoEntry(video, uid, guideId, videoIdx)
-    + '<div class="home-btn-wrap"><button class="home-btn" onclick="goHome()">← Home</button></div>';
+  el.innerHTML = '<div style="padding:0.5rem 1.25rem;"><button class="home-btn" onclick="goHome()" style="padding:0;">← Back</button></div>'
+    + '<div class="guide-cat-label" style="font-size:0.65rem;">Concept '+(videoIdx+1)+'</div>'
+    + buildVideoEntry(video, uid, guideId, videoIdx);
   showPage('page-guide');
 }
 
@@ -1645,10 +1697,10 @@ function renderGuide(id) {
   }
 
   el.innerHTML =
-    '<div class="guide-cat-label">'+esc(catLabel)+'</div>'
+    '<div style="padding:0.5rem 1.25rem;"><button class="home-btn" onclick="goHome()" style="padding:0;">← Back</button></div>'
+    +'<div class="guide-cat-label">'+esc(catLabel)+'</div>'
     +tagFilterHTML
-    +videosHTML
-    +'<div class="home-btn-wrap"><button class="home-btn" onclick="goHome()">← Home</button></div>';
+    +videosHTML;
 }
 
 function buildVideoEntry(video, uid, guideId, videoIdx) {
@@ -1876,6 +1928,7 @@ function showPage(id) {
   window.scrollTo(0,0);
 }
 function goHome()       { window.location.hash = '#home'; }
+function goHub()        { window.location.href = 'index.html'; }
 function goShot(id)     { window.location.hash = '#shot/'+id; }
 function goGuide(id)    { window.location.hash = '#guide/'+id; }
 
