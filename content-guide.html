@@ -445,10 +445,12 @@ button{font-family:inherit;}
 .brief-body{display:flex;border-top:1px solid #1a1a1a;}
 .brief-vid-col{flex:1;min-width:0;padding:0.75rem 0.9rem;border-right:1px solid #1a1a1a;}
 .brief-vid-col-lbl{font-size:0.42rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--m);font-weight:700;margin-bottom:8px;}
-.brief-vid-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-.brief-vid-item{background:#0a0a0a;border-radius:10px;overflow:hidden;border:2px solid var(--m);transition:border-color 0.15s;}
-.brief-vid-item:hover{border-color:#fff;}
-.brief-vid-thumb{width:100%;aspect-ratio:9/16;max-height:220px;background:#0a0a0a;overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center;}
+.brief-cf-row{display:flex;gap:10px;margin-bottom:10px;padding:8px;background:#0a0a15;border:1px solid #1a1a2e;border-radius:8px;}
+.brief-cf-row:last-child{margin-bottom:0;}
+.brief-cf-vid{flex-shrink:0;width:90px;overflow:hidden;border-radius:8px;border:2px solid var(--m);background:#0a0a0a;}
+.brief-cf-vid:hover{border-color:#fff;}
+.brief-cf-info{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;}
+.brief-vid-thumb{width:100%;aspect-ratio:9/16;max-height:160px;background:#0a0a0a;overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center;}
 .brief-vid-thumb .video-embed-wrap{border:none!important;width:100%;height:100%;position:absolute;top:0;left:0;}
 .brief-vid-thumb .video-embed-wrap.tiktok-wrap iframe,.brief-vid-thumb .video-embed-wrap.instagram-wrap iframe{width:325px!important;height:580px!important;aspect-ratio:unset!important;max-height:none!important;transform:scale(0.55);transform-origin:top left;}
 .brief-vid-thumb .video-embed-wrap iframe{width:100%;height:100%;border:none;}
@@ -460,6 +462,16 @@ button{font-family:inherit;}
 .brief-detail-section-hdr{font-size:0.52rem;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;color:var(--m);margin-bottom:0.4rem;display:flex;align-items:center;gap:0.4rem;}
 .brief-detail-section-hdr::before{content:'';width:3px;height:12px;background:var(--m);border-radius:2px;}
 .brief-detail-section-txt{font-size:0.65rem;color:#aaa;line-height:1.5;}
+.brief-synced-concept{margin-bottom:0.6rem;border:1px solid #222;border-radius:8px;padding:0.5rem;background:#0a0a15;}
+.brief-synced-concept:last-child{margin-bottom:0;}
+.brief-synced-title{font-size:0.52rem;font-weight:800;color:#888;margin-bottom:0.35rem;letter-spacing:0.03em;}
+.brief-synced-frame{display:flex;align-items:flex-start;gap:0.4rem;margin-bottom:0.25rem;font-size:0.6rem;line-height:1.45;}
+.brief-synced-frame:last-child{margin-bottom:0;}
+.brief-synced-ts{flex-shrink:0;padding:0.15rem 0.4rem;border-radius:4px;font-size:0.5rem;font-weight:800;background:#c8ff00;color:#000;}
+.brief-synced-ts.nancy-ts{background:var(--m);color:#fff;}
+.brief-synced-desc{color:#bbb;}
+.brief-synced-frame.nancy .brief-synced-desc{color:#f0a0d0;}
+.brief-cf-divider{border-top:1px dashed #333;margin:6px 0;}
 .brief-detail-row{display:grid;grid-template-columns:1fr 1fr;gap:0.55rem;}
 .brief-detail-lbl{font-size:0.42rem;text-transform:uppercase;letter-spacing:0.08em;color:#555;font-weight:700;}
 .brief-detail-val{font-size:0.7rem;color:#ccc;font-weight:600;margin-top:0.1rem;}
@@ -656,8 +668,9 @@ button{font-family:inherit;}
   .brief-vid-col{border-right:none;border-bottom:1px solid #1a1a1a;padding:0.65rem 0.75rem;}
   .brief-detail-col{padding:0.65rem 0.75rem;}
   .brief-card{margin:0 0.5rem 0.75rem;}
-  .brief-vid-grid{grid-template-columns:1fr 1fr;gap:8px;}
-  .brief-vid-thumb{max-height:180px;}
+  .brief-cf-row{gap:8px;padding:6px;}
+  .brief-cf-vid{width:70px;}
+  .brief-vid-thumb{max-height:130px;}
   .brief-detail-row{grid-template-columns:1fr;}
   .brief-onset-row{grid-template-columns:1fr;}
   .brief-refs{padding:0.45rem 0.75rem 0.65rem;}
@@ -1526,7 +1539,24 @@ function renderCategoryShots(catId, filter) {
         });
       });
       if (!found) return null;
-      return { title: title, url: found.url, num: conceptNum };
+      var nancyFrames = found.productionShots || [];
+      var origFrames = [];
+      var da = found.deepAnalysis;
+      if (da && typeof da === 'string') {
+        var brkIdx = da.indexOf('Shot breakdown');
+        if (brkIdx !== -1) {
+          var brkText = da.substring(brkIdx);
+          var endIdx = brkText.search(/\n\s*\n|\n[A-Z]{2}/);
+          if (endIdx > 0) brkText = brkText.substring(0, endIdx);
+          var tsParts = brkText.split(/(\d{1,2}:\d{2}[\s–\-]+\d{1,2}:\d{2})\s*/);
+          for (var ti = 1; ti < tsParts.length; ti += 2) {
+            origFrames.push((tsParts[ti]||'').trim() + ' ' + (tsParts[ti+1]||'').trim());
+          }
+        }
+      } else if (Array.isArray(da)) {
+        origFrames = da;
+      }
+      return { title: title, url: found.url, num: conceptNum, nancyFrames: nancyFrames, origFrames: origFrames };
     }).filter(Boolean);
 
     var shotNum = idx + 1;
@@ -1550,16 +1580,16 @@ function renderCategoryShots(catId, filter) {
     // Body: ALL connected concept videos stacked left + info columns right
     html += '<div class="brief-body">';
 
-    // LEFT: connected concept videos in 2-col grid (max 4 on side)
-    var sideVids = connectedVids.slice(0, 4);
+    // LEFT: merged concept frames — portrait video + frame text per concept
     var overflowVids = connectedVids.slice(4);
-    if (sideVids.length) {
+    if (connectedVids.length) {
       html += '<div class="brief-vid-col">';
-      html += '<div class="brief-vid-col-lbl">Connected Concepts</div>';
-      html += '<div class="brief-vid-grid">';
-      sideVids.forEach(function(cv) {
+      html += '<div class="brief-vid-col-lbl">Concept Frames</div>';
+      connectedVids.forEach(function(cv) {
         var vidThumb = buildVideoEmbed(cv.url) || '';
-        html += '<div class="brief-vid-item">'
+        var hasFrames = cv.origFrames.length || cv.nancyFrames.length;
+        html += '<div class="brief-cf-row">';
+        html += '<div class="brief-cf-vid">'
           +'<div class="brief-vid-thumb">'
             +vidThumb
             +'<div class="brief-vid-play"></div>'
@@ -1568,8 +1598,31 @@ function renderCategoryShots(catId, filter) {
             +'view guide'
           +'</div>'
           +'</div>';
+        html += '<div class="brief-cf-info">';
+        html += '<div class="brief-synced-title">C'+cv.num+' '+esc(cv.title)+'</div>';
+        cv.origFrames.forEach(function(f) {
+          var om = f.match(/^(\d[\d:.\-–\s]+\d)\s*:?\s*(.*)/);
+          html += '<div class="brief-synced-frame orig">';
+          if (om) html += '<span class="brief-synced-ts">'+esc(om[1].trim())+'</span>';
+          html += '<span class="brief-synced-desc">'+ esc(om ? om[2].trim() : f) +'</span>';
+          html += '</div>';
+        });
+        if (cv.nancyFrames.length) {
+          html += '<div class="brief-cf-divider"></div>';
+          cv.nancyFrames.forEach(function(f) {
+            var nm = f.match(/^(\d[\d:.\-–\s]+\d)\s*:?\s*(.*)/);
+            html += '<div class="brief-synced-frame nancy">';
+            if (nm) html += '<span class="brief-synced-ts nancy-ts">'+esc(nm[1].trim())+'</span>';
+            html += '<span class="brief-synced-desc">'+ esc(nm ? nm[2].trim() : f) +'</span>';
+            html += '</div>';
+          });
+        }
+        if (!hasFrames) {
+          html += '<div class="brief-synced-desc" style="color:#555;font-style:italic;font-size:0.55rem;">No frames available</div>';
+        }
+        html += '</div></div>';
       });
-      html += '</div></div>';
+      html += '</div>';
     }
 
     // RIGHT: Edit Recipe, Director Note, On Set, Props stacked vertically
@@ -1589,6 +1642,7 @@ function renderCategoryShots(catId, filter) {
         +'</div>';
     }
 
+
     if (hasOnset) {
       html += '<div class="brief-detail-section">';
       html += '<div class="brief-detail-section-hdr">On Set</div>';
@@ -1601,11 +1655,11 @@ function renderCategoryShots(catId, filter) {
       html += '</div>';
     }
 
-    if (gs.propStation) {
+    if (gs.props) {
       html += '<div class="brief-detail-section">';
       html += '<div class="brief-detail-section-hdr">Props</div>';
       html += '<div class="brief-tags">';
-      gs.propStation.split(',').forEach(function(p) {
+      gs.props.split(',').forEach(function(p) {
         p = p.trim();
         if (p) html += '<span class="brief-tag">'+esc(p)+'</span>';
       });
@@ -2005,33 +2059,13 @@ function buildVideoEntry(video, uid, guideId, videoIdx) {
     }).join('');
   }
 
-  // Original column — parse analysis + extract frames (timestamps or Shot N:)
+  // Original column — analysis text + frames
   var origHTML = '';
-  if (video.deepAnalysis) {
-    var da = video.deepAnalysis;
-    var tsParts = da.split(/\s*(?:Shot\s*breakdown\s*:?\s*)?(\d{1,2}:\d{2}[\s–\-]+\d{1,2}:\d{2})\s*/);
-    var shotNumParts = da.split(/\s*(Shot\s+\d+\s*:?)\s*/i);
-    if (tsParts.length > 2) {
-      var aPart = tsParts[0].replace(/\s*shot\s*breakdown\s*:?\s*$/i,'').trim();
-      if (aPart) origHTML += '<div class="vev2-slbl">Analysis</div><div class="vev2-txt">'+esc(aPart)+'</div>';
-      var oFrames = [];
-      for (var ti = 1; ti < tsParts.length; ti += 2) {
-        var ts = (tsParts[ti]||'').trim();
-        var body = (tsParts[ti+1]||'').trim();
-        if (ts) oFrames.push(ts + ' ' + body);
-      }
-      if (oFrames.length) origHTML += '<div class="vev2-slbl">Frames</div>'+buildFrames(oFrames, 'ft-orig');
-    } else if (shotNumParts.length > 1) {
-      var aPart2 = shotNumParts[0].replace(/\s*shot\s*breakdown\s*:?\s*$/i,'').trim();
-      if (aPart2) origHTML += '<div class="vev2-slbl">Analysis</div><div class="vev2-txt">'+esc(aPart2)+'</div>';
-      var oFrames2 = [];
-      for (var si = 1; si < shotNumParts.length; si += 2) {
-        oFrames2.push((shotNumParts[si]||'').trim() + ' ' + (shotNumParts[si+1]||'').trim());
-      }
-      if (oFrames2.length) origHTML += '<div class="vev2-slbl">Frames</div>'+buildFrames(oFrames2, 'ft-orig');
-    } else {
-      origHTML += '<div class="vev2-slbl">Analysis</div><div class="vev2-txt">'+esc(da)+'</div>';
-    }
+  if (video.hookAnalysis) origHTML += '<div class="vev2-slbl">Analysis</div><div class="vev2-txt">'+esc(video.hookAnalysis)+'</div>';
+  if (Array.isArray(video.deepAnalysis) && video.deepAnalysis.length) {
+    origHTML += '<div class="vev2-slbl">Frames</div>'+buildFrames(video.deepAnalysis, 'ft-orig');
+  } else if (typeof video.deepAnalysis === 'string' && video.deepAnalysis) {
+    origHTML += '<div class="vev2-slbl">Analysis</div><div class="vev2-txt">'+esc(video.deepAnalysis)+'</div>';
   }
   if (video.shots && video.shots.length) origHTML += '<div class="vev2-slbl">Frames</div>'+buildFrames(video.shots, 'ft-orig');
 
@@ -2086,23 +2120,7 @@ function buildVideoEntry(video, uid, guideId, videoIdx) {
           +'</div>';
       })()
 
-    // Linked shooting guide shots
-    + (function(){
-        var shotIds = videoGSMap[video.title] || [];
-        if (!shotIds.length) return '';
-        var html = '<div class="vev2-linked-shots"><div class="vev2-slbl" style="margin-bottom:0.15rem;">Shooting Checklist</div>';
-        shotIds.forEach(function(id) {
-          var gs = GENERAL_SHOTS.find(function(s){ return s.id === id; });
-          if (!gs) return;
-          var isDone = doneGS.has(id);
-          html += '<div class="vev2-linked-shot'+(isDone?' done':'')+'">'
-            +'<span class="vev2-ls-check">'+(isDone?'✓':'○')+'</span>'
-            +'<span class="vev2-ls-title">'+esc(gs.title||gs.id)+'</span>'
-            +'</div>';
-        });
-        html += '</div>';
-        return html;
-      })()
+    ''
 
     + '</div>';
 }
