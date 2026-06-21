@@ -313,9 +313,21 @@ button{font-family:inherit;}
 
 /* ── VIDEO ENTRY V2 ── */
 .video-entry-v2{border:1px solid var(--border);border-radius:18px;overflow:hidden;background:var(--card-bg);margin:0 0.75rem 1.5rem;}
-.vev2-hdr{display:flex;align-items:center;justify-content:space-between;padding:0.75rem 0.85rem 0.55rem;gap:0.4rem;border-bottom:1px solid var(--border);}
+.vev2-hdr{display:flex;align-items:center;justify-content:space-between;padding:0.75rem 0.85rem 0.35rem;gap:0.4rem;}
 .vev2-title{font-size:0.88rem;font-weight:800;color:#fff;flex:1;line-height:1.25;}
 .vev2-outlier{font-size:0.72rem;font-weight:800;color:var(--m);white-space:nowrap;background:rgba(255,0,170,0.08);border:1px solid rgba(255,0,170,0.22);padding:0.18rem 0.55rem;border-radius:20px;}
+.vev2-hook-banner{padding:0.45rem 0.85rem 0.55rem;border-bottom:1px solid var(--border);}
+.vev2-hook-type{display:inline-block;font-size:0.58rem;font-weight:800;padding:0.2rem 0.6rem;border-radius:8px;letter-spacing:0.04em;text-transform:uppercase;}
+.vev2-hook-type.hook-visual{background:rgba(255,107,157,0.15);color:#ff6b9d;border:1px solid rgba(255,107,157,0.35);}
+.vev2-hook-type.hook-script{background:rgba(68,255,153,0.12);color:#44ff99;border:1px solid rgba(68,255,153,0.35);}
+.vev2-hook-type.hook-audio{background:rgba(68,170,255,0.12);color:#44aaff;border:1px solid rgba(68,170,255,0.35);}
+.vev2-hook-type.hook-mix{background:rgba(255,204,68,0.12);color:#ffcc44;border:1px solid rgba(255,204,68,0.35);}
+.vev2-hook-desc{font-size:0.58rem;color:#999;margin-top:0.25rem;line-height:1.4;}
+.vev2-tag-group{margin-bottom:0.2rem;}
+.vev2-tag-group-label{font-size:0.42rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#444;margin-bottom:0.15rem;}
+.vev2-videographer-row{display:flex;align-items:center;gap:0.35rem;padding:0.3rem 0.6rem;border-bottom:1px solid var(--border);background:rgba(255,255,255,0.02);}
+.vev2-videographer-label{font-size:0.46rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#555;}
+.vev2-videographer-name{font-size:0.55rem;font-weight:800;color:#ccc;}
 .vev2-body{display:flex;align-items:flex-start;}
 /* Left: phone + stats */
 .vev2-left{width:126px;flex-shrink:0;padding:0.65rem 0 0.75rem 0.7rem;display:flex;flex-direction:column;}
@@ -429,15 +441,19 @@ button{font-family:inherit;}
 .brief-type.t-photo{background:rgba(68,255,153,0.12);color:#44ff99;}
 .brief-type.t-still{background:rgba(255,204,68,0.12);color:#ffcc44;}
 .brief-body{display:flex;border-top:1px solid #1a1a1a;}
-.brief-vid-col{flex-shrink:0;width:140px;padding:0.75rem 0 0.75rem 0.9rem;}
-.brief-vid-thumb{width:140px;height:200px;background:#0a0a0a;border-radius:10px;overflow:hidden;position:relative;border:2px solid #222;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.brief-vid-col{flex-shrink:0;width:150px;padding:0.75rem 0.9rem;display:flex;flex-direction:column;gap:8px;border-right:1px solid #1a1a1a;}
+.brief-vid-col-lbl{font-size:0.42rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--m);font-weight:700;}
+.brief-vid-item{width:100%;background:#0a0a0a;border-radius:8px;overflow:hidden;border:1px solid #222;cursor:pointer;transition:border-color 0.15s;}
+.brief-vid-item:hover{border-color:var(--m);}
+.brief-vid-thumb{width:100%;aspect-ratio:9/16;max-height:180px;background:#0a0a0a;overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center;}
 .brief-vid-thumb .video-embed-wrap{border:none!important;width:100%;height:100%;position:absolute;top:0;left:0;pointer-events:none;}
-.brief-vid-thumb .video-embed-wrap.tiktok-wrap iframe,.brief-vid-thumb .video-embed-wrap.instagram-wrap iframe{width:325px!important;height:580px!important;aspect-ratio:unset!important;max-height:none!important;transform:scale(0.435);transform-origin:top left;}
+.brief-vid-thumb .video-embed-wrap.tiktok-wrap iframe,.brief-vid-thumb .video-embed-wrap.instagram-wrap iframe{width:325px!important;height:580px!important;aspect-ratio:unset!important;max-height:none!important;transform:scale(0.47);transform-origin:top left;}
 .brief-vid-thumb .video-embed-wrap iframe{width:100%;height:100%;border:none;}
-.brief-vid-play{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:3;background:rgba(0,0,0,0.2);}
-.brief-vid-play::after{content:'';width:0;height:0;border-left:16px solid #fff;border-top:10px solid transparent;border-bottom:10px solid transparent;filter:drop-shadow(0 0 4px rgba(0,0,0,0.5));}
-.brief-vid-play:hover{background:rgba(255,0,170,0.15);}
-.brief-vid-label{position:absolute;bottom:6px;left:6px;background:rgba(0,0,0,0.75);color:#fff;font-size:0.48rem;font-weight:700;padding:0.12rem 0.4rem;border-radius:4px;z-index:4;}
+.brief-vid-play{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:3;background:rgba(0,0,0,0.15);}
+.brief-vid-play::after{content:'';width:0;height:0;border-left:14px solid #fff;border-top:9px solid transparent;border-bottom:9px solid transparent;filter:drop-shadow(0 0 4px rgba(0,0,0,0.5));}
+.brief-vid-info{padding:0.25rem 0.4rem 0.3rem;}
+.brief-vid-num{font-size:0.5rem;color:var(--m);font-weight:700;}
+.brief-vid-title{font-size:0.48rem;color:#666;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .brief-info-cols{flex:1;min-width:0;display:grid;grid-template-columns:1fr 1fr;}
 .brief-col{padding:0.75rem 0.9rem;}
 .brief-col+.brief-col{border-left:1px solid #1a1a1a;}
@@ -525,8 +541,12 @@ button{font-family:inherit;}
 .concept-card-big-outlier{position:absolute;top:8px;right:8px;background:rgba(76,175,80,0.9);color:#fff;font-size:0.62rem;font-weight:800;padding:0.2rem 0.55rem;border-radius:6px;z-index:2;}
 .concept-card-big-info{padding:0.55rem 0.65rem;}
 .concept-card-big-title{font-size:0.72rem;font-weight:700;color:#ccc;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
-.concept-card-big-desc{font-size:0.58rem;color:#666;line-height:1.45;margin-top:0.3rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
-.concept-card-big-hook{font-size:0.48rem;color:#888;margin-top:0.25rem;font-style:italic;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.concept-card-big-hook-type{display:inline-block;font-size:0.46rem;font-weight:800;padding:0.14rem 0.42rem;border-radius:6px;margin-top:0.3rem;letter-spacing:0.03em;text-transform:uppercase;}
+.concept-card-big-hook-type.hook-visual{background:rgba(255,107,157,0.15);color:#ff6b9d;border:1px solid rgba(255,107,157,0.3);}
+.concept-card-big-hook-type.hook-script{background:rgba(68,255,153,0.12);color:#44ff99;border:1px solid rgba(68,255,153,0.3);}
+.concept-card-big-hook-type.hook-audio{background:rgba(68,170,255,0.12);color:#44aaff;border:1px solid rgba(68,170,255,0.3);}
+.concept-card-big-hook-type.hook-mix{background:rgba(255,204,68,0.12);color:#ffcc44;border:1px solid rgba(255,204,68,0.3);}
+.concept-card-big-desc{font-size:0.52rem;color:#555;line-height:1.4;margin-top:0.25rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
 .concept-card-big-tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:0.35rem;}
 .concept-card-big-tag{font-size:0.48rem;font-weight:600;padding:0.1rem 0.4rem;border-radius:8px;}
 
@@ -855,19 +875,26 @@ function renderConceptsTab(wrap) {
       +'</div>'
       +'<div class="concept-card-big-info">'
         +'<div class="concept-card-big-title">'+esc(v.title||'Untitled')+'</div>';
-    var descText = v.nancyExecution || v.description || '';
-    if (descText) {
-      html += '<div class="concept-card-big-desc">'+esc(descText)+'</div>';
-    }
     if (v.hookPattern) {
-      html += '<div class="concept-card-big-hook">'+esc(v.hookPattern)+'</div>';
+      var hookClass = 'hook-mix';
+      var hookLabel = v.hookPattern;
+      var hp = v.hookPattern.toLowerCase();
+      if (hp.indexOf('visual') === 0 && hp.indexOf('+') === -1 && hp.indexOf('mix') === -1) hookClass = 'hook-visual';
+      else if (hp.indexOf('script') === 0 && hp.indexOf('+') === -1 && hp.indexOf('mix') === -1) hookClass = 'hook-script';
+      else if (hp.indexOf('audio') === 0 && hp.indexOf('+') === -1 && hp.indexOf('mix') === -1) hookClass = 'hook-audio';
+      var hookType = hp.split('.')[0].trim();
+      var hookDesc = hookLabel.indexOf('.') > -1 ? hookLabel.substring(hookLabel.indexOf('.')+1).trim() : '';
+      html += '<span class="concept-card-big-hook-type '+hookClass+'">'+esc(hookType)+'</span>';
+      if (hookDesc) html += '<div class="concept-card-big-desc">'+esc(hookDesc)+'</div>';
+    } else {
+      var descText = v.nancyExecution || v.description || '';
+      if (descText) html += '<div class="concept-card-big-desc">'+esc(descText)+'</div>';
     }
     if (tags.length) {
       html += '<div class="concept-card-big-tags">';
-      tags.slice(0,4).forEach(function(t) {
+      tags.forEach(function(t) {
         html += '<span class="concept-card-big-tag concept-tag '+getTagClass(t)+'">'+esc(t)+'</span>';
       });
-      if (tags.length > 4) html += '<span class="concept-card-big-tag" style="background:#111;color:#555;">+' + (tags.length - 4) + '</span>';
       html += '</div>';
     }
     html += '</div></div>';
@@ -1385,50 +1412,51 @@ function renderCategoryShots(catId, filter) {
       +(gs.shotType ? '<span class="brief-type '+typeClass+'">'+esc(typeLabel)+'</span>' : '')
       +'</div>';
 
-    // Body: video preview left + two info columns right
-    var hasBody = hasOnset || connectedVids.length;
-    if (hasBody) {
-      html += '<div class="brief-body">';
+    // Body: ALL connected concept videos stacked left + info columns right
+    html += '<div class="brief-body">';
 
-      // Left: first reference video as prominent preview
-      if (connectedVids.length) {
-        var firstVid = connectedVids[0];
-        var vidThumb = buildVideoEmbed(firstVid.url) || '';
-        html += '<div class="brief-vid-col">'
-          +'<div class="brief-vid-thumb" onclick="openVideoModal(\''+esc(firstVid.url||'').replace(/'/g,"\\'")+'\')">'
+    // Left: all connected concept videos stacked vertically
+    if (connectedVids.length) {
+      html += '<div class="brief-vid-col">';
+      html += '<div class="brief-vid-col-lbl">Connected Concepts</div>';
+      connectedVids.forEach(function(cv) {
+        var vidThumb = buildVideoEmbed(cv.url) || '';
+        html += '<div class="brief-vid-item" onclick="showSingleVideo(\''+cv.title.replace(/'/g,"\\'")+'\')">'
+          +'<div class="brief-vid-thumb">'
             +vidThumb
             +'<div class="brief-vid-play"></div>'
-            +'<div class="brief-vid-label">C'+firstVid.num+'</div>'
           +'</div>'
+          +'<div class="brief-vid-info"><span class="brief-vid-num">C'+cv.num+'</span> <span class="brief-vid-title">'+esc(cv.title)+'</span></div>'
           +'</div>';
-      }
+      });
+      html += '</div>';
+    }
 
-      // Right: props + on set columns
-      html += '<div class="brief-info-cols">';
+    // Right: props + on set columns
+    html += '<div class="brief-info-cols">';
+    html += '<div class="brief-col">';
+    if (gs.propStation) {
+      html += '<div class="brief-lbl">Props / Station</div><div class="brief-tags">';
+      gs.propStation.split(',').forEach(function(p) {
+        p = p.trim();
+        if (p) html += '<span class="brief-tag">'+esc(p)+'</span>';
+      });
+      html += '</div>';
+    }
+    html += '</div>';
+    if (hasOnset) {
       html += '<div class="brief-col">';
-      if (gs.propStation) {
-        html += '<div class="brief-lbl">Props / Station</div><div class="brief-tags">';
-        gs.propStation.split(',').forEach(function(p) {
-          p = p.trim();
-          if (p) html += '<span class="brief-tag">'+esc(p)+'</span>';
-        });
+      html += '<div class="brief-onset-hdr">On Set</div>';
+      if (gs.videographer || gs.talent) {
+        html += '<div class="brief-onset-row">';
+        if (gs.videographer) html += '<div><div class="brief-onset-lbl">Videographer</div><div class="brief-onset-val">'+esc(gs.videographer)+'</div></div>';
+        if (gs.talent) html += '<div><div class="brief-onset-lbl">Talent</div><div class="brief-onset-val">'+esc(gs.talent)+'</div></div>';
         html += '</div>';
       }
       html += '</div>';
-      if (hasOnset) {
-        html += '<div class="brief-col">';
-        html += '<div class="brief-onset-hdr">On Set</div>';
-        if (gs.videographer || gs.talent) {
-          html += '<div class="brief-onset-row">';
-          if (gs.videographer) html += '<div><div class="brief-onset-lbl">Videographer</div><div class="brief-onset-val">'+esc(gs.videographer)+'</div></div>';
-          if (gs.talent) html += '<div><div class="brief-onset-lbl">Talent</div><div class="brief-onset-val">'+esc(gs.talent)+'</div></div>';
-          html += '</div>';
-        }
-        html += '</div>';
-      }
-      html += '</div>'; // close brief-info-cols
-      html += '</div>'; // close brief-body
     }
+    html += '</div>'; // close brief-info-cols
+    html += '</div>'; // close brief-body
 
     // Edit Recipe box
     if (gs.editRecipe) {
@@ -1444,19 +1472,6 @@ function renderCategoryShots(catId, filter) {
         +'<div class="brief-note-hdr"><span class="brief-note-lbl">Director Note</span><span class="brief-note-badge">edit freely</span></div>'
         +'<div class="brief-note-txt">'+esc(gs.directorNote)+'</div>'
         +'</div>';
-    }
-
-    // Additional reference videos row (skip the first since it's shown as the side preview)
-    if (connectedVids.length > 1) {
-      html += '<div class="brief-refs"><div class="brief-refs-lbl">Reference Videos</div><div class="brief-refs-row">';
-      connectedVids.slice(1).forEach(function(cv) {
-        var thumbEmbed = buildVideoEmbed(cv.url) || '';
-        html += '<div class="brief-ref" onclick="showSingleVideo(\''+cv.title.replace(/'/g,"\\'")+'\')">'
-          +'<div class="brief-ref-thumb">'+(thumbEmbed || '<div class="brief-ref-play"></div>')+'</div>'
-          +'<div class="brief-ref-info"><div class="brief-ref-num">C'+cv.num+'</div><div class="brief-ref-title">'+esc(cv.title)+'</div></div>'
-          +'</div>';
-      });
-      html += '</div></div>';
     }
 
     html += '</div>';
@@ -1789,20 +1804,52 @@ function renderGuide(id) {
 function buildVideoEntry(video, uid, guideId, videoIdx) {
   var embedInner = buildVideoEmbed(video.url || null) || '<div class="ve-embed-placeholder"><div class="ve-play"></div></div>';
 
-  // Stats pills
+  // Stats pills (no hook — moved to banner)
   var statsHTML = [
     video.outlierScore ? '<span class="vev2-stat s-score">'+esc(video.outlierScore)+'</span>' : '',
     video.views        ? '<span class="vev2-stat s-views">'+esc(video.views)+' views</span>' : '',
-    video.likes        ? '<span class="vev2-stat s-likes">'+esc(video.likes)+' likes</span>' : '',
-    video.hookPattern  ? '<span class="vev2-stat s-hook">🪝 '+esc(video.hookPattern)+'</span>' : ''
+    video.likes        ? '<span class="vev2-stat s-likes">'+esc(video.likes)+' likes</span>' : ''
   ].filter(Boolean).join('');
 
-  // Tags (coloured by category)
+  // Hook banner
+  var hookBannerHTML = '';
+  if (video.hookPattern) {
+    var _hp = video.hookPattern.toLowerCase();
+    var _hc = 'hook-mix';
+    if (_hp.indexOf('visual') === 0 && _hp.indexOf('+') === -1 && _hp.indexOf('mix') === -1) _hc = 'hook-visual';
+    else if (_hp.indexOf('script') === 0 && _hp.indexOf('+') === -1 && _hp.indexOf('mix') === -1) _hc = 'hook-script';
+    else if (_hp.indexOf('audio') === 0 && _hp.indexOf('+') === -1 && _hp.indexOf('mix') === -1) _hc = 'hook-audio';
+    var _ht = video.hookPattern.split('.')[0].trim();
+    var _hd = video.hookPattern.indexOf('.') > -1 ? video.hookPattern.substring(video.hookPattern.indexOf('.')+1).trim() : '';
+    hookBannerHTML = '<div class="vev2-hook-banner"><span class="vev2-hook-type '+_hc+'">'+esc(_ht)+'</span>'
+      + (_hd ? '<div class="vev2-hook-desc">'+esc(_hd)+'</div>' : '') + '</div>';
+  }
+
+  // Tags grouped by category
   var vtags = Array.isArray(video.tags) ? video.tags : [];
-  var tagsHTML = vtags.map(function(t) {
-    var cat = Object.keys(TAG_CATEGORIES).find(function(c){ return getAllTags(c).indexOf(t) !== -1; }) || 'other';
-    return '<span class="vev2-tag" data-cat="'+cat+'">'+esc(t)+'</span>';
-  }).join('');
+  var tagGroups = {};
+  var tagOrder = ['People','Product','Location','Prop'];
+  vtags.forEach(function(t) {
+    var cat = Object.keys(TAG_CATEGORIES).find(function(c){ return getAllTags(c).indexOf(t) !== -1; }) || 'Other';
+    if (!tagGroups[cat]) tagGroups[cat] = [];
+    tagGroups[cat].push(t);
+  });
+  var tagsHTML = '';
+  tagOrder.forEach(function(cat) {
+    if (!tagGroups[cat] || !tagGroups[cat].length) return;
+    tagsHTML += '<div class="vev2-tag-group"><div class="vev2-tag-group-label">'+cat+'</div>';
+    tagGroups[cat].forEach(function(t) {
+      tagsHTML += '<span class="vev2-tag" data-cat="'+cat+'">'+esc(t)+'</span>';
+    });
+    tagsHTML += '</div>';
+  });
+  if (tagGroups['Other'] && tagGroups['Other'].length) {
+    tagsHTML += '<div class="vev2-tag-group">';
+    tagGroups['Other'].forEach(function(t) {
+      tagsHTML += '<span class="vev2-tag" data-cat="other">'+esc(t)+'</span>';
+    });
+    tagsHTML += '</div>';
+  }
 
   // Shot list builder
   function shots(arr) {
