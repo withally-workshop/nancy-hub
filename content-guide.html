@@ -445,11 +445,11 @@ button{font-family:inherit;}
 .brief-body{display:flex;border-top:1px solid #1a1a1a;}
 .brief-vid-col{flex:1;min-width:0;padding:0.75rem 0.9rem;border-right:1px solid #1a1a1a;}
 .brief-vid-col-lbl{font-size:0.42rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--m);font-weight:700;margin-bottom:8px;}
-.brief-cf-row{display:flex;gap:10px;margin-bottom:10px;padding:8px;background:#0a0a15;border:1px solid #1a1a2e;border-radius:8px;}
+.brief-cf-row{display:flex;gap:12px;margin-bottom:12px;padding:10px;background:#0a0a15;border:1px solid #1a1a2e;border-radius:8px;}
 .brief-cf-row:last-child{margin-bottom:0;}
-.brief-cf-vid{flex-shrink:0;width:90px;overflow:hidden;border-radius:8px;border:2px solid var(--m);background:#0a0a0a;}
+.brief-cf-vid{flex-shrink:0;width:110px;overflow:hidden;border-radius:8px;border:2px solid var(--m);background:#0a0a0a;}
 .brief-cf-vid:hover{border-color:#fff;}
-.brief-cf-info{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;}
+.brief-cf-info{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:4px;}
 .brief-vid-thumb{width:100%;aspect-ratio:9/16;max-height:160px;background:#0a0a0a;overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center;}
 .brief-vid-thumb .video-embed-wrap{border:none!important;width:100%;height:100%;position:absolute;top:0;left:0;}
 .brief-vid-thumb .video-embed-wrap.tiktok-wrap iframe,.brief-vid-thumb .video-embed-wrap.instagram-wrap iframe{width:325px!important;height:580px!important;aspect-ratio:unset!important;max-height:none!important;transform:scale(0.55);transform-origin:top left;}
@@ -2184,7 +2184,9 @@ function openGuideSheet(guideId, videoIdx, type) {
     }
     // Fallback: no filmingGuide/script/fullGuide — show available card data
     if (!contentHTML) {
-      if (video.deepAnalysis) contentHTML += '<div class="gs-type-label">Original Analysis</div><div class="gs-fg-body">'+esc(video.deepAnalysis)+'</div>';
+      if (video.hookAnalysis) contentHTML += '<div class="gs-type-label">Analysis</div><div class="gs-fg-body">'+esc(video.hookAnalysis)+'</div>';
+      if (Array.isArray(video.deepAnalysis) && video.deepAnalysis.length) contentHTML += '<div class="gs-type-label">Original Frames</div><div class="gs-fg-items">'+video.deepAnalysis.map(function(s){ return '<div class="gs-fg-item">'+esc(s)+'</div>'; }).join('')+'</div>';
+      else if (typeof video.deepAnalysis === 'string' && video.deepAnalysis) contentHTML += '<div class="gs-type-label">Original Analysis</div><div class="gs-fg-body">'+esc(video.deepAnalysis)+'</div>';
       if (video.shots && video.shots.length) contentHTML += '<div class="gs-type-label">Original Shots</div><div class="gs-fg-items">'+video.shots.map(function(s){ return '<div class="gs-fg-item">'+esc(s)+'</div>'; }).join('')+'</div>';
       if (video.nancyExecution) contentHTML += '<div class="gs-type-label">Nancy Execution</div><div class="gs-fg-body">'+esc(video.nancyExecution)+'</div>';
       if (video.productionShots && video.productionShots.length) contentHTML += '<div class="gs-type-label">Production Shots</div><div class="gs-fg-items">'+video.productionShots.map(function(s){ return '<div class="gs-fg-item">'+esc(s)+'</div>'; }).join('')+'</div>';
